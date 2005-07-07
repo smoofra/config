@@ -1,4 +1,5 @@
 
+; switched to darcs!
 
 (load "~/.site-init.el")
 

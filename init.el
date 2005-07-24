@@ -4,6 +4,7 @@
 (load "~/.site-init.el")
 
 (setq inferior-lisp-program  "sbcl")
+;(setq inferior-lisp-program  "lisp")
 ;(setq inferior-lisp-program  "/sw/bin/openmcl --load /Users/larry/.openmcl-init")
 ;(setq inferior-lisp-program  "/Users/larry/usr-sbcl-cvs/bin/sbcl --core /Users/larry/usr-sbcl-cvs/lib/sbcl/sbcl.core")
 
@@ -421,3 +422,4 @@ is setup, unless the user already set one explicitly."
 
 
 
+(put 'downcase-region 'disabled nil)

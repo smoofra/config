@@ -4,7 +4,9 @@
 (load "~/.site-init.el")
 
 (setq inferior-lisp-program  "sbcl")
+;(setq inferior-lisp-program  "/home/larry/allegro/acl62_trial/alisp")
 ;(setq inferior-lisp-program  "lisp")
+;(setq inferior-lisp-program  "env SBCL_HOME=/home/larry/usrsbcl/lib/sbcl /home/larry/usrsbcl/bin/sbcl")
 ;(setq inferior-lisp-program  "/sw/bin/openmcl --load /Users/larry/.openmcl-init")
 ;(setq inferior-lisp-program  "/Users/larry/usr-sbcl-cvs/bin/sbcl --core /Users/larry/usr-sbcl-cvs/lib/sbcl/sbcl.core")
 
@@ -56,6 +58,7 @@
 (global-set-key [(f2)]     'next-error)
 (global-set-key "\C-xe"    'next-error)
 
+(global-set-key "\C-\M-j"  'join-line)
 (global-set-key "\C-xp"    'revert-buffer)
 (global-set-key "\C-x`"    'delete-other-windows)
 (global-set-key "\M-o"     'switch-to-buffer)
@@ -389,7 +392,8 @@
   (interactive)
   (global-set-key "\C-x\C-c" 'save-buffers-kill-emacs))
 
-(slime-define-key "\C-cb" 'slime-selector)
+(global-set-key "\C-cb" 'slime-selector)
+(global-set-key [backtab] 'slime-fuzzy-complete-symbol)
 
 
 (column-number-mode t)

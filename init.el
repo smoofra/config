@@ -20,6 +20,19 @@
 (require 'slime)
 (slime-setup)
 
+(defun my-unhighlight ()
+  (interactive)
+  (sldb-delete-overlays))
+
+(defun semi-forward-sexp ()
+  (interactive)
+  (forward-sexp)
+  (backward-sexp))
+
+(slime-define-key "\M-c" 'my-unhighlight)
+(slime-define-key "\M-/" 'slime-fuzzy-complete-symbol)
+(global-set-key "\C-\M-n" 'semi-forward-sexp)
+
 (defun my-slime-edit-definition (name &optional where)
   (interactive (list (slime-read-symbol-name "Symbol: ")))
   (set-mark (point))
@@ -48,16 +61,15 @@
   (let ((p (point)))
     (unwind-protect (myblink-h) (goto-char p))))
       
-      
+(show-paren-mode)
 
 (global-set-key "\C-o"      'myblink)    
-
 (global-set-key [C-return] 'open-line)
-
 (global-set-key [(f1)]     'delete-other-windows)
 (global-set-key [(f2)]     'next-error)
 (global-set-key "\C-xe"    'next-error)
-
+(global-set-key "\M-_"     'unwrap-next-sexp)
+(global-set-key "\C-\M-y"  'insert-parentheses)
 (global-set-key "\C-\M-j"  'join-line)
 (global-set-key "\C-xp"    'revert-buffer)
 (global-set-key "\C-x`"    'delete-other-windows)
@@ -82,7 +94,6 @@
 (global-set-key "\C-j"      'backwards-kill-line)
 (global-set-key "\M-s"      'ispell-region)
 (global-set-key "\C-xc"     'font-lock-fontify-buffer)
-  
 (global-set-key "\C-h"      'delete-backward-char)
 (global-set-key "\M-?"      'help-command)
 (global-set-key "\M-p"      'fill-paragraph)
@@ -91,24 +102,17 @@
 ;(global-set-key "\M-r"      're-lock)
 (global-set-key "\M-r"      'replace-regexp-region)
 (global-set-key "\M-l"      'goto-line)
-
 (global-set-key [C-down] 'scroll-up-one)
 (global-set-key [C-up]  'scroll-down-one)
-
 (global-set-key "\M-z" 'scroll-up-one)
 (global-set-key "\M-q" 'scroll-down-one)
 ;(global-set-key "\C-\M-z" 'scroll-up-half)
 ;(global-set-key "\C-\M-q" 'scroll-down-half)
-
-
 (global-set-key "\C-s" 'isearch-forward-regexp)
 (global-set-key "\C-r" 'isearch-backward-regexp)
 (global-set-key "\C-v" 'view-mode)
-
 (global-set-key   "\M-\C-z"   'scroll-up-half)
 (global-set-key "\M-\C-a"   'scroll-down-half)
-
-
 (global-set-key [home] 'SDO)
 (global-set-key [end]  'SUO)
 
@@ -123,6 +127,7 @@
 		("\\.sawfishrc" . lisp-mode)
 		("\\.ph" . cperl-mode)
 		("\\.rb" . ruby-mode)
+		("\\.asd" . lisp-mode)
 		("\\.jl$" . lisp-mode))
 	      auto-mode-alist )) 
 
@@ -146,9 +151,64 @@
 			       makefile-mode
 			       diff-mode))
 
+;;by marco baringer
+(defun unwrap-next-sexp (&optional kill-n-sexps)
+  "Convert (x ...) to ..."
+  (interactive "P")
+  (forward-sexp)
+  (backward-delete-char 1)
+  (backward-up-list)
+  (delete-char 1)
+  (let ((start-region-to-kill (point)))
+    (kill-sexp kill-n-sexps)
+    (forward-sexp)
+    (backward-sexp)
+    (delete-region start-region-to-kill (1- (point)))
+    (set-mark (point)))
+;  (backward-up-list)
+  (lisp-indent-line))
 
-;(setq font-lock-global-modes '(not))
+(defun delete-empty-lines ()
+  (interactive)
+  (delete-horizontal-space)
+  (when (equal (char-after (point)) 10)
+      (delete-char 1)
+      (delete-empty-lines)))
 
+(defun forward-delete-space ()
+  (interactive)
+  (when (or (equal (char-after (point)) 10)
+	    (equal (char-after (point)) 32)
+	    (equal (char-after (point)) 9))
+      (delete-char 1)
+      (forward-delete-space)))
+
+(defun consume-sexp  ()
+  (interactive)
+  (backward-up-list)
+  (forward-sexp)
+  (let ((c (char-before (point))))
+    (backward-delete-char 1)
+    (forward-delete-space)
+    (cond
+     ((equal (char-to-string (char-after (point))) ")")
+      (consume-sexp)
+      (insert c)
+      (backward-char))
+     (t (if (and (not (equal (char-to-string (char-before (point))) "("))
+		 (not (equal (char-to-string (char-before (point))) " ")))
+	    (insert " "))
+	(forward-sexp)
+	(insert c)
+	(backward-char)))))
+
+
+(defun slime-insert-eval-last-expression ()
+  (interactive)
+  (insert (slime-eval `(swank:pprint-eval ,(slime-last-expression)))))
+
+(define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression)
+(global-set-key "\M-i" 'consume-sexp)
 
 (defun define-jk (map)
   (define-key map "u" 'scroll-down-half)
@@ -160,6 +220,7 @@
   (define-key map "/" 'isearch-forward)
   (define-key map "?" 'isearch-backward))
 
+
 (require 'info)
 (require 'view)
 (require 'apropos)
@@ -167,7 +228,6 @@
 (require 'man)
 (require 'term)
 
-(define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
 
 (define-jk Info-mode-map)
 (define-jk help-mode-map)
@@ -177,7 +237,7 @@
 (define-jk Man-mode-map)
 (define-key slime-inspector-mode-map "D" 'slime-inspector-describe)
 
-
+(define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
 (define-key Info-mode-map "U" 'Info-up)
 (define-key Info-mode-map "D" 'Info-directory)
 
@@ -190,12 +250,12 @@
 (add-hook 'window-setup-hook '(lambda () (scroll-bar-mode -1)))
 ;(add-hook 'emacs-startup-hook '(lambda () (menu-bar-mode -1)))
 
-(define-key comint-mode-map "\M-p" 'previous-line)
-(define-key comint-mode-map "\M-n" 'next-line)
-(define-key comint-mode-map [up]   'comint-previous-input)
-(define-key comint-mode-map [down] 'comint-next-input)
-(define-key comint-mode-map "\C-p" 'comint-previous-input)
-(define-key comint-mode-map "\C-n" 'comint-next-input)
+;(define-key comint-mode-map "\M-p" 'previous-line)
+;(define-key comint-mode-map "\M-n" 'next-line)
+;(define-key comint-mode-map [up]   'comint-previous-input)
+;(define-key comint-mode-map [down] 'comint-next-input)
+;(define-key comint-mode-map "\C-p" 'comint-previous-input)
+;(define-key comint-mode-map "\C-n" 'comint-next-input)
 (define-key comint-mode-map "\C-z" 'scroll-up-one)
 (define-key comint-mode-map "\C-q" 'scroll-down-one)
 
@@ -394,6 +454,7 @@
 
 (global-set-key "\C-cb" 'slime-selector)
 (global-set-key [backtab] 'slime-fuzzy-complete-symbol)
+
 
 
 (column-number-mode t)

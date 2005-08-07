@@ -78,7 +78,6 @@
 (global-set-key "\C-x\C-m" 'compi)
 (global-set-key "\C-p"     'previous-line)
 (global-set-key "\C-x\C-k" 'view-file)
-(global-set-key "\M-'"     'replace-regexp-region)
 (global-set-key "\M-\""     'transient-mark-mode)
 ;(global-set-key "\C-h\M-a"  'apropos)
 (global-set-key "\C-xf"     'set-visited-file-name)
@@ -175,13 +174,32 @@
       (delete-char 1)
       (delete-empty-lines)))
 
+(defun is-space (c)
+  (or (equal c 10)
+      (equal c 32)
+      (equal c 9)))
+
 (defun forward-delete-space ()
   (interactive)
-  (when (or (equal (char-after (point)) 10)
-	    (equal (char-after (point)) 32)
-	    (equal (char-after (point)) 9))
+  (when (is-space (char-after (point)))
       (delete-char 1)
       (forward-delete-space)))
+
+(defun forward-delete-space-through-parens ()
+  (interactive)
+  (forward-delete-space)
+  (when (equal (char-to-string (char-after (point))) ")")
+    (forward-char)
+    (let ((close nil))
+      (save-excursion
+	(while (is-space (char-after (point)))
+	  (forward-char))
+	(when (equal (char-to-string (char-after (point))) ")")
+	  (setq close t)))
+      (when close 
+	(forward-delete-space-through-parens))
+      (backward-char))))
+
 
 (defun consume-sexp  ()
   (interactive)
@@ -207,6 +225,7 @@
   (interactive)
   (insert (slime-eval `(swank:pprint-eval ,(slime-last-expression)))))
 
+(global-set-key "\M-'" 'forward-delete-space-through-parens)
 (define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression)
 (global-set-key "\M-i" 'consume-sexp)
 

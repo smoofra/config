@@ -74,6 +74,7 @@
 (global-set-key "\C-xp"    'revert-buffer)
 (global-set-key "\C-x`"    'delete-other-windows)
 (global-set-key "\M-o"     'switch-to-buffer)
+(global-set-key "\M-e"     'call-last-kbd-macro)
 (global-set-key "\C-xm"    'comp)
 (global-set-key "\C-x\C-m" 'compi)
 (global-set-key "\C-p"     'previous-line)

@@ -179,11 +179,11 @@
       (equal c 32)
       (equal c 9)))
 
+
 (defun forward-delete-space ()
   (interactive)
-  (when (is-space (char-after (point)))
-      (delete-char 1)
-      (forward-delete-space)))
+  (while (is-space (char-after (point)))
+    (delete-char 1)))
 
 (defun forward-delete-space-through-parens ()
   (interactive)

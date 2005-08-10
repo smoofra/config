@@ -29,9 +29,15 @@
   (forward-sexp)
   (backward-sexp))
 
+(defun semi-backward-sexp ()
+  (interactive)
+  (backward-sexp)
+  (forward-sexp))
+
 (slime-define-key "\M-c" 'my-unhighlight)
 (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol)
 (global-set-key "\C-\M-n" 'semi-forward-sexp)
+(global-set-key "\C-\M-p" 'semi-backward-sexp)
 
 (defun my-slime-edit-definition (name &optional where)
   (interactive (list (slime-read-symbol-name "Symbol: ")))
@@ -63,11 +69,12 @@
       
 (show-paren-mode)
 
-(global-set-key "\C-o"      'myblink)    
+;(global-set-key "\C-o"      'myblink)
 (global-set-key [C-return] 'open-line)
 (global-set-key [(f1)]     'delete-other-windows)
 (global-set-key [(f2)]     'next-error)
 (global-set-key "\C-xe"    'next-error)
+(global-set-key "\C-xd"    'beginning-of-defun)
 (global-set-key "\M-_"     'unwrap-next-sexp)
 (global-set-key "\C-\M-y"  'insert-parentheses)
 (global-set-key "\C-\M-j"  'join-line)

@@ -14,6 +14,9 @@
 (autoload 'maxima "maxima")
 (setq load-path (cons "/usr/share/maxima/5.9.1/emacs/" load-path))
 
+(setq load-path (cons "~/config" load-path))
+(autoload 'lisppaste-paste-region "lisppaste" "lisppaste" t)
+
 (setq browse-url-browser-function 'w3m-browse-url)
 (autoload 'w3m-browse-url "w3m" "web browser" t)
 

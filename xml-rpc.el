@@ -149,6 +149,7 @@
       nil
     s))
 
+(require 'w3)
 (require 'custom)
 (require 'xml)
 (require 'url)

@@ -15,6 +15,7 @@
 (setq load-path (cons "/usr/share/maxima/5.9.1/emacs/" load-path))
 
 (setq load-path (cons "~/config" load-path))
+(setq load-path (cons "~/emacslisp/darcs-mode" load-path))
 (autoload 'lisppaste-paste-region "lisppaste" "lisppaste" t)
 
 (setq browse-url-browser-function 'w3m-browse-url)
@@ -27,16 +28,50 @@
   (interactive)
   (sldb-delete-overlays))
 
+(defun is-sexp-start ()
+  (let ((p (point)))
+    (save-excursion 
+      (forward-sexp)
+      (backward-sexp)
+      (equal (point) p))))
+
 (defun semi-forward-sexp ()
   (interactive)
-  (forward-sexp)
-  (backward-sexp))
+  (let ((a (point)))
+    (forward-sexp)
+    (let ((b (point)))
+      (backward-sexp)
+      (unless (< a (point))
+	(setf (point) b)))))
 
 (defun semi-backward-sexp ()
   (interactive)
-  (backward-sexp)
-  (forward-sexp))
+  (let ((a (point)))
+    (backward-sexp)
+    (let ((b (point)))
+      (forward-sexp)
+      (unless (< (point) a)
+	(setf (point) b)))))
 
+;(defun semi-backward-sexp ()
+;  (interactive)
+;  (if (cheqstr (char-before (point)) ")")
+;      (backward-sexp)
+;    (progn
+;      (backward-sexp)
+;      (forward-sexp))))
+
+(defun save-sexp ()
+  (interactive)
+  (save-excursion
+    (unless (is-sexp-start)
+      (semi-forward-sexp))
+    (mark-sexp)
+    (call-interactively 'kill-ring-save)))
+
+
+(define-key emacs-lisp-mode-map "\M-k" 'save-sexp)
+(slime-define-key "\M-k" 'save-sexp)
 (slime-define-key "\M-c" 'my-unhighlight)
 (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol)
 (global-set-key "\C-\M-n" 'semi-forward-sexp)
@@ -169,13 +204,13 @@
   (backward-delete-char 1)
   (backward-up-list)
   (delete-char 1)
-  (let ((start-region-to-kill (point)))
-    (kill-sexp kill-n-sexps)
-    (forward-sexp)
-    (backward-sexp)
-    (delete-region start-region-to-kill (1- (point)))
-    (set-mark (point)))
-;  (backward-up-list)
+  (unless (equal kill-n-sexps 0)
+    (let ((start-region-to-kill (point)))
+      (kill-sexp kill-n-sexps)
+      (forward-sexp)
+      (backward-sexp)
+      (delete-region start-region-to-kill (1- (point)))
+      (set-mark (point))))
   (lisp-indent-line))
 
 (defun delete-empty-lines ()
@@ -196,21 +231,29 @@
   (while (is-space (char-after (point)))
     (delete-char 1)))
 
+(defun cheqstr (char str)
+  (and char 
+       (equal (char-to-string char) str)))
+
 (defun forward-delete-space-through-parens ()
   (interactive)
   (forward-delete-space)
-  (when (equal (char-to-string (char-after (point))) ")")
+  (when (cheqstr (char-after (point)) ")")
     (forward-char)
     (let ((close nil))
       (save-excursion
 	(while (is-space (char-after (point)))
 	  (forward-char))
-	(when (equal (char-to-string (char-after (point))) ")")
+	(when (cheqstr (char-after (point)) ")")
 	  (setq close t)))
       (when close 
 	(forward-delete-space-through-parens))
       (backward-char))))
 
+(defun consume-sexp-and-indent ()
+  (interactive)
+  (consume-sexp)
+  (lisp-indent-line))
 
 (defun consume-sexp  ()
   (interactive)
@@ -238,7 +281,7 @@
 
 (global-set-key "\M-'" 'forward-delete-space-through-parens)
 (define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression)
-(global-set-key "\M-i" 'consume-sexp)
+(global-set-key "\M-i" 'consume-sexp-and-indent)
 
 (defun define-jk (map)
   (define-key map "u" 'scroll-down-half)
@@ -359,10 +402,8 @@
 	(when (and (string-match "electric" str)
 		   (not (equal str "c-electric-backspace")))
 ;	  (define-key map (car elem) 'self-insert-command))
-	  (setcdr elem 'self-insert-command)
-	))
-      (setq rest (cdr rest))
-      )))
+	  (setcdr elem 'self-insert-command)))
+      (setq rest (cdr rest)))))
 
 
 ;(no-electric java-mode-map)   
@@ -400,21 +441,16 @@
 
 (defun scroll-up-half ()
   (interactive)
-  (SUO (/ (window-height) 2))
-)
+  (SUO (/ (window-height) 2)))
 
 (defun scroll-down-half ()
   (interactive)
-  (SDO (/ (window-height) 2))
-)
+  (SDO (/ (window-height) 2)))
 
 (defun re-lock ()
   (interactive)
   (font-lock-unfontify-buffer)
-  (font-lock-fontify-buffer)
-  ;(font-lock-mode)(font-lock-mode)
-  )
-
+  (font-lock-fontify-buffer))
 
 (defun backwards-kill-line ()
   (interactive)

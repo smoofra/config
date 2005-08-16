@@ -1,0 +1,26 @@
+#!/usr/bin/perl -w
+
+
+my $divw = 200;
+my $divh = 160;
+
+
+my ($file, $out)  = @ARGV;
+
+my $ident = `identify "$file"`;
+$? == 0 or die "identify failed\n";
+
+my ($w, $h) = $ident =~ /(\d+)x(\d+)/; 
+
+
+if ( ($w/$divw) > ($h/$divh) ) {
+#  print "w\n";
+  exec "convert", "-resize", $divw, $file, $out;
+} else {
+#  print "h\n";
+  exec "convert", "-resize", "x$divh", $file, $out;
+}
+
+
+
+

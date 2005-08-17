@@ -253,6 +253,13 @@
 (defun consume-sexp-and-indent ()
   (interactive)
   (consume-sexp)
+  (backward-sexp)
+  (indent-pp-sexp)
+  (forward-sexp))
+
+(defun lisp-newline-and-indent ()
+  (interactive)
+  (newline)
   (lisp-indent-line))
 
 (defun consume-sexp  ()
@@ -275,6 +282,11 @@
 	(backward-char)))))
 
 
+(defun lisp-ctrla ()
+  (interactive)
+  (call-interactively 'move-beginning-of-line)
+  (lisp-indent-line))
+
 (defun slime-insert-eval-last-expression ()
   (interactive)
   (insert (slime-eval `(swank:pprint-eval ,(slime-last-expression)))))
@@ -282,6 +294,17 @@
 (global-set-key "\M-'" 'forward-delete-space-through-parens)
 (define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression)
 (global-set-key "\M-i" 'consume-sexp-and-indent)
+
+(defun my-lisp-define-key (k b)
+  (define-key emacs-lisp-mode-map k b)
+  (define-key lisp-mode-map k b))
+
+(my-lisp-define-key "\r" 'lisp-newline-and-indent)
+(my-lisp-define-key "\C-a" 'lisp-ctrla)
+
+
+
+
 
 (defun define-jk (map)
   (define-key map "u" 'scroll-down-half)

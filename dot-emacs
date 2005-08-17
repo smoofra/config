@@ -1,2 +1,4 @@
 
 (load "~/config/init.el")
+
+(put 'upcase-region 'disabled nil)

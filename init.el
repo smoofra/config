@@ -228,8 +228,12 @@
 
 (defun forward-delete-space ()
   (interactive)
-  (while (is-space (char-after (point)))
-    (delete-char 1)))
+  (let ((newlines nil))
+    (while (is-space (char-after (point)))
+      (if (cheqstr (char-after (point)) "\n")
+	  (setq newlines t))
+      (delete-char 1))
+    newlines))
 
 (defun cheqstr (char str)
   (and char 
@@ -250,6 +254,16 @@
 	(forward-delete-space-through-parens))
       (backward-char))))
 
+(defun beginning-of-line-p ()
+  (or (equal (point) 1) (cheqstr (char-before (point)) "\n")))
+
+(defun line-empty-before-point ()
+  (save-excursion
+    (while (and (not (beginning-of-line-p))
+		(is-space (char-before (point))))
+      (backward-char))
+    (beginning-of-line-p)))
+
 (defun consume-sexp-and-indent ()
   (interactive)
   (consume-sexp)
@@ -264,23 +278,28 @@
 
 (defun consume-sexp  ()
   (interactive)
+  (forward-delete-space-through-parens)
+  (while (line-empty-before-point)
+    (join-line))
   (backward-up-list)
   (forward-sexp)
   (let ((c (char-before (point))))
     (backward-delete-char 1)
-    (forward-delete-space)
-    (cond
-     ((equal (char-to-string (char-after (point))) ")")
-      (consume-sexp)
-      (insert c)
-      (backward-char))
-     (t (if (and (not (equal (char-to-string (char-before (point))) "("))
-		 (not (equal (char-to-string (char-before (point))) " ")))
-	    (insert " "))
-	(forward-sexp)
+    (let ((newlines (forward-delete-space)))
+      (cond
+       ((equal (char-to-string (char-after (point))) ")")
+	(consume-sexp)
 	(insert c)
-	(backward-char)))))
-
+	(backward-char))
+       (t (when (and (not newlines)
+		     (not (equal (char-to-string (char-before (point))) "("))
+		     (not (equal (char-to-string (char-before (point))) " ")))
+	    (insert " "))
+	  (when newlines 
+	    (lisp-newline-and-indent))
+	  (forward-sexp)
+	  (insert c)
+	  (backward-char))))))
 
 (defun lisp-ctrla ()
   (interactive)

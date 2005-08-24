@@ -309,8 +309,9 @@
 	(insert c)
 	(backward-char))
        (t (when (and (not newlines)
-		     (not (equal (char-to-string (char-before (point))) "("))
-		     (not (equal (char-to-string (char-before (point))) " ")))
+		     (not (cheqstr (char-before (point)) "'"))
+		     (not (cheqstr (char-before (point)) "("))
+		     (not (cheqstr (char-before (point)) " ")))
 	    (insert " "))
 	  (when newlines 
 	    (lisp-newline-and-indent))
@@ -337,8 +338,6 @@
 	      (cl::list 
 	       (cl::macroexpand-1 
 		(cl::read-from-string ,(slime-last-expression)))))))))
-
-
 
 (global-set-key "\M-'" 'forward-delete-space-through-parens)
 (define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression)

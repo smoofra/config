@@ -196,12 +196,13 @@
 			       makefile-mode
 			       diff-mode))
 
-;;by marco baringer
+;;orig. by marco baringer
 (defun unwrap-next-sexp (&optional kill-n-sexps)
   "Convert (x ...) to ..."
   (interactive "P")
   (forward-sexp)
   (backward-delete-char 1)
+  (set-mark (point))
   (backward-up-list)
   (delete-char 1)
   (unless (equal kill-n-sexps 0)
@@ -209,9 +210,9 @@
       (kill-sexp kill-n-sexps)
       (forward-sexp)
       (backward-sexp)
-      (delete-region start-region-to-kill (1- (point)))
-      (set-mark (point))))
-  (lisp-indent-line))
+      (delete-region start-region-to-kill (1- (point)))))
+  (lisp-indent-line)
+  (call-interactively 'indent-region))
 
 (defun delete-empty-lines ()
   (interactive)
@@ -290,6 +291,7 @@
   (interactive)
   (newline)
   (lisp-indent-line))
+
 
 (defun consume-sexp  (&optional supress-newlines)
   (interactive)

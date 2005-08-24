@@ -291,20 +291,46 @@
   (interactive)
   (insert (slime-eval `(swank:pprint-eval ,(slime-last-expression)))))
 
+
+(defun slime-insert-expand-last-expression ()
+  (interactive)
+  (insert (slime-eval 
+	   `(swank::with-buffer-syntax 
+	     ()
+	     (swank::swank-pprint
+	      (cl::list 
+	       (cl::macroexpand-1 
+		(cl::read-from-string ,(slime-last-expression)))))))))
+
+
+
 (global-set-key "\M-'" 'forward-delete-space-through-parens)
 (define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression)
 (global-set-key "\M-i" 'consume-sexp-and-indent)
+
+(defun my-mark-defun ()
+  (interactive)
+  (call-interactively 'beginning-of-defun)
+  (forward-sexp)
+  (call-interactively 'set-mark-command)
+  (backward-sexp))
 
 (defun my-lisp-define-key (k b)
   (define-key emacs-lisp-mode-map k b)
   (define-key lisp-mode-map k b))
 
-(my-lisp-define-key "\r" 'lisp-newline-and-indent)
+(defun backward-transpose-sexp ()
+  (interactive)
+  (call-interactively 'transpose-sexps)
+  (backward-sexp)
+  (backward-sexp))
+
+
+(my-lisp-define-key "\C-ce" 'slime-insert-expand-last-expression)
 (my-lisp-define-key "\C-a" 'lisp-ctrla)
-
-
-
-
+(my-lisp-define-key "\C-\M-h" 'my-mark-defun)
+(my-lisp-define-key "\r" 'lisp-newline-and-indent)
+(my-lisp-define-key "\C-\M-e" 'backward-transpose-sexp)
 
 (defun define-jk (map)
   (define-key map "u" 'scroll-down-half)
@@ -577,3 +603,7 @@ is setup, unless the user already set one explicitly."
 
 
 (put 'downcase-region 'disabled nil)
+
+(setf (get 'bind 'common-lisp-indent-function) 2)
+(setf (get 'defmethod/cc 'common-lisp-indent-function) 'lisp-indent-defmethod)
+

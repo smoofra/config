@@ -15,14 +15,52 @@
 (setq load-path (cons "/usr/share/maxima/5.9.1/emacs/" load-path))
 
 (setq load-path (cons "~/config" load-path))
+(setq load-path (cons "~/emacslisp" load-path))
 (setq load-path (cons "~/emacslisp/darcs-mode" load-path))
 (autoload 'lisppaste-paste-region "lisppaste" "lisppaste" t)
 
 (setq browse-url-browser-function 'w3m-browse-url)
 (autoload 'w3m-browse-url "w3m" "web browser" t)
 
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+
+(when (load "escreen" t)
+  (setq escreen-prefix-char "\M-\d")
+  (escreen-install))
+
+(when (load "fff" t)
+  (fff-install-map))
+
+(when (load "fff-elisp" t)
+  (fff-elisp-install-map))
+
 (require 'slime)
 (slime-setup)
+
+(defun makehoriz ()
+  (interactive)
+  (other-window 1)
+  (let ((buf (current-buffer)))
+    (delete-window)
+    (other-window -1)
+    (split-window-horizontally)
+    (other-window 1)
+    (switch-to-buffer buf)
+    (other-window -1)))
+
+(defun makevert ()
+  (interactive)
+  (other-window 1)
+  (let ((buf (current-buffer)))
+    (delete-window)
+    (other-window -1)
+    (split-window-vertically)
+    (other-window 1)
+    (switch-to-buffer buf)
+    (other-window -1)))
+
+(global-set-key "\C-x4h" 'makehoriz)
+(global-set-key "\C-x4v" 'makevert)
 
 (defun my-unhighlight ()
   (interactive)
@@ -86,7 +124,7 @@
 (tool-bar-mode)
 
 (if (not (eq system-type 'darwin)) 
-    (setq default-frame-alist '((vertical-scroll-bars) (menu-bar-lines . 0)) ))
+    (setq default-frame-alist '((vertical-scroll-bars) (menu-bar-lines . 0))))
 
 (setq next-line-add-newlines nil)
 
@@ -94,11 +132,11 @@
 
 (defun myblink-h ()
   (cond
-   ( (equal (char-to-string (char-before (point))) ")") t )
-   ( (equal (char-to-string (char-before (point))) "]") t )
-   ( (equal (char-to-string (char-before (point))) "}") t )
-   ( t (progn (backward-char) (myblink-h)) ))
-  (call-interactively blink-paren-function))   
+   ((equal (char-to-string (char-before (point))) ")") t)
+   ((equal (char-to-string (char-before (point))) "]") t)
+   ((equal (char-to-string (char-before (point))) "}") t)
+   (t (progn (backward-char) (myblink-h))))
+  (call-interactively blink-paren-function))
 
 (defun myblink ()
   (interactive)
@@ -123,7 +161,7 @@
 (global-set-key "\C-xm"    'comp)
 (global-set-key "\C-x\C-m" 'compi)
 (global-set-key "\C-p"     'previous-line)
-(global-set-key "\C-x\C-k" 'view-file)
+(global-set-key "\C-x\M-f" 'view-file)
 (global-set-key "\M-\""     'transient-mark-mode)
 ;(global-set-key "\C-h\M-a"  'apropos)
 (global-set-key "\C-xf"     'set-visited-file-name)
@@ -169,6 +207,7 @@
 
 (setq auto-mode-alist
       (append '(("\\.\\([pP][Llm]\\|al\\)$" . cperl-mode)
+		("^/tmp/mutt-" . message-mode)
 		("\\.sawfishrc" . lisp-mode)
 		("\\.ph" . cperl-mode)
 		("\\.rb" . ruby-mode)
@@ -352,6 +391,7 @@
 
 (defun my-lisp-define-key (k b)
   (define-key emacs-lisp-mode-map k b)
+  (define-key lisp-interaction-mode-map k b)
   (define-key lisp-mode-map k b))
 
 (defun backward-transpose-sexp ()
@@ -360,11 +400,22 @@
   (backward-sexp)
   (backward-sexp))
 
+(defun space-to-col (n)
+  (interactive "p")
+  (while (not (equal n (current-column)))
+    (insert " ")))
 
-(my-lisp-define-key "\C-ce" 'slime-insert-expand-last-expression)
-(my-lisp-define-key "\C-a" 'lisp-ctrla)
+(defun lisp-join-line ()
+  (interactive)
+  (join-line)
+  (lisp-indent-line))
+
+(slime-define-key   "\C-ce" 'slime-insert-expand-last-expression)
+
+(my-lisp-define-key "\C-\M-j" 'lisp-join-line)
+(my-lisp-define-key "\C-a"    'lisp-ctrla)
 (my-lisp-define-key "\C-\M-h" 'my-mark-defun)
-(my-lisp-define-key "\r" 'lisp-newline-and-indent)
+(my-lisp-define-key "\r"      'lisp-newline-and-indent)
 (my-lisp-define-key "\C-\M-e" 'backward-transpose-sexp)
 
 (defun define-jk (map)
@@ -398,11 +449,13 @@
 (define-key Info-mode-map "U" 'Info-up)
 (define-key Info-mode-map "D" 'Info-directory)
 
-(add-hook 'diff-mode-hook '(lambda () 
-			     (toggle-read-only 1)
-			     (define-key diff-mode-map "\M-q" 'scroll-down-one)
-			     (define-key diff-mode-map "a" 'diff-apply-hunk)
-			     (define-key diff-mode-map "t" 'diff-test-hunk)))
+(add-hook 'diff-mode-hook 
+	  '(lambda () 
+	     (define-key diff-mode-map "\M-q" 'scroll-down-one)
+	     (define-key diff-mode-map "a" 'diff-apply-hunk)
+	     (define-key diff-mode-map "t" 'diff-test-hunk)))
+
+
 (add-hook 'before-make-frame-hook '(lambda () (menu-bar-mode -1)))
 (add-hook 'window-setup-hook '(lambda () (scroll-bar-mode -1)))
 ;(add-hook 'emacs-startup-hook '(lambda () (menu-bar-mode -1)))
@@ -431,13 +484,16 @@
 
 
 (add-hook 'cperl-mode-hook 
-	  (lambda () (define-key cperl-mode-map "\C-j" 'backwards-kill-line)))
+	  (lambda () 
+	    (define-key cperl-mode-map "\C-j" 'backwards-kill-line)))
 
 (add-hook 'LaTeX-mode-hook 
-	  (lambda () (define-key cperl-mode-map "\C-j" 'backwards-kill-line)))
+	  (lambda () 
+	    (define-key cperl-mode-map "\C-j" 'backwards-kill-line)))
 
 (add-hook 'ruby-mode-hook
-	  (lambda () (define-key ruby-mode-map "\C-j" 'backwards-kill-line)))
+	  (lambda () 
+	    (define-key ruby-mode-map "\C-j" 'backwards-kill-line)))
 
 (defun replace-regexp-region ()
   (interactive) 
@@ -558,12 +614,18 @@
 ;		     (point)))))
              
    
+(add-hook 'message-mode-hook 
+	  '(lambda ()
+	     (define-key message-mode-map "\C-cs" 'skip-to-body)))
+
+(setq truncate-partial-width-windows nil)
+
 (defun skip-to-body ()     
   (interactive)
   (if (= (progn (beginning-of-line) (point)) 
 	 (progn (end-of-line)       (point)))
       (forward-line 1)
-      (progn (forward-line 1) (skip-to-body))))
+    (progn (forward-line 1) (skip-to-body))))
 
 (defun muttland-wrapper ()
   (interactive)
@@ -640,5 +702,6 @@ is setup, unless the user already set one explicitly."
 (put 'downcase-region 'disabled nil)
 
 (setf (get 'bind 'common-lisp-indent-function) 2)
-(setf (get 'defmethod/cc 'common-lisp-indent-function) 'lisp-indent-defmethod)
+(setf (get 'defmethod/cc 'common-lisp-indent-function)
+      'lisp-indent-defmethod)
 

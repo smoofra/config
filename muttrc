@@ -276,7 +276,8 @@ set record='=sent-mail'
 unset save_name
 unset force_name
 set nosig_dashes
-set editor="emacs -nw  -f muttland"
+#set editor="emacs -nw  -f muttland"
+set editor="emacsclient"
 set fcc_clear
 
 

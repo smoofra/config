@@ -152,6 +152,7 @@
 (global-set-key "\C-xe"    'next-error)
 (global-set-key "\C-xd"    'beginning-of-defun)
 (global-set-key "\M-_"     'unwrap-next-sexp)
+(global-set-key "\C-x\C-b" 'ibuffer)
 (global-set-key "\C-\M-y"  'insert-parentheses)
 (global-set-key "\C-\M-j"  'join-line)
 (global-set-key "\C-xp"    'revert-buffer)

@@ -3,6 +3,8 @@
 
 (load "~/.site-init.el")
 
+(require 'cl)
+
 (setq inferior-lisp-program  "sbcl")
 ;(setq inferior-lisp-program  "/home/larry/allegro/acl62_trial/alisp")
 ;(setq inferior-lisp-program  "lisp")
@@ -16,13 +18,15 @@
 
 (setq load-path (cons "~/config" load-path))
 (setq load-path (cons "~/emacslisp" load-path))
+(setq load-path (cons "~/emacslisp/emacs-cl" load-path))
 (setq load-path (cons "~/emacslisp/darcs-mode" load-path))
 (autoload 'lisppaste-paste-region "lisppaste" "lisppaste" t)
 
 (setq browse-url-browser-function 'w3m-browse-url)
 (autoload 'w3m-browse-url "w3m" "web browser" t)
 
-(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+(add-hook 'after-save-hook 
+	  'executable-make-buffer-file-executable-if-script-p)
 
 (when (load "escreen" t)
   (setq escreen-prefix-char "\M-\d")
@@ -67,11 +71,22 @@
   (sldb-delete-overlays))
 
 (defun is-sexp-start ()
-  (let ((p (point)))
-    (save-excursion 
-      (forward-sexp)
-      (backward-sexp)
-      (equal (point) p))))
+  (condition-case err
+      (let ((p (point)))
+	(save-excursion 
+	  (forward-sexp)
+	  (backward-sexp)
+	  (equal (point) p)))
+    (error nil)))
+
+(defun is-sexp-end ()
+  (condition-case err
+      (let ((p (point)))
+	(save-excursion 
+	  (backward-sexp)
+	  (forward-sexp)
+	  (equal (point) p)))
+    (error nil)))
 
 (defun semi-forward-sexp ()
   (interactive)
@@ -109,7 +124,6 @@
 
 
 (define-key emacs-lisp-mode-map "\M-k" 'save-sexp)
-(slime-define-key "\M-k" 'save-sexp)
 (slime-define-key "\M-c" 'my-unhighlight)
 (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol)
 (global-set-key "\C-\M-n" 'semi-forward-sexp)
@@ -124,7 +138,8 @@
 (tool-bar-mode)
 
 (if (not (eq system-type 'darwin)) 
-    (setq default-frame-alist '((vertical-scroll-bars) (menu-bar-lines . 0))))
+    (setq default-frame-alist 
+	  '((vertical-scroll-bars) (menu-bar-lines . 0))))
 
 (setq next-line-add-newlines nil)
 
@@ -142,6 +157,15 @@
   (interactive)
   (let ((p (point)))
     (unwind-protect (myblink-h) (goto-char p))))
+
+(defun diff-current-buffer-with-file ()
+  (interactive)
+  (diff-buffer-with-file (current-buffer)))
+
+
+(defun remove-keymap-prop (begin end)
+  (interactive "r")
+  (remove-text-properties begin end '(keymap)))
       
 (show-paren-mode)
 
@@ -156,6 +180,7 @@
 (global-set-key "\C-\M-y"  'insert-parentheses)
 (global-set-key "\C-\M-j"  'join-line)
 (global-set-key "\C-xp"    'revert-buffer)
+(global-set-key "\C-x\C-p" 'diff-current-buffer-with-file)
 (global-set-key "\C-x`"    'delete-other-windows)
 (global-set-key "\M-o"     'switch-to-buffer)
 (global-set-key "\M-e"     'call-last-kbd-macro)
@@ -298,6 +323,9 @@
 (defun beginning-of-line-p ()
   (or (equal (point) 1) (cheqstr (char-before (point)) "\n")))
 
+(defun end-of-line-p ()
+  (or (null (char-after (point))) (cheqstr (char-after (point)) "\n")))
+
 (defun line-empty-before-point ()
   (save-excursion
     (while (and (not (beginning-of-line-p))
@@ -305,20 +333,46 @@
       (backward-char))
     (beginning-of-line-p)))
 
+(defun line-empty-after-point ()
+  (save-excursion
+    (while (and (not (end-of-line-p))
+		(is-space (char-after (point))))
+      (forward-char))
+    (end-of-line-p)))      
+
 (defun is-tail ()
   (save-excursion
     (while (is-space (char-after (point)))
       (forward-char))
     (cheqstr (char-after (point)) ")")))
 
+(defun grab-quotes-before-point ()
+  (if (or (cheqstr (char-before (point)) "'")
+	  (cheqstr (char-before (point)) "`"))
+      (let ((quote (char-to-string (char-before (point)))))
+	(backward-delete-char 1)
+	(concat (grab-quotes-before-point) quote))
+    ""))
+
+(defun at-most-one-space ()
+  (interactive)
+  (if (or (and (not (beginning-of-line-p)) (is-space (char-before (point))))
+	  (and (not (end-of-line-p))       (is-space (char-after  (point)))))
+      (just-one-space)))
+
 (defun consume-sexp-and-indent ()
   (interactive)
-  (let ((n 0))
+  (let ((quote (grab-quotes-before-point))
+	(n 0))
+    (at-most-one-space)
     (while (not (is-tail))
       (incf n)
       (forward-sexp))
     (consume-sexp (< 0 n))
     (backward-sexp)
+    (insert quote)
+    (backward-char (length quote))
+    (lisp-indent-line)
     (indent-pp-sexp)
     (forward-sexp)
     (while (< 0 n)
@@ -332,12 +386,19 @@
   (newline)
   (lisp-indent-line))
 
-
 (defun consume-sexp  (&optional supress-newlines)
   (interactive)
   (forward-delete-space-through-parens)
-  (while (line-empty-before-point)
-    (join-line))
+  (while (and (line-empty-before-point)
+	      (or (save-excursion
+		    (beginning-of-line)
+		    (backward-char)
+		    (line-empty-before-point))
+		  (save-excursion
+		    (forward-char)
+		    (line-empty-after-point))))
+    (join-line)
+    (lisp-indent-line))
   (backward-up-list)
   (forward-sexp)
   (let ((c (char-before (point))))
@@ -349,6 +410,7 @@
 	(insert c)
 	(backward-char))
        (t (when (and (not newlines)
+		     (not (cheqstr (char-before (point)) "`"))
 		     (not (cheqstr (char-before (point)) "'"))
 		     (not (cheqstr (char-before (point)) "("))
 		     (not (cheqstr (char-before (point)) " ")))
@@ -362,7 +424,7 @@
 (defun lisp-ctrla ()
   (interactive)
   (call-interactively 'move-beginning-of-line)
-  (lisp-indent-line))
+  '(lisp-indent-line))
 
 (defun slime-insert-eval-last-expression ()
   (interactive)
@@ -390,11 +452,6 @@
   (call-interactively 'set-mark-command)
   (backward-sexp))
 
-(defun my-lisp-define-key (k b)
-  (define-key emacs-lisp-mode-map k b)
-  (define-key lisp-interaction-mode-map k b)
-  (define-key lisp-mode-map k b))
-
 (defun backward-transpose-sexp ()
   (interactive)
   (call-interactively 'transpose-sexps)
@@ -411,13 +468,58 @@
   (join-line)
   (lisp-indent-line))
 
+(defun lisp-yank (&optional arg)
+  (interactive "*P")
+  (yank arg)
+  (cond 
+   ((null arg) 
+    (when (and (is-sexp-end)
+	       (equal (save-excursion
+			(backward-sexp)
+			(point))
+		      (mark)))
+      (backward-sexp)
+      (indent-pp-sexp)
+      (forward-sexp)))))
+
+(defun lisp-yank-pop (&optional arg)
+  (interactive "*p")
+  (let ((last-command (if (equal last-command 'lisp-yank)
+			  'yank
+			last-command)))
+    (yank-pop arg)))
+
 (slime-define-key   "\C-ce" 'slime-insert-expand-last-expression)
 
+(defvar my-lisp-keys nil)
+
+(defun my-lisp-define-key (k b)
+  (setq my-lisp-keys (cons (cons k b) my-lisp-keys)))
+
+(defun define-my-lisp-keys-on-map (map)
+  (dolist (cns my-lisp-keys)
+    (define-key map (car cns) (cdr cns))))
+
+(my-lisp-define-key "\C-y"    'lisp-yank)
+(my-lisp-define-key "\M-y"    'lisp-yank-pop)
+(my-lisp-define-key "\M-k"    'save-sexp)
 (my-lisp-define-key "\C-\M-j" 'lisp-join-line)
 (my-lisp-define-key "\C-a"    'lisp-ctrla)
 (my-lisp-define-key "\C-\M-h" 'my-mark-defun)
 (my-lisp-define-key "\r"      'lisp-newline-and-indent)
 (my-lisp-define-key "\C-\M-e" 'backward-transpose-sexp)
+
+(define-my-lisp-keys-on-map slime-repl-mode-map)
+(define-my-lisp-keys-on-map emacs-lisp-mode-map)
+(define-my-lisp-keys-on-map lisp-interaction-mode-map)
+(define-my-lisp-keys-on-map lisp-mode-map)
+
+(define-key slime-repl-mode-map "\r" 'slime-repl-return)
+
+(eval-after-load "interaction"
+  '(progn
+     (define-key emacs-cl-mode-map "\C-m" 'emacs-cl-newline)
+     (define-my-lisp-keys-on-map emacs-cl-mode-map)))
 
 (defun define-jk (map)
   (define-key map "u" 'scroll-down-half)
@@ -430,25 +532,53 @@
   (define-key map "?" 'isearch-backward))
 
 
-(require 'info)
-(require 'view)
-(require 'apropos)
-(require 'comint)
-(require 'man)
-(require 'term)
+(eval-after-load 'apropos
+  '(progn 
+     (define-jk apropos-mode-map)))
+
+(eval-after-load 'comint
+  '(progn
+     (define-key comint-mode-map "\C-z" 'scroll-up-one)
+     (define-key comint-mode-map "\C-q" 'scroll-down-one)))
+
+;(define-key comint-mode-map "\M-p" 'previous-line)
+;(define-key comint-mode-map "\M-n" 'next-line)
+;(define-key comint-mode-map [up]   'comint-previous-input)
+;(define-key comint-mode-map [down] 'comint-next-input)
+;(define-key comint-mode-map "\C-p" 'comint-previous-input)
+;(define-key comint-mode-map "\C-n" 'comint-next-input)
 
 
-(define-jk Info-mode-map)
+(eval-after-load 'man
+  '(progn 
+     (define-jk Man-mode-map)))
+
+(eval-after-load 'term 
+  '(progn 
+     (define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
+     (define-key term-raw-map "\C-x" ctl-x-map)))
+
+
 (define-jk help-mode-map)
-(define-jk view-mode-map)
-(define-jk apropos-mode-map)
+
+(eval-after-load 'view 
+  '(progn 
+     (define-jk view-mode-map)
+     (define-key view-mode-map "q" '(lambda () (interactive) 1))))
+
+;(define-key view-mode-map "q" '(lambda () (interactive) (view-mode -1)))
+;(define-key view-mode-map " " 'foo)
+;(define-key view-mode-map [return] 'foo)
+;(define-key view-mode-map [backspace] 'foo)
+
 (define-jk slime-inspector-mode-map)
-(define-jk Man-mode-map)
 (define-key slime-inspector-mode-map "D" 'slime-inspector-describe)
 
-(define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
-(define-key Info-mode-map "U" 'Info-up)
-(define-key Info-mode-map "D" 'Info-directory)
+(eval-after-load 'info 
+  '(progn
+     (define-jk Info-mode-map)
+     (define-key Info-mode-map "U" 'Info-up)
+     (define-key Info-mode-map "D" 'Info-directory)))
 
 (add-hook 'diff-mode-hook 
 	  '(lambda () 
@@ -461,28 +591,10 @@
 (add-hook 'window-setup-hook '(lambda () (scroll-bar-mode -1)))
 ;(add-hook 'emacs-startup-hook '(lambda () (menu-bar-mode -1)))
 
-;(define-key comint-mode-map "\M-p" 'previous-line)
-;(define-key comint-mode-map "\M-n" 'next-line)
-;(define-key comint-mode-map [up]   'comint-previous-input)
-;(define-key comint-mode-map [down] 'comint-next-input)
-;(define-key comint-mode-map "\C-p" 'comint-previous-input)
-;(define-key comint-mode-map "\C-n" 'comint-next-input)
-(define-key comint-mode-map "\C-z" 'scroll-up-one)
-(define-key comint-mode-map "\C-q" 'scroll-down-one)
-
-
-;(define-key view-mode-map "q" '(lambda () (interactive) (view-mode -1)))
-(define-key view-mode-map "q" '(lambda () (interactive) 1))
-;(define-key view-mode-map " " 'foo)
-;(define-key view-mode-map [return] 'foo)
-;(define-key view-mode-map [backspace] 'foo)
-
 (define-key text-mode-map "\M-s" 'ispell-region)
-
 
 (defun SUO (x) (interactive "p")  (scroll-up-one x) (next-line x))
 (defun SDO (x) (interactive "p") (scroll-down-one x) (previous-line x))
-
 
 (add-hook 'cperl-mode-hook 
 	  (lambda () 
@@ -505,8 +617,7 @@
 		 (call-interactively 'replace-regexp))
 	(call-interactively 'transient-mark-mode)))
  ;   (goto-char p)
- ;    (set-mark m)
-    ))
+ ;    (set-mark m)))
 
 (defun replace-regexp-region-foo (re to) 
   (let ((p (point)) (m (mark)))
@@ -516,8 +627,7 @@
 	       (replace-regexp re to))
       (call-interactively 'transient-mark-mode)))
   (goto-char p)
-  (set-mark m)
-  ))
+  (set-mark m)))
 
 
 (defun diff-clear ()

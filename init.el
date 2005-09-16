@@ -16,14 +16,17 @@
 (autoload 'maxima "maxima")
 (setq load-path (cons "/usr/share/maxima/5.9.1/emacs/" load-path))
 
+;(setq load-path (cons "/usr/share/emacs/site-lisp/tnt/" load-path))
 (setq load-path (cons "~/config" load-path))
 (setq load-path (cons "~/emacslisp" load-path))
+(setq load-path (cons "~/emacslisp/tnt-2.5/" load-path))
 (setq load-path (cons "~/emacslisp/emacs-cl" load-path))
 (setq load-path (cons "~/emacslisp/darcs-mode" load-path))
 (autoload 'lisppaste-paste-region "lisppaste" "lisppaste" t)
 
 (setq browse-url-browser-function 'w3m-browse-url)
 (autoload 'w3m-browse-url "w3m" "web browser" t)
+(autoload 'tnt-open "tnt" "tnt" t)
 
 (add-hook 'after-save-hook 
 	  'executable-make-buffer-file-executable-if-script-p)
@@ -40,6 +43,17 @@
 
 (require 'slime)
 (slime-setup)
+
+(defun link-url-at-point ()
+  (interactive)
+  (let ((url (browse-url-url-at-point)))
+    (call-process "chain" nil nil nil url "1")))
+
+(defun links ()
+  (interactive)
+  (occur "http://[^ ]*"))
+
+(global-set-key "\C-x4l" 'link-url-at-point)
 
 (defun makehoriz ()
   (interactive)
@@ -615,9 +629,8 @@
       (unwind-protect
 	  (progn (call-interactively 'transient-mark-mode)
 		 (call-interactively 'replace-regexp))
-	(call-interactively 'transient-mark-mode)))
- ;   (goto-char p)
- ;    (set-mark m)))
+	(call-interactively 'transient-mark-mode)))))
+    
 
 (defun replace-regexp-region-foo (re to) 
   (let ((p (point)) (m (mark)))

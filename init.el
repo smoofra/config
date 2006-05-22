@@ -570,7 +570,8 @@
 (eval-after-load 'term 
   '(progn 
      (define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
-     (define-key term-raw-map "\C-x" ctl-x-map)))
+     (define-key term-raw-map "\C-x" ctl-x-map)
+     (define-key term-raw-map "\C-y" 'term-paste)))
 
 
 (define-jk help-mode-map)

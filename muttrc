@@ -53,6 +53,7 @@ macro generic Sm ':set from="Larry D'\''Anna <ldanna@math.umd.edu>"'\n
 macro pager V ':set pager_index_lines='
 macro index V ':set pager_index_lines='
 macro index x "s=spam.new\n"
+macro pager x "s=spam.new\n"
 
 color attachment  green  default  # ..
 color bold        green  default  # ..
@@ -102,6 +103,8 @@ color underline   yellow default  #
 
 color index yellow  default '~t ldanna@wam.umd.edu'
 color index yellow  default '~c ldanna@wam.umd.edu'
+#color index blue default '~t ldanna@math.umd.edu' 
+color index blue default '~f umd.edu' 
 color index cyan default '~t larry@melkor.elder-gods.org'
 color index cyan default '~c larry@melkor.elder-gods.or'g
 color index cyan default '~t smoof-ra@melkor.elder-gods.org'
@@ -114,6 +117,7 @@ color index cyan default '~t ldanna@math.umd.edu'
 color index cyan default '~c ldanna@math.umd.edu'
 color index green default "~s '\\[(Linux-bcom4301-priv|darcs-devel|Bese-devel|Sbcl-devel|slime-devel|madman-discuss)\\]'"
 color index red  default '~h "X-SpamProbe: SPAM"'
+
 
 
 lists  thoughts@13th-floor.org Bese-devel@common-lisp.net sbcl-devel@lists.sourceforge.net slime-devel@common-lisp.net madman-discuss@lists.sourceforge.net darcs-devel@darcs.net
@@ -256,7 +260,7 @@ set include
 set nomark_old 
 set mime_forward=ask-yes
 set nomove  
-set pager_index_lines=0  
+set pager_index_lines=10  
 set pager_stop
 set noprompt_after
 set write_inc=75
@@ -270,7 +274,6 @@ set status_on_top
 set tilde  
 set noautoedit
 set nomove
-set arrow_cursor
 set copy=yes
 set record='=sent-mail'
 unset save_name
@@ -320,4 +323,4 @@ auto_view application/msword
 set postponed="=postponed"
 
 
-alternative_order text/enriched text/plain text/*
+alternative_order text/html text/enriched text/plain text/*

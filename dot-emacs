@@ -1,3 +1,4 @@
+(load "/usr/share/emacs/site-lisp/site-gentoo.el")
 
 (load "~/config/init.el")
 

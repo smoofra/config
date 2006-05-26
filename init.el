@@ -34,7 +34,6 @@
 (when (load "escreen" t)
   (setq escreen-prefix-char "\M-\d")
   (escreen-install))
-
 (when (load "fff" t)
   (fff-install-map))
 
@@ -43,6 +42,23 @@
 
 (require 'slime)
 (slime-setup)
+
+(def-slime-selector-method ?S
+  "*scratch* buffer."
+  (get-buffer "*scratch*"))
+
+(def-slime-selector-method ?I
+  "*Slime Inspector* buffer."
+  (slime-inspector-buffer))
+
+(def-slime-selector-method ?t
+  "*terminal* buffer."
+  (get-buffer "*terminal*"))
+
+(def-slime-selector-method ?T
+  "SLIME threads buffer."
+  (slime-list-threads)
+  "*slime-threads*")
 
 (defun link-url-at-point ()
   (interactive)
@@ -571,7 +587,9 @@
   '(progn 
      (define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
      (define-key term-raw-map "\C-x" ctl-x-map)
-     (define-key term-raw-map "\C-y" 'term-paste)))
+     (define-key term-raw-map "\C-y" 'term-paste)
+     (define-key term-raw-map "\M-x" 'execute-extended-command)
+     (define-key term-raw-map "\C-cb" 'slime-selector)))
 
 
 (define-jk help-mode-map)
@@ -801,23 +819,23 @@
 (autoload 'ruby-mode "ruby-mode" "editor mode for ruby" t)
 
 
-(defun slime-handle-indentation-update (alist)
-  "Update Lisp indent information.
+;; (defun slime-handle-indentation-update (alist)
+;;   "Update Lisp indent information.
 
-ALIST is a list of (SYMBOL-NAME . INDENT-SPEC) of proposed indentation
-settings for `common-lisp-indent-function'. The appropriate property
-is setup, unless the user already set one explicitly."
-  (dolist (info alist)
-    (let ((symbol-name (car info)))
-      (unless (and slime-conservative-indentation
-                   (string-match "^\\(def\\|\\with-\\)" symbol-name))
-        (let ((symbol (intern symbol-name))
-              (indent (cdr info)))
-          ;; Does the symbol have an indentation value that we set?
-          (when (equal (get symbol 'lisp-indent-function)
-                       (get symbol 'slime-indent))
-            (put symbol 'slime-indent indent)
-            (put symbol 'lisp-indent-function indent)))))))
+;; ALIST is a list of (SYMBOL-NAME . INDENT-SPEC) of proposed indentation
+;; settings for `common-lisp-indent-function'. The appropriate property
+;; is setup, unless the user already set one explicitly."
+;;   (dolist (info alist)
+;;     (let ((symbol-name (car info)))
+;;       (unless (and slime-conservative-indentation
+;;                    (string-match "^\\(def\\|\\with-\\)" symbol-name))
+;;         (let ((symbol (intern symbol-name))
+;;               (indent (cdr info)))
+;;           ;; Does the symbol have an indentation value that we set?
+;;           (when (equal (get symbol 'lisp-indent-function)
+;;                        (get symbol 'slime-indent))
+;;             (put symbol 'slime-indent indent)
+;;             (put symbol 'lisp-indent-function indent)))))))
 
 (setq custom-file "~/.custom.el")
 (load "~/.custom.el")
@@ -829,4 +847,41 @@ is setup, unless the user already set one explicitly."
 (setf (get 'bind 'common-lisp-indent-function) 2)
 (setf (get 'defmethod/cc 'common-lisp-indent-function)
       'lisp-indent-defmethod)
+
+(defun open-inspector-helper ()
+  (slime-eval-async '(swank:init-inspector "utils::*future-inspectee*") 'slime-open-inspector))
+
+
+
+(defun back-window ()
+  (interactive)
+  (other-window -1))
+
+(global-set-key "\C-xi" 'back-window)
+
+
+(defun freenode ()
+  (interactive)
+  (erc-select :server "irc.freenode.net" :port "ircd" :nick "smoofra" :password my-stupid-password))
+
+(defun wjoe ()
+  (interactive)
+  (erc-select :server "wjoe.tv" :port "ircd" :nick "smoofra"))
+
+(defun bitlbee ()
+  (interactive)
+  (erc-select :server "localhost" :port 6666 :nick "smoofra"))
+
+(autoload 'erc-select "erc")
+
+(eval-after-load 'erc 
+  '(progn (add-hook 'erc-join-hook 'bitlbee-identify)
+	  (setq erc-auto-query 'buffer)))
+
+(defun bitlbee-identify ()
+   "If we're on the bitlbee server, send the identify command to the #bitlbee channel."
+   (when (and (string= "localhost" erc-session-server)
+	      (= 6666 erc-session-port)
+	      (string= "&bitlbee" (buffer-name)))
+     (erc-message "PRIVMSG" (format "%s identify %s" (erc-default-target) my-stupid-passwd))))
 

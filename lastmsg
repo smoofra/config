@@ -1,0 +1,36 @@
+#!/usr/bin/perl -w 
+
+my $dirh;
+opendir $dirh, "/home" or die $!; 
+my @names = grep {$_ !~ /^\.\.?$/} readdir $dirh;
+
+
+sub theint {
+  local $_ = shift;
+  /(\d+)/ or die "no int in $_\n";
+  return $1;
+};
+
+my @files = sort {theint($b)  <=> theint($a);} glob "/var/log/messages.*";
+push @files, "/var/log/messages";
+
+@ARGV = @files;
+
+my %last;
+
+my $anyname = "(?:" . join("|", @names) . ")";
+
+while (<>) { 
+  chomp;
+  if ( /melkor (?:imapd|ipop3d)\[\d+\]: Login user=(\w+)/ || 
+       /melkor sshd\(pam_unix\)\[\d+\]: session opened for user (\w+)/ || 
+       (0 && /($anyname)/) ) {
+    $last{$1} = $_;
+  }
+}
+
+for $name (@names) { 
+  printf "%15s", "$name : ";
+  print $last{$name} if defined $last{$name};
+  print "\n";
+}

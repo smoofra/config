@@ -1,0 +1,18 @@
+#!/usr/bin/perl -w 
+
+$loc = shift; 
+
+open OUT, ">$ENV{HOME}/public_html/link.html";
+print OUT "<a href=\"$loc\">link</a>\n";
+print OUT "<script> window.location.replace(\"$loc\") </script>";
+close OUT;
+
+if (0 && !shift) { 
+  system "links", $loc;
+}
+
+
+
+
+
+

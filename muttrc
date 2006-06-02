@@ -115,6 +115,8 @@ color index cyan default '~t smoof-ra@elder-gods.org'
 color index cyan default '~c smoof-ra@elder-gods.or'g
 color index cyan default '~t ldanna@math.umd.edu'
 color index cyan default '~c ldanna@math.umd.edu'
+color index cyan default '~t smoofra@gmail.com'
+color index cyan default '~c smoofra@gmail.com'
 color index green default "~s '\\[(Linux-bcom4301-priv|darcs-devel|Bese-devel|Sbcl-devel|slime-devel|madman-discuss)\\]'"
 color index red  default '~h "X-SpamProbe: SPAM"'
 
@@ -280,7 +282,7 @@ unset save_name
 unset force_name
 set nosig_dashes
 #set editor="emacs -nw  -f muttland"
-set editor="emacsclient"
+set editor="emacsclient -a emacs-nw"
 set fcc_clear
 
 

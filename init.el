@@ -32,8 +32,18 @@
 	  'executable-make-buffer-file-executable-if-script-p)
 
 (when (load "escreen" t)
-  (setq escreen-prefix-char "\M-\d")
+  ;(setq escreen-prefix-char "\M-\d")
+  (setq escreen-prefix-char "\M-`")
+  (define-key escreen-map "w" 'escreen-w)
   (escreen-install))
+
+(defun escreen-w ()
+  (interactive)
+  (let ((screen-list (sort (escreen-configuration-screen-numbers) '<)))
+    (message "escreen: active screens: %s --- current screen is number %d"
+	     (mapconcat 'number-to-string screen-list " ") 
+	     escreen-current-screen-number) screen-list))
+
 (when (load "fff" t)
   (fff-install-map))
 
@@ -42,6 +52,10 @@
 
 (require 'slime)
 (slime-setup)
+
+(def-slime-selector-method ?h
+  "*Help* buffer."
+  (get-buffer "*Help*"))
 
 (def-slime-selector-method ?S
   "*scratch* buffer."
@@ -59,6 +73,10 @@
   "SLIME threads buffer."
   (slime-list-threads)
   "*slime-threads*")
+
+(def-slime-selector-method ?b
+  "*Backtrace* buffer"
+  (get-buffer "*Backtrace*"))
 
 (defun link-url-at-point ()
   (interactive)
@@ -154,6 +172,8 @@
 
 
 (define-key emacs-lisp-mode-map "\M-k" 'save-sexp)
+(define-key lisp-interaction-mode-map "\M-." 'find-function)
+(define-key emacs-lisp-mode-map "\M-." 'find-function)
 (slime-define-key "\M-c" 'my-unhighlight)
 (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol)
 (global-set-key "\C-\M-n" 'semi-forward-sexp)
@@ -196,7 +216,29 @@
 (defun remove-keymap-prop (begin end)
   (interactive "r")
   (remove-text-properties begin end '(keymap)))
-      
+
+
+(defun insert-some-pair (&optional open) 
+  (interactive "c")
+  (if (null open)
+      (setq open ?\())
+  (let ((close (cond 
+		((eql open ?\( ) ?\) )
+		((eql open ?\{ ) ?\} )
+		((eql open ?\[ ) ?\] )
+		(t open))))
+    (insert-pair 0 open close)))
+
+(defun my-insert-parentheses (&optional arg)
+  (interactive "P")
+  (if (null arg)
+      (insert-pair 0 ?\( ?\) )
+    (call-interactively 'insert-some-pair)))
+
+(defun self-insert-pair ()
+  (interactive)
+  (insert-some-pair (string-to-char (this-command-keys))))
+
 (show-paren-mode)
 
 ;(global-set-key "\C-o"      'myblink)
@@ -207,7 +249,7 @@
 (global-set-key "\C-xd"    'beginning-of-defun)
 (global-set-key "\M-_"     'unwrap-next-sexp)
 (global-set-key "\C-x\C-b" 'ibuffer)
-(global-set-key "\C-\M-y"  'insert-parentheses)
+(global-set-key "\C-\M-y"  'my-insert-parentheses)
 (global-set-key "\C-\M-j"  'join-line)
 (global-set-key "\C-xp"    'revert-buffer)
 (global-set-key "\C-x\C-p" 'diff-current-buffer-with-file)
@@ -265,10 +307,12 @@
       (append '(("\\.\\([pP][Llm]\\|al\\)$" . cperl-mode)
 		("^/tmp/mutt-" . message-mode)
 		("\\.sawfishrc" . lisp-mode)
+		("\\.php" . php-mode)
 		("\\.ph" . cperl-mode)
 		("\\.rb" . ruby-mode)
 		("\\.asd" . lisp-mode)
-		("\\.jl$" . lisp-mode))
+		("\\.jl$" . lisp-mode)
+		("\\.css$" . css-mode))
 	      auto-mode-alist )) 
 
 (global-font-lock-mode 't)
@@ -279,6 +323,7 @@
   			       c++-mode
 			       perl-mode
 			       lisp-mode
+			       xml-mode
 			       cperl-mode	
 			       emacs-lisp-mode
 			       ruby-mode
@@ -335,16 +380,23 @@
   (and char 
        (equal (char-to-string char) str)))
 
+(defun is-closer (char)
+  (cond 
+   ((eql ?\) char) t)
+   ((eql ?\} char) t)
+   ((eql ?\] char) t)
+   (t nil)))
+
 (defun forward-delete-space-through-parens ()
   (interactive)
   (forward-delete-space)
-  (when (cheqstr (char-after (point)) ")")
+  (when (is-closer (char-after (point)))
     (forward-char)
     (let ((close nil))
       (save-excursion
 	(while (is-space (char-after (point)))
 	  (forward-char))
-	(when (cheqstr (char-after (point)) ")")
+	(when (is-closer  (char-after (point)))
 	  (setq close t)))
       (when close 
 	(forward-delete-space-through-parens))
@@ -586,6 +638,7 @@
 (eval-after-load 'term 
   '(progn 
      (define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
+     (define-key term-raw-map "\M-`" escreen-map)
      (define-key term-raw-map "\C-x" ctl-x-map)
      (define-key term-raw-map "\C-y" 'term-paste)
      (define-key term-raw-map "\M-x" 'execute-extended-command)
@@ -613,6 +666,8 @@
      (define-key Info-mode-map "U" 'Info-up)
      (define-key Info-mode-map "D" 'Info-directory)))
 
+(setq diff-default-read-only t)
+
 (add-hook 'diff-mode-hook 
 	  '(lambda () 
 	     (define-key diff-mode-map "\M-q" 'scroll-down-one)
@@ -631,6 +686,10 @@
 
 (add-hook 'cperl-mode-hook 
 	  (lambda () 
+	    (define-key cperl-mode-map "(" 'self-insert-command)
+	    (define-key cperl-mode-map "\"" 'self-insert-command)
+	    (define-key cperl-mode-map "[" 'self-insert-command)
+	    (define-key cperl-mode-map "{" 'self-insert-command)
 	    (define-key cperl-mode-map "\C-j" 'backwards-kill-line)))
 
 (add-hook 'LaTeX-mode-hook 
@@ -862,11 +921,12 @@
 
 (defun freenode ()
   (interactive)
-  (erc-select :server "irc.freenode.net" :port "ircd" :nick "smoofra" :password my-stupid-password))
+  (erc-select :server "irc.freenode.net" :port "ircd" :nick "smoofra" :password my-stupid-passwd))
 
 (defun wjoe ()
   (interactive)
-  (erc-select :server "wjoe.tv" :port "ircd" :nick "smoofra"))
+  (erc-select :server "wjoe.tv" :port "ircd" :nick "smoofra")
+  (erc-join-channel "#yourmom"))
 
 (defun bitlbee ()
   (interactive)
@@ -884,4 +944,74 @@
 	      (= 6666 erc-session-port)
 	      (string= "&bitlbee" (buffer-name)))
      (erc-message "PRIVMSG" (format "%s identify %s" (erc-default-target) my-stupid-passwd))))
+
+(setq manual-program  "man")
+
+(defun perldoc (&optional q)
+  (interactive)
+  (let* ((query (if q q (read-string  "perldoc: " nil nil)))
+	 (manual-program "perldoc")
+	 (bufname (concat "*Perldoc " query "*"))
+	 (oldbuf (get-buffer bufname)))
+    (man query)
+    (let* ((buf (get-buffer (concat "*Man " query "*"))))
+      (save-excursion
+	(if oldbuf (kill-buffer oldbuf))
+	(set-buffer buf)
+	(rename-buffer bufname)))))
+
+
+(eval-after-load 'css-mode
+  '(setq cssm-indent-function #'cssm-c-style-indenter))
+
+
+(window-configuration-to-register ?w)
+
+(setq sgml-auto-activate-dtd t)
+(setq sgml-indent-data t)
+(setq sgml-set-face t)  
+
+(make-face 'sgml-comment-face)
+(make-face 'sgml-doctype-face)
+(make-face 'sgml-end-tag-face)
+(make-face 'sgml-entity-face)
+(make-face 'sgml-ignored-face)
+(make-face 'sgml-ms-end-face)
+(make-face 'sgml-ms-start-face)
+(make-face 'sgml-pi-face)
+(make-face 'sgml-sgml-face)
+(make-face 'sgml-short-ref-face)
+(make-face 'sgml-start-tag-face)
+
+(set-face-foreground 'sgml-comment-face "dark green")
+(set-face-foreground 'sgml-doctype-face "maroon")
+(set-face-foreground 'sgml-end-tag-face "cyan")
+(set-face-foreground 'sgml-entity-face "red2")
+(set-face-foreground 'sgml-ignored-face "maroon")
+(set-face-background 'sgml-ignored-face "gray90")
+(set-face-foreground 'sgml-ms-end-face "maroon")
+(set-face-foreground 'sgml-ms-start-face "maroon")
+(set-face-foreground 'sgml-pi-face "maroon")
+(set-face-foreground 'sgml-sgml-face "maroon")
+(set-face-foreground 'sgml-short-ref-face "goldenrod")
+(set-face-foreground 'sgml-start-tag-face "cyan")
+
+(setq-default sgml-markup-faces
+	      '((comment . sgml-comment-face)
+		(doctype . sgml-doctype-face)
+		(end-tag . sgml-end-tag-face)
+		(entity . sgml-entity-face)
+		(ignored . sgml-ignored-face)
+		(ms-end . sgml-ms-end-face)
+		(ms-start . sgml-ms-start-face)
+		(pi . sgml-pi-face)
+		(sgml . sgml-sgml-face)
+		(short-ref . sgml-short-ref-face)
+		(start-tag . sgml-start-tag-face)))
+
+(if nil
+    (progn 
+      (define-key xml-mode-map [tab] 'sgml-indent-line)
+      (define-key sgml-mode-map [tab] 'sgml-indent-line))
+  t)
 

@@ -303,6 +303,19 @@
 
 (setq cperl-font-lock t)
 
+(defun filter (pred list)
+  (mapcan #'(lambda (x)
+	      (if (funcall pred x)
+		  (list x)
+		nil))
+	  list))
+
+(setq auto-mode-alist 
+      (filter #'(lambda (x)
+		  (not (or (equal (cdr x) 'xml-mode)
+			   (equal (cdr x) 'sgml-mode))))
+	      auto-mode-alist))
+
 (setq auto-mode-alist
       (append '(("\\.\\([pP][Llm]\\|al\\)$" . cperl-mode)
 		("^/tmp/mutt-" . message-mode)
@@ -312,8 +325,18 @@
 		("\\.rb" . ruby-mode)
 		("\\.asd" . lisp-mode)
 		("\\.jl$" . lisp-mode)
+		("\\.\\(xsl\\|xml\\|rss\\|rdf\\)$" . nxml-mode)
 		("\\.css$" . css-mode))
 	      auto-mode-alist )) 
+
+(add-to-list 'auto-mode-alist
+	     (cons (concat "\\." (regexp-opt '("xml" "xsd" "sch" "rng" "xslt" "svg" "rss") t)
+			   "\\'")
+		   'nxml-mode))
+
+(add-to-list 'magic-mode-alist
+	     (cons "<\\?xml" 'nxml-mode))
+
 
 (global-font-lock-mode 't)
 
@@ -964,54 +987,21 @@
 (eval-after-load 'css-mode
   '(setq cssm-indent-function #'cssm-c-style-indenter))
 
+(eval-after-load 'nxml-mode
+  '(progn
+     (define-key nxml-mode-map "\C-c/" 'nxml-finish-element)
+     (define-key nxml-mode-map "\C-\M-f" 'nxml-forward-element)
+     (define-key nxml-mode-map "\C-\M-b" 'nxml-backward-element)))
+
+(eval-after-load 'sgml-mode
+  '(progn
+     (define-key sgml-mode-map "\C-\M-f" 'sgml-skip-tag-forward)
+     (define-key sgml-mode-map "\C-\M-b" 'sgml-skip-tag-backward)
+     (define-key html-mode-map "\C-\M-f" 'sgml-skip-tag-forward)
+     (define-key html-mode-map "\C-\M-b" 'sgml-skip-tag-backward)))
 
 (window-configuration-to-register ?w)
 
-(setq sgml-auto-activate-dtd t)
-(setq sgml-indent-data t)
-(setq sgml-set-face t)  
-
-(make-face 'sgml-comment-face)
-(make-face 'sgml-doctype-face)
-(make-face 'sgml-end-tag-face)
-(make-face 'sgml-entity-face)
-(make-face 'sgml-ignored-face)
-(make-face 'sgml-ms-end-face)
-(make-face 'sgml-ms-start-face)
-(make-face 'sgml-pi-face)
-(make-face 'sgml-sgml-face)
-(make-face 'sgml-short-ref-face)
-(make-face 'sgml-start-tag-face)
-
-(set-face-foreground 'sgml-comment-face "dark green")
-(set-face-foreground 'sgml-doctype-face "maroon")
-(set-face-foreground 'sgml-end-tag-face "cyan")
-(set-face-foreground 'sgml-entity-face "red2")
-(set-face-foreground 'sgml-ignored-face "maroon")
-(set-face-background 'sgml-ignored-face "gray90")
-(set-face-foreground 'sgml-ms-end-face "maroon")
-(set-face-foreground 'sgml-ms-start-face "maroon")
-(set-face-foreground 'sgml-pi-face "maroon")
-(set-face-foreground 'sgml-sgml-face "maroon")
-(set-face-foreground 'sgml-short-ref-face "goldenrod")
-(set-face-foreground 'sgml-start-tag-face "cyan")
-
-(setq-default sgml-markup-faces
-	      '((comment . sgml-comment-face)
-		(doctype . sgml-doctype-face)
-		(end-tag . sgml-end-tag-face)
-		(entity . sgml-entity-face)
-		(ignored . sgml-ignored-face)
-		(ms-end . sgml-ms-end-face)
-		(ms-start . sgml-ms-start-face)
-		(pi . sgml-pi-face)
-		(sgml . sgml-sgml-face)
-		(short-ref . sgml-short-ref-face)
-		(start-tag . sgml-start-tag-face)))
-
-(if nil
-    (progn 
-      (define-key xml-mode-map [tab] 'sgml-indent-line)
-      (define-key sgml-mode-map [tab] 'sgml-indent-line))
-  t)
-
+;(setq sgml-auto-activate-dtd t)
+;(setq sgml-indent-data t)
+;(setq sgml-set-face t)  

@@ -658,14 +658,15 @@
   '(progn 
      (define-jk Man-mode-map)))
 
-(eval-after-load 'term 
-  '(progn 
-     (define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
-     (define-key term-raw-map "\M-`" escreen-map)
-     (define-key term-raw-map "\C-x" ctl-x-map)
-     (define-key term-raw-map "\C-y" 'term-paste)
-     (define-key term-raw-map "\M-x" 'execute-extended-command)
-     (define-key term-raw-map "\C-cb" 'slime-selector)))
+(setq term-mode-hook
+      (list 
+       '(lambda ()
+	  (define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
+	  (define-key term-raw-map "\M-`" escreen-map)
+	  (define-key term-raw-map "\C-x" ctl-x-map)
+	  (define-key term-raw-map "\C-y" 'term-paste)
+	  (define-key term-raw-map "\M-x" 'execute-extended-command)
+	  (define-key term-raw-map "\C-cb" 'slime-selector))))
 
 
 (define-jk help-mode-map)
@@ -1005,3 +1006,6 @@
 ;(setq sgml-auto-activate-dtd t)
 ;(setq sgml-indent-data t)
 ;(setq sgml-set-face t)  
+
+
+(define-key c-mode-map "\M-q" 'scroll-down-one)

@@ -318,7 +318,6 @@
 
 (setq auto-mode-alist
       (append '(("\\.\\([pP][Llm]\\|al\\)$" . cperl-mode)
-		("^/tmp/mutt-" . message-mode)
 		("\\.sawfishrc" . lisp-mode)
 		("\\.php" . php-mode)
 		("\\.ph" . cperl-mode)
@@ -328,6 +327,10 @@
 		("\\.\\(xsl\\|xml\\|rss\\|rdf\\)$" . nxml-mode)
 		("\\.css$" . css-mode))
 	      auto-mode-alist )) 
+
+(when (>= emacs-major-version 22)
+  (add-to-list 'auto-mode-alist 
+	       (cons "^/tmp/mutt-" 'message-mode)))
 
 (add-to-list 'auto-mode-alist
 	     (cons (concat "\\." (regexp-opt '("xml" "xsd" "sch" "rng" "xslt" "svg" "rss") t)

@@ -1,6 +1,4 @@
 
-; switched to darcs!
-
 (load "~/.site-init.el")
 
 (require 'cl)
@@ -31,8 +29,11 @@
 (add-hook 'after-save-hook 
 	  'executable-make-buffer-file-executable-if-script-p)
 
+
+(defvar i-have-escreen nil)
 (when (load "escreen" t)
   ;(setq escreen-prefix-char "\M-\d")
+  (setq i-have-escreen t)
   (setq escreen-prefix-char "\M-`")
   (define-key escreen-map "w" 'escreen-w)
   (escreen-install))
@@ -249,7 +250,11 @@
 (global-set-key "\C-xd"    'beginning-of-defun)
 (global-set-key "\M-_"     'unwrap-next-sexp)
 (global-set-key "\C-x\C-b" 'ibuffer)
-(global-set-key "\C-\M-y"  'my-insert-parentheses)
+
+(if (>= emacs-major-version 22)
+    (global-set-key "\C-\M-y"  'my-insert-parentheses)
+  (global-set-key "\C-\M-y"  'insert-parentheses))
+
 (global-set-key "\C-\M-j"  'join-line)
 (global-set-key "\C-xp"    'revert-buffer)
 (global-set-key "\C-x\C-p" 'diff-current-buffer-with-file)
@@ -531,8 +536,10 @@
 
 (defun lisp-ctrla ()
   (interactive)
-  (call-interactively 'move-beginning-of-line)
-  '(lisp-indent-line))
+  (if (>= emacs-major-version 22)
+      (call-interactively 'move-beginning-of-line)
+    (call-interactively 'beginning-of-line))
+  (lisp-indent-line))
 
 (defun slime-insert-eval-last-expression ()
   (interactive)
@@ -661,15 +668,15 @@
   '(progn 
      (define-jk Man-mode-map)))
 
-(setq term-mode-hook
-      (list 
-       '(lambda ()
-	  (define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
-	  (define-key term-raw-map "\M-`" escreen-map)
-	  (define-key term-raw-map "\C-x" ctl-x-map)
-	  (define-key term-raw-map "\C-y" 'term-paste)
-	  (define-key term-raw-map "\M-x" 'execute-extended-command)
-	  (define-key term-raw-map "\C-cb" 'slime-selector))))
+
+(when (and nil (load "term"))
+  (define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
+  (when i-have-escreen
+    (define-key term-raw-map "\M-`" escreen-map))
+  (define-key term-raw-map "\C-x" ctl-x-map)
+  (define-key term-raw-map "\C-y" 'term-paste)
+  (define-key term-raw-map "\M-x" 'execute-extended-command)
+  (define-key term-raw-map "\C-cb" 'slime-selector))
 
 
 (define-jk help-mode-map)
@@ -1011,4 +1018,15 @@
 ;(setq sgml-set-face t)  
 
 
-(define-key c-mode-map "\M-q" 'scroll-down-one)
+
+(defun deprop-region (start end)
+  (interactive "r")
+  (set-text-properties start end nil ))
+
+;(eval-after-load 'c-mode
+;'(define-key c-mode-map "\M-q" 'scroll-down-one))
+
+;(eval-after-load 'cc-mode
+;'(define-key c-mode-map "\M-q" 'scroll-down-one))
+
+

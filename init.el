@@ -1,7 +1,5 @@
 
-; switched to darcs!
-
-(load "~/.site-init.el")
+(load "~/.site-init.el" t)
 
 (require 'cl)
 

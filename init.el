@@ -1,4 +1,6 @@
 
+; switched to darcs!
+
 (load "~/.site-init.el")
 
 (require 'cl)
@@ -51,33 +53,34 @@
 (when (load "fff-elisp" t)
   (fff-elisp-install-map))
 
-(require 'slime)
-(slime-setup)
+(setq i-have-slime (load "slime" t))
+(when i-have-slime
+  (slime-setup)
 
-(def-slime-selector-method ?h
-  "*Help* buffer."
-  (get-buffer "*Help*"))
+  (def-slime-selector-method ?h
+    "*Help* buffer."
+    (get-buffer "*Help*"))
 
-(def-slime-selector-method ?S
-  "*scratch* buffer."
-  (get-buffer "*scratch*"))
+  (def-slime-selector-method ?S
+    "*scratch* buffer."
+    (get-buffer "*scratch*"))
 
-(def-slime-selector-method ?I
-  "*Slime Inspector* buffer."
-  (slime-inspector-buffer))
+  (def-slime-selector-method ?I
+    "*Slime Inspector* buffer."
+    (slime-inspector-buffer))
 
-(def-slime-selector-method ?t
-  "*terminal* buffer."
-  (get-buffer "*terminal*"))
+  (def-slime-selector-method ?t
+    "*terminal* buffer."
+    (get-buffer "*terminal*"))
 
-(def-slime-selector-method ?T
-  "SLIME threads buffer."
-  (slime-list-threads)
-  "*slime-threads*")
+  (def-slime-selector-method ?T
+    "SLIME threads buffer."
+    (slime-list-threads)
+    "*slime-threads*")
 
-(def-slime-selector-method ?b
-  "*Backtrace* buffer"
-  (get-buffer "*Backtrace*"))
+  (def-slime-selector-method ?b
+    "*Backtrace* buffer"
+    (get-buffer "*Backtrace*")))
 
 (defun link-url-at-point ()
   (interactive)
@@ -175,8 +178,11 @@
 (define-key emacs-lisp-mode-map "\M-k" 'save-sexp)
 (define-key lisp-interaction-mode-map "\M-." 'find-function)
 (define-key emacs-lisp-mode-map "\M-." 'find-function)
-(slime-define-key "\M-c" 'my-unhighlight)
-(slime-define-key "\M-/" 'slime-fuzzy-complete-symbol)
+
+(when i-have-slime
+  (slime-define-key "\M-c" 'my-unhighlight)
+  (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol))
+
 (global-set-key "\C-\M-n" 'semi-forward-sexp)
 (global-set-key "\C-\M-p" 'semi-backward-sexp)
 
@@ -184,7 +190,9 @@
   (interactive (list (slime-read-symbol-name "Symbol: ")))
   (set-mark (point))
   (slime-edit-definition name where))
-(define-key slime-mode-map "\M-." 'my-slime-edit-definition)
+
+(when i-have-slime
+  (define-key slime-mode-map "\M-." 'my-slime-edit-definition))
 
 (tool-bar-mode)
 
@@ -557,7 +565,8 @@
 		(cl::read-from-string ,(slime-last-expression)))))))))
 
 (global-set-key "\M-'" 'forward-delete-space-through-parens)
-(define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression)
+(when i-have-slime
+  (define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression))
 (global-set-key "\M-i" 'consume-sexp-and-indent)
 
 (defun my-mark-defun ()
@@ -604,7 +613,8 @@
 			last-command)))
     (yank-pop arg)))
 
-(slime-define-key   "\C-ce" 'slime-insert-expand-last-expression)
+(when i-have-slime
+  (slime-define-key   "\C-ce" 'slime-insert-expand-last-expression))
 
 (defvar my-lisp-keys nil)
 
@@ -624,12 +634,14 @@
 (my-lisp-define-key "\r"      'lisp-newline-and-indent)
 (my-lisp-define-key "\C-\M-e" 'backward-transpose-sexp)
 
-(define-my-lisp-keys-on-map slime-repl-mode-map)
+(when i-have-slime
+  (define-my-lisp-keys-on-map slime-repl-mode-map))
 (define-my-lisp-keys-on-map emacs-lisp-mode-map)
 (define-my-lisp-keys-on-map lisp-interaction-mode-map)
 (define-my-lisp-keys-on-map lisp-mode-map)
 
-(define-key slime-repl-mode-map "\r" 'slime-repl-return)
+(when i-have-slime
+  (define-key slime-repl-mode-map "\r" 'slime-repl-return))
 
 (eval-after-load "interaction"
   '(progn
@@ -693,8 +705,10 @@
 ;(define-key view-mode-map [return] 'foo)
 ;(define-key view-mode-map [backspace] 'foo)
 
-(define-jk slime-inspector-mode-map)
-(define-key slime-inspector-mode-map "D" 'slime-inspector-describe)
+(when i-have-slime
+  (define-jk slime-inspector-mode-map)
+  (define-key slime-inspector-mode-map "D" 'slime-inspector-describe))
+
 
 (eval-after-load 'info 
   '(progn
@@ -933,7 +947,7 @@
 ;;             (put symbol 'lisp-indent-function indent)))))))
 
 (setq custom-file "~/.custom.el")
-(load "~/.custom.el")
+(load "~/.custom.el" t)
 
 
 

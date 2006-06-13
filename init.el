@@ -479,6 +479,10 @@
 	  (and (not (end-of-line-p))       (is-space (char-after  (point)))))
       (just-one-space)))
 
+(when (< emacs-major-version 22)
+  (defun indent-pp-sexp ()
+    (indent-sexp)))
+
 (defun consume-sexp-and-indent ()
   (interactive)
   (let ((quote (grab-quotes-before-point))

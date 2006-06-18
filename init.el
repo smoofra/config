@@ -695,7 +695,10 @@
   (define-key term-raw-map "\C-cb" 'slime-selector))
 
 
-(define-jk help-mode-map)
+(eval-after-load 'help
+  '(add-hook 'help-mode-hook 
+	     (lambda ()
+	       (define-jk help-mode-map))))
 
 (eval-after-load 'view 
   '(progn 

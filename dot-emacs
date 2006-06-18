@@ -1,4 +1,6 @@
-(load "/usr/share/emacs/site-lisp/site-gentoo.el")
+(load "/usr/share/emacs/site-lisp/site-gentoo.el" t)
+
+(setq magic-mode-alist nil)
 
 (load "~/config/init.el")
 

@@ -217,7 +217,10 @@
 
 (defun diff-current-buffer-with-file ()
   (interactive)
-  (diff-buffer-with-file (current-buffer)))
+  (diff-buffer-with-file (current-buffer))
+  (save-excursion 
+    (set-buffer (get-buffer "*Diff*"))
+    (toggle-read-only 1)))
 
 
 (defun remove-keymap-prop (begin end)

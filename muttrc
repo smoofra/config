@@ -246,7 +246,7 @@ set tmpdir="/tmp"
 source ~/.mutt.aliases
 #set signature="/home/larry/.sig"
 save-hook "~A" "=inbox.save"
-#set spoolfile='=inbox'
+set spoolfile='=inbox'
 
 set allow_8bit
 set arrow_cursor
@@ -297,10 +297,10 @@ unignore X-SpamProbe:
 unhdr_order *
 hdr_order From Subject: From: Reply-To: To: Cc: Newsgroups: Date: X-SpamProbe: 
 
-macro index ci C/var/spool/mail/larry\n
+macro index ci C=inbox\n
 macro index cr C=sent-mail\n
 macro index cs C=inbox.save\n
-macro pager ci C/var/spool/mail/larry\n
+macro pager ci C=inbox\n
 macro pager cr C=sent-mail\n
 macro pager cs C=inbox.save\n
 

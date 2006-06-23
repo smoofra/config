@@ -698,10 +698,10 @@
 
 (when (load "term")
   (define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
-  (when i-have-escreen
-    (define-key term-raw-map "\M-`" escreen-map))
   (when (null term-raw-map)
     (term "echo"))
+  (when i-have-escreen
+    (define-key term-raw-map "\M-`" escreen-map))
   (define-key term-raw-map "\C-x" ctl-x-map)
   (define-key term-raw-map "\C-y" 'term-paste)
   (define-key term-raw-map "\M-x" 'execute-extended-command)

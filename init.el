@@ -680,11 +680,9 @@
 ;(define-key comint-mode-map "\C-p" 'comint-previous-input)
 ;(define-key comint-mode-map "\C-n" 'comint-next-input)
 
-
-(eval-after-load 'man
-  '(progn 
-     (define-jk Man-mode-map)))
-
+(add-hook 'Man-mode-hook 
+	  (lambda () 
+	    (define-jk Man-mode-map)))
 
 (when (load "term")
   (define-key term-mode-map (kbd "TAB") 'term-dynamic-complete)
@@ -703,10 +701,11 @@
 	     (lambda ()
 	       (define-jk help-mode-map))))
 
-(eval-after-load 'view 
-  '(progn 
-     (define-jk view-mode-map)
-     (define-key view-mode-map "q" '(lambda () (interactive) 1))))
+(add-hook 'view-mode-hook
+	  '(lambda ()
+	     (progn 
+	       (define-jk view-mode-map)
+	       (define-key view-mode-map "q" '(lambda () (interactive) 1)))))
 
 ;(define-key view-mode-map "q" '(lambda () (interactive) (view-mode -1)))
 ;(define-key view-mode-map " " 'foo)

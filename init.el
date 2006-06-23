@@ -51,6 +51,18 @@
 (when (load "fff-elisp" t)
   (fff-elisp-install-map))
 
+(defun perl-lib-path () 
+  (when (get-buffer "*foo*")
+    (kill-buffer "*foo*"))
+  (call-process "perl" nil "*foo*" nil "-e" "print join ':', @INC")
+  (save-excursion 
+    (set-buffer "*foo*")
+    (buffer-substring (point-min) (point-max))))
+
+(defun fff-pm (name)
+  (interactive (list (read-string "Module name: ")))
+  (fff-find-file-in-path (concat name ".pm") (perl-lib-path)))
+
 (setq i-have-slime (load "slime" t))
 (when i-have-slime
   (slime-setup)

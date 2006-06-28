@@ -2,6 +2,43 @@
 
 $loc = shift; 
 
+
+open IN, "<$ENV{HOME}/public_html/links.txt";
+$_ = join '', <IN>;
+s/\s+$//; 
+s/^\s+//; 
+@links = split '[\r\n]+';
+shift @links while @links > 9;
+unshift @links, $loc;
+
+
+
+open OUT, ">$ENV{HOME}/public_html/links.txt";
+print OUT $_, "\n" for @links;
+close OUT;
+
+
+open OUT, ">$ENV{HOME}/public_html/links.rss";
+print OUT <<"END";
+<?xml version="1.0"?>
+<rss version="2.0">
+<channel>
+<title>Some Links</title>
+END
+print OUT <<"END" for @links;
+<item>
+<title>$_</title>
+<description>$_</description>
+<link>$_</link>
+</item>
+END
+print OUT <<"END";
+</channel>
+</rss>
+END
+close OUT;
+
+
 open OUT, ">$ENV{HOME}/public_html/link.html";
 print OUT "<a href=\"$loc\">link</a>\n";
 print OUT "<script> window.location.replace(\"$loc\") </script>";

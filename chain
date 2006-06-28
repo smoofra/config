@@ -8,7 +8,7 @@ $_ = join '', <IN>;
 s/\s+$//; 
 s/^\s+//; 
 @links = split '[\r\n]+';
-shift @links while @links > 9;
+shift @links while @links > 25;
 unshift @links, $loc;
 
 

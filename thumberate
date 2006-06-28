@@ -5,21 +5,33 @@ my $divw = 200;
 my $divh = 160;
 
 
+use Getopt::Long;
+Getopt::Long::Configure ("bundling");
+my $fork;
+GetOptions ("fork|f" => \$fork) or die "couln't get options $!";
+
 my ($file, $out)  = @ARGV;
 
-my $ident = `identify "$file"`;
-$? == 0 or die "identify failed\n";
+my $pid = $fork ? fork() : 0;
 
-my ($w, $h) = $ident =~ /(\d+)x(\d+)/; 
-
-
-if ( ($w/$divw) > ($h/$divh) ) {
-#  print "w\n";
-  exec "convert", "-resize", $divw, $file, $out;
+if ($pid) { 
+  #parent
 } else {
+  my $ident = `identify "$file"`;
+  $? == 0 or die "identify failed\n";
+
+  my ($w, $h) = $ident =~ /(\d+)x(\d+)/; 
+
+  if ( ($w/$divw) > ($h/$divh) ) {
+#  print "w\n";
+    exec "convert", "-resize", $divw, $file, $out;
+  } else {
 #  print "h\n";
-  exec "convert", "-resize", "x$divh", $file, $out;
+    exec "convert", "-resize", "x$divh", $file, $out;
+  }
 }
+
+
 
 
 

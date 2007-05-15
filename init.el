@@ -942,8 +942,8 @@
 
 (column-number-mode t)
 
-(setq scheme-program-name "guile")
-(autoload 'run-scheme "cmuscheme48" "Run an inferior Scheme process." t)
+;(setq scheme-program-name "guile")
+;(autoload 'run-scheme "cmuscheme48" "Run an inferior Scheme process." t)
 (autoload 'ruby-mode "ruby-mode" "editor mode for ruby" t)
 
 
@@ -991,6 +991,10 @@
 (defun freenode ()
   (interactive)
   (erc-select :server "irc.freenode.net" :port "ircd" :nick "smoofra" :password my-stupid-passwd))
+
+(defun dalnet ()
+  (interactive)
+  (erc-select :server "punch.va.us.dal.net" :port "ircd" :nick "smoofra" :password my-stupid-passwd))
 
 (defun wjoe ()
   (interactive)

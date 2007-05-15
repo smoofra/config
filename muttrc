@@ -44,6 +44,8 @@ bind pager "\Ct" read-thread
 bind pager   n   next-unread
 bind pager   D  delete-message
 bind pager   U  undelete-message
+bind pager <space> next-unread
+
 
 
 macro generic Ss ':set from="Larry D'\''Anna <smoof-ra@elder-gods.org>"'\n
@@ -60,14 +62,13 @@ color bold        green  default  # ..
 color error       red    white  # global
 color header      yellow   default  "^cc: "
 color header      yellow default  "^date: "
-color header      red    default  "^from: "
 color header      white  red    "^newsgroups: "
 color header      red    default  "^reply-to: "
 color header      white  blue   "^subject: "
-color header      yellow default  "^to: "
+color header      black green  "^to: "
 color header      magenta default  "^x-mailer: "
 color header      default  red     "^message-id: .*pine"
-color header     white  default   "^[fF]rom"
+color header      black  red   "^from:"
 color hdrdefault  default   default  # 
 color indicator   white  blue   # index
 color markers     red    default  # index
@@ -104,21 +105,23 @@ color underline   yellow default  #
 color index yellow  default '~t ldanna@wam.umd.edu'
 color index yellow  default '~c ldanna@wam.umd.edu'
 #color index blue default '~t ldanna@math.umd.edu' 
-color index blue default '~f umd.edu' 
+#color index blue default '~f umd.edu' 
 color index cyan default '~t larry@melkor.elder-gods.org'
-color index cyan default '~c larry@melkor.elder-gods.or'g
+color index cyan default '~c larry@melkor.elder-gods.org'
 color index cyan default '~t smoof-ra@melkor.elder-gods.org'
-color index cyan default '~c smoof-ra@melkor.elder-gods.or'g
+color index cyan default '~c smoof-ra@melkor.elder-gods.org'
 color index cyan default '~t larry@elder-gods.org'
-color index cyan default '~c larry@elder-gods.or'g
+color index cyan default '~c larry@elder-gods.org'
 color index cyan default '~t smoof-ra@elder-gods.org'
-color index cyan default '~c smoof-ra@elder-gods.or'g
+color index cyan default '~c smoof-ra@elder-gods.org'
 color index cyan default '~t ldanna@math.umd.edu'
 color index cyan default '~c ldanna@math.umd.edu'
 color index cyan default '~t smoofra@gmail.com'
 color index cyan default '~c smoofra@gmail.com'
 color index green default "~s '\\[(Linux-bcom4301-priv|darcs-devel|Bese-devel|Sbcl-devel|slime-devel|madman-discuss)\\]'"
 color index red  default '~h "X-SpamProbe: SPAM"'
+color index red default '~h "X-Spam-Flag: YES"' 
+
 
 
 
@@ -277,12 +280,14 @@ set tilde
 set noautoedit
 set nomove
 set copy=yes
+set use_from=yes
 set record='=sent-mail'
 unset save_name
 unset force_name
 set nosig_dashes
 #set editor="emacs -nw  -f muttland"
-set editor="emacsclient -a emacs-nw"
+#set editor="emacsclient -a emacs-nw"
+set editor="emacsclient"
 set fcc_clear
 
 
@@ -304,9 +309,12 @@ macro pager ci C=inbox\n
 macro pager cr C=sent-mail\n
 macro pager cs C=inbox.save\n
 
+macro pager,index A "|spamassassin -t |less\n"
+
+
 
 set sort=date
-set from="Larry D'Anna <smoof-ra@elder-gods.org>"
+set from="Larry D'Anna <larry@elder-gods.org>" 
 alternates  "ldanna@\(wam\|glue\|cs\|math\).umd.edu\|\(admin\|larry\|larry-web\|root\|smoof-ra\|SmoofRa\)@\(elder-gods.org\|melkor.elder-gods.org\|minerva.elder-gods.org\)
 
 

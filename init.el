@@ -998,7 +998,7 @@
 
 (defun wjoe ()
   (interactive)
-  (erc-select :server "wjoe.tv" :port "ircd" :nick "smoofra")
+  (erc-select :server "localhost" :port "ircd" :nick "smoofra")
   (erc-join-channel "#yourmom"))
 
 (defun bitlbee ()
@@ -1069,3 +1069,9 @@
 ;'(define-key c-mode-map "\M-q" 'scroll-down-one))
 
 
+;;; indentation-related crap
+; c-basic-offset
+; indent-tab-mode
+; tab-width
+; c-backspace-function
+; backward-delete-char-untabify-method

@@ -191,6 +191,7 @@
 
 (when i-have-slime
   (slime-define-key "\M-c" 'my-unhighlight)
+  (slime-define-key [tab] 'slime-indent-and-complete-symbol)
   (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol))
 
 (global-set-key "\C-\M-n" 'semi-forward-sexp)
@@ -1075,3 +1076,15 @@
 ; tab-width
 ; c-backspace-function
 ; backward-delete-char-untabify-method
+; c-set-style
+
+(when i-have-slime
+  (defun slime-clean ()
+	(interactive)
+	(slime-remove-old-overlays)))
+
+
+(defun setup-tramp ()
+  (interactive)
+  (require 'tramp)
+  (setq tramp-default-method "scp"))

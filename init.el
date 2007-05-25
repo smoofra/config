@@ -192,6 +192,7 @@
 (when i-have-slime
   (slime-define-key "\M-c" 'my-unhighlight)
   (slime-define-key [tab] 'slime-indent-and-complete-symbol)
+  (slime-define-key [backtab]   'tab-to-tab-stop)
   (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol))
 
 (global-set-key "\C-\M-n" 'semi-forward-sexp)
@@ -319,8 +320,8 @@
 (global-set-key "\C-s" 'isearch-forward-regexp)
 (global-set-key "\C-r" 'isearch-backward-regexp)
 (global-set-key "\C-v" 'view-mode)
-(global-set-key   "\M-\C-z"   'scroll-up-half)
-(global-set-key "\M-\C-a"   'scroll-down-half)
+;(global-set-key   "\M-\C-z"   'scroll-up-half)
+;(global-set-key "\M-\C-a"   'scroll-down-half)
 (global-set-key [home] 'SDO)
 (global-set-key [end]  'SUO)
 
@@ -388,6 +389,18 @@
 			       java-mode
 			       makefile-mode
 			       diff-mode))
+
+
+(defun c-unwrap-next-sexp (&optional kill-n-sexps)
+  "Convert (x ...) to ..."
+  (interactive "P")
+  (forward-sexp)
+  (backward-delete-char 1)
+  (set-mark (point))
+  (backward-up-list)
+  (delete-char 1)
+  (c-indent-command)
+  (call-interactively 'indent-region))
 
 ;;orig. by marco baringer
 (defun unwrap-next-sexp (&optional kill-n-sexps)
@@ -525,6 +538,11 @@
   (newline)
   (lisp-indent-line))
 
+(defun c-newline-and-indent ()
+  (interactive)
+  (newline)
+  (c-indent-command))
+
 (defun consume-sexp  (&optional supress-newlines)
   (interactive)
   (forward-delete-space-through-parens)
@@ -609,6 +627,11 @@
   (interactive)
   (join-line)
   (lisp-indent-line))
+
+(defun c-join-line ()
+  (interactive)
+  (join-line)
+  (c-indent-command))
 
 (defun lisp-yank (&optional arg)
   (interactive "*P")
@@ -917,10 +940,24 @@
     (shrink-window (- h l))
     (select-window SW)))
 
+(defvar comp-default-directory nil)
+
+(defun end-of-compilation-buffer (buf str)
+  (set-window-point (get-buffer-window buf) 
+					(save-excursion 
+					  (set-buffer buf)
+					  (point-max))))
+
+(setq compilation-finish-functions (list 'end-of-compilation-buffer))
+
 (defun comp (&optional i)
   (interactive)
   (if i (call-interactively 'compile) (compile compile-command))
-  (set-window-lines (get-buffer-window "*compilation*") 15))
+  (set-window-lines (get-buffer-window "*compilation*") 20)
+  (when comp-default-directory 
+	  (save-excursion
+		(set-buffer "*compilation*")
+		(setq default-directory comp-default-directory))))
 
 (defun compi () (interactive) (comp 1))
 
@@ -1088,3 +1125,33 @@
   (interactive)
   (require 'tramp)
   (setq tramp-default-method "scp"))
+
+
+(defun c-kill-line ()
+  (interactive)
+  (call-interactively 'kill-line)
+  (c-indent-command))
+
+(defun c-open-line ()
+  (interactive)
+  (call-interactively 'open-line)
+  (save-excursion 
+	(next-line)
+	(c-indent-command)))
+
+
+(eval-after-load 'c-mode
+  '(progn 
+	 (define-key c-mode-map "\C-o"   'c-open-line)
+	 (define-key c-mode-map "\C-k"   'c-kill-line)
+	 (define-key c-mode-map "\M-_"   'c-unwrap-next-sexp)
+	 (define-key c-mode-map [return] 'c-newline-and-indent)
+	 (define-key c-mode-map "\C-\M-j" 'c-join-line)))
+
+
+;; hl-line-mode will highlight the current line, 
+;; but i woln't be able to remember it's name
+(defun highlight-current-line-mode ()
+  (interactive)
+  (hl-line-mode))
+

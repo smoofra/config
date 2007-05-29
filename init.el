@@ -192,7 +192,7 @@
 (when i-have-slime
   (slime-define-key "\M-c" 'my-unhighlight)
   (slime-define-key [tab] 'slime-indent-and-complete-symbol)
-  (slime-define-key [backtab]   'tab-to-tab-stop)
+  (slime-define-key [(control tab)]   'tab-to-tab-stop)
   (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol))
 
 (global-set-key "\C-\M-n" 'semi-forward-sexp)
@@ -538,22 +538,18 @@
   (newline)
   (lisp-indent-line))
 
-(defun c-newline-and-indent ()
-  (interactive)
-  (newline)
-  (c-indent-command))
 
 (defun consume-sexp  (&optional supress-newlines)
   (interactive)
   (forward-delete-space-through-parens)
   (while (and (line-empty-before-point)
-	      (or (save-excursion
-		    (beginning-of-line)
-		    (backward-char)
-		    (line-empty-before-point))
-		  (save-excursion
-		    (forward-char)
-		    (line-empty-after-point))))
+			  (or (save-excursion
+					(beginning-of-line)
+					(backward-char)
+					(line-empty-before-point))
+				  (save-excursion
+					(forward-char)
+					(line-empty-after-point))))
     (join-line)
     (lisp-indent-line))
   (backward-up-list)
@@ -563,20 +559,20 @@
     (let ((newlines (and (forward-delete-space) (not supress-newlines))))
       (cond
        ((equal (char-to-string (char-after (point))) ")")
-	(consume-sexp supress-newlines)
-	(insert c)
-	(backward-char))
+		(consume-sexp supress-newlines)
+		(insert c)
+		(backward-char))
        (t (when (and (not newlines)
-		     (not (cheqstr (char-before (point)) "`"))
-		     (not (cheqstr (char-before (point)) "'"))
-		     (not (cheqstr (char-before (point)) "("))
-		     (not (cheqstr (char-before (point)) " ")))
-	    (insert " "))
-	  (when newlines 
-	    (lisp-newline-and-indent))
-	  (forward-sexp)
-	  (insert c)
-	  (backward-char))))))
+					 (not (cheqstr (char-before (point)) "`"))
+					 (not (cheqstr (char-before (point)) "'"))
+					 (not (cheqstr (char-before (point)) "("))
+					 (not (cheqstr (char-before (point)) " ")))
+			(insert " "))
+		  (when newlines 
+			(lisp-newline-and-indent))
+		  (forward-sexp)
+		  (insert c)
+		  (backward-char))))))
 
 (defun lisp-ctrla ()
   (interactive)
@@ -1140,8 +1136,12 @@
 	(c-indent-command)))
 
 
-(eval-after-load 'c-mode
+(eval-after-load 'cc-mode
   '(progn 
+	 (defun c-newline-and-indent ()
+	   (interactive)
+	   (newline)
+	   (c-indent-command))
 	 (define-key c-mode-map "\C-o"   'c-open-line)
 	 (define-key c-mode-map "\C-k"   'c-kill-line)
 	 (define-key c-mode-map "\M-_"   'c-unwrap-next-sexp)
@@ -1155,3 +1155,25 @@
   (interactive)
   (hl-line-mode))
 
+
+(defun advance-column ()
+  (interactive)
+  (let ((c (current-column))
+		(lp nil))
+	(while (and (not (is-space (char-after (point))))
+				(is-space (char-before (point))))
+	  (setq lp (point))
+	  (forward-line -1)
+	  (setf (current-column) c))
+	(setf (point) lp)
+	(advance-column-down)))
+
+(defun advance-column-down ()
+  (interactive)
+  (when (and (not (is-space (char-after (point))))
+			 (is-space (char-before (point))))
+	(let ((c (current-column)))
+	  (call-interactively 'tab-to-tab-stop)
+	  (forward-line)
+	  (setf (current-column) c)
+	  (advance-column))))

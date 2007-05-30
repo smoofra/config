@@ -1177,3 +1177,6 @@
 	  (forward-line)
 	  (setf (current-column) c)
 	  (advance-column))))
+
+
+;; to keep long lines from wrapping around use toggle-truncate-lines

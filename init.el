@@ -67,6 +67,21 @@
 (when i-have-slime
   (slime-setup)
 
+  (def-slime-selector-method ?.
+	"exit"
+	(current-buffer))
+  
+  ;; this is control-g.  don't ask me why, but 
+  ;; you can call (read-char) to find out the code 
+  ;; for sometihng
+  (def-slime-selector-method 33554439
+	"exit"
+	(current-buffer))  
+  
+  (def-slime-selector-method ?C
+	"*compilation* buffer"
+	(get-buffer "*compilation*"))
+  
   (def-slime-selector-method ?h
     "*Help* buffer."
     (get-buffer "*Help*"))

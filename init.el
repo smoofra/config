@@ -66,6 +66,10 @@
 (setq i-have-slime (load "slime" t))
 (when i-have-slime
   (slime-setup)
+  
+  (def-slime-selector-method ?o
+	"*Shell Command Output*"
+	(get-buffer "*Shell Command Output*"))
 
   (def-slime-selector-method ?.
 	"exit"
@@ -77,6 +81,10 @@
   (def-slime-selector-method 33554439
 	"exit"
 	(current-buffer))  
+  
+  (def-slime-selector-method ?g
+	"*grep*"
+	(get-buffer "*grep*"))
   
   (def-slime-selector-method ?C
 	"*compilation* buffer"
@@ -114,7 +122,7 @@
 
 (defun links ()
   (interactive)
-  (occur "http://[^ ]*"))
+  (occur "https?://[^ ]*"))
 
 (global-set-key "\C-x4l" 'link-url-at-point)
 
@@ -145,6 +153,7 @@
 
 (defun my-unhighlight ()
   (interactive)
+  (slime-remove-old-overlays)
   (sldb-delete-overlays))
 
 (defun is-sexp-start ()
@@ -244,12 +253,45 @@
   (let ((p (point)))
     (unwind-protect (myblink-h) (goto-char p))))
 
+;;;;from emacs source, modified
+(eval-after-load "diff"
+  '(defun diff-sentinel (code)
+	 "Code run when the diff process exits.
+     CODE is the exit code of the process.  It should be 0 iff no diffs were found."
+	 (if diff-old-temp-file (delete-file diff-old-temp-file))
+	 (if diff-new-temp-file (delete-file diff-new-temp-file))
+	 (save-excursion
+	   (goto-char (point-max))
+	   (let ((inhibit-read-only t))
+		 (insert (format "\nDiff finished%s.  %s\n"
+						 (if (equal 0 code) " (no differences)" "")
+						 (current-time-string)))))
+	 (when (and (not (null buffer-to-revert-if-no-diff))
+				(equal 0 code))
+	   (set-buffer buffer-to-revert-if-no-diff)
+	   (revert-buffer t t t))
+	 (setq diff-return-code code)))
+ 
+
+(defvar diff-return-code nil)
+(defvar buffer-to-revert-if-no-diff nil)
+
 (defun diff-current-buffer-with-file ()
   (interactive)
-  (diff-buffer-with-file (current-buffer))
-  (save-excursion 
-    (set-buffer (get-buffer "*Diff*"))
-    (toggle-read-only 1)))
+  (let ((wc (current-window-configuration))
+		(buffer-to-revert-if-no-diff (current-buffer))
+		(diff-return-code nil))
+	(diff-buffer-with-file (current-buffer))
+	(cond 
+	 ((equal diff-return-code 0)
+	  (message "no diff")
+	  ;;(read-char nil nil .5)
+	  (sit-for .5)
+	  (set-window-configuration wc))
+	 (t 
+	  (save-excursion 
+		(set-buffer (get-buffer "*Diff*"))
+		(toggle-read-only 1))))))
 
 
 (defun remove-keymap-prop (begin end)
@@ -1125,12 +1167,6 @@
 ; c-backspace-function
 ; backward-delete-char-untabify-method
 ; c-set-style
-
-(when i-have-slime
-  (defun slime-clean ()
-	(interactive)
-	(slime-remove-old-overlays)))
-
 
 (defun setup-tramp ()
   (interactive)

@@ -12,6 +12,7 @@
 
 (setq load-path (cons "~/usr/share/emacs/site-lisp" load-path))
 (autoload 'maxima "maxima")
+(autoload 'svn-status "psvn")
 (setq load-path (cons "/usr/share/maxima/5.9.1/emacs/" load-path))
 
 ;(setq load-path (cons "/usr/share/emacs/site-lisp/tnt/" load-path))
@@ -25,6 +26,15 @@
 (setq browse-url-browser-function 'w3m-browse-url)
 (autoload 'w3m-browse-url "w3m" "web browser" t)
 (autoload 'tnt-open "tnt" "tnt" t)
+
+
+(autoload 'bubble-buffer-next "bubble-buffer")
+(autoload 'bubble-buffer-previous "bubble-buffer")
+(global-set-key [f11] 'bubble-buffer-next)
+(global-set-key [(shift f11)] 'bubble-buffer-previous)
+
+
+
 
 (add-hook 'after-save-hook 
 	  'executable-make-buffer-file-executable-if-script-p)
@@ -81,6 +91,10 @@
   (def-slime-selector-method 33554439
 	"exit"
 	(current-buffer))  
+  
+  (def-slime-selector-method ?V
+	"*svn-status*"
+	(get-buffer "*svn-status*"))
   
   (def-slime-selector-method ?g
 	"*grep*"
@@ -1228,6 +1242,8 @@
 	  (forward-line)
 	  (setf (current-column) c)
 	  (advance-column))))
+
+
 
 
 ;; to keep long lines from wrapping around use toggle-truncate-lines

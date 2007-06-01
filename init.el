@@ -1247,3 +1247,7 @@
 
 
 ;; to keep long lines from wrapping around use toggle-truncate-lines
+
+;; amazing fucking awesome buffer switcher
+(require 'iswitchb)
+(global-set-key "\C-xb" 'iswitchb-buffer)

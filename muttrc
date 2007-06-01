@@ -1,4 +1,4 @@
-
+# -*- mode: conf -*- 
 
 bind attach ' ' select-entry
 bind attach \Cg exit
@@ -288,7 +288,9 @@ set nosig_dashes
 #set editor="emacs -nw  -f muttland"
 #set editor="emacsclient -a emacs-nw"
 set editor="emacsclient"
-set fcc_clear
+
+#save pgp encrypted messages in $record in the clear
+set fcc_clear=no
 
 
 ignore *
@@ -315,7 +317,7 @@ macro pager,index A "|spamassassin -t |less\n"
 
 set sort=date
 set from="Larry D'Anna <larry@elder-gods.org>" 
-alternates  "ldanna@\(wam\|glue\|cs\|math\).umd.edu\|\(admin\|larry\|larry-web\|root\|smoof-ra\|SmoofRa\)@\(elder-gods.org\|melkor.elder-gods.org\|minerva.elder-gods.org\)
+alternates  "ldanna@\(wam\|glue\|cs\|math\).umd.edu\|\(admin\|larry\|larry-web\|root\|smoof-ra\|SmoofRa\)@\(elder-gods.org\|melkor.elder-gods.org\|minerva.elder-gods.org\)"
 
 
 
@@ -334,3 +336,4 @@ set postponed="=postponed"
 
 
 alternative_order text/html text/enriched text/plain text/*
+#set pgp_encryptself

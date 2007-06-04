@@ -1250,4 +1250,5 @@
 
 ;; amazing fucking awesome buffer switcher
 (require 'iswitchb)
-(global-set-key "\C-xb" 'iswitchb-buffer)
+(iswitchb-mode 1)
+;;(global-set-key "\C-xb" 'iswitchb-buffer)

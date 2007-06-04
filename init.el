@@ -1,6 +1,3 @@
-
-(load "~/.site-init.el" t)
-
 (require 'cl)
 
 (setq inferior-lisp-program  "sbcl")
@@ -1252,3 +1249,7 @@
 (require 'iswitchb)
 (iswitchb-mode 1)
 ;;(global-set-key "\C-xb" 'iswitchb-buffer)
+
+
+
+(site-init-late)

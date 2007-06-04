@@ -1,11 +1,14 @@
-(load "/usr/share/emacs/site-lisp/site-gentoo.el" t)
+;;(load "/usr/share/emacs/site-lisp/site-gentoo.el" t)
 
 (setq magic-mode-alist nil)
 
+(defun site-init-late ())
+(load "~/.site-init.el")
 (load "~/config/init.el")
 
 (put 'upcase-region 'disabled nil)
-
 (put 'narrow-to-region 'disabled nil)
-
 (put 'scroll-left 'disabled nil)
+
+
+

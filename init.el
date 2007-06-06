@@ -9,7 +9,11 @@
 
 (setq load-path (cons "~/usr/share/emacs/site-lisp" load-path))
 (autoload 'maxima "maxima")
-(autoload 'svn-status "psvn")
+
+(autoload 'svn-status "psvn" "" t)
+(eval-after-load 'psvn 
+  (setq svn-status-default-log-arguments '("--verbose   --limit=20")))
+
 (setq load-path (cons "/usr/share/maxima/5.9.1/emacs/" load-path))
 
 ;(setq load-path (cons "/usr/share/emacs/site-lisp/tnt/" load-path))
@@ -85,9 +89,9 @@
   ;; this is control-g.  don't ask me why, but 
   ;; you can call (read-char) to find out the code 
   ;; for sometihng
-  (def-slime-selector-method 33554439
-	"exit"
-	(current-buffer))  
+  ;;(def-slime-selector-method 33554439  
+  ;;"exit"
+  ;;(current-buffer))  
   
   (def-slime-selector-method ?V
 	"*svn-status*"
@@ -136,6 +140,7 @@
   (occur "https?://[^ ]*"))
 
 (global-set-key "\C-x4l" 'link-url-at-point)
+(global-set-key "\C-x4k" 'browse-url-at-point)
 
 (defun makehoriz ()
   (interactive)
@@ -819,7 +824,14 @@
 
 (eval-after-load 'info 
   '(progn
-     (define-jk Info-mode-map)
+	 (define-key Info-mode-map "h" 'backward-char)
+	 (define-key Info-mode-map "l" 'forward-char)
+	 (define-key Info-mode-map "n" 'next-line)
+	 (define-key Info-mode-map "p" 'previous-line)
+	 (define-key Info-mode-map "N" 'Info-next)
+	 (define-key Info-mode-map "L" 'Info-history-back)
+	 (define-key Info-mode-map "H" 'Info-history)
+	 (define-key Info-mode-map "P" 'Info-prev)
      (define-key Info-mode-map "U" 'Info-up)
      (define-key Info-mode-map "D" 'Info-directory)))
 
@@ -1236,12 +1248,14 @@
 			 (is-space (char-before (point))))
 	(let ((c (current-column)))
 	  (call-interactively 'tab-to-tab-stop)
-	  (forward-line)
+      (forward-line)
 	  (setf (current-column) c)
-	  (advance-column))))
+      (advance-column))))
 
-
-
+(add-hook 'c-mode-common-hook '(lambda ()
+                                 (setq indent-tabs-mode t)
+                                 (setq tab-width 4) 
+                                 (setq c-basic-offset 4)))
 
 ;; to keep long lines from wrapping around use toggle-truncate-lines
 

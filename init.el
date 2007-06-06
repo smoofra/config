@@ -13,6 +13,8 @@
 (autoload 'svn-status "psvn" "" t)
 (eval-after-load 'psvn 
   (setq svn-status-default-log-arguments '("--verbose   --limit=20")))
+(autoload 'darcsum-whatsnew "darcsum" "" t)
+
 
 (setq load-path (cons "/usr/share/maxima/5.9.1/emacs/" load-path))
 

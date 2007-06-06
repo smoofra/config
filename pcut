@@ -1,0 +1,22 @@
+#!/usr/bin/perl -w  
+
+
+use Getopt::Long; 
+Getopt::Long::Configure ("bundling");
+
+my $delim = q/\s+/;
+my $field = 0;
+GetOptions (
+  "d=s"			=> \$delim,
+  "f=s"			=> \$field,
+	) or die "couldn't get options\n";
+
+
+while (<>) { 
+  @f = split $delim, $_;
+  print $f[$field], "\n"; 
+}
+			
+
+
+

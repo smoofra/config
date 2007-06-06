@@ -1264,6 +1264,11 @@
 (iswitchb-mode 1)
 ;;(global-set-key "\C-xb" 'iswitchb-buffer)
 
+(defun open-scratches ()
+  (let ((enable-local-eval t))
+    (find-file "~/slime-scratch.lisp")
+    (kill-buffer "*scratch*")
+    (find-file "~/scratch.el")))
 
 
 (site-init-late)

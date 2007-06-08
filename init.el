@@ -12,7 +12,7 @@
 
 (autoload 'svn-status "psvn" "" t)
 (eval-after-load 'psvn 
-  (setq svn-status-default-log-arguments '("--verbose   --limit=20")))
+  (setq svn-status-default-log-arguments '("--verbose"   "--limit=20")))
 (autoload 'darcsum-whatsnew "darcsum" "" t)
 
 
@@ -826,6 +826,8 @@
 
 (eval-after-load 'info 
   '(progn
+     (define-key Info-mode-map "k" 'scroll-down-one)
+     (define-key Info-mode-map "j" 'scroll-up-one)
 	 (define-key Info-mode-map "h" 'backward-char)
 	 (define-key Info-mode-map "l" 'forward-char)
 	 (define-key Info-mode-map "n" 'next-line)
@@ -1272,5 +1274,6 @@
     (kill-buffer "*scratch*")
     (find-file "~/scratch.el")))
 
+(setq x-select-enable-clipboard t)
 
 (site-init-late)

@@ -1322,6 +1322,6 @@
     (comint-send-input)
     (yank)))
 
-
+(setq grep-command "grep -nHi")
 
 (site-init-late)

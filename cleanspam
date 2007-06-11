@@ -23,10 +23,19 @@ my $fold = Email::Folder->new($in);
 
 while (my $msg  = $fold->next_message()) { 
   my $recv = $msg->header("Received");
-  $recv =~ s/^.*;//; 
-  $tp = Time::Piece->new(str2time $recv); 
-  $now = localtime;
-  $diff = $now - $tp;
+  my $diff;
+  if (not defined $recv) { 
+    $id = $msg->header("Message-Id");
+    unless ($id eq '<1181245635@melkor>') {
+      warn "message $id has no Received\n";
+    }
+    $diff = 0
+  } else { 
+    $recv =~ s/^.*;//; 
+    $tp = Time::Piece->new(str2time $recv); 
+    $now = localtime;
+    $diff = $now - $tp;
+  }
   #print $ofh $msg->as_string() if $diff < ONE_WEEK;
   #print Dumper $msg;
   Email::LocalDelivery->deliver($msg->as_string(), $out) if $diff < ONE_WEEK; 

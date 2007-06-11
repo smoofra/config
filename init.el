@@ -229,7 +229,8 @@
 
 (define-key emacs-lisp-mode-map "\M-k" 'save-sexp)
 (define-key lisp-interaction-mode-map "\M-." 'find-function)
-(define-key emacs-lisp-mode-map "\M-." 'find-function)
+(define-key emacs-lisp-mode-map "\M-." 'find-functin)
+(define-key emacs-lisp-mode-map "\M-/" 'lisp-complete-symbol)
 
 (when i-have-slime
   (slime-define-key "\M-c" 'my-unhighlight)
@@ -830,6 +831,8 @@
 
 (eval-after-load 'info 
   '(progn
+     (define-key Info-mode-map "u" 'scroll-down-half)
+     (define-key Info-mode-map "d" 'scroll-up-half)
      (define-key Info-mode-map "k" 'scroll-down-one)
      (define-key Info-mode-map "j" 'scroll-up-one)
 	 (define-key Info-mode-map "h" 'backward-char)
@@ -1304,3 +1307,18 @@
   '(progn
      (load-library "ansi-color")
      (ansi-color-for-comint-mode-on)))
+
+(defun here-shell ()
+  (interactive)
+  (let ((dd default-directory))
+    (shell)
+    (end-of-buffer)
+    (set-mark (point))
+    (move-beginning-of-line nil)
+    (call-interactively 'kill-region)
+    (insert "cd ")
+    (insert dd)
+    (insert "")
+    (comint-send-input)
+    (yank)))
+

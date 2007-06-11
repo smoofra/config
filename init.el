@@ -1293,7 +1293,7 @@
   (setq after-make-frame-functions 
         (cons 'set-nice-font after-make-frame-functions)))
 
-(site-init-late)
+
 
 ;;;;; C-g fucked up, fix it.
 (setq 
@@ -1322,3 +1322,6 @@
     (comint-send-input)
     (yank)))
 
+
+
+(site-init-late)

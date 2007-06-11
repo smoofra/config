@@ -12,7 +12,7 @@
 
 (autoload 'svn-status "psvn" "" t)
 (eval-after-load 'psvn 
-  (setq svn-status-default-log-arguments '("--verbose"   "--limit=20")))
+  '(setq svn-status-default-log-arguments '("--verbose"   "--limit=20")))
 (autoload 'darcsum-whatsnew "darcsum" "" t)
 
 
@@ -399,6 +399,9 @@
 ;(global-set-key "\M-\C-a"   'scroll-down-half)
 (global-set-key [home] 'SDO)
 (global-set-key [end]  'SUO)
+(global-set-key "\M-," 'pop-tag-mark)
+(global-set-key "\M-*" 'tags-loop-continue)
+
 
 (setq perl-indent-level 2)
 
@@ -450,21 +453,21 @@
 (transient-mark-mode -1)
 
 (setq font-lock-global-modes '(c-mode
-  			       c++-mode
-			       perl-mode
-			       lisp-mode
-			       xml-mode
-			       cperl-mode	
-			       emacs-lisp-mode
-			       ruby-mode
-			       shell-script-mode
-			       asm-mode
-			       pascal-mode
+                               c++-mode
+                               perl-mode
+                               lisp-mode
+                               xml-mode
+                               cperl-mode	
+                               emacs-lisp-mode
+                               ruby-mode
+                               shell-script-mode
+                               asm-mode
+                               pascal-mode
                                html-mode
-			       sh-mode
-			       java-mode
-			       makefile-mode
-			       diff-mode))
+                               sh-mode
+                               java-mode
+                               makefile-mode
+                               diff-mode))
 
 
 (defun c-unwrap-next-sexp (&optional kill-n-sexps)

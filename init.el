@@ -89,7 +89,7 @@
 	(current-buffer))
   
   ;; this is control-g.  don't ask me why, but 
-  ;; you can call (read-char) to find out the code 
+  ;; you can call (read-char) or (read-event) to find out the code 
   ;; for sometihng
   ;;(def-slime-selector-method 33554439  
   ;;"exit"
@@ -311,7 +311,7 @@
 		(set-buffer (get-buffer "*Diff*"))
 		(toggle-read-only 1))))))
 
-
+;;; keymap properties aren't overlays!
 (defun remove-keymap-prop (begin end)
   (interactive "r")
   (remove-text-properties begin end '(keymap)))
@@ -421,15 +421,16 @@
 
 (setq auto-mode-alist
       (append '(("\\.\\([pP][Llm]\\|al\\)$" . cperl-mode)
-		("\\.sawfishrc" . lisp-mode)
-		("\\.php" . php-mode)
-		("\\.ph" . cperl-mode)
-		("\\.rb" . ruby-mode)
-		("\\.asd" . lisp-mode)
-		("\\.jl$" . lisp-mode)
-		("\\.\\(xsl\\|xml\\|rss\\|rdf\\)$" . nxml-mode)
-		("\\.css$" . css-mode))
-	      auto-mode-alist )) 
+                ("\\.sawfishrc" . lisp-mode)
+                ("\\.php" . php-mode)
+                ("\\.xul" . xml-mode)
+                ("\\.ph" . cperl-mode)
+                ("\\.rb" . ruby-mode)
+                ("\\.asd" . lisp-mode)
+                ("\\.jl$" . lisp-mode)
+                ("\\.\\(xsl\\|xml\\|rss\\|rdf\\)$" . nxml-mode)
+                ("\\.css$" . css-mode))
+              auto-mode-alist )) 
 
 (when (>= emacs-major-version 22)
   (add-to-list 'auto-mode-alist 
@@ -1276,4 +1277,20 @@
 
 (setq x-select-enable-clipboard t)
 
+(defun set-nice-font (x)
+  (let ((f (selected-frame)))
+    (select-frame x)
+    (set-default-font "Bitstream Vera Sans Mono-13")
+    (select-frame f)))
+
+(defun set-nice-font-setter ()
+  (setq after-make-frame-functions 
+        (cons 'set-nice-font after-make-frame-functions)))
+
 (site-init-late)
+
+;;;;; C-g fucked up, fix it.
+(setq 
+ query-replace-map
+ (cons 'keymap (cons (cons 33554439 'exit) (cdr query-replace-map))))
+

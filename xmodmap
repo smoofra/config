@@ -1,6 +1,6 @@
-#remap capsloc to left control
+! remap capsloc to left control
 keycode 66 = Control_L
 add control = Control_L
-#remap right control to capslock
+! remap right control to capslock
 keycode 109 = Caps_Lock
 add lock = Caps_Lock

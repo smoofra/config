@@ -1297,3 +1297,10 @@
  query-replace-map
  (cons 'keymap (cons (cons 33554439 'exit) (cdr query-replace-map))))
 
+
+;;;freaking, yay.  this should be the default though.
+(setq comint-prompt-read-only 1)
+(eval-after-load 'shell
+  '(progn
+     (load-library "ansi-color")
+     (ansi-color-for-comint-mode-on)))

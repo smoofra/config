@@ -17,17 +17,29 @@ my $pid = $fork ? fork() : 0;
 if ($pid) { 
   #parent
 } else {
-  my $ident = `identify "$file"`;
-  $? == 0 or die "identify failed\n";
+  if ($file =~ /\.mov$/i) { 
+    my $tdir = "/tmp/mplayer_frames$$"; 
+    mkdir $tdir or die $!; 
+    system qw/ mplayer -nosound -frames 1 -vf tfields=2 -sstep 3 -vo /, 
+      "jpeg:outdir=$tdir", qw/  -vf scale=200:160  /, $file;
+    $? == 0 or die "mplayer failed";
+    my @jpgs = glob "$tdir/*.jpg";
+    scalar(@jpgs) == 1 or die "not exactly one frame, wtf\n";
+    rename shift(@jpgs), $out or die $!;
+    rmdir $tdir or die $!;
+  } else { 
+    my $ident = `identify "$file"`;
+    $? == 0 or die "identify failed\n";
 
-  my ($w, $h) = $ident =~ /(\d+)x(\d+)/; 
+    my ($w, $h) = $ident =~ /(\d+)x(\d+)/; 
 
-  if ( ($w/$divw) > ($h/$divh) ) {
-#  print "w\n";
-    exec "convert", "-resize", $divw, $file, $out;
-  } else {
-#  print "h\n";
-    exec "convert", "-resize", "x$divh", $file, $out;
+    if ( ($w/$divw) > ($h/$divh) ) {
+      #print "w\n";
+      exec "convert", "-resize", $divw, $file, $out;
+    } else {
+      #print "h\n";
+      exec "convert", "-resize", "x$divh", $file, $out;
+    }
   }
 }
 

@@ -1292,11 +1292,14 @@
 
 (setq x-select-enable-clipboard t)
 
+(defvar nice-font "Bitstream Vera Sans Mono-13")
+
+;;dont' forget to remove any default font from .custom.el
 (defun set-nice-font (&optional x)
   (let ((f (selected-frame)))
     (when x 
       (select-frame x))
-    (set-default-font "Bitstream Vera Sans Mono-13")
+    (set-default-font nice-font)
     (select-frame f)))
 
 (defun set-nice-font-setter ()

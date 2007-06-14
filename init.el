@@ -1292,9 +1292,10 @@
 
 (setq x-select-enable-clipboard t)
 
-(defun set-nice-font (x)
+(defun set-nice-font (&optional x)
   (let ((f (selected-frame)))
-    (select-frame x)
+    (when x 
+      (select-frame x))
     (set-default-font "Bitstream Vera Sans Mono-13")
     (select-frame f)))
 

@@ -36,6 +36,8 @@
 (global-set-key [f11] 'bubble-buffer-next)
 (global-set-key [(shift f11)] 'bubble-buffer-previous)
 
+(autoload 'javascript-mode "javascript" "javascript-mode" t)
+
 
 
 
@@ -425,28 +427,33 @@
 
 (setq auto-mode-alist
       (append '(("\\.\\([pP][Llm]\\|al\\)$" . cperl-mode)
-                ("\\.sawfishrc" . lisp-mode)
-                ("\\.php" . php-mode)
-                ("\\.xul" . xml-mode)
-                ("\\.ph" . cperl-mode)
-                ("\\.rb" . ruby-mode)
-                ("\\.asd" . lisp-mode)
-                ("\\.jl$" . lisp-mode)
-                ("\\.\\(xsl\\|xml\\|rss\\|rdf\\)$" . nxml-mode)
-                ("\\.css$" . css-mode))
-              auto-mode-alist )) 
+		("\\.sawfishrc" . lisp-mode)
+		("\\.php" . php-mode)
+		("\\.ph" . cperl-mode)
+		;;("\\.js" . javascript-mode)
+		("\\.rb" . ruby-mode)
+		("\\.asd" . lisp-mode)
+		("\\.jl$" . lisp-mode)
+		("\\.css$" . css-mode))
+	      auto-mode-alist ))
 
 (when (>= emacs-major-version 22)
   (add-to-list 'auto-mode-alist 
 	       (cons "^/tmp/mutt-" 'message-mode)))
 
-(add-to-list 'auto-mode-alist
-	     (cons (concat "\\." (regexp-opt '("xml" "xsd" "sch" "rng" "xslt" "svg" "rss") t)
-			   "\\'")
-		   'nxml-mode))
+(defun setup-nxml-crap ()
+  (setq auto-mode-alist
+	(append '("\\.\\(xsl\\|xml\\|rss\\|rdf\\)$" . nxml-mode)
+		auto-mode-alist ))
+  (add-to-list 'auto-mode-alist
+	       (cons (concat "\\." (regexp-opt '("xml" "xsd" "sch" "rng" "xslt" "svg" "rss") t)
+			     "\\'")
+		     'nxml-mode))
+  (add-to-list 'magic-mode-alist
+	       (cons "<\\?xml" 'nxml-mode))  )
 
-(add-to-list 'magic-mode-alist
-	     (cons "<\\?xml" 'nxml-mode))
+(eval-after-load "nxml-mode"
+  '(setup-nxml-crap))
 
 
 (global-font-lock-mode 't)
@@ -835,14 +842,16 @@
      (define-key Info-mode-map "d" 'scroll-up-half)
      (define-key Info-mode-map "k" 'scroll-down-one)
      (define-key Info-mode-map "j" 'scroll-up-one)
-	 (define-key Info-mode-map "h" 'backward-char)
-	 (define-key Info-mode-map "l" 'forward-char)
-	 (define-key Info-mode-map "n" 'next-line)
-	 (define-key Info-mode-map "p" 'previous-line)
-	 (define-key Info-mode-map "N" 'Info-next)
-	 (define-key Info-mode-map "L" 'Info-history-back)
-	 (define-key Info-mode-map "H" 'Info-history)
-	 (define-key Info-mode-map "P" 'Info-prev)
+     (define-key Info-mode-map "h" 'backward-char)
+     (define-key Info-mode-map "l" 'forward-char)
+     (define-key Info-mode-map "n" 'next-line)
+     (define-key Info-mode-map "d" 'next-line)
+     (define-key Info-mode-map "u" 'scroll-down-half)
+     (define-key Info-mode-map "d" 'scroll-up-half)
+     (define-key Info-mode-map "N" 'Info-next)
+     (define-key Info-mode-map "L" 'Info-history-back)
+     (define-key Info-mode-map "H" 'Info-history)
+     (define-key Info-mode-map "P" 'Info-prev)
      (define-key Info-mode-map "U" 'Info-up)
      (define-key Info-mode-map "D" 'Info-directory)))
 

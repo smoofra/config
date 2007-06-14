@@ -634,7 +634,8 @@
 					(forward-char)
 					(line-empty-after-point))))
     (join-line)
-    (lisp-indent-line))
+    ;;;(lisp-indent-line)
+    (indent-according-to-mode))
   (backward-up-list)
   (forward-sexp)
   (let ((c (char-before (point))))
@@ -652,7 +653,9 @@
 					 (not (cheqstr (char-before (point)) " ")))
 			(insert " "))
 		  (when newlines 
-			(lisp-newline-and-indent))
+                    ;;;(lisp-newline-and-indent)
+                    (newline)
+                    (indent-according-to-mode))
 		  (forward-sexp)
 		  (insert c)
 		  (backward-char))))))
@@ -682,7 +685,7 @@
 (global-set-key "\M-'" 'forward-delete-space-through-parens)
 (when i-have-slime
   (define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression))
-(global-set-key "\M-i" 'consume-sexp-and-indent)
+(global-set-key "\M-i" 'consume-sexp)
 
 (defun my-mark-defun ()
   (interactive)
@@ -746,6 +749,7 @@
     (define-key map (car cns) (cdr cns))))
 
 (my-lisp-define-key "\C-y"    'lisp-yank)
+(my-lisp-define-key "\M-i"    'consume-sexp-and-indent)
 (my-lisp-define-key "\M-y"    'lisp-yank-pop)
 (my-lisp-define-key "\M-k"    'save-sexp)
 (my-lisp-define-key "\C-\M-j" 'lisp-join-line)

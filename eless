@@ -1,0 +1,20 @@
+#!/usr/bin/perl -w 
+
+
+my $file;
+my $tmp  = 0;
+
+if (@ARGV) { 
+  $file = shift;
+} else {
+  $file = "/tmp/${$}eless";
+  $tmp = 1;
+  !(system "cat >$file") or die;
+}
+
+!(system qw/ emacsclient -e /, "(view-file \"$file\")")
+  or !(system qw/ less /, $file)
+  or die;
+
+unlink $file if $tmp;
+

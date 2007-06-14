@@ -425,32 +425,28 @@
 			   (equal (cdr x) 'sgml-mode))))
 	      auto-mode-alist))
 
-(setq auto-mode-alist
-      (append '(("\\.\\([pP][Llm]\\|al\\)$" . cperl-mode)
-		("\\.sawfishrc" . lisp-mode)
-		("\\.php" . php-mode)
-		("\\.ph" . cperl-mode)
-		;;("\\.js" . javascript-mode)
-		("\\.rb" . ruby-mode)
-		("\\.asd" . lisp-mode)
-		("\\.jl$" . lisp-mode)
-		("\\.css$" . css-mode))
-	      auto-mode-alist ))
+(add-to-list 'auto-mode-alist '("\\.\\([pP][Llm]\\|al\\)$" . cperl-mode))
+(add-to-list 'auto-mode-alist '("\\.sawfishrc" . lisp-mode))
+(add-to-list 'auto-mode-alist '("\\.mak" . makefile-mode))
+(add-to-list 'auto-mode-alist '("\\.php" . php-mode))
+(add-to-list 'auto-mode-alist '("\\.ph" . cperl-mode))
+(add-to-list 'auto-mode-alist '("\\.rb" . ruby-mode))
+(add-to-list 'auto-mode-alist '("\\.asd" . lisp-mode))
+(add-to-list 'auto-mode-alist '("\\.jl$" . lisp-mode))
+(add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+;;(add-to-list 'auto-mode-alist '("\\.js" . javascript-mode))
 
 (when (>= emacs-major-version 22)
   (add-to-list 'auto-mode-alist 
 	       (cons "^/tmp/mutt-" 'message-mode)))
 
 (defun setup-nxml-crap ()
-  (setq auto-mode-alist
-	(append '("\\.\\(xsl\\|xml\\|rss\\|rdf\\)$" . nxml-mode)
-		auto-mode-alist ))
   (add-to-list 'auto-mode-alist
-	       (cons (concat "\\." (regexp-opt '("xml" "xsd" "sch" "rng" "xslt" "svg" "rss") t)
+	       (cons (concat "\\." (regexp-opt '("xsl" "rss" "rdf" "xml" "xsd" "sch" "rng" "xslt" "svg" "rss") t)
 			     "\\'")
 		     'nxml-mode))
   (add-to-list 'magic-mode-alist
-	       (cons "<\\?xml" 'nxml-mode))  )
+	       (cons "<\\?xml" 'nxml-mode)))
 
 (eval-after-load "nxml-mode"
   '(setup-nxml-crap))

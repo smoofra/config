@@ -875,6 +875,7 @@
 
 (add-hook 'cperl-mode-hook 
 	  (lambda () 
+	    (define-key cperl-mode-map "\r" 'newline-and-indent)
 	    (define-key cperl-mode-map "(" 'self-insert-command)
 	    (define-key cperl-mode-map "\"" 'self-insert-command)
 	    (define-key cperl-mode-map "[" 'self-insert-command)

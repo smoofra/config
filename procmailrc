@@ -1,0 +1,94 @@
+MAILDIR=$HOME/mail
+
+#:0 c
+#backup
+
+
+:0 c 
+*^From: .*vonage.com
+*^Subject: .*new voicemail
+| /home/larry/bin/vmnotify
+
+
+
+:0
+*^From: blockbuster@custhelp.com
+$MAILDIR/inbox
+
+:0
+*^From: [^ ]*@blockbuster.com
+$MAILDIR/inbox
+
+
+
+
+
+
+:0
+*^List-Id:.*darcs-devel.darcs.net
+$MAILDIR/darcs
+
+
+:0
+*^Sender: .*FYI@LISTSERV.UMD.EDU
+$MAILDIR/spam
+
+:0
+*^From:.*Borders Rewards
+*^Subject:.*the Shortlist
+$MAILDIR/spam
+
+
+#:0 wf 
+#*^X-Spam-Flag: YES
+#| formail -I "X-Spam-Flag-YES: YES"
+
+
+
+:0
+SCORE=| /usr/bin/spamprobe train
+:0 wf
+| formail -I "X-SpamProbe: $SCORE"
+:0 a
+*^X-SpamProbe: SPAM
+spam
+
+
+:0 
+* !^X-Spam-Status: YES
+{
+
+:0fw: /home/larry/.spamassassin.lock
+| /usr/bin/spamassassin
+
+}
+
+:0 
+*^X-Spam-Status: YES
+spam.new
+
+
+:0
+*^List-Subscribe: .*madman
+$MAILDIR/madman
+
+
+:0
+*^List-Id: .*slime-devel
+$MAILDIR/lisp
+
+
+:0
+*^List-Id: .*sbcl-devel
+$MAILDIR/lisp
+
+:0
+*^List-Id: .*bese-devel
+$MAILDIR/lisp
+
+
+:0 
+$MAILDIR/inbox
+
+
+

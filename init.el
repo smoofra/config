@@ -231,7 +231,7 @@
 
 (define-key emacs-lisp-mode-map "\M-k" 'save-sexp)
 (define-key lisp-interaction-mode-map "\M-." 'find-function)
-(define-key emacs-lisp-mode-map "\M-." 'find-functin)
+(define-key emacs-lisp-mode-map "\M-." 'find-function)
 (define-key emacs-lisp-mode-map "\M-/" 'lisp-complete-symbol)
 
 (when i-have-slime
@@ -757,12 +757,14 @@
 (my-lisp-define-key "\C-\M-h" 'my-mark-defun)
 (my-lisp-define-key "\r"      'lisp-newline-and-indent)
 (my-lisp-define-key "\C-\M-e" 'backward-transpose-sexp)
+(my-lisp-define-key "\C-j"    'backwards-kill-line)
 
 (when i-have-slime
   (define-my-lisp-keys-on-map slime-repl-mode-map))
 (define-my-lisp-keys-on-map emacs-lisp-mode-map)
 (define-my-lisp-keys-on-map lisp-interaction-mode-map)
 (define-my-lisp-keys-on-map lisp-mode-map)
+(define-my-lisp-keys-on-map slime-scratch-mode-map)
 
 (when i-have-slime
   (define-key slime-repl-mode-map "\r" 'slime-repl-return))

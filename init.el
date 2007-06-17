@@ -26,6 +26,7 @@
 (setq load-path (cons "~/emacslisp/darcs-mode" load-path))
 (autoload 'lisppaste-paste-region "lisppaste" "lisppaste" t)
 
+;;(setq browse-url-browser-function 'browse-url-firefox)
 (setq browse-url-browser-function 'w3m-browse-url)
 (autoload 'w3m-browse-url "w3m" "web browser" t)
 (autoload 'tnt-open "tnt" "tnt" t)
@@ -486,7 +487,7 @@
   (call-interactively 'indent-region))
 
 ;;orig. by marco baringer
-(defun unwrap-next-sexp (&optional kill-n-sexps)
+(defun unwrap-next-sexp (&optional arg)
   "Convert (x ...) to ..."
   (interactive "P")
   (forward-sexp)
@@ -494,9 +495,9 @@
   (set-mark (point))
   (backward-up-list)
   (delete-char 1)
-  (unless (equal kill-n-sexps 0)
+  (unless arg
     (let ((start-region-to-kill (point)))
-      (kill-sexp kill-n-sexps)
+      (kill-sexp 1)
       (forward-sexp)
       (backward-sexp)
       (delete-region start-region-to-kill (1- (point)))))
@@ -828,15 +829,17 @@
 	       (define-jk view-mode-map)
 	       (define-key view-mode-map "q" '(lambda () (interactive) 1)))))
 
-;(define-key view-mode-map "q" '(lambda () (interactive) (view-mode -1)))
-;(define-key view-mode-map " " 'foo)
-;(define-key view-mode-map [return] 'foo)
-;(define-key view-mode-map [backspace] 'foo)
+;; (define-key view-mode-map "q" '(lambda () (interactive) (view-mode -1)))
+;; (define-key view-mode-map " " 'foo)
+;; (define-key view-mode-map [return] 'foo)
+;; (define-key view-mode-map [backspace] 'foo)
 
 (when i-have-slime
   (define-jk slime-inspector-mode-map)
   (define-key slime-inspector-mode-map "D" 'slime-inspector-describe))
 
+
+;;; (setq Info-additional-directory-list '("/usr/share/info/emacs-snapshot"))
 
 (eval-after-load 'info 
   '(progn
@@ -1290,7 +1293,8 @@
 (defun open-scratches ()
   (let ((enable-local-eval t))
     (find-file "~/slime-scratch.lisp")
-    (kill-buffer "*scratch*")
+    (ignore-errors
+      (kill-buffer "*scratch*"))
     (find-file "~/scratch.el")))
 
 (setq x-select-enable-clipboard t)

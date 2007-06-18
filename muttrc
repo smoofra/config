@@ -47,7 +47,8 @@ bind pager   U  undelete-message
 bind pager <space> next-unread
 
 
-
+macro generic Sc ':set arrow_cursor'\n
+macro generic SC ':set noarrow_cursor'\n
 macro generic Ss ':set from="Larry D'\''Anna <smoof-ra@elder-gods.org>"'\n
 macro generic Sl ':set from="Larry D'\''Anna <larry@elder-gods.org>"'\n
 macro generic Sw ':set from="Larry D'\''Anna <ldanna@wam.umd.edu>"'\n
@@ -305,6 +306,7 @@ unhdr_order *
 hdr_order From Subject: From: Reply-To: To: Cc: Newsgroups: Date: X-SpamProbe: 
 
 macro index ci C=inbox\n
+macro index cl C=lisp\n
 macro index cr C=sent-mail\n
 macro index cs C=inbox.save\n
 macro pager ci C=inbox\n

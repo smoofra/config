@@ -430,12 +430,14 @@
 (add-to-list 'auto-mode-alist '("\\.sawfishrc" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.mak" . makefile-mode))
 (add-to-list 'auto-mode-alist '("\\.php" . php-mode))
+(add-to-list 'auto-mode-alist '("\\.pl" . cperl-mode))
 (add-to-list 'auto-mode-alist '("\\.ph" . cperl-mode))
 (add-to-list 'auto-mode-alist '("\\.rb" . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.asd" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.jl$" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
 ;;(add-to-list 'auto-mode-alist '("\\.js" . javascript-mode))
+;;(add-to-list 'magic-mode-alist (cons "#!.*perl" 'cperl-mode))
 
 (when (>= emacs-major-version 22)
   (add-to-list 'auto-mode-alist 
@@ -878,9 +880,12 @@
 (defun SUO (x) (interactive "p")  (scroll-up-one x) (next-line x))
 (defun SDO (x) (interactive "p") (scroll-down-one x) (previous-line x))
 
+(eval-after-load 'cperl 
+  (setq cperl-invalid-face 'default))
+
 (add-hook 'cperl-mode-hook 
 	  (lambda () 
-	    (define-key cperl-mode-map "\r" 'newline-and-indent)
+            (define-key cperl-mode-map "\r" 'newline-and-indent)
 	    (define-key cperl-mode-map "(" 'self-insert-command)
 	    (define-key cperl-mode-map "\"" 'self-insert-command)
 	    (define-key cperl-mode-map "[" 'self-insert-command)
@@ -1211,7 +1216,7 @@
 
 ;;; indentation-related crap
 ; c-basic-offset
-; indent-tab-mode
+; indent-tabs-mode
 ; tab-width
 ; c-backspace-function
 ; backward-delete-char-untabify-method

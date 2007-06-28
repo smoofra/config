@@ -226,7 +226,7 @@ set forward_format="Fw: %s"
 set status_format="%v: %f (%s) [%M/%m new=%n,*=%t,postponed=%p]"
 
 #message number flags date from (lines) subject
-set index_format="%4C %Z %{%b %d} %-15.15L (%4l) %s"
+set index_format="%4C %Z %{%b %d} %-30.30F (%4l) %s"
 
 #   [flags / messageno / whositto] author (lines) subject
 set pager_format="[%C %Z] %n (%l) %s"      
@@ -253,7 +253,7 @@ save-hook "~A" "=inbox.save"
 set spoolfile='=inbox'
 
 set allow_8bit
-set arrow_cursor
+set noarrow_cursor
 set envelope_from
 #set ascii_chars
 set attribution="* %n (%a) [%(%y%m%d %H:%M)]:"

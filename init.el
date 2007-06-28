@@ -1,11 +1,12 @@
 (require 'cl)
 
 (setq inferior-lisp-program  "sbcl")
-;(setq inferior-lisp-program  "/home/larry/allegro/acl62_trial/alisp")
-;(setq inferior-lisp-program  "lisp")
-;(setq inferior-lisp-program  "env SBCL_HOME=/home/larry/usrsbcl/lib/sbcl /home/larry/usrsbcl/bin/sbcl")
-;(setq inferior-lisp-program  "/sw/bin/openmcl --load /Users/larry/.openmcl-init")
-;(setq inferior-lisp-program  "/Users/larry/usr-sbcl-cvs/bin/sbcl --core /Users/larry/usr-sbcl-cvs/lib/sbcl/sbcl.core")
+;;(setq inferior-lisp-program  "sbcl.cvs")
+;;(setq inferior-lisp-program  "/home/larry/allegro/acl62_trial/alisp")
+;;(setq inferior-lisp-program  "lisp")
+;;(setq inferior-lisp-program  "env SBCL_HOME=/home/larry/usrsbcl/lib/sbcl /home/larry/usrsbcl/bin/sbcl")
+;;(setq inferior-lisp-program  "/sw/bin/openmcl --load /Users/larry/.openmcl-init")
+;;(setq inferior-lisp-program  "/Users/larry/usr-sbcl-cvs/bin/sbcl --core /Users/larry/usr-sbcl-cvs/lib/sbcl/sbcl.core")
 
 (setq load-path (cons "~/usr/share/emacs/site-lisp" load-path))
 (autoload 'maxima "maxima")

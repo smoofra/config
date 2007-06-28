@@ -867,7 +867,9 @@
 (add-hook 'diff-mode-hook 
 	  '(lambda () 
 	     (define-key diff-mode-map "\M-q" 'scroll-down-one)
-	     (define-key diff-mode-map "a" 'diff-apply-hunk)
+	     (define-jk diff-mode-shared-map)
+             (define-jk diff-mode-map)
+             (define-key diff-mode-map "a" 'diff-apply-hunk)
 	     (define-key diff-mode-map "t" 'diff-test-hunk)))
 
 
@@ -1232,7 +1234,8 @@
 (defun c-kill-line ()
   (interactive)
   (call-interactively 'kill-line)
-  (c-indent-command))
+  ;;(c-indent-command)
+  )
 
 (defun c-open-line ()
   (interactive)

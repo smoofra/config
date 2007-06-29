@@ -240,7 +240,9 @@
   (slime-define-key "\M-c" 'my-unhighlight)
   (slime-define-key [tab] 'slime-indent-and-complete-symbol)
   (slime-define-key [(control tab)]   'tab-to-tab-stop)
-  (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol))
+  (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol)
+  (define-key slime-repl-mode-map "\M-/" 'slime-fuzzy-complete-symbol))
+ 
 
 (global-set-key "\C-\M-n" 'semi-forward-sexp)
 (global-set-key "\C-\M-p" 'semi-backward-sexp)

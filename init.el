@@ -1402,3 +1402,5 @@
 
 (site-init-late)
 
+;;; to get the x clipboard selection use x-clipboard-yank
+;;; to get the primary selection just yank 

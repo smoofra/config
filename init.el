@@ -41,7 +41,44 @@
 (autoload 'javascript-mode "javascript" "javascript-mode" t)
 
 
+(defvar pending-emacsmerge nil)
+(defvar emacsmerge-wc nil)
+(defvar emacsmerge-a nil)
+(defvar emacsmerge-b nil)
+(defvar emacsmerge-ancestor nil)
+(defvar emacsmerge-out nil)
+(defvar emacsmerge-pid nil)
 
+(defun done-emacsmerge ()
+  (interactive)
+  (when pending-emacsmerge
+    (call-process "/bin/kill" nil nil nil "-HUP" (prin1-to-string pending-emacsmerge))
+    (setq pending-emacsmerge nil)
+    (run-at-time ".1 sec" nil (lambda () (set-window-configuration emacsmerge-wc)))))
+
+(defun emacsmerge-setup-quit-hook ()
+  (setq emerge-quit-hook 
+	(cons (lambda ()
+		(done-emacsmerge))
+	      emerge-quit-hook)))
+
+(defun dmerge ()
+  (interactive)
+  (setq emacsmerge-wc (current-window-configuration))
+  (emerge-files-with-ancestor nil emacsmerge-a emacsmerge-b emacsmerge-ancestor emacsmerge-out)
+  (window-configuration-to-register ?j))
+
+(defun emacsmerge (pid a b ancestor out)
+  (setq pending-emacsmerge pid)
+  (setq emacsmerge-a a)
+  (setq emacsmerge-b b)
+  (setq emacsmerge-ancestor ancestor)
+  (setq emacsmerge-out out)
+  (setq emacsmerge-pid pid)
+  (run-at-time ".1 sec" nil (lambda () (call-interactively (quote dmerge))))
+  nil)
+
+(add-hook 'emerge-startup-hook 'emacsmerge-setup-quit-hook)
 
 (add-hook 'after-save-hook 
 	  'executable-make-buffer-file-executable-if-script-p)
@@ -126,6 +163,10 @@
   (def-slime-selector-method ?t
     "*terminal* buffer."
     (get-buffer "*terminal*"))
+  
+  (def-slime-selector-method ?y
+    "*shell* buffer."
+    (get-buffer "*shell*"))
 
   (def-slime-selector-method ?T
     "SLIME threads buffer."
@@ -140,6 +181,9 @@
   (interactive)
   (let ((url (browse-url-url-at-point)))
     (call-process "chain" nil nil nil url "1")))
+
+(defun link-url (url)
+  (call-process "chain" nil nil nil url "1"))
 
 (defun links ()
   (interactive)

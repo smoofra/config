@@ -810,11 +810,12 @@
 (my-lisp-define-key "\C-j"    'backwards-kill-line)
 
 (when i-have-slime
-  (define-my-lisp-keys-on-map slime-repl-mode-map))
+  (define-my-lisp-keys-on-map slime-repl-mode-map)
+  (define-my-lisp-keys-on-map slime-scratch-mode-map))
 (define-my-lisp-keys-on-map emacs-lisp-mode-map)
 (define-my-lisp-keys-on-map lisp-interaction-mode-map)
 (define-my-lisp-keys-on-map lisp-mode-map)
-(define-my-lisp-keys-on-map slime-scratch-mode-map)
+
 
 (when i-have-slime
   (define-key slime-repl-mode-map "\r" 'slime-repl-return))

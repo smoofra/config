@@ -1,18 +1,38 @@
 #!/usr/bin/perl -w
 
 
+
 for (@ARGV) {
     s/\\/\\\\/g;
     s/"/\\"/g;
+};
+
+$cwd = `pwd`;
+chomp $cwd;
+
+sub absfn { 
+  my $fn = shift;
+  if ($fn =~ /^[^\/]/) { 
+    $fn = "$cwd/$fn";
+  }
+  $fn;
 }
 
-my  $lisp  = <<"EOF";
+my ($a, $b, $ancestor, $out) = map { absfn $_ } @ARGV;
 
-(defun dmerge ()
-  (interactive)
-  (emerge-files-with-ancestor nil "$ARGV[0]" "$ARGV[1]" "$ARGV[2]" "$ARGV[3]")
-  (window-configuration-to-register ?\j))
 
-EOF
+my  $lisp  = qq{ (emacsmerge $$ "$a" "$b" "$ancestor" "$out") };
 
+$SIG{HUP} = sub { 
+  exit 0;
+};
+
+$SIG{TERM} = sub { 
+  exit 1;
+};
+
+print "lisp: $lisp\n";
+print  "waiting for emacs...\n";
 system 'emacsclient', '-e', $lisp;
+
+while (1) {sleep 1};

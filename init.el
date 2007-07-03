@@ -362,6 +362,10 @@
 		(set-buffer (get-buffer "*Diff*"))
 		(toggle-read-only 1))))))
 
+(defun my-revert-buffer () 
+  (interactive)
+  (revert-buffer-with-coding-system buffer-file-coding-system))
+
 ;;; keymap properties aren't overlays!
 (defun remove-keymap-prop (begin end)
   (interactive "r")
@@ -394,6 +398,7 @@
 ;(global-set-key "\C-o"      'myblink)
 (global-set-key [C-return] 'open-line)
 (global-set-key [(f1)]     'delete-other-windows)
+(global-set-key [(f12)]    'delete-window)
 (global-set-key [(f2)]     'next-error)
 (global-set-key "\C-xe"    'next-error)
 (global-set-key "\C-xd"    'beginning-of-defun)
@@ -405,13 +410,14 @@
   (global-set-key "\C-\M-y"  'insert-parentheses))
 
 (global-set-key "\C-\M-j"  'join-line)
-(global-set-key "\C-xp"    'revert-buffer)
+(global-set-key "\C-xp"    'my-revert-buffer)
 (global-set-key "\C-x\C-p" 'diff-current-buffer-with-file)
 (global-set-key "\C-x`"    'delete-other-windows)
 (global-set-key "\M-o"     'switch-to-buffer)
 (global-set-key "\M-e"     'call-last-kbd-macro)
 (global-set-key "\C-xm"    'comp)
 (global-set-key "\C-x\C-m" 'compi)
+(define-key ctl-x-map [(control 59)] mule-keymap) ;;; 59 is semicolon
 (global-set-key "\C-p"     'previous-line)
 (global-set-key "\C-x\M-f" 'view-file)
 (global-set-key "\M-\""     'transient-mark-mode)

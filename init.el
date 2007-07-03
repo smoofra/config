@@ -452,7 +452,7 @@
 (global-set-key [end]  'SUO)
 (global-set-key "\M-," 'pop-tag-mark)
 (global-set-key "\M-*" 'tags-loop-continue)
-
+(global-set-key "\C-xj" 'other-frame)
 
 (setq perl-indent-level 2)
 

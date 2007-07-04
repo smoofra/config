@@ -1417,4 +1417,10 @@
 ;;; to get the primary selection just yank 
 
 
+(custom-set-variables
+ '(cperl-invalid-face (quote default)))
+(custom-set-faces
+ '(default ((t (:background "#000000" :foreground "#ffffff"))))
+ '(cursor ((t (:background "#ffffff")))))
+
 (site-init-late)

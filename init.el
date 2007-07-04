@@ -1407,7 +1407,14 @@
 
 (setq grep-command "grep -nHi")
 
-(site-init-late)
+
+
+;;;;; (setq make-backup-files nil)
+
+
 
 ;;; to get the x clipboard selection use x-clipboard-yank
 ;;; to get the primary selection just yank 
+
+
+(site-init-late)

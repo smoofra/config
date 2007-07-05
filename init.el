@@ -1167,8 +1167,6 @@
 ;;             (put symbol 'slime-indent indent)
 ;;             (put symbol 'lisp-indent-function indent)))))))
 
-(setq custom-file "~/.custom.el")
-(load "~/.custom.el" t)
 
 
 
@@ -1271,7 +1269,8 @@
 ;'(define-key c-mode-map "\M-q" 'scroll-down-one))
 
 
-;;; indentation-related crap
+;;;; indentation-related crap
+; c-default-style
 ; c-basic-offset
 ; indent-tabs-mode
 ; tab-width
@@ -1417,10 +1416,35 @@
 ;;; to get the primary selection just yank 
 
 
+
+(setq custom-file "~/config/init.el")
+;;(load "~/.custom.el" t)
+
 (custom-set-variables
+ '(safe-local-variable-values (quote ((unibyte . t) (Package . COMMON-LISP-USER))))
+ '(c-default-style (quote ((c-mode . "k&r") (java-mode . "java") (awk-mode . "awk") (other . "gnu"))))
+ '(c-basic-offset 4)
+ '(tab-width 8)
+ '(woman-use-own-frame nil)
+ '(svn-status-default-log-arguments (quote ("--verbose   --limit=20")))
+ '(slime-backend "swank-loader.lisp")
+ '(slime-enable-evaluate-in-emacs t)
+ '(indent-tabs-mode nil)
+ '(diff-switches "-u")
+ '(Info-additional-directory-list (quote ("/usr/share/info/emacs-snapshot")))
+ '(Man-notify-method (quote pushy))
+ '(blink-cursor-alist (quote ((box . box) (t . box))))
  '(cperl-invalid-face (quote default)))
+
 (custom-set-faces
- '(default ((t (:background "#000000" :foreground "#ffffff"))))
- '(cursor ((t (:background "#ffffff")))))
+ '(default ((t (:stipple nil :background "#110022" 
+                             :foreground "#ffffff"))))
+ '(cursor ((t (:background "#ffffff"))))
+ '(diff-changed ((nil (:foreground "yellow"))))
+ '(diff-file-header ((((class color) (min-colors 88) 
+                       (background dark)) 
+                      (:foreground "cyan" :weight bold))))
+ '(diff-header ((((class color) (min-colors 88) (background dark)) (:foreground "green" :weight bold))))
+ '(diff-removed ((t (:inherit diff-changed :foreground "red")))))
 
 (site-init-late)

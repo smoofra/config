@@ -869,7 +869,7 @@
   (when i-have-escreen
     (define-key term-raw-map "\M-`" escreen-map))
   (define-key term-raw-map "\C-x" ctl-x-map)
-  (define-key term-raw-map "\C-y" 'term-paste)
+  (define-key term-raw-map "\C-c\C-y" 'term-paste)
   (define-key term-raw-map "\M-x" 'execute-extended-command)
   (define-key term-raw-map "\C-cb" 'slime-selector))
 

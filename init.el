@@ -1421,29 +1421,34 @@
 ;;(load "~/.custom.el" t)
 
 (custom-set-variables
- '(safe-local-variable-values (quote ((unibyte . t) (Package . COMMON-LISP-USER))))
- '(c-default-style (quote ((c-mode . "k&r") (java-mode . "java") (awk-mode . "awk") (other . "gnu"))))
- '(c-basic-offset 4)
- '(tab-width 8)
- '(woman-use-own-frame nil)
- '(svn-status-default-log-arguments (quote ("--verbose   --limit=20")))
- '(slime-backend "swank-loader.lisp")
- '(slime-enable-evaluate-in-emacs t)
- '(indent-tabs-mode nil)
- '(diff-switches "-u")
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(Info-additional-directory-list (quote ("/usr/share/info/emacs-snapshot")))
  '(Man-notify-method (quote pushy))
  '(blink-cursor-alist (quote ((box . box) (t . box))))
- '(cperl-invalid-face (quote default)))
+ '(c-basic-offset 4)
+ '(c-default-style (quote ((c-mode . "k&r") (java-mode . "java") (awk-mode . "awk") (other . "gnu"))))
+ '(cperl-invalid-face (quote default) t)
+ '(diff-switches "-u")
+ '(indent-tabs-mode nil)
+ '(safe-local-variable-values (quote ((unibyte . t) (Package . COMMON-LISP-USER))))
+ '(slime-backend "swank-loader.lisp")
+ '(slime-enable-evaluate-in-emacs t)
+ '(svn-status-default-log-arguments (quote ("--verbose   --limit=20")))
+ '(tab-width 8)
+ '(woman-use-own-frame nil))
 
 (custom-set-faces
- '(default ((t (:stipple nil :background "#110022" 
-                             :foreground "#ffffff"))))
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(default ((t (:stipple nil :background "#110023" :foreground "#ffffff" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 133 :width normal :family "bitstream-bitstream vera sans mono"))))
  '(cursor ((t (:background "#ffffff"))))
  '(diff-changed ((nil (:foreground "yellow"))))
- '(diff-file-header ((((class color) (min-colors 88) 
-                       (background dark)) 
-                      (:foreground "cyan" :weight bold))))
+ '(diff-file-header ((((class color) (min-colors 88) (background dark)) (:foreground "cyan" :weight bold))))
  '(diff-header ((((class color) (min-colors 88) (background dark)) (:foreground "green" :weight bold))))
  '(diff-removed ((t (:inherit diff-changed :foreground "red")))))
 

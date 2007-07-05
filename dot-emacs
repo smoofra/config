@@ -1,8 +1,18 @@
+;;;; -*- mode: emacs-lisp -*-
+
 ;;(load "/usr/share/emacs/site-lisp/site-gentoo.el" t)
 
 (setq magic-mode-alist nil)
 
 (defun site-init-late ())
+
+(defun debiafy ()
+  (load "/usr/share/emacs/site-lisp/debian-startup.el" nil)
+  (debian-startup 'emacs-snapshot)
+  (debian-startup 'emacs-snapshot)
+  (setq load-path (cons "/usr/share/emacs-snapshot/site-lisp" load-path))
+  (setq load-path (cons "/home/larry/emacslisp/share/emacs/site-lisp/w3m" load-path)))
+
 (load "~/.site-init.el")
 (load "~/config/init.el")
 

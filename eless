@@ -4,6 +4,11 @@
 my $file;
 my $tmp  = 0;
 
+use Getopt::Long;
+Getopt::Long::Configure ("bundling");
+my ($diff);
+GetOptions ("diff|d" => \$diff) or die "couln't get options $!";
+
 if (@ARGV) { 
   $file = shift;
 } else {
@@ -12,8 +17,12 @@ if (@ARGV) {
   !(system "cat >$file") or die;
 }
 
-!(system qw/ emacsclient -e /, "(view-file \"$file\")")
-  or !(system qw/ less /, $file)
+my $lisp = $diff ? 
+    "(find-diff-file \"$file\")" :
+    "(view-file \"$file\")";
+
+!(system qw/ emacsclient -e /, $lisp)
+  or !(system qw/ less -c /, $file)
   or die;
 
 unlink $file if $tmp;

@@ -1452,4 +1452,9 @@
  '(diff-header ((((class color) (min-colors 88) (background dark)) (:foreground "green" :weight bold))))
  '(diff-removed ((t (:inherit diff-changed :foreground "red")))))
 
+(defun find-diff-file (file)
+  (interactive)
+  (find-file file)
+  (diff-mode))
+
 (site-init-late)

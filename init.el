@@ -855,6 +855,8 @@
 
 (eval-after-load 'comint
   '(progn
+     (define-key comint-mode-map "\M-/" 'comint-dynamic-list-filename-completions)
+     (define-key comint-mode-map "\M-?" 'help)
      (define-key comint-mode-map "\C-z" 'scroll-up-one)
      (define-key comint-mode-map "\C-q" 'scroll-down-one)))
 
@@ -1384,7 +1386,9 @@
 (eval-after-load 'shell
   '(progn
      (load-library "ansi-color")
-     (ansi-color-for-comint-mode-on)))
+     (ansi-color-for-comint-mode-on)
+     (setq shell-font-lock-keywords nil)
+     (define-key shell-mode-map "\M-?" 'help)))
 
 (defun here-shell ()
   (interactive)

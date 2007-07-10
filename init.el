@@ -822,9 +822,16 @@
 (define-my-lisp-keys-on-map lisp-interaction-mode-map)
 (define-my-lisp-keys-on-map lisp-mode-map)
 
-
 (when i-have-slime
-  (define-key slime-repl-mode-map "\r" 'slime-repl-return))
+  (defun slime-repl-backwards-kill-line ()
+    (interactive)
+    (let ((p (point)))
+      (slime-repl-bol)
+      (kill-region (point) p)))
+  
+  (define-key slime-repl-mode-map "\C-j" 'slime-repl-backwards-kill-line)
+  (define-key slime-repl-mode-map "\r"   'slime-repl-return)
+  (define-key slime-repl-mode-map "\C-a" 'slime-repl-bol))
 
 (eval-after-load "interaction"
   '(progn

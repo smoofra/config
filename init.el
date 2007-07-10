@@ -1395,12 +1395,19 @@
 (setq comint-prompt-read-only 1)
 (eval-after-load 'shell
   '(progn
-     ;;;(add-hook 'shell-mode-hook 'shell-insert-columns)
+     (add-hook 'shell-mode-hook 'my-shell-hook)
      (load-library "ansi-color")
      (ansi-color-for-comint-mode-on)
      (setq shell-font-lock-keywords nil)
      (define-key shell-mode-map "\M-?" 'help)))
 
+(defun my-shell-hook ()
+  (setq comint-last-output-start (copy-marker 0))
+  (end-of-buffer)
+  ;;(insert "echo foo")
+  ;;(call-interactively 'comint-send-input)
+  (shell-insert-columns)
+    )
 
 (defun shell-send-line (s)
   (shell)
@@ -1409,7 +1416,8 @@
   (move-beginning-of-line nil)
   (call-interactively 'kill-region)
   (insert s)
-  (comint-send-input)
+  ;;(comint-send-input nil t)
+  (call-interactively 'comint-send-input)
   (yank))
 
 (defun here-shell ()
@@ -1417,7 +1425,7 @@
   (let ((dd default-directory))
     (shell-send-line (concat "cd " dd))))
 
-(defun shell-insert-columns ()
+(defun shell-send-columns ()
   (interactive)
   (shell-send-line (concat "export COLUMNS=" (prin1-to-string (window-width)))))
 

@@ -957,26 +957,15 @@
 	  (lambda () 
 	    (define-key ruby-mode-map "\C-j" 'backwards-kill-line)))
 
-(defun replace-regexp-region ()
-  (interactive) 
-  (let ((p (point)) (m (mark)))
+(defun replace-regexp-region () 
+  (interactive)
+  (let ((end (copy-marker (max (point) (mark)))))
     (if transient-mark-mode (call-interactively 'replace-regexp)
       (unwind-protect
-	  (progn (call-interactively 'transient-mark-mode)
-		 (call-interactively 'replace-regexp))
-	(call-interactively 'transient-mark-mode)))))
-    
-
-(defun replace-regexp-region-foo (re to) 
-  (let ((p (point)) (m (mark)))
-  (if transient-mark-mode (replace-regexp re to)
-    (unwind-protect
-	(progn (call-interactively 'transient-mark-mode)
-	       (replace-regexp re to))
-      (call-interactively 'transient-mark-mode)))
-  (goto-char p)
-  (set-mark m)))
-
+          (progn (call-interactively 'transient-mark-mode)
+                 (call-interactively 'replace-regexp))
+        (call-interactively 'transient-mark-mode)))
+    (setf (point) end)))
 
 (defun diff-clear ()
   (interactive)

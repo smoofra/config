@@ -1431,7 +1431,7 @@
 
 (setq grep-command "grep -nHir ")
 
-;;;;; (setq make-backup-files nil)
+(setq make-backup-files nil)
 
 
 

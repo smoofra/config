@@ -1395,28 +1395,33 @@
 (setq comint-prompt-read-only 1)
 (eval-after-load 'shell
   '(progn
+     ;;;(add-hook 'shell-mode-hook 'shell-insert-columns)
      (load-library "ansi-color")
      (ansi-color-for-comint-mode-on)
      (setq shell-font-lock-keywords nil)
      (define-key shell-mode-map "\M-?" 'help)))
 
+
+(defun shell-send-line (s)
+  (shell)
+  (end-of-buffer)
+  (set-mark (point))
+  (move-beginning-of-line nil)
+  (call-interactively 'kill-region)
+  (insert s)
+  (comint-send-input)
+  (yank))
+
 (defun here-shell ()
   (interactive)
   (let ((dd default-directory))
-    (shell)
-    (end-of-buffer)
-    (set-mark (point))
-    (move-beginning-of-line nil)
-    (call-interactively 'kill-region)
-    (insert "cd ")
-    (insert dd)
-    (insert "")
-    (comint-send-input)
-    (yank)))
+    (shell-send-line (concat "cd " dd))))
 
-(setq grep-command "grep -nHi")
+(defun shell-insert-columns ()
+  (interactive)
+  (shell-send-line (concat "export COLUMNS=" (prin1-to-string (window-width)))))
 
-
+(setq grep-command "grep -nHir ")
 
 ;;;;; (setq make-backup-files nil)
 

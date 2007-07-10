@@ -853,8 +853,18 @@
   '(progn 
      (define-jk apropos-mode-map)))
 
+(defun comint-previous-matching-input-feh () 
+  (interactive)
+  (comint-previous-matching-input (car minibuffer-history-search-history) 1))
+
+(defun comint-next-matching-input-feh () 
+  (interactive)
+  (comint-next-matching-input (car minibuffer-history-search-history) 1))
+
 (eval-after-load 'comint
   '(progn
+     (define-key comint-mode-map "\M-\C-r" 'comint-previous-matching-input-feh)
+     (define-key comint-mode-map "\M-\C-s" 'comint-next-matching-input-feh)
      (define-key comint-mode-map "\M-/" 'comint-dynamic-list-filename-completions)
      (define-key comint-mode-map "\M-?" 'help)
      (define-key comint-mode-map "\C-z" 'scroll-up-one)

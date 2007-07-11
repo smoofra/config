@@ -86,6 +86,11 @@ $MAILDIR/lisp
 *^List-Id: .*bese-devel
 $MAILDIR/lisp
 
+:0
+*^List-Id: .*cffi-devel
+$MAILDIR/lisp
+
+
 
 :0 
 $MAILDIR/inbox

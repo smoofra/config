@@ -119,14 +119,14 @@ color index cyan default '~t ldanna@math.umd.edu'
 color index cyan default '~c ldanna@math.umd.edu'
 color index cyan default '~t smoofra@gmail.com'
 color index cyan default '~c smoofra@gmail.com'
-color index green default "~s '\\[(Linux-bcom4301-priv|darcs-devel|Bese-devel|Sbcl-devel|slime-devel|madman-discuss)\\]'"
+color index green default "~s '\\[(Linux-bcom4301-priv|darcs-devel|Bese-devel|Sbcl-devel|slime-devel|madman-discuss|cffi-devel)\\]'"
 color index red  default '~h "X-SpamProbe: SPAM"'
 color index red default '~h "X-Spam-Flag: YES"' 
 
 
 
 
-lists  thoughts@13th-floor.org Bese-devel@common-lisp.net sbcl-devel@lists.sourceforge.net slime-devel@common-lisp.net madman-discuss@lists.sourceforge.net darcs-devel@darcs.net
+lists  thoughts@13th-floor.org Bese-devel@common-lisp.net sbcl-devel@lists.sourceforge.net slime-devel@common-lisp.net madman-discuss@lists.sourceforge.net darcs-devel@darcs.net 
 subscribe  thoughts@13th-floor.org Bese-devel@common-lisp.net sbcl-devel@lists.sourceforge.net slime-devel@common-lisp.net madman-discuss@lists.sourceforge.net darcs-devel@darcs.net
 #subscribe thoughts@13th-floor.org
 

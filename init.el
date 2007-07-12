@@ -1406,7 +1406,7 @@
   (end-of-buffer)
   ;;(insert "echo foo")
   ;;(call-interactively 'comint-send-input)
-  (shell-insert-columns)
+  (shell-send-columns)
     )
 
 (defun shell-send-line (s)

@@ -1,1 +1,3 @@
 alias less=eless
+alias ls='ls --color=auto' 
+

@@ -1360,6 +1360,13 @@
 (iswitchb-mode 1)
 ;;(global-set-key "\C-xb" 'iswitchb-buffer)
 
+;; amazing fucking awesome quicksilver-like thing
+(defvar i-have-anything (load "anything" t))
+(when i-have-anything 
+  (define-key anything-map  "\C-n" 'anything-next-line)
+  (define-key anything-map  "\C-p" 'anything-previous-line)
+  (anything-iswitchb-setup))
+
 (defun open-scratches ()
   (let ((enable-local-eval t))
     (find-file "~/slime-scratch.lisp")

@@ -678,6 +678,16 @@
   (lisp-indent-line))
 
 
+(defun unwrap-sexp-at-mark ()
+  (interactive)
+  (if (> (mark) (point))
+      (exchange-point-and-mark))
+  (kill-sexp)
+  (exchange-point-and-mark)
+  (lisp-yank)
+  (lisp-newline-and-indent)
+  (lisp-newline-and-indent))
+
 (defun consume-sexp  (&optional supress-newlines)
   (interactive)
   (forward-delete-space-through-parens)
@@ -1227,11 +1237,11 @@
 	  (setq erc-auto-query 'buffer)))
 
 (defun bitlbee-identify ()
-   "If we're on the bitlbee server, send the identify command to the #bitlbee channel."
-   (when (and (string= "localhost" erc-session-server)
-	      (= 6666 erc-session-port)
-	      (string= "&bitlbee" (buffer-name)))
-     (erc-message "PRIVMSG" (format "%s identify %s" (erc-default-target) my-stupid-passwd))))
+  "If we're on the bitlbee server, send the identify command to the #bitlbee channel."
+  (when (and (string= "localhost" erc-session-server)
+             (= 6666 erc-session-port)
+             (string= "&bitlbee" (buffer-name)))
+    (erc-message "PRIVMSG" (format "%s identify %s" (erc-default-target) my-stupid-passwd))))
 
 (setq manual-program  "man")
 

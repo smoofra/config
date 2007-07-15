@@ -677,16 +677,18 @@
   (newline)
   (lisp-indent-line))
 
-
 (defun unwrap-sexp-at-mark ()
   (interactive)
   (if (> (mark) (point))
       (exchange-point-and-mark))
-  (kill-sexp)
-  (exchange-point-and-mark)
-  (lisp-yank)
-  (lisp-newline-and-indent)
-  (lisp-newline-and-indent))
+  (let ((x (copy-marker (point))))
+    (kill-sexp)
+    (exchange-point-and-mark)
+    (lisp-yank)
+    (lisp-newline-and-indent)
+    (lisp-newline-and-indent)
+    (indent-pp-sexp)
+    (setf (mark) x)))
 
 (defun consume-sexp  (&optional supress-newlines)
   (interactive)
@@ -816,6 +818,7 @@
 
 (my-lisp-define-key "\C-y"    'lisp-yank)
 (my-lisp-define-key "\M-i"    'consume-sexp-and-indent)
+(my-lisp-define-key "\M-I"    'unwrap-sexp-at-mark)
 (my-lisp-define-key "\M-y"    'lisp-yank-pop)
 (my-lisp-define-key "\M-k"    'save-sexp)
 (my-lisp-define-key "\C-\M-j" 'lisp-join-line)

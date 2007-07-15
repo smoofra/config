@@ -1215,8 +1215,15 @@
 
 (autoload 'erc-select "erc")
 
-(eval-after-load 'erc 
+(defun silly-scroll-down-one-hack ()
+  (interactive)
+  (previous-line)
+  (scroll-down-one 1)
+  (next-line))
+
+(eval-after-load 'erc
   '(progn (add-hook 'erc-join-hook 'bitlbee-identify)
+          (define-key erc-mode-map "\M-q" 'silly-scroll-down-one-hack )
 	  (setq erc-auto-query 'buffer)))
 
 (defun bitlbee-identify ()

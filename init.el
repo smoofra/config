@@ -276,7 +276,10 @@
 
 
 (define-key emacs-lisp-mode-map "\M-k" 'save-sexp)
-(define-key lisp-interaction-mode-map "\M-." 'find-function) ;;;; C-x C-SPC to go back
+;;;; C-x C-SPC to go back if it sends you to a new buffer
+;;;; C-U C-SPC to go back in the current buffer
+;;;; damn  that's stupid
+(define-key lisp-interaction-mode-map "\M-." 'find-function) 
 (define-key emacs-lisp-mode-map "\M-." 'find-function)
 (define-key emacs-lisp-mode-map "\M-/" 'lisp-complete-symbol)
 

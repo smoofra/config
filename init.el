@@ -1507,4 +1507,8 @@
   (find-file file)
   (diff-mode))
 
+;;;;;; how to find out how to bind a particular key interactively 
+;;; M-x global-set-key
+;;; M-x repeat-complex-command (or C-x ESC ESC)
+
 (site-init-late)

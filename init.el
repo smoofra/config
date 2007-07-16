@@ -276,7 +276,7 @@
 
 
 (define-key emacs-lisp-mode-map "\M-k" 'save-sexp)
-(define-key lisp-interaction-mode-map "\M-." 'find-function)
+(define-key lisp-interaction-mode-map "\M-." 'find-function) ;;;; C-x C-SPC to go back
 (define-key emacs-lisp-mode-map "\M-." 'find-function)
 (define-key emacs-lisp-mode-map "\M-/" 'lisp-complete-symbol)
 

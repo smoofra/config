@@ -1490,7 +1490,7 @@
  '(diff-switches "-u")
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
  '(indent-tabs-mode nil)
- '(safe-local-variable-values (quote ((unibyte . t) (Package . COMMON-LISP-USER))))
+ '(safe-local-variable-values (quote ((Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
  '(slime-backend "swank-loader.lisp")
  '(slime-enable-evaluate-in-emacs t)
  '(slime-multiprocessing t)

@@ -1,4 +1,12 @@
 
+
+(defmethod asdf:perform :after ((o asdf:load-op) (s (eql (asdf:find-system :cffi))))
+  (eval
+   `(pushnew #P"/home/larry/proj/application/" ,(read-from-string "cffi:*foreign-library-directories*") :test #'equal)))
+
+;;;;;;;;;
+
+
 (require 'asdf-install)
 (defun asdf-install::where ()
   (list (pathname "/home/larry/lisp/asdf-install/")

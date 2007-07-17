@@ -1,3 +1,4 @@
 alias less=eless
+export PAGER=eless
 alias ls='ls --color=auto' 
 

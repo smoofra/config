@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-@vars = qw/ DISPLAY /;
+@vars = qw/ DISPLAY SSH_AUTH_SOCK /;
 
 sub croak {
   if (scalar @_) {

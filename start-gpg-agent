@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+
+sub kill_agent {
+  my $info = shift;
+  return unless defined $info;
+  my ($sock, $pid) = split /:/, $info;
+  system qw/ fuser -ks -KILL /, $sock;
+}
+
+
+
+kill_agent $ENV{GPG_AGENT_INFO};
+
+my $file = "$ENV{HOME}/.gpg-agent-info";
+if (-f $file) {
+  open FH, $file or die $!;
+  kill_agent join('', <FH>);
+  close FH;
+}
+
+my $shell = <<"END";
+x=\$(gpg-agent --daemon)
+eval "\$x"
+echo "\$GPG_AGENT_INFO" >${file}
+echo "\$x"
+END
+
+system qw/sh -c/, $shell;
+
+
+
+
+

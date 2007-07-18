@@ -1523,4 +1523,6 @@
 ;;; M-x global-set-key
 ;;; M-x repeat-complex-command (or C-x ESC ESC)
 
+;;test change for git
+
 (site-init-late)

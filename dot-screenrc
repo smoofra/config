@@ -1,0 +1,4 @@
+vbell off
+autodetach on
+escape ^\\
+bind ^\ stuff ^\

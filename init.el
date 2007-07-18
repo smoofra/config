@@ -1485,12 +1485,12 @@
  '(blink-cursor-alist (quote ((box . box) (t . box))))
  '(c-basic-offset 4)
  '(c-default-style (quote ((c-mode . "k&r") (java-mode . "java") (awk-mode . "awk") (other . "gnu"))))
- '(cperl-invalid-face (quote default) t)
+ '(cperl-invalid-face (quote default))
  '(delete-selection-mode nil)
  '(diff-switches "-u")
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
  '(indent-tabs-mode nil)
- '(safe-local-variable-values (quote ((Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
+ '(safe-local-variable-values (quote ((syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
  '(slime-backend "swank-loader.lisp")
  '(slime-enable-evaluate-in-emacs t)
  '(slime-multiprocessing t)
@@ -1503,7 +1503,6 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:stipple nil :background "#000000" :foreground "#ffffff" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 133 :width normal :family "bitstream-bitstream vera sans mono"))))
  '(cursor ((t (:background "#ffffff"))))
  '(diff-changed ((nil (:foreground "yellow"))))
  '(diff-file-header ((((class color) (min-colors 88) (background dark)) (:foreground "cyan" :weight bold))))
@@ -1511,8 +1510,17 @@
  '(diff-removed ((t (:inherit diff-changed :foreground "red"))))
  '(mmm-default-submode-face ((t (:background "gray85" :foreground "black")))))
 
-(when (display-graphic-p)
-  (set-face-background 'default "#110022"))
+
+
+;;; this seems to be a problem so we'll just set it outside of custom for everything
+;;;'(default ((t (:stipple nil :background "#000000" :foreground "#ffffff" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 133 :width normal :family "bitstream-bitstream vera sans mono"))))
+
+(cond 
+ ((display-graphic-p)
+  (set-face-background 'default "#110022")
+  (set-face-foreground 'default "#ffffff"))
+ (t
+  (set-face-background 'default "#000000")))
 
 (defun find-diff-file (file)
   (interactive)

@@ -986,7 +986,7 @@
 
 (add-hook 'LaTeX-mode-hook 
 	  (lambda () 
-	    (define-key cperl-mode-map "\C-j" 'backwards-kill-line)))
+	    (define-key latex-mode-map "\C-j" 'backwards-kill-line)))
 
 (add-hook 'ruby-mode-hook
 	  (lambda () 

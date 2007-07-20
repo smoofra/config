@@ -1541,13 +1541,11 @@
 (site-init-late)
 
 
-;; (defun latex-begin (type)
-;;   (interactive "M begin what? ")
-;;   (skeleton-insert '(nil "\\begin{" type "}" \n _ \n "\\end{" type "}")))
+(define-skeleton latex-begin 
+   "\begin something"
+   ""
+   "\\begin{" (setq foo (skeleton-read "begin what? ")) "}" ?\n > _ > ?\n > "\\end{" foo "}" >)
+(define-abbrev latex-mode-abbrev-table "beg" "" 'latex-begin)
 
 
-;; (define-skeleton latex-begin 
-;;   "\begin something"
-;;   ""
-;;   "\\begin{" (setq foo (skeleton-read "begin what? ")) "}" \n _ \n "\\end{" foo "}")
 

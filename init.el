@@ -988,6 +988,7 @@
 
 (add-hook 'latex-mode-hook 
 	  (lambda () 
+            (setq skeleton-pair t)
             (define-key latex-mode-map ""  'newline-and-indent)
             (define-key latex-mode-map [(control tab)] 'tab-to-tab-stop)
 	    (define-key latex-mode-map "\C-j" 'backwards-kill-line)))

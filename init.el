@@ -986,6 +986,8 @@
 
 (add-hook 'LaTeX-mode-hook 
 	  (lambda () 
+            (define-key latex-mode-map ""  'newline-and-indent)
+            (define-key latex-mode-map [(control tab)] 'tab-to-tab-stop)
 	    (define-key latex-mode-map "\C-j" 'backwards-kill-line)))
 
 (add-hook 'ruby-mode-hook

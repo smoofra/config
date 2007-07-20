@@ -986,7 +986,7 @@
 	    (define-key cperl-mode-map "{" 'self-insert-command)
 	    (define-key cperl-mode-map "\C-j" 'backwards-kill-line)))
 
-(add-hook 'LaTeX-mode-hook 
+(add-hook 'latex-mode-hook 
 	  (lambda () 
             (define-key latex-mode-map ""  'newline-and-indent)
             (define-key latex-mode-map [(control tab)] 'tab-to-tab-stop)

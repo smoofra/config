@@ -1540,11 +1540,13 @@
 
 (site-init-late)
 
+;;bar
 
 (define-skeleton latex-begin 
    "\begin something"
    ""
    "\\begin{" (setq foo (skeleton-read "begin what? ")) "}" ?\n > _ > ?\n > "\\end{" foo "}" >)
+
 (define-abbrev latex-mode-abbrev-table "beg" "" 'latex-begin)
 
 

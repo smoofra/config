@@ -1541,6 +1541,7 @@
 (site-init-late)
 
 ;;bar
+;;fooooooooo
 
 (define-skeleton latex-begin 
    "\begin something"

@@ -454,7 +454,7 @@
 ;(global-set-key "\C-\M-q" 'scroll-down-half)
 (global-set-key "\C-s" 'isearch-forward-regexp)
 (global-set-key "\C-r" 'isearch-backward-regexp)
-(global-set-key "\C-v" 'view-mode)
+(global-set-key "\C-v" 'jk-mode)
 ;(global-set-key   "\M-\C-z"   'scroll-up-half)
 ;(global-set-key "\M-\C-a"   'scroll-down-half)
 (global-set-key [home] 'SDO)
@@ -869,6 +869,10 @@
      (define-my-lisp-keys-on-map emacs-cl-mode-map)))
 
 (defun define-jk (map)
+  (define-key map "h" 'backward-char)
+  (define-key map "l" 'forward-char)
+  (define-key map "H" 'backward-char)
+  (define-key map "L" 'forward-char)
   (define-key map "u" 'scroll-down-half)
   (define-key map "d" 'scroll-up-half)
   (define-key map "J" 'next-line)
@@ -877,6 +881,23 @@
   (define-key map "k" 'SDO)
   (define-key map "/" 'isearch-forward)
   (define-key map "?" 'isearch-backward))
+
+(defun nothing ()
+  "Do nothing at all"
+  (interactive))
+
+(defvar jk-keymap nil)
+(progn
+  (setq jk-keymap (make-keymap))
+  (loop for i from 32 to 126 
+        do (define-key jk-keymap (char-to-string i) 'nothing))
+  (define-jk jk-keymap))
+
+(define-minor-mode jk-mode
+  "a lightweight version view mode with vilike movement key "
+  :init-value nil
+  :lighter " jk"
+  :keymap jk-keymap) 
 
 
 (eval-after-load 'apropos

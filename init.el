@@ -1539,16 +1539,22 @@
 
 ;;test change for git, again.  now testing pushing. again
 
-(site-init-late)
-
 ;;bar
 ;;fooooooooo
 
 (define-skeleton latex-begin 
    "\begin something"
    ""
-   "\\begin{" (setq foo (skeleton-read "begin what? ")) "}" ?\n > _ > ?\n > "\\end{" foo "}" >)
+   "\\begin{" (setq foo (skeleton-read "begin what? ")) "}"  _ > ?\n > "\\end{" foo "}" >)
 
 (define-abbrev latex-mode-abbrev-table "beg" "" 'latex-begin)
 (setq-default abbrev-mode t)
+(setq scroll-step 1)
+
+
+
+(site-init-late)
+
+
+
 

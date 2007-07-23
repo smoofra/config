@@ -720,6 +720,8 @@
         (insert c)
         (backward-char))
        (t (when (and (not newlines)
+                     (not (cheqstr (char-before (point)) "["))
+                     (not (cheqstr (char-before (point)) "{"))
                      (not (cheqstr (char-before (point)) "`"))
                      (not (cheqstr (char-before (point)) "'"))
                      (not (cheqstr (char-before (point)) "("))
@@ -1562,9 +1564,24 @@
   ""
   "\\texttt{" _ "}")
 
+(define-skeleton latex-textit
+  "put something in italic"
+  ""
+  "\\textit{" _ "}")
+
+
+(define-skeleton latex-textbf
+  "put something in bold font"
+  ""
+  "\\textbf{" _ "}")
+
+
+
 (define-abbrev latex-mode-abbrev-table "beg" "" 'latex-begin)
 (define-abbrev latex-mode-abbrev-table "ttt" "" 'latex-texttt)
 (define-abbrev latex-mode-abbrev-table "trm" "" 'latex-textrm)
+(define-abbrev latex-mode-abbrev-table "tit" "" 'latex-textit)
+(define-abbrev latex-mode-abbrev-table "tbf" "" 'latex-textbf)
 (define-abbrev latex-mode-abbrev-table "tsf" "" 'latex-textsf)
 (setq-default abbrev-mode t)
 (setq scroll-step 1)

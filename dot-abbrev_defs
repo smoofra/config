@@ -101,6 +101,8 @@
 
 (define-abbrev-table 'latex-mode-abbrev-table '(
     ("beg" "" latex-begin 1)
+    ("tbf" "" latex-textbf 2)
+    ("tit" "" latex-textit 0)
     ("trm" "" latex-textrm 2)
     ("tsf" "" latex-textsf 1)
     ("ttt" "" latex-texttt 1)

@@ -1547,7 +1547,13 @@
    ""
    "\\begin{" (setq foo (skeleton-read "begin what? ")) "}"  _ > ?\n > "\\end{" foo "}" >)
 
+(define-skeleton latex-texttt
+  "put something in typewriter font"
+  ""
+  "\\texttt{" _ "}")
+
 (define-abbrev latex-mode-abbrev-table "beg" "" 'latex-begin)
+(define-abbrev latex-mode-abbrev-table "ttt" "" 'latex-texttt)
 (setq-default abbrev-mode t)
 (setq scroll-step 1)
 

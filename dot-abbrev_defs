@@ -41,7 +41,7 @@
     ))
 
 (define-abbrev-table 'latex-mode-abbrev-table '(
-    ("beg" "" latex-begin 6)
+    ("beg" "" latex-begin 18)
     ))
 
 (define-abbrev-table 'lisp-mode-abbrev-table '(

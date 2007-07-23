@@ -1550,6 +1550,5 @@
    "\\begin{" (setq foo (skeleton-read "begin what? ")) "}" ?\n > _ > ?\n > "\\end{" foo "}" >)
 
 (define-abbrev latex-mode-abbrev-table "beg" "" 'latex-begin)
-
-
+(setq-default abbrev-mode t)
 

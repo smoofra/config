@@ -1547,6 +1547,16 @@
    ""
    "\\begin{" (setq foo (skeleton-read "begin what? ")) "}"  _ > ?\n > "\\end{" foo "}" >)
 
+(define-skeleton latex-textrm 
+  "put something in roman font"
+  ""
+  "\\textrm{" _ "}")
+
+(define-skeleton latex-textsf
+  "put something in sans-serif font"
+  ""
+  "\\textsf{" _ "}")
+
 (define-skeleton latex-texttt
   "put something in typewriter font"
   ""
@@ -1554,6 +1564,8 @@
 
 (define-abbrev latex-mode-abbrev-table "beg" "" 'latex-begin)
 (define-abbrev latex-mode-abbrev-table "ttt" "" 'latex-texttt)
+(define-abbrev latex-mode-abbrev-table "trm" "" 'latex-textrm)
+(define-abbrev latex-mode-abbrev-table "tsf" "" 'latex-textsf)
 (setq-default abbrev-mode t)
 (setq scroll-step 1)
 

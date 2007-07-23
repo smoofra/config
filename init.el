@@ -682,8 +682,12 @@
   (newline)
   (lisp-indent-line))
 
-(defun unwrap-sexp-at-mark ()
-  (interactive)
+(defun sexp-inside-out (&optional arg)
+  (interactive "P")
+  (setf (mark)
+        (if arg (mark) 
+          (save-excursion 
+            (backward-up-list) (point))))
   (if (> (mark) (point))
       (exchange-point-and-mark))
   (let ((x (copy-marker (point))))
@@ -814,7 +818,7 @@
 (when i-have-slime
   (slime-define-key   "\C-ce" 'slime-insert-expand-last-expression))
 
-(defvar my-lisp-keys nil)
+
 
 (defun my-lisp-define-key (k b)
   (setq my-lisp-keys (cons (cons k b) my-lisp-keys)))
@@ -823,26 +827,29 @@
   (dolist (cns my-lisp-keys)
     (define-key map (car cns) (cdr cns))))
 
-(my-lisp-define-key "\C-y"    'lisp-yank)
-(my-lisp-define-key "\M-i"    'consume-sexp-and-indent)
-(my-lisp-define-key "\M-I"    'unwrap-sexp-at-mark)
-(my-lisp-define-key "\M-y"    'lisp-yank-pop)
-(my-lisp-define-key "\M-k"    'save-sexp)
-(my-lisp-define-key "\C-\M-j" 'lisp-join-line)
-(my-lisp-define-key "\C-a"    'lisp-ctrla)
-(my-lisp-define-key "\C-\M-h" 'my-mark-defun)
-(my-lisp-define-key "\r"      'lisp-newline-and-indent)
-(my-lisp-define-key "\C-\M-e" 'backward-transpose-sexp)
-(my-lisp-define-key "\""      'skeleton-pair-insert-maybe) 
-(my-lisp-define-key "\C-j"    'backwards-kill-line)
-
-(when i-have-slime
-  (define-my-lisp-keys-on-map slime-mode-map)
-  (define-my-lisp-keys-on-map slime-repl-mode-map)
-  (define-my-lisp-keys-on-map slime-scratch-mode-map))
-(define-my-lisp-keys-on-map emacs-lisp-mode-map)
-(define-my-lisp-keys-on-map lisp-interaction-mode-map)
-(define-my-lisp-keys-on-map lisp-mode-map)
+(progn
+  (defvar my-lisp-keys nil)
+  (setq my-lisp-keys nil)
+  (my-lisp-define-key "\C-c-"   'kill-backward-up-list)
+  (my-lisp-define-key "\C-y"    'lisp-yank)
+  (my-lisp-define-key "\M-i"    'consume-sexp-and-indent)
+  (my-lisp-define-key "\M-I"    'sexp-inside-out)
+  (my-lisp-define-key "\M-y"    'lisp-yank-pop)
+  (my-lisp-define-key "\M-k"    'save-sexp)
+  (my-lisp-define-key "\C-\M-j" 'lisp-join-line)
+  (my-lisp-define-key "\C-a"    'lisp-ctrla)
+  (my-lisp-define-key "\C-\M-h" 'my-mark-defun)
+  (my-lisp-define-key "\r"      'lisp-newline-and-indent)
+  (my-lisp-define-key "\C-\M-e" 'backward-transpose-sexp)
+  (my-lisp-define-key "\""      'skeleton-pair-insert-maybe)
+  (my-lisp-define-key "\C-j"    'backwards-kill-line)
+  (when i-have-slime
+    (define-my-lisp-keys-on-map slime-mode-map)
+    (define-my-lisp-keys-on-map slime-repl-mode-map)
+    (define-my-lisp-keys-on-map slime-scratch-mode-map))
+  (define-my-lisp-keys-on-map emacs-lisp-mode-map)
+  (define-my-lisp-keys-on-map lisp-interaction-mode-map)
+  (define-my-lisp-keys-on-map lisp-mode-map))
 
 
 (when i-have-slime

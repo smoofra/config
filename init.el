@@ -462,6 +462,8 @@
 (global-set-key "\M-," 'pop-tag-mark)
 (global-set-key "\M-*" 'tags-loop-continue)
 (global-set-key "\C-xj" 'other-frame)
+(global-set-key "\C-xi" 'back-window)
+(global-set-key "\C-xI" 'insert-file) 
 
 (setq perl-indent-level 2)
 
@@ -829,6 +831,7 @@
 (my-lisp-define-key "\C-\M-h" 'my-mark-defun)
 (my-lisp-define-key "\r"      'lisp-newline-and-indent)
 (my-lisp-define-key "\C-\M-e" 'backward-transpose-sexp)
+(my-lisp-define-key "\""      'skeleton-pair-insert-maybe) 
 (my-lisp-define-key "\C-j"    'backwards-kill-line)
 
 (when i-have-slime
@@ -1215,8 +1218,6 @@
 (defun back-window ()
   (interactive)
   (other-window -1))
-
-(global-set-key "\C-xi" 'back-window)
 
 
 (defun freenode ()

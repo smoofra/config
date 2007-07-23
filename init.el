@@ -991,8 +991,13 @@
 (add-hook 'diff-mode-hook 
 	  '(lambda () 
 	     (define-key diff-mode-map "\M-q" 'scroll-down-one)
-	     (define-jk diff-mode-shared-map)
-             (define-jk diff-mode-map)
+	     ;;(define-jk diff-mode-shared-map)
+             ;;(define-jk diff-mode-map)
+             ;;;; diff mode sets this so it can add binds to read-only buffers 
+             ;;;; in an extremely broken way, and removes it in a special hook
+             ;;;; for view mode in an even more broken way.  ugh disgusting.
+             (setq minor-mode-overriding-map-alist nil) 
+             (jk-mode)
              (define-key diff-mode-map "a" 'diff-apply-hunk)
 	     (define-key diff-mode-map "t" 'diff-test-hunk)))
 
@@ -1018,13 +1023,6 @@
 	    (define-key cperl-mode-map "[" 'self-insert-command)
 	    (define-key cperl-mode-map "{" 'self-insert-command)
 	    (define-key cperl-mode-map "\C-j" 'backwards-kill-line)))
-
-(add-hook 'latex-mode-hook 
-	  (lambda () 
-            (setq skeleton-pair t)
-            (define-key latex-mode-map ""  'newline-and-indent)
-            (define-key latex-mode-map [(control tab)] 'tab-to-tab-stop)
-	    (define-key latex-mode-map "\C-j" 'backwards-kill-line)))
 
 (add-hook 'ruby-mode-hook
 	  (lambda () 
@@ -1605,12 +1603,23 @@
 
 
 
-(define-abbrev latex-mode-abbrev-table "beg" "" 'latex-begin)
-(define-abbrev latex-mode-abbrev-table "ttt" "" 'latex-texttt)
-(define-abbrev latex-mode-abbrev-table "trm" "" 'latex-textrm)
-(define-abbrev latex-mode-abbrev-table "tit" "" 'latex-textit)
-(define-abbrev latex-mode-abbrev-table "tbf" "" 'latex-textbf)
-(define-abbrev latex-mode-abbrev-table "tsf" "" 'latex-textsf)
+
+(add-hook 'latex-mode-hook 
+	  (lambda () 
+            (setq skeleton-pair t)
+            (define-abbrev latex-mode-abbrev-table "beg" "" 'latex-begin)
+            (define-abbrev latex-mode-abbrev-table "ttt" "" 'latex-texttt)
+            (define-abbrev latex-mode-abbrev-table "trm" "" 'latex-textrm)
+            (define-abbrev latex-mode-abbrev-table "tit" "" 'latex-textit)
+            (define-abbrev latex-mode-abbrev-table "tbf" "" 'latex-textbf)
+            (define-abbrev latex-mode-abbrev-table "tsf" "" 'latex-textsf)
+            (define-key latex-mode-map ""  'newline-and-indent)
+            (define-key latex-mode-map [(control tab)] 'tab-to-tab-stop)
+	    (define-key latex-mode-map "\C-j" 'backwards-kill-line)))
+
+
+
+
 (setq-default abbrev-mode t)
 (setq scroll-step 1)
 

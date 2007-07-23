@@ -328,21 +328,21 @@
 ;;;;from emacs source, modified
 (eval-after-load "diff"
   '(defun diff-sentinel (code)
-	 "Code run when the diff process exits.
+     "Code run when the diff process exits.
      CODE is the exit code of the process.  It should be 0 iff no diffs were found."
-	 (if diff-old-temp-file (delete-file diff-old-temp-file))
-	 (if diff-new-temp-file (delete-file diff-new-temp-file))
-	 (save-excursion
-	   (goto-char (point-max))
-	   (let ((inhibit-read-only t))
-		 (insert (format "\nDiff finished%s.  %s\n"
-						 (if (equal 0 code) " (no differences)" "")
-						 (current-time-string)))))
-	 (when (and (not (null buffer-to-revert-if-no-diff))
-				(equal 0 code))
-	   (set-buffer buffer-to-revert-if-no-diff)
-	   (revert-buffer t t t))
-	 (setq diff-return-code code)))
+     (if diff-old-temp-file (delete-file diff-old-temp-file))
+     (if diff-new-temp-file (delete-file diff-new-temp-file))
+     (save-excursion
+       (goto-char (point-max))
+       (let ((inhibit-read-only t))
+         (insert (format "\nDiff finished%s.  %s\n"
+                         (if (equal 0 code) " (no differences)" "")
+                         (current-time-string)))))
+     (when (and (not (null buffer-to-revert-if-no-diff))
+                (equal 0 code))
+       (set-buffer buffer-to-revert-if-no-diff)
+       (revert-buffer t t t))
+     (setq diff-return-code code)))
  
 
 (defvar diff-return-code nil)
@@ -351,19 +351,19 @@
 (defun diff-current-buffer-with-file ()
   (interactive)
   (let ((wc (current-window-configuration))
-		(buffer-to-revert-if-no-diff (current-buffer))
-		(diff-return-code nil))
-	(diff-buffer-with-file (current-buffer))
-	(cond 
-	 ((equal diff-return-code 0)
-	  (message "no diff")
-	  ;;(read-char nil nil .5)
-	  (sit-for .5)
-	  (set-window-configuration wc))
-	 (t 
-	  (save-excursion 
-		(set-buffer (get-buffer "*Diff*"))
-		(toggle-read-only 1))))))
+        (buffer-to-revert-if-no-diff (current-buffer))
+        (diff-return-code nil))
+    (diff-buffer-with-file (current-buffer))
+    (cond 
+     ((equal diff-return-code 0)
+      (message "no diff")
+      ;;(read-char nil nil .5)
+      (sit-for .5)
+      (set-window-configuration wc))
+     (t 
+      (save-excursion 
+        (set-buffer (get-buffer "*Diff*"))
+        (toggle-read-only 1))))))
 
 (defun my-revert-buffer () 
   (interactive)

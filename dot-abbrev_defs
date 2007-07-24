@@ -81,10 +81,15 @@
 
 (define-abbrev-table 'global-abbrev-table '(
     ("allready" "already" nil 3)
+    ("engeneer" "engineer" nil 4)
+    ("foce" "force" nil 2)
     ("necissary" "necessary" nil 4)
     ("nesiccary" "necessary" nil 2)
     ("nessicary" "necessary" nil 1)
     ("nessiccary" "necessary" nil 1)
+    ("parallellism" "parallelism" nil 1)
+    ("recurrance" "recurrence" nil 2)
+    ("relys" "relies" nil 1)
     ))
 
 (define-abbrev-table 'idl-mode-abbrev-table '(
@@ -101,11 +106,11 @@
 
 (define-abbrev-table 'latex-mode-abbrev-table '(
     ("beg" "" latex-begin 1)
-    ("tbf" "" latex-textbf 2)
+    ("tbf" "" latex-textbf 0)
     ("tit" "" latex-textit 0)
-    ("trm" "" latex-textrm 2)
-    ("tsf" "" latex-textsf 1)
-    ("ttt" "" latex-texttt 1)
+    ("trm" "" latex-textrm 0)
+    ("tsf" "" latex-textsf 0)
+    ("ttt" "" latex-texttt 4)
     ))
 
 (define-abbrev-table 'lisp-mode-abbrev-table '(

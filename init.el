@@ -962,6 +962,7 @@
 
 (when i-have-slime
   (define-jk slime-inspector-mode-map)
+  (define-key slime-inspector-mode-map "l" 'slime-inspector-pop)
   (define-key slime-inspector-mode-map "D" 'slime-inspector-describe))
 
 

@@ -1607,12 +1607,6 @@
 (add-hook 'latex-mode-hook 
 	  (lambda () 
             (setq skeleton-pair t)
-            (define-abbrev latex-mode-abbrev-table "beg" "" 'latex-begin)
-            (define-abbrev latex-mode-abbrev-table "ttt" "" 'latex-texttt)
-            (define-abbrev latex-mode-abbrev-table "trm" "" 'latex-textrm)
-            (define-abbrev latex-mode-abbrev-table "tit" "" 'latex-textit)
-            (define-abbrev latex-mode-abbrev-table "tbf" "" 'latex-textbf)
-            (define-abbrev latex-mode-abbrev-table "tsf" "" 'latex-textsf)
             (define-key latex-mode-map ""  'newline-and-indent)
             (define-key latex-mode-map [(control tab)] 'tab-to-tab-stop)
 	    (define-key latex-mode-map "\C-j" 'backwards-kill-line)))

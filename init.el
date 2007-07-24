@@ -1572,9 +1572,9 @@
 ;;fooooooooo
 
 (define-skeleton latex-begin 
-   "\begin something"
-   ""
-   "\\begin{" (setq foo (skeleton-read "begin what? ")) "}"  _ > ?\n > "\\end{" foo "}" >)
+  "\begin something"
+  ""
+  "\\begin{" (setq foo (skeleton-read "begin what? ")) "}"  _ > ?\n > "\\end{" foo "}" >)
 
 (define-skeleton latex-textrm 
   "put something in roman font"

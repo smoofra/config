@@ -88,6 +88,7 @@
     ("nessicary" "necessary" nil 1)
     ("nessiccary" "necessary" nil 1)
     ("parallellism" "parallelism" nil 1)
+    ("propper" "proper" nil 2)
     ("recurrance" "recurrence" nil 2)
     ("relys" "relies" nil 1)
     ))
@@ -107,10 +108,10 @@
 (define-abbrev-table 'latex-mode-abbrev-table '(
     ("beg" "" latex-begin 1)
     ("tbf" "" latex-textbf 0)
-    ("tit" "" latex-textit 0)
+    ("tit" "" latex-textit 1)
     ("trm" "" latex-textrm 0)
     ("tsf" "" latex-textsf 0)
-    ("ttt" "" latex-texttt 4)
+    ("ttt" "" latex-texttt 3)
     ))
 
 (define-abbrev-table 'lisp-mode-abbrev-table '(

@@ -1175,16 +1175,18 @@
 					  (set-buffer buf)
 					  (point-max))))
 
-(setq compilation-finish-functions (list 'end-of-compilation-buffer))
+;;(setq compilation-finish-functions (list 'end-of-compilation-buffer))
 
 (defun comp (&optional i)
   (interactive)
+  (ignore-errors (kill-buffer "*compilation*"))
   (if i (call-interactively 'compile) (compile compile-command))
+  (end-of-compilation-buffer (get-buffer "*compilation*") nil)
   (set-window-lines (get-buffer-window "*compilation*") 20)
   (when comp-default-directory 
-	  (save-excursion
-		(set-buffer "*compilation*")
-		(setq default-directory comp-default-directory))))
+    (save-excursion
+      (set-buffer "*compilation*")
+      (setq default-directory comp-default-directory))))
 
 (defun compi () (interactive) (comp 1))
 
@@ -1617,6 +1619,7 @@
 
 (setq-default abbrev-mode t)
 (setq scroll-step 1)
+(setq scroll-conservatively 1)
 
 
 

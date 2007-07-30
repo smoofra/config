@@ -396,7 +396,7 @@
   (interactive)
   (insert-some-pair (string-to-char (this-command-keys))))
 
-(show-paren-mode)
+(show-paren-mode t)
 
 ;(global-set-key "\C-o"      'myblink)
 (global-set-key [C-return] 'open-line)

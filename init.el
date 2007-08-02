@@ -1376,6 +1376,11 @@
 	   (interactive)
 	   (newline)
 	   (c-indent-command))
+         (define-key c-mode-map "\C-c;"  'comment-region)
+         (define-key c-mode-map "\""     'skeleton-pair-insert-maybe)
+         (define-key c-mode-map "("      'skeleton-pair-insert-maybe)
+         (define-key c-mode-map "{"      'skeleton-pair-insert-maybe)
+         (define-key c-mode-map "["      'skeleton-pair-insert-maybe)
 	 (define-key c-mode-map "\C-o"   'c-open-line)
 	 (define-key c-mode-map "\C-k"   'c-kill-line)
 	 (define-key c-mode-map "\M-_"   'c-unwrap-next-sexp)
@@ -1529,7 +1534,7 @@
  '(diff-switches "-u")
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
  '(indent-tabs-mode nil)
- '(safe-local-variable-values (quote ((syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
+ '(safe-local-variable-values (quote ((Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
  '(slime-backend "swank-loader.lisp")
  '(slime-enable-evaluate-in-emacs t)
  '(slime-multiprocessing t)
@@ -1607,17 +1612,19 @@
   "\\textbf{" _ "}")
 
 
+(setq skeleton-pair t)
+
+(defun my-latex-mode-hook ()
+  (define-key latex-mode-map ""  'newline-and-indent)
+  (define-key latex-mode-map [(control tab)] 'tab-to-tab-stop)
+  (define-key latex-mode-map "\C-j" 'backwards-kill-line))
+
+(add-hook 'latex-mode-hook 'my-latex-mode-hook)
 
 
-(add-hook 'latex-mode-hook 
-	  (lambda () 
-            (setq skeleton-pair t)
-            (define-key latex-mode-map ""  'newline-and-indent)
-            (define-key latex-mode-map [(control tab)] 'tab-to-tab-stop)
-	    (define-key latex-mode-map "\C-j" 'backwards-kill-line)))
-
-
-
+(defun my-makefile-mode-hook ()
+  (define-key makefile-mode-map "(" 'skeleton-pair-insert-maybe))
+(add-hook 'makefile-mode-hook 'my-makefile-mode-hook)
 
 (setq-default abbrev-mode t)
 (setq scroll-step 1)

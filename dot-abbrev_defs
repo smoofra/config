@@ -80,7 +80,7 @@
     ))
 
 (define-abbrev-table 'global-abbrev-table '(
-    ("allready" "already" nil 3)
+    ("allready" "already" nil 4)
     ("engeneer" "engineer" nil 4)
     ("foce" "force" nil 2)
     ("necissary" "necessary" nil 4)
@@ -91,6 +91,9 @@
     ("propper" "proper" nil 2)
     ("recurrance" "recurrence" nil 2)
     ("relys" "relies" nil 1)
+    ))
+
+(define-abbrev-table 'grep-mode-abbrev-table '(
     ))
 
 (define-abbrev-table 'idl-mode-abbrev-table '(
@@ -115,6 +118,8 @@
     ))
 
 (define-abbrev-table 'lisp-mode-abbrev-table '(
+    ("inp" "in-package" nil 4)
+    ("mvb" "multiple-value-bind" nil 2)
     ))
 
 (define-abbrev-table 'lisppaste-mode-abbrev-table '(

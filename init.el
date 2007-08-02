@@ -427,8 +427,8 @@
 ;(global-set-key "\C-h\M-a"  'apropos)
 (global-set-key "\C-xf"     'set-visited-file-name)
 ;(global-set-key "\C-z"      'scroll-up-one)
-(global-set-key "\C-z"      'SUO)
-(global-set-key "\C-q"      'SDO)
+;(global-set-key "\C-z"      'SUO)
+;(global-set-key "\C-q"      'SDO)
 ;(global-set-key "\C-q"      'scroll-down-one)
 (global-set-key [prior]      'scroll-down-half)
 (global-set-key [next]     'scroll-up-half)
@@ -455,6 +455,8 @@
 (global-set-key "\C-s" 'isearch-forward-regexp)
 (global-set-key "\C-r" 'isearch-backward-regexp)
 (global-set-key "\C-v" 'jk-mode)
+
+
 ;(global-set-key   "\M-\C-z"   'scroll-up-half)
 ;(global-set-key "\M-\C-a"   'scroll-down-half)
 (global-set-key [home] 'SDO)
@@ -464,6 +466,7 @@
 (global-set-key "\C-xj" 'other-frame)
 (global-set-key "\C-xi" 'back-window)
 (global-set-key "\C-xI" 'insert-file) 
+(global-set-key "\C-xg" 'grep)
 
 (setq perl-indent-level 2)
 
@@ -555,7 +558,7 @@
   (set-mark (point))
   (backward-up-list)
   (delete-char 1)
-  (unless arg
+  (unless (or t arg) ;;;; im not sure i like it deleteing the head anymore
     (let ((start-region-to-kill (point)))
       (kill-sexp 1)
       (forward-sexp)
@@ -699,6 +702,7 @@
     (indent-pp-sexp)
     (setf (mark) x)))
 
+
 (defun consume-sexp  (&optional supress-newlines)
   (interactive)
   (forward-delete-space-through-parens)
@@ -711,7 +715,6 @@
                     (forward-char)
                     (line-empty-after-point))))
     (join-line)
-    ;;(lisp-indent-line)
     (indent-according-to-mode))
   (backward-up-list)
   (forward-sexp)
@@ -724,6 +727,7 @@
         (insert c)
         (backward-char))
        (t (when (and (not newlines)
+                     (not c-buffer-is-cc-mode)
                      (not (cheqstr (char-before (point)) "["))
                      (not (cheqstr (char-before (point)) "{"))
                      (not (cheqstr (char-before (point)) "`"))
@@ -830,6 +834,7 @@
 (progn
   (defvar my-lisp-keys nil)
   (setq my-lisp-keys nil)
+  (my-lisp-define-key ")"       'up-list)
   (my-lisp-define-key "\C-cl"   'slime-load-system)
   (my-lisp-define-key "\C-c;"   'comment-region)
   (my-lisp-define-key "\C-c-"   'kill-backward-up-list)
@@ -1370,6 +1375,11 @@
 	(c-indent-command)))
 
 
+(define-skeleton curly-braces
+  "insert some curly braces"
+  ""
+  "{" >  ?\n >  _  > ?\n "}" > )
+
 (eval-after-load 'cc-mode
   '(progn 
 	 (defun c-newline-and-indent ()
@@ -1379,7 +1389,7 @@
          (define-key c-mode-map "\C-c;"  'comment-region)
          (define-key c-mode-map "\""     'skeleton-pair-insert-maybe)
          (define-key c-mode-map "("      'skeleton-pair-insert-maybe)
-         (define-key c-mode-map "{"      'skeleton-pair-insert-maybe)
+         (define-key c-mode-map "{"      'curly-braces)
          (define-key c-mode-map "["      'skeleton-pair-insert-maybe)
 	 (define-key c-mode-map "\C-o"   'c-open-line)
 	 (define-key c-mode-map "\C-k"   'c-kill-line)
@@ -1505,7 +1515,7 @@
   (interactive)
   (shell-send-line (concat "export COLUMNS=" (prin1-to-string (window-width)))))
 
-(setq grep-command "grep -nHir ")
+(setq grep-command "grep --exclude '*.svn*' -nHir ")
 
 (setq make-backup-files nil)
 

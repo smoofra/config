@@ -703,6 +703,9 @@
     (setf (mark) x)))
 
 
+(defun buffer-is-cc-mode ()
+  nil)
+
 (defun consume-sexp  (&optional supress-newlines)
   (interactive)
   (forward-delete-space-through-parens)
@@ -727,7 +730,7 @@
         (insert c)
         (backward-char))
        (t (when (and (not newlines)
-                     (not c-buffer-is-cc-mode)
+                     (not (buffer-is-cc-mode))
                      (not (cheqstr (char-before (point)) "["))
                      (not (cheqstr (char-before (point)) "{"))
                      (not (cheqstr (char-before (point)) "`"))
@@ -822,8 +825,6 @@
 (when i-have-slime
   (slime-define-key   "\C-ce" 'slime-insert-expand-last-expression))
 
-
-
 (defun my-lisp-define-key (k b)
   (setq my-lisp-keys (cons (cons k b) my-lisp-keys)))
 
@@ -834,6 +835,7 @@
 (progn
   (defvar my-lisp-keys nil)
   (setq my-lisp-keys nil)
+  (my-lisp-define-key "("       'my-insert-parentheses) 
   (my-lisp-define-key ")"       'up-list)
   (my-lisp-define-key "\C-cl"   'slime-load-system)
   (my-lisp-define-key "\C-c;"   'comment-region)
@@ -857,6 +859,15 @@
   (define-my-lisp-keys-on-map emacs-lisp-mode-map)
   (define-my-lisp-keys-on-map lisp-interaction-mode-map)
   (define-my-lisp-keys-on-map lisp-mode-map))
+
+
+(eval-after-load "paredit" 
+  '(progn
+     (define-key paredit-mode-map "\C-j" 'backwards-kill-line)
+     (define-key paredit-mode-map (kbd ")")
+       'paredit-close-parenthesis)
+     (define-key paredit-mode-map (kbd "M-)")
+       'paredit-close-parenthesis-and-newline)))
 
 
 (when i-have-slime
@@ -1382,20 +1393,22 @@
 
 (eval-after-load 'cc-mode
   '(progn 
-	 (defun c-newline-and-indent ()
-	   (interactive)
-	   (newline)
-	   (c-indent-command))
-         (define-key c-mode-map "\C-c;"  'comment-region)
-         (define-key c-mode-map "\""     'skeleton-pair-insert-maybe)
-         (define-key c-mode-map "("      'skeleton-pair-insert-maybe)
-         (define-key c-mode-map "{"      'curly-braces)
-         (define-key c-mode-map "["      'skeleton-pair-insert-maybe)
-	 (define-key c-mode-map "\C-o"   'c-open-line)
-	 (define-key c-mode-map "\C-k"   'c-kill-line)
-	 (define-key c-mode-map "\M-_"   'c-unwrap-next-sexp)
-	 (define-key c-mode-map [return] 'c-newline-and-indent)
-	 (define-key c-mode-map "\C-\M-j" 'c-join-line)))
+     (defun buffer-is-cc-mode ()
+       c-buffer-is-cc-mode)
+     (defun c-newline-and-indent ()
+       (interactive)
+       (newline)
+       (c-indent-command))
+     (define-key c-mode-map "\C-c;"  'comment-region)
+     (define-key c-mode-map "\""     'skeleton-pair-insert-maybe)
+     (define-key c-mode-map "("      'skeleton-pair-insert-maybe)
+     (define-key c-mode-map "{"      'curly-braces)
+     (define-key c-mode-map "["      'skeleton-pair-insert-maybe)
+     (define-key c-mode-map "\C-o"   'c-open-line)
+     (define-key c-mode-map "\C-k"   'c-kill-line)
+     (define-key c-mode-map "\M-_"   'c-unwrap-next-sexp)
+     (define-key c-mode-map [return] 'c-newline-and-indent)
+     (define-key c-mode-map "\C-\M-j" 'c-join-line)))
 
 
 ;; hl-line-mode will highlight the current line, 

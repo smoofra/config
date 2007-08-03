@@ -1515,7 +1515,7 @@
   (interactive)
   (shell-send-line (concat "export COLUMNS=" (prin1-to-string (window-width)))))
 
-(setq grep-command "grep --exclude '*.svn*' -nHir ")
+(setq grep-command "grep --exclude '*~' --exclude '#*#'  --exclude '*.svn*' -nHir ")
 
 (setq make-backup-files nil)
 

@@ -279,8 +279,26 @@
 ;;;; C-x C-SPC to go back if it sends you to a new buffer
 ;;;; C-U C-SPC to go back in the current buffer
 ;;;; damn  that's stupid
-(define-key lisp-interaction-mode-map "\M-." 'find-function) 
-(define-key emacs-lisp-mode-map "\M-." 'find-function)
+
+(defvar my-function-places nil)
+
+(defun my-find-function (function)
+  (interactive (find-function-read))
+  (push  (copy-marker (point)) my-function-places)
+  (find-function-do-it function nil 'switch-to-buffer))
+
+(defun my-pop-function ()
+  (interactive)
+  (let ((p (pop my-function-places)))
+    (when p 
+      (switch-to-buffer (or (marker-buffer p)
+                            (error "The marked buffer has been deleted")))
+      (goto-char p))))
+
+(define-key lisp-interaction-mode-map "\M-." 'my-find-function) 
+(define-key emacs-lisp-mode-map "\M-." 'my-find-function)
+(define-key lisp-interaction-mode-map "\M-," 'my-pop-function) 
+(define-key emacs-lisp-mode-map "\M-," 'my-pop-function)
 (define-key emacs-lisp-mode-map "\M-/" 'lisp-complete-symbol)
 
 (when i-have-slime
@@ -365,9 +383,12 @@
         (set-buffer (get-buffer "*Diff*"))
         (toggle-read-only 1))))))
 
+
 (defun my-revert-buffer () 
   (interactive)
-  (revert-buffer-with-coding-system buffer-file-coding-system))
+  (check-coding-system buffer-file-coding-system)
+  (let ((coding-system-for-read buffer-file-coding-system))
+    (revert-buffer t)))
 
 ;;; keymap properties aren't overlays!
 (defun remove-keymap-prop (begin end)

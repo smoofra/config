@@ -117,6 +117,15 @@
   (interactive (list (read-string "Module name: ")))
   (fff-find-file-in-path (concat name ".pm") (perl-lib-path)))
 
+
+(defun chat () 
+  (interactive)
+  (delete-other-windows)
+  (split-window-vertically)
+  (switch-to-buffer "#lisp")
+  (other-window 1)
+  (switch-to-buffer "#yourmom"))
+
 (setq i-have-slime (load "slime" t))
 (when i-have-slime
   (slime-setup)
@@ -143,6 +152,10 @@
   (def-slime-selector-method ?g
 	"*grep*"
 	(get-buffer "*grep*"))
+  
+  (def-slime-selector-method ?k
+    "chat"
+    (chat))
   
   (def-slime-selector-method ?C
 	"*compilation* buffer"

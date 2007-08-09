@@ -80,7 +80,8 @@
     ))
 
 (define-abbrev-table 'global-abbrev-table '(
-    ("allready" "already" nil 4)
+    ("actuall" "actual" nil 2)
+    ("allready" "already" nil 6)
     ("engeneer" "engineer" nil 4)
     ("foce" "force" nil 2)
     ("necissary" "necessary" nil 4)
@@ -127,7 +128,7 @@
     ))
 
 (define-abbrev-table 'lisp-mode-abbrev-table '(
-    ("inp" "in-package" nil 4)
+    ("inp" "in-package" nil 5)
     ("mvb" "multiple-value-bind" nil 2)
     ))
 

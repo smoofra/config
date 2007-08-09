@@ -90,6 +90,9 @@ $MAILDIR/lisp
 *^List-Id: .*cffi-devel
 $MAILDIR/lisp
 
+:0
+*^List-Id: .*iterate-devel
+$MAILDIR/lisp
 
 
 :0 

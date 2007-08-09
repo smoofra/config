@@ -119,7 +119,7 @@ color index cyan default '~t ldanna@math.umd.edu'
 color index cyan default '~c ldanna@math.umd.edu'
 color index cyan default '~t smoofra@gmail.com'
 color index cyan default '~c smoofra@gmail.com'
-color index green default "~s '\\[(Linux-bcom4301-priv|darcs-devel|Bese-devel|Sbcl-devel|slime-devel|madman-discuss|cffi-devel)\\]'"
+color index green default "~s '\\[(Linux-bcom4301-priv|iterate-devel|darcs-devel|Bese-devel|Sbcl-devel|slime-devel|madman-discuss|cffi-devel)\\]'"
 color index red  default '~h "X-SpamProbe: SPAM"'
 color index red default '~h "X-Spam-Flag: YES"' 
 

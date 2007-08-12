@@ -880,7 +880,7 @@
   (my-lisp-define-key "\M-y"    'lisp-yank-pop)
   (my-lisp-define-key "\M-k"    'save-sexp)
   (my-lisp-define-key "\C-\M-j" 'lisp-join-line)
-  (my-lisp-define-key "\C-a"    'lisp-ctrla)
+  (my-lisp-define-key "\C-a"    'beginning-of-line)
   (my-lisp-define-key "\C-\M-h" 'my-mark-defun)
   (my-lisp-define-key "\r"      'lisp-newline-and-indent)
   (my-lisp-define-key "\C-\M-e" 'backward-transpose-sexp)

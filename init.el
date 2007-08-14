@@ -253,6 +253,21 @@
 	  (equal (point) p)))
     (error nil)))
 
+(defun can-forward-sexp ()
+  (condition-case err
+      (save-excursion
+        (forward-sexp)
+        t)
+    (error nil)))
+
+(defun my-forward-sexp ()
+  (interactive)  
+  (if (can-forward-sexp)
+      (call-interactively 'forward-sexp)
+    (progn
+      (up-list)
+      (backward-char))))
+
 (defun semi-forward-sexp ()
   (interactive)
   (let ((a (point)))
@@ -879,6 +894,7 @@
   (my-lisp-define-key "\M-I"    'sexp-inside-out)
   (my-lisp-define-key "\M-y"    'lisp-yank-pop)
   (my-lisp-define-key "\M-k"    'save-sexp)
+  (my-lisp-define-key "\C-\M-f" 'my-forward-sexp)
   (my-lisp-define-key "\C-\M-j" 'lisp-join-line)
   (my-lisp-define-key "\C-a"    'beginning-of-line)
   (my-lisp-define-key "\C-\M-h" 'my-mark-defun)
@@ -1592,7 +1608,7 @@
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
  '(fill-column 80)
  '(indent-tabs-mode nil)
- '(safe-local-variable-values (quote ((Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
+ '(safe-local-variable-values (quote ((Package . Memoization) (Package . COMMON-LISP-CONTROLLER) (Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
  '(slime-backend "swank-loader.lisp")
  '(slime-enable-evaluate-in-emacs t)
  '(slime-multiprocessing t)

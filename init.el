@@ -329,14 +329,6 @@
 (define-key emacs-lisp-mode-map "\M-," 'my-pop-function)
 (define-key emacs-lisp-mode-map "\M-/" 'lisp-complete-symbol)
 
-(when i-have-slime
-  (slime-define-key "\M-c" 'my-unhighlight)
-  (slime-define-key [tab] 'slime-indent-and-complete-symbol)
-  (slime-define-key [(control tab)]   'tab-to-tab-stop)
-  (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol)
-  (define-key slime-repl-mode-map "\M-/" 'slime-fuzzy-complete-symbol))
- 
-
 (global-set-key "\C-\M-n" 'semi-forward-sexp)
 (global-set-key "\C-\M-p" 'semi-backward-sexp)
 
@@ -345,8 +337,7 @@
   (set-mark (point))
   (slime-edit-definition name where))
 
-(when i-have-slime
-  (define-key slime-mode-map "\M-." 'my-slime-edit-definition))
+
 
 (tool-bar-mode)
 
@@ -448,6 +439,7 @@
 (show-paren-mode t)
 
 ;(global-set-key "\C-o"      'myblink)
+(global-set-key "\\" 'indent-region)
 (global-set-key [C-return] 'open-line)
 (global-set-key [(f1)]     'delete-other-windows)
 (global-set-key [(f12)]    'delete-window)
@@ -818,8 +810,6 @@
 		(cl::read-from-string ,(slime-last-expression)))))))))
 
 (global-set-key "\M-'" 'forward-delete-space-through-parens)
-(when i-have-slime
-  (define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression))
 (global-set-key "\M-i" 'consume-sexp)
 
 (defun my-mark-defun ()
@@ -871,9 +861,6 @@
 			last-command)))
     (yank-pop arg)))
 
-(when i-have-slime
-  (slime-define-key   "\C-ce" 'slime-insert-expand-last-expression))
-
 (defun my-lisp-define-key (k b)
   (setq my-lisp-keys (cons (cons k b) my-lisp-keys)))
 
@@ -881,9 +868,17 @@
   (dolist (cns my-lisp-keys)
     (define-key map (car cns) (cdr cns))))
 
+(defun indent-defun ()
+  (interactive)
+  (let ((x (copy-marker (point))))
+    (beginning-of-defun)
+    (indent-sexp)
+    (goto-char x)))
+
 (progn
   (defvar my-lisp-keys nil)
   (setq my-lisp-keys nil)
+  (my-lisp-define-key "\\"    'indent-defun)
   (my-lisp-define-key "("       'my-insert-parentheses) 
   (my-lisp-define-key ")"       'up-list)
   (my-lisp-define-key "\C-cl"   'slime-load-system)
@@ -903,6 +898,17 @@
   (my-lisp-define-key "\""      'skeleton-pair-insert-maybe)
   (my-lisp-define-key "\C-j"    'backwards-kill-line)
   (when i-have-slime
+    (define-jk slime-inspector-mode-map)
+    (define-key slime-inspector-mode-map "l" 'slime-inspector-pop)
+    (define-key slime-inspector-mode-map "D" 'slime-inspector-describe)
+    (define-key slime-mode-map "\M-." 'my-slime-edit-definition)
+    (slime-define-key "\M-c" 'my-unhighlight)
+    (slime-define-key "\t" 'slime-indent-and-complete-symbol)  
+    (slime-define-key [(control tab)]   'tab-to-tab-stop)
+    (define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression)
+    (slime-define-key "\C-ce" 'slime-insert-expand-last-expression)
+    (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol)
+    (define-key slime-repl-mode-map "\M-/" 'slime-fuzzy-complete-symbol)
     (define-my-lisp-keys-on-map slime-mode-map)
     (define-my-lisp-keys-on-map slime-repl-mode-map)
     (define-my-lisp-keys-on-map slime-scratch-mode-map)
@@ -912,7 +918,6 @@
   (define-my-lisp-keys-on-map emacs-lisp-mode-map)
   (define-my-lisp-keys-on-map lisp-interaction-mode-map)
   (define-my-lisp-keys-on-map lisp-mode-map))
-
 
 (eval-after-load "paredit" 
   '(progn
@@ -1027,12 +1032,6 @@
 ;; (define-key view-mode-map [return] 'foo)
 ;; (define-key view-mode-map [backspace] 'foo)
 
-(when i-have-slime
-  (define-jk slime-inspector-mode-map)
-  (define-key slime-inspector-mode-map "l" 'slime-inspector-pop)
-  (define-key slime-inspector-mode-map "D" 'slime-inspector-describe))
-
-
 ;;; (setq Info-additional-directory-list '("/usr/share/info/emacs-snapshot"))
 
 (eval-after-load 'info 
@@ -1056,6 +1055,7 @@
 
 (setq diff-default-read-only t)
 
+;;; minor mode, keymap, shadow, override
 (add-hook 'diff-mode-hook 
 	  '(lambda () 
 	     (define-key diff-mode-map "\M-q" 'scroll-down-one)

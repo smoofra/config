@@ -905,7 +905,10 @@
   (when i-have-slime
     (define-my-lisp-keys-on-map slime-mode-map)
     (define-my-lisp-keys-on-map slime-repl-mode-map)
-    (define-my-lisp-keys-on-map slime-scratch-mode-map))
+    (define-my-lisp-keys-on-map slime-scratch-mode-map)
+    (define-key slime-repl-mode-map "\C-j" 'slime-repl-backwards-kill-line)
+    (define-key slime-repl-mode-map "\r"   'slime-repl-return)
+    (define-key slime-repl-mode-map "\C-a" 'slime-repl-bol))
   (define-my-lisp-keys-on-map emacs-lisp-mode-map)
   (define-my-lisp-keys-on-map lisp-interaction-mode-map)
   (define-my-lisp-keys-on-map lisp-mode-map))
@@ -919,17 +922,13 @@
      (define-key paredit-mode-map (kbd "M-)")
        'paredit-close-parenthesis-and-newline)))
 
+(defun slime-repl-backwards-kill-line ()
+  (interactive)
+  (let ((p (point)))
+    (slime-repl-bol)
+    (kill-region (point) p)))
 
-(when i-have-slime
-  (defun slime-repl-backwards-kill-line ()
-    (interactive)
-    (let ((p (point)))
-      (slime-repl-bol)
-      (kill-region (point) p)))
-  
-  (define-key slime-repl-mode-map "\C-j" 'slime-repl-backwards-kill-line)
-  (define-key slime-repl-mode-map "\r"   'slime-repl-return)
-  (define-key slime-repl-mode-map "\C-a" 'slime-repl-bol))
+
 
 (eval-after-load "interaction"
   '(progn

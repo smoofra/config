@@ -483,7 +483,7 @@
 (global-set-key "\M-?"      'help-command)
 (global-set-key "\M-p"      'fill-paragraph)
 (global-set-key "\M-\C-q"   'shrink-window)
-(global-set-key "\M-z"      'suspend-emacs)
+;(global-set-key "\M-z"      'suspend-emacs)
 ;(global-set-key "\M-r"      're-lock)
 (global-set-key "\M-r"      'replace-regexp-region)
 (global-set-key "\M-l"      'goto-line)
@@ -958,22 +958,22 @@
   (define-key map "/" 'isearch-forward)
   (define-key map "?" 'isearch-backward))
 
-(defun nothing ()
-  "Do nothing at all"
-  (interactive))
+(defun jk-warn ()
+  (interactive)
+  (message "you're in jk mode dumbass"))
 
 (defvar jk-keymap nil)
 (progn
   (setq jk-keymap (make-keymap))
   (loop for i from 32 to 126 
-        do (define-key jk-keymap (char-to-string i) 'nothing))
-  (define-jk jk-keymap))
-
-(define-minor-mode jk-mode
-  "a lightweight version view mode with vilike movement key "
-  :init-value nil
-  :lighter " jk"
-  :keymap jk-keymap) 
+        do (define-key jk-keymap (char-to-string i) 'jk-warn))
+  (define-key jk-keymap "" 'jk-warn)
+  (define-jk jk-keymap)
+  (define-minor-mode jk-mode
+    "a lightweight version view mode with vilike movement key "
+    :init-value nil
+    :lighter " jk"
+    :keymap jk-keymap)) 
 
 
 (eval-after-load 'apropos

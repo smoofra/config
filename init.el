@@ -541,6 +541,8 @@
 ;;(add-to-list 'auto-mode-alist '("\\.js" . javascript-mode))
 ;;(add-to-list 'magic-mode-alist (cons "#!.*perl" 'cperl-mode))
 
+(add-to-list 'interpreter-mode-alist '("perl" . cperl-mode))
+
 (when (>= emacs-major-version 22)
   (add-to-list 'auto-mode-alist 
 	       (cons "^/tmp/mutt-" 'message-mode)))
@@ -875,6 +877,7 @@
     (indent-sexp)
     (goto-char x)))
 
+;;lisp keybinds
 (progn
   (defvar my-lisp-keys nil)
   (setq my-lisp-keys nil)
@@ -1434,11 +1437,31 @@
 	(next-line)
 	(c-indent-command)))
 
+(defun curly-braces ()
+  (interactive)
+  (if transient-mark-mode
+      (let ((b (copy-marker (region-beginning)))
+            (e (copy-marker (region-end))))
+        (goto-char b)
+        (forward-delete-space)
+        (indent-according-to-mode)
+        (insert "{\n")
+        (indent-according-to-mode)
+        (goto-char e)
+        (if (not (looking-back "\n[ \t]*"))
+            (insert "\n"))
+        (insert "}")
+        (indent-region b (point)))
+    (skeleton-proxy-new
+     '("" > "{" > ?\n > _ > ?\n "}" >))))
 
-(define-skeleton curly-braces
-  "insert some curly braces"
-  ""
-  "{" >  ?\n >  _  > ?\n "}" > )
+;; (defun lambdamark ()
+;;   (interactive)
+;;   (setq transient-mark-mode 'lambda))
+;; (global-set-key "\C-x " 'lambdamark)
+;;;; don't need this, use C-u C-x C-x
+
+
 
 (eval-after-load 'cc-mode
   '(progn 

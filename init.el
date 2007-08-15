@@ -508,7 +508,8 @@
 (global-set-key "\C-xi" 'back-window)
 (global-set-key "\C-xI" 'insert-file) 
 (global-set-key "\C-xg" 'grep)
-
+(global-set-key [insertchar] 'repeat)
+       
 (setq perl-indent-level 2)
 
 (setq compile-command "make | cat")
@@ -1083,17 +1084,12 @@
 (defun SDO (x) (interactive "p") (scroll-down-one x) (previous-line x))
 
 (eval-after-load 'cperl 
-  (setq cperl-invalid-face 'default))
-
-(add-hook 'cperl-mode-hook 
-	  (lambda () 
-            (define-key cperl-mode-map "\M-_"   'c-unwrap-next-sexp)
-            (define-key cperl-mode-map "\r" 'newline-and-indent)
-	    (define-key cperl-mode-map "(" 'self-insert-command)
-	    (define-key cperl-mode-map "\"" 'self-insert-command)
-	    (define-key cperl-mode-map "[" 'self-insert-command)
-	    (define-key cperl-mode-map "{" 'self-insert-command)
-	    (define-key cperl-mode-map "\C-j" 'backwards-kill-line)))
+  (quote
+   (progn
+     (setq cperl-invalid-face 'default)
+     (define-key cperl-mode-map "\M-_"   'c-unwrap-next-sexp)
+     (define-key cperl-mode-map "\r" 'newline-and-indent)
+     (define-key cperl-mode-map "\C-j" 'backwards-kill-line))))
 
 (add-hook 'ruby-mode-hook
 	  (lambda () 
@@ -1444,9 +1440,7 @@
             (e (copy-marker (region-end))))
         (goto-char b)
         (forward-delete-space)
-        (indent-according-to-mode)
         (insert "{\n")
-        (indent-according-to-mode)
         (goto-char e)
         (if (not (looking-back "\n[ \t]*"))
             (insert "\n"))
@@ -1725,6 +1719,24 @@
 (setq-default abbrev-mode t)
 (setq scroll-step 1)
 (setq scroll-conservatively 1)
+
+(defmacro alist-set (place key thing)
+  (let ((cons (gensym)))
+    `(let ((,cons (assoc ,key ,place)))
+       (if ,cons
+           (setf (cdr ,cons) ,thing)
+         (setf ,place (cons (cons ,key ,thing) ,place))))))
+
+
+(alist-set 
+ save-some-buffers-action-alist
+ ?e
+ (list
+  (lambda (buf)
+    (switch-to-buffer buf)
+    (recursive-edit)
+    nil)
+  "edit this buffer"))
 
 
 

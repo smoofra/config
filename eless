@@ -21,7 +21,7 @@ my $lisp = $diff ?
     "(find-diff-file \"$file\")" :
     "(view-file \"$file\")";
 
-!(system qw/ emacsclient -e /, $lisp)
+!(system qw/ emacsclient -a eless-alternate-editor -e /, $lisp)
   or !(system qw/ less -c /, $file)
   or die;
 

@@ -1082,6 +1082,10 @@
 (eval-after-load 'cperl 
   (quote
    (progn
+     (defun cperl-mark-active ()
+       (and transient-mark-mode (mark)))
+     (setq cperl-electric-parens t)
+     (setq cperl-electric-parens-mark t)
      (setq cperl-invalid-face 'default)
      (define-key cperl-mode-map "\M-_"   'c-unwrap-next-sexp)
      (define-key cperl-mode-map "\C-c{" 'curly-braces)
@@ -1735,6 +1739,15 @@
     nil)
   "edit this buffer"))
 
+(alist-set 
+ save-some-buffers-action-alist 
+ ?r 
+ (list 
+  (lambda (buf)
+    (switch-to-buffer buf)
+    (my-revert-buffer)
+    nil)
+  "revert this buffer"))
 
 
 (site-init-late)

@@ -288,7 +288,7 @@
 
 ;(defun semi-backward-sexp ()
 ;  (interactive)
-;  (if (cheqstr (char-before (point)) ")")
+;  (if (= (char-before (point)) ?\) )
 ;      (backward-sexp)
 ;    (progn
 ;      (backward-sexp)
@@ -628,14 +628,10 @@
   (interactive)
   (let ((newlines nil))
     (while (is-space (char-after (point)))
-      (if (cheqstr (char-after (point)) "\n")
+      (if (= (char-after (point)) ?\n)
 	  (setq newlines t))
       (delete-char 1))
     newlines))
-
-(defun cheqstr (char str)
-  (and char 
-       (equal (char-to-string char) str)))
 
 (defun is-closer (char)
   (cond 
@@ -660,10 +656,10 @@
       (backward-char))))
 
 (defun beginning-of-line-p ()
-  (or (equal (point) 1) (cheqstr (char-before (point)) "\n")))
+  (or (equal (point) 1) (= (char-before (point)) ?\n)))
 
 (defun end-of-line-p ()
-  (or (null (char-after (point))) (cheqstr (char-after (point)) "\n")))
+  (or (null (char-after (point))) (= (char-after (point)) ?\n)))
 
 (defun line-empty-before-point ()
   (save-excursion
@@ -683,11 +679,11 @@
   (save-excursion
     (while (is-space (char-after (point)))
       (forward-char))
-    (cheqstr (char-after (point)) ")")))
+    (= (char-after (point)) ?\))))
 
 (defun grab-quotes-before-point ()
-  (if (or (cheqstr (char-before (point)) "'")
-	  (cheqstr (char-before (point)) "`"))
+  (if (or (= (char-before (point)) ?')
+	  (= (char-before (point)) ?`))
       (let ((quote (char-to-string (char-before (point)))))
 	(backward-delete-char 1)
 	(concat (grab-quotes-before-point) quote))
@@ -775,12 +771,12 @@
         (backward-char))
        (t (when (and (not newlines)
                      (not (buffer-is-cc-mode))
-                     (not (cheqstr (char-before (point)) "["))
-                     (not (cheqstr (char-before (point)) "{"))
-                     (not (cheqstr (char-before (point)) "`"))
-                     (not (cheqstr (char-before (point)) "'"))
-                     (not (cheqstr (char-before (point)) "("))
-                     (not (cheqstr (char-before (point)) " ")))
+                     (not (= (char-before (point)) ?[))
+                     (not (= (char-before (point)) ?{))
+                     (not (= (char-before (point)) ?`))
+                     (not (= (char-before (point)) ?'))
+                     (not (= (char-before (point)) ?())
+                     (not (= (char-before (point)) ? )))
             (insert " "))
           (when newlines 
             ;;(lisp-newline-and-indent)
@@ -1086,6 +1082,10 @@
 (eval-after-load 'cperl 
   (quote
    (progn
+     (defun cperl-mark-active ()
+       (and transient-mark-mode (mark)))
+     (setq cperl-electric-parens t)
+     (setq cperl-electric-parens-mark t)
      (setq cperl-invalid-face 'default)
      (define-key cperl-mode-map "\M-_"   'c-unwrap-next-sexp)
      (define-key cperl-mode-map "\C-c{" 'curly-braces)
@@ -1739,6 +1739,15 @@
     nil)
   "edit this buffer"))
 
+(alist-set 
+ save-some-buffers-action-alist 
+ ?r 
+ (list 
+  (lambda (buf)
+    (switch-to-buffer buf)
+    (my-revert-buffer)
+    nil)
+  "revert this buffer"))
 
 
 (site-init-late)

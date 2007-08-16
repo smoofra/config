@@ -921,12 +921,13 @@
   (define-my-lisp-keys-on-map lisp-mode-map))
 
 (eval-after-load "paredit" 
-  '(progn
+  (quote
+   (progn
      (define-key paredit-mode-map "\C-j" 'backwards-kill-line)
      (define-key paredit-mode-map (kbd ")")
        'paredit-close-parenthesis)
      (define-key paredit-mode-map (kbd "M-)")
-       'paredit-close-parenthesis-and-newline)))
+       'paredit-close-parenthesis-and-newline))))
 
 (defun slime-repl-backwards-kill-line ()
   (interactive)
@@ -937,9 +938,10 @@
 
 
 (eval-after-load "interaction"
-  '(progn
+  (quote
+   (progn
      (define-key emacs-cl-mode-map "\C-m" 'emacs-cl-newline)
-     (define-my-lisp-keys-on-map emacs-cl-mode-map)))
+     (define-my-lisp-keys-on-map emacs-cl-mode-map))))
 
 (defun define-jk (map)
   (define-key map "h" 'backward-char)
@@ -974,8 +976,9 @@
 
 
 (eval-after-load 'apropos
-  '(progn 
-     (define-jk apropos-mode-map)))
+  (quote
+   (progn 
+     (define-jk apropos-mode-map))))
 
 (defun comint-previous-matching-input-feh () 
   (interactive)
@@ -986,13 +989,14 @@
   (comint-next-matching-input (car minibuffer-history-search-history) 1))
 
 (eval-after-load 'comint
-  '(progn
+  (quote
+   (progn
      (define-key comint-mode-map "\M-\C-r" 'comint-previous-matching-input-feh)
      (define-key comint-mode-map "\M-\C-s" 'comint-next-matching-input-feh)
      (define-key comint-mode-map "\M-/" 'comint-dynamic-list-filename-completions)
      (define-key comint-mode-map "\M-?" 'help)
      (define-key comint-mode-map "\C-z" 'scroll-up-one)
-     (define-key comint-mode-map "\C-q" 'scroll-down-one)))
+     (define-key comint-mode-map "\C-q" 'scroll-down-one))))
 
 ;(define-key comint-mode-map "\M-p" 'previous-line)
 ;(define-key comint-mode-map "\M-n" 'next-line)
@@ -1036,7 +1040,8 @@
 ;;; (setq Info-additional-directory-list '("/usr/share/info/emacs-snapshot"))
 
 (eval-after-load 'info 
-  '(progn
+  (quote
+   (progn
      (define-key Info-mode-map "u" 'scroll-down-half)
      (define-key Info-mode-map "d" 'scroll-up-half)
      (define-key Info-mode-map "k" 'scroll-down-one)
@@ -1052,23 +1057,23 @@
      (define-key Info-mode-map "H" 'Info-history)
      (define-key Info-mode-map "P" 'Info-prev)
      (define-key Info-mode-map "U" 'Info-up)
-     (define-key Info-mode-map "D" 'Info-directory)))
+     (define-key Info-mode-map "D" 'Info-directory))))
 
 (setq diff-default-read-only t)
 
 ;;; minor mode, keymap, shadow, override
-(add-hook 'diff-mode-hook 
-	  '(lambda () 
-	     (define-key diff-mode-map "\M-q" 'scroll-down-one)
-	     ;;(define-jk diff-mode-shared-map)
-             ;;(define-jk diff-mode-map)
-             ;;;; diff mode sets this so it can add binds to read-only buffers 
-             ;;;; in an extremely broken way, and removes it in a special hook
-             ;;;; for view mode in an even more broken way.  ugh disgusting.
-             (setq minor-mode-overriding-map-alist nil) 
-             (jk-mode)
-             (define-key diff-mode-map "a" 'diff-apply-hunk)
-	     (define-key diff-mode-map "t" 'diff-test-hunk)))
+(add-hook 'diff-mode-hook 'my-diff-hook)
+(defun my-diff-hook () 
+  (define-key diff-mode-map "\M-q" 'scroll-down-one)
+  ;;(define-jk diff-mode-shared-map)
+  ;;(define-jk diff-mode-map)
+  ;; diff mode sets this so it can add binds to read-only buffers 
+  ;; in an extremely broken way, and removes it in a special hook
+  ;; for view mode in an even more broken way.  ugh disgusting.
+  (setq minor-mode-overriding-map-alist nil) 
+  (jk-mode)
+  (define-key diff-mode-map "a" 'diff-apply-hunk)
+  (define-key diff-mode-map "t" 'diff-test-hunk))
 
 
 (add-hook 'before-make-frame-hook '(lambda () (menu-bar-mode -1)))
@@ -1345,9 +1350,10 @@
 ;;   (next-line))
 
 (eval-after-load 'erc
-  '(progn (add-hook 'erc-join-hook 'bitlbee-identify)
-          ;;;(define-key erc-mode-map "\M-q" 'silly-scroll-down-one-hack )
-	  (setq erc-auto-query 'buffer)))
+  (quote
+   (progn (add-hook 'erc-join-hook 'bitlbee-identify)
+          ;;(define-key erc-mode-map "\M-q" 'silly-scroll-down-one-hack )
+	  (setq erc-auto-query 'buffer))))
 
 (defun bitlbee-identify ()
   "If we're on the bitlbee server, send the identify command to the #bitlbee channel."
@@ -1373,20 +1379,22 @@
 
 
 (eval-after-load 'css-mode
-  '(setq cssm-indent-function #'cssm-c-style-indenter))
+  (quote (setq cssm-indent-function #'cssm-c-style-indenter)))
 
 (eval-after-load 'nxml-mode
-  '(progn
+  (quote
+   (progn
      (define-key nxml-mode-map "\C-c/" 'nxml-finish-element)
      (define-key nxml-mode-map "\C-\M-f" 'nxml-forward-element)
-     (define-key nxml-mode-map "\C-\M-b" 'nxml-backward-element)))
+     (define-key nxml-mode-map "\C-\M-b" 'nxml-backward-element))))
 
 (eval-after-load 'sgml-mode
-  '(progn
+  (quote
+   (progn
      (define-key sgml-mode-map "\C-\M-f" 'sgml-skip-tag-forward)
      (define-key sgml-mode-map "\C-\M-b" 'sgml-skip-tag-backward)
      (define-key html-mode-map "\C-\M-f" 'sgml-skip-tag-forward)
-     (define-key html-mode-map "\C-\M-b" 'sgml-skip-tag-backward)))
+     (define-key html-mode-map "\C-\M-b" 'sgml-skip-tag-backward))))
 
 (window-configuration-to-register ?w)
 
@@ -1460,7 +1468,8 @@
 
 
 (eval-after-load 'cc-mode
-  '(progn 
+  (quote
+   (progn 
      (defun buffer-is-cc-mode ()
        c-buffer-is-cc-mode)
      (defun c-newline-and-indent ()
@@ -1476,7 +1485,7 @@
      (define-key c-mode-map "\C-k"   'c-kill-line)
      (define-key c-mode-map "\M-_"   'c-unwrap-next-sexp)
      (define-key c-mode-map [return] 'c-newline-and-indent)
-     (define-key c-mode-map "\C-\M-j" 'c-join-line)))
+     (define-key c-mode-map "\C-\M-j" 'c-join-line))))
 
 
 ;; hl-line-mode will highlight the current line, 
@@ -1561,12 +1570,13 @@
 ;;;freaking, yay.  this should be the default though.
 (setq comint-prompt-read-only 1)
 (eval-after-load 'shell
-  '(progn
+  (quote
+   (progn
      (add-hook 'shell-mode-hook 'my-shell-hook)
      (load-library "ansi-color")
      (ansi-color-for-comint-mode-on)
      (setq shell-font-lock-keywords nil)
-     (define-key shell-mode-map "\M-?" 'help)))
+     (define-key shell-mode-map "\M-?" 'help))))
 
 (defun my-shell-hook ()
   (setq comint-last-output-start (copy-marker 0))

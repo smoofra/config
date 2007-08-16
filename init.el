@@ -339,7 +339,7 @@
 
 
 
-(tool-bar-mode)
+(tool-bar-mode -1)
 
 (if (not (eq system-type 'darwin)) 
     (setq default-frame-alist 

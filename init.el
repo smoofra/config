@@ -897,6 +897,7 @@
   (my-lisp-define-key "\C-\M-e" 'backward-transpose-sexp)
   (my-lisp-define-key "\""      'skeleton-pair-insert-maybe)
   (my-lisp-define-key "\C-j"    'backwards-kill-line)
+  (my-lisp-define-key "\C-cd"   'mark-defun)
   (when i-have-slime
     (define-jk slime-inspector-mode-map)
     (define-key slime-inspector-mode-map "l" 'slime-inspector-pop)

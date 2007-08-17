@@ -874,6 +874,39 @@
     (indent-sexp)
     (goto-char x)))
 
+
+(defun define-jk (map)
+  (define-key map "h" 'backward-char)
+  (define-key map "l" 'forward-char)
+  (define-key map "H" 'backward-char)
+  (define-key map "L" 'forward-char)
+  (define-key map "u" 'scroll-down-half)
+  (define-key map "d" 'scroll-up-half)
+  (define-key map "J" 'next-line)
+  (define-key map "K" 'previous-line)
+  (define-key map "j" 'SUO)
+  (define-key map "k" 'SDO)
+  (define-key map "/" 'isearch-forward)
+  (define-key map "?" 'isearch-backward))
+
+(defun jk-warn ()
+  (interactive)
+  (message "you're in jk mode dumbass"))
+
+(defvar jk-keymap nil)
+(progn
+  (setq jk-keymap (make-keymap))
+  (loop for i from 32 to 126 
+        do (define-key jk-keymap (char-to-string i) 'jk-warn))
+  (define-key jk-keymap "" 'jk-warn)
+  (define-jk jk-keymap)
+  (define-minor-mode jk-mode
+    "a lightweight version view mode with vilike movement key "
+    :init-value nil
+    :lighter " jk"
+    :keymap jk-keymap))
+
+
 ;;lisp keybinds
 (progn
   (defvar my-lisp-keys nil)
@@ -942,38 +975,6 @@
    (progn
      (define-key emacs-cl-mode-map "\C-m" 'emacs-cl-newline)
      (define-my-lisp-keys-on-map emacs-cl-mode-map))))
-
-(defun define-jk (map)
-  (define-key map "h" 'backward-char)
-  (define-key map "l" 'forward-char)
-  (define-key map "H" 'backward-char)
-  (define-key map "L" 'forward-char)
-  (define-key map "u" 'scroll-down-half)
-  (define-key map "d" 'scroll-up-half)
-  (define-key map "J" 'next-line)
-  (define-key map "K" 'previous-line)
-  (define-key map "j" 'SUO)
-  (define-key map "k" 'SDO)
-  (define-key map "/" 'isearch-forward)
-  (define-key map "?" 'isearch-backward))
-
-(defun jk-warn ()
-  (interactive)
-  (message "you're in jk mode dumbass"))
-
-(defvar jk-keymap nil)
-(progn
-  (setq jk-keymap (make-keymap))
-  (loop for i from 32 to 126 
-        do (define-key jk-keymap (char-to-string i) 'jk-warn))
-  (define-key jk-keymap "" 'jk-warn)
-  (define-jk jk-keymap)
-  (define-minor-mode jk-mode
-    "a lightweight version view mode with vilike movement key "
-    :init-value nil
-    :lighter " jk"
-    :keymap jk-keymap)) 
-
 
 (eval-after-load 'apropos
   (quote

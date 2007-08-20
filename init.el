@@ -1762,6 +1762,22 @@
   "revert this buffer"))
 
 
+(defun arithmatic-on-number-at-point (form)
+  (interactive "x")
+  (if (looking-at "\\([0-9]+\\)")
+      (let* ((x  (car (read-from-string (match-string 1))))
+             (nx (eval form)))
+        (replace-match (prin1-to-string nx)))
+    (error "not an integer")))
+
+(defun increment-number-at-point ()
+  (interactive)
+  (if (looking-at "\\([0-9]+\\)")
+      (replace-match (prin1-to-string (+ 1 (car (read-from-string (match-string 1))))))
+    (error "not an integer")))
+
+
+
 (site-init-late)
 
 

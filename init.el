@@ -3,6 +3,7 @@
 (setq inferior-lisp-program  "sbcl")
 ;;(setq inferior-lisp-program  "sbcl.cvs")
 ;;(setq inferior-lisp-program  "/home/larry/allegro/acl62_trial/alisp")
+;;(setq inferior-lisp-program  "/home/larry/lisp/acl81_express/alisp")
 ;;(setq inferior-lisp-program  "lisp")
 ;;(setq inferior-lisp-program  "env SBCL_HOME=/home/larry/usrsbcl/lib/sbcl /home/larry/usrsbcl/bin/sbcl")
 ;;(setq inferior-lisp-program  "/sw/bin/openmcl --load /Users/larry/.openmcl-init")
@@ -364,22 +365,23 @@
 
 ;;;;from emacs source, modified
 (eval-after-load "diff"
-  '(defun diff-sentinel (code)
-     "Code run when the diff process exits.
-     CODE is the exit code of the process.  It should be 0 iff no diffs were found."
-     (if diff-old-temp-file (delete-file diff-old-temp-file))
-     (if diff-new-temp-file (delete-file diff-new-temp-file))
-     (save-excursion
-       (goto-char (point-max))
-       (let ((inhibit-read-only t))
-         (insert (format "\nDiff finished%s.  %s\n"
-                         (if (equal 0 code) " (no differences)" "")
-                         (current-time-string)))))
-     (when (and (not (null buffer-to-revert-if-no-diff))
-                (equal 0 code))
-       (set-buffer buffer-to-revert-if-no-diff)
-       (revert-buffer t t t))
-     (setq diff-return-code code)))
+  (quote (defun diff-sentinel (code)
+           "Code run when the diff process exits.
+            CODE is the exit code of the process.  It should be 0
+            iff no diffs were found."
+           (if diff-old-temp-file (delete-file diff-old-temp-file))
+           (if diff-new-temp-file (delete-file diff-new-temp-file))
+           (save-excursion
+             (goto-char (point-max))
+             (let ((inhibit-read-only t))
+               (insert (format "\nDiff finished%s.  %s\n"
+                               (if (equal 0 code) " (no differences)" "")
+                               (current-time-string)))))
+           (when (and (not (null buffer-to-revert-if-no-diff))
+                      (equal 0 code))
+             (set-buffer buffer-to-revert-if-no-diff)
+             (revert-buffer t t t))
+           (setq diff-return-code code))))
  
 
 (defvar diff-return-code nil)

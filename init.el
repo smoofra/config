@@ -1678,10 +1678,21 @@
 ;;; M-x global-set-key
 ;;; M-x repeat-complex-command (or C-x ESC ESC)
 
-;;test change for git, again.  now testing pushing. again
 
-;;bar
-;;fooooooooo
+
+(define-skeleton html-tag 
+  "add a html tag"
+  ""
+  "<" (setq foo (read-from-minibuffer "tag? ")) ">"  _ "</" foo ">" )
+
+(setq skeleton-end-newline nil)
+
+(eval-after-load 'php-mode
+  (quote
+   (progn 
+     ;; C-, 
+     (define-key php-mode-map (quote [67108908]) (quote html-tag)))))
+
 
 (define-skeleton latex-begin 
   "\begin something"

@@ -1691,7 +1691,8 @@
   (quote
    (progn 
      ;; C-, 
-     (define-key php-mode-map (quote [67108908]) (quote html-tag)))))
+     (define-key php-mode-map (quote [67108908]) (quote html-tag))
+     (define-key php-mode-map ")" 'up-list))))
 
 
 (define-skeleton latex-begin 

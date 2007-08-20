@@ -876,6 +876,39 @@
     (indent-sexp)
     (goto-char x)))
 
+
+(defun define-jk (map)
+  (define-key map "h" 'backward-char)
+  (define-key map "l" 'forward-char)
+  (define-key map "H" 'backward-char)
+  (define-key map "L" 'forward-char)
+  (define-key map "u" 'scroll-down-half)
+  (define-key map "d" 'scroll-up-half)
+  (define-key map "J" 'next-line)
+  (define-key map "K" 'previous-line)
+  (define-key map "j" 'SUO)
+  (define-key map "k" 'SDO)
+  (define-key map "/" 'isearch-forward)
+  (define-key map "?" 'isearch-backward))
+
+(defun jk-warn ()
+  (interactive)
+  (message "you're in jk mode dumbass"))
+
+(defvar jk-keymap nil)
+(progn
+  (setq jk-keymap (make-keymap))
+  (loop for i from 32 to 126 
+        do (define-key jk-keymap (char-to-string i) 'jk-warn))
+  (define-key jk-keymap "" 'jk-warn)
+  (define-jk jk-keymap)
+  (define-minor-mode jk-mode
+    "a lightweight version view mode with vilike movement key "
+    :init-value nil
+    :lighter " jk"
+    :keymap jk-keymap))
+
+
 ;;lisp keybinds
 (progn
   (defvar my-lisp-keys nil)
@@ -944,38 +977,6 @@
    (progn
      (define-key emacs-cl-mode-map "\C-m" 'emacs-cl-newline)
      (define-my-lisp-keys-on-map emacs-cl-mode-map))))
-
-(defun define-jk (map)
-  (define-key map "h" 'backward-char)
-  (define-key map "l" 'forward-char)
-  (define-key map "H" 'backward-char)
-  (define-key map "L" 'forward-char)
-  (define-key map "u" 'scroll-down-half)
-  (define-key map "d" 'scroll-up-half)
-  (define-key map "J" 'next-line)
-  (define-key map "K" 'previous-line)
-  (define-key map "j" 'SUO)
-  (define-key map "k" 'SDO)
-  (define-key map "/" 'isearch-forward)
-  (define-key map "?" 'isearch-backward))
-
-(defun jk-warn ()
-  (interactive)
-  (message "you're in jk mode dumbass"))
-
-(defvar jk-keymap nil)
-(progn
-  (setq jk-keymap (make-keymap))
-  (loop for i from 32 to 126 
-        do (define-key jk-keymap (char-to-string i) 'jk-warn))
-  (define-key jk-keymap "" 'jk-warn)
-  (define-jk jk-keymap)
-  (define-minor-mode jk-mode
-    "a lightweight version view mode with vilike movement key "
-    :init-value nil
-    :lighter " jk"
-    :keymap jk-keymap)) 
-
 
 (eval-after-load 'apropos
   (quote
@@ -1679,10 +1680,21 @@
 ;;; M-x global-set-key
 ;;; M-x repeat-complex-command (or C-x ESC ESC)
 
-;;test change for git, again.  now testing pushing. again
 
-;;bar
-;;fooooooooo
+
+(define-skeleton html-tag 
+  "add a html tag"
+  ""
+  "<" (setq foo (read-from-minibuffer "tag? ")) ">"  _ "</" foo ">" )
+
+(setq skeleton-end-newline nil)
+
+(eval-after-load 'php-mode
+  (quote
+   (progn 
+     ;; C-, 
+     (define-key php-mode-map (quote [67108908]) (quote html-tag)))))
+
 
 (define-skeleton latex-begin 
   "\begin something"
@@ -1761,6 +1773,22 @@
     (my-revert-buffer)
     nil)
   "revert this buffer"))
+
+
+(defun arithmatic-on-number-at-point (form)
+  (interactive "x")
+  (if (looking-at "\\([0-9]+\\)")
+      (let* ((x  (car (read-from-string (match-string 1))))
+             (nx (eval form)))
+        (replace-match (prin1-to-string nx)))
+    (error "not an integer")))
+
+(defun increment-number-at-point ()
+  (interactive)
+  (if (looking-at "\\([0-9]+\\)")
+      (replace-match (prin1-to-string (+ 1 (car (read-from-string (match-string 1))))))
+    (error "not an integer")))
+
 
 
 (site-init-late)

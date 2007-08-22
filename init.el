@@ -443,8 +443,8 @@
 (defun my-server-done ()
   (interactive)
   (dolist (x server-clients)
-  (when (eql (current-buffer) (cadr x))
-    (call-interactively 'server-edit))))
+    (when (eql (current-buffer) (cadr x))
+      (call-interactively 'server-edit))))
 
 (global-set-key "\C-c\C-c"  'my-server-done)
 ;(global-set-key "\C-o"      'myblink)

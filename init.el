@@ -129,6 +129,7 @@
 
 (setq i-have-slime (load "slime" t))
 (when i-have-slime
+  (setq slime-net-coding-system 'utf-8-unix)
   (slime-setup)
   
   (def-slime-selector-method ?o

@@ -441,6 +441,13 @@
 
 (show-paren-mode t)
 
+(defun my-server-done ()
+  (interactive)
+  (dolist (x server-clients)
+    (when (eql (current-buffer) (cadr x))
+      (call-interactively 'server-edit))))
+
+(global-set-key "\C-c\C-c"  'my-server-done)
 ;(global-set-key "\C-o"      'myblink)
 (global-set-key "\\" 'indent-region)
 (global-set-key [C-return] 'open-line)
@@ -1694,7 +1701,8 @@
   (quote
    (progn 
      ;; C-, 
-     (define-key php-mode-map (quote [67108908]) (quote html-tag)))))
+     (define-key php-mode-map (quote [67108908]) (quote html-tag))
+     (define-key php-mode-map ")" 'up-list))))
 
 
 (define-skeleton latex-begin 

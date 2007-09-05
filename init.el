@@ -968,6 +968,7 @@
 (eval-after-load "paredit" 
   (quote
    (progn
+     (define-key paredit-mode-map "\M-r"  'replace-regexp-region)
      (define-key paredit-mode-map "\C-\M-n" 'semi-forward-sexp)
      (define-key paredit-mode-map "\C-\M-p" 'semi-backward-sexp)
      (define-key paredit-mode-map "\C-j" 'backwards-kill-line)
@@ -1368,7 +1369,8 @@
   (quote
    (progn (add-hook 'erc-join-hook 'bitlbee-identify)
           ;;(define-key erc-mode-map "\M-q" 'silly-scroll-down-one-hack )
-	  (setq erc-auto-query 'buffer))))
+          (setq erc-auto-query 'buffer)
+          (define-key erc-mode-map [home]  'SDO))))
 
 (defun bitlbee-identify ()
   "If we're on the bitlbee server, send the identify command to the #bitlbee channel."

@@ -22,18 +22,14 @@
 
 (setq load-path (cons "/usr/share/maxima/5.9.1/emacs/" load-path))
 
-;(setq load-path (cons "/usr/share/emacs/site-lisp/tnt/" load-path))
 (setq load-path (cons "~/config" load-path))
-(setq load-path (cons "~/emacslisp" load-path))
-(setq load-path (cons "~/emacslisp/tnt-2.5/" load-path))
-(setq load-path (cons "~/emacslisp/emacs-cl" load-path))
-(setq load-path (cons "~/emacslisp/darcs-mode" load-path))
+(setq load-path (cons "~/config/emacslisp" load-path))
+
 (autoload 'lisppaste-paste-region "lisppaste" "lisppaste" t)
 
 ;;(setq browse-url-browser-function 'browse-url-firefox)
 (setq browse-url-browser-function 'w3m-browse-url)
 (autoload 'w3m-browse-url "w3m" "web browser" t)
-(autoload 'tnt-open "tnt" "tnt" t)
 
 
 (autoload 'bubble-buffer-next "bubble-buffer")

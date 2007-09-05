@@ -17,6 +17,7 @@
 (eval-after-load 'psvn 
   '(setq svn-status-default-log-arguments '("--verbose"   "--limit=20")))
 (autoload 'darcsum-whatsnew "darcsum" "" t)
+(autoload 'paredit-mode "paredit" "" t)
 
 
 (setq load-path (cons "/usr/share/maxima/5.9.1/emacs/" load-path))
@@ -130,6 +131,7 @@
 
 (setq i-have-slime (load "slime" t))
 (when i-have-slime
+  (require 'slime-fuzzy)
   (setq slime-net-coding-system 'utf-8-unix)
   (slime-setup)
   
@@ -273,12 +275,15 @@
 
 (defun semi-forward-sexp ()
   (interactive)
-  (let ((a (point)))
-    (forward-sexp)
-    (let ((b (point)))
-      (backward-sexp)
-      (unless (< a (point))
-	(setf (point) b)))))
+  (if (looking-at "[ \n]*)")
+      (progn (up-list)
+             (backward-char))
+    (let ((a (point)))
+      (forward-sexp)
+      (let ((b (point)))
+        (backward-sexp)
+        (unless (< a (point))
+          (setf (point) b))))))
 
 (defun semi-backward-sexp ()
   (interactive)
@@ -332,8 +337,6 @@
 (define-key emacs-lisp-mode-map "\M-," 'my-pop-function)
 (define-key emacs-lisp-mode-map "\M-/" 'lisp-complete-symbol)
 
-(global-set-key "\C-\M-n" 'semi-forward-sexp)
-(global-set-key "\C-\M-p" 'semi-backward-sexp)
 
 (defun my-slime-edit-definition (name &optional where)
   (interactive (list (slime-read-symbol-name "Symbol: ")))
@@ -795,7 +798,7 @@
             (indent-according-to-mode))
           (forward-sexp)
           (insert c)
-          (backward-char))))))
+          (backward-char))))))))
 
 (defun lisp-ctrla ()
   (interactive)
@@ -922,6 +925,8 @@
 (progn
   (defvar my-lisp-keys nil)
   (setq my-lisp-keys nil)
+  (my-lisp-define-key "\C-\M-n" 'semi-forward-sexp)
+  (my-lisp-define-key "\C-\M-p" 'semi-backward-sexp)
   (my-lisp-define-key "\\"    'indent-defun)
   (my-lisp-define-key "("       'my-insert-parentheses) 
   (my-lisp-define-key ")"       'up-list)
@@ -967,6 +972,8 @@
 (eval-after-load "paredit" 
   (quote
    (progn
+     (define-key paredit-mode-map "\C-\M-n" 'semi-forward-sexp)
+     (define-key paredit-mode-map "\C-\M-p" 'semi-backward-sexp)
      (define-key paredit-mode-map "\C-j" 'backwards-kill-line)
      (define-key paredit-mode-map (kbd ")")
        'paredit-close-parenthesis)

@@ -128,8 +128,9 @@
     ))
 
 (define-abbrev-table 'lisp-mode-abbrev-table '(
-    ("inp" "in-package" nil 5)
-    ("mvb" "multiple-value-bind" nil 2)
+    ("inp" "in-package" nil 8)
+    ("mvb" "multiple-value-bind" nil 4)
+    ("mvl" "multiple-value-list" nil 3)
     ))
 
 (define-abbrev-table 'lisppaste-mode-abbrev-table '(

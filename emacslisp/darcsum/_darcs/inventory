@@ -1,0 +1,435 @@
+[Initial import
+Christian Neukirchen <chneukirchen@gmail.com>**20050313133841
+ Import of John Wiegley's darcsum.el version 1.00
+] 
+[Fix regexps for prompts
+Christian Neukirchen <chneukirchen@gmail.com>**20050313134209
+ The regular expressions to match "Shall I * this patch?" have been updated.
+] 
+[Support for context diffs
+Christian Neukirchen <chneukirchen@gmail.com>**20050313134814
+ With `u' you can now toggle whether `diff -u'-like context should be displayed.
+] 
+[Handle changed darcs whatsnew exit value
+Christian Neukirchen <chneukirchen@gmail.com>**20050313134924
+ darcs whatsnew has been changed to return 1 if there are no changes.
+] 
+[Bugfix
+Christian Neukirchen <chneukirchen@gmail.com>**20050313134940] 
+[Provide darcsum
+Christian Neukirchen <chneukirchen@gmail.com>**20050313135028
+ Added (provide 'darcsum) so you can load darcsum with
+ (require 'darcsum) in your .emacs.
+] 
+[Activate font-lock by default
+Christian Neukirchen <chneukirchen@gmail.com>**20050313135041] 
+[Add TODO
+Christian Neukirchen <chneukirchen@gmail.com>**20050313135241] 
+[Reenable undo for darcs-comment-mode
+Christian Neukirchen <chneukirchen@gmail.com>**20050313162549] 
+[Don't bark if there are no changes on redo
+Christian Neukirchen <chneukirchen@gmail.com>**20050313162703] 
+[Ask whether to use existing *darcs comment* buffer and record
+Christian Neukirchen <chneukirchen@gmail.com>**20050313165044] 
+[Add Xtla like record messaging writing
+Christian Neukirchen <chneukirchen@gmail.com>**20050313173548
+ 
+ * darcsum.el (darcsum-add-comment): New function lifted from Xtla.
+ ("\C-xD"): New keybinding.
+ 
+] 
+[New TODO entry
+Christian Neukirchen <chneukirchen@gmail.com>**20050313173622] 
+[Allow both the old and new prompts
+Christian Neukirchen <chneukirchen@gmail.com>**20050313175224] 
+[Code rearranginng
+Christian Neukirchen <chneukirchen@gmail.com>**20050313175655] 
+[Capitalize messages
+Christian Neukirchen <chneukirchen@gmail.com>**20050313175858] 
+[Add my writing about the "perfect darcs mode"
+Christian Neukirchen <chneukirchen@gmail.com>**20050313184422] 
+[Bugfix
+Christian Neukirchen <chneukirchen@gmail.com>**20050320133934] 
+[Ensure TERM=emacs to (partly) disable darcs highlighting
+Christian Neukirchen <chneukirchen@gmail.com>**20050320135258] 
+[Convert left-over ANSI sequences
+Christian Neukirchen <chneukirchen@gmail.com>**20050320141912] 
+[Handle question for mail adress
+Christian Neukirchen <chneukirchen@gmail.com>**20050320162240] 
+[Use simple text properties rather than font-lock mode
+David E. Long <david@integrandsoftware.com>**20050414133002
+ 
+] 
+[Add TERM=emacs to process-environment for record, send, and revert
+David E. Long <david@integrandsoftware.com>**20050414133135] 
+[Handle changes and removals for binary files
+David E. Long <david@integrandsoftware.com>**20050417133500] 
+[Further clean-ups for addfile and rmfile patches
+David E. Long <david@integrandsoftware.com>**20050418012647
+ Internally, keep track of whatever other changes darcs spit out for
+ added or removed files, so that we'll know what to do if asked about
+ those changes during recording.  However, keep toggle from showing
+ any other changes.  Once this is done, the ignore-next-hunk stuff can
+ be dropped from parsing change sets.  It was causing problems in the
+ rmfile case, since darcs was spitting out the hunk that should have
+ been ignored before the rmfile.
+] 
+[Put optional --unified at end of whatsnew options for darcsum-whatsnew
+David E. Long <david@integrandsoftware.com>**20050418144807
+ Otherwise with prefix arg, implying --look-for-adds, the command that
+ is executed is darcs whatsnew --no-summary "" --look-for-adds, which
+ darcs takes to mean look for changes in the files "" and
+ "--look-for-adds".  At any rate, darcs prints
+ 
+ What's new in "" "--look-for-adds":
+ 
+ at the start of the change set, which confuses the change set parsing.
+] 
+[Update header
+Christian Neukirchen <chneukirchen@gmail.com>**20050419185253] 
+[Handle new darcs questions
+Matthieu Lemerre <racin@free.fr>**20050727204338] 
+[Derive darcsum-mode from fundamental-mode, not text-mode
+Christian Neukirchen <chneukirchen@gmail.com>**20050803103437
+ This will make darcsum-mode not use text-mode's hooks, which can be
+ inappropriate (proposed by Björn Lindström).
+] 
+[require 'cl
+Christian Neukirchen <chneukirchen@gmail.com>**20050907132755
+ As reported by lelit on #darcs and Lukasz Pankowski, cl is needed for
+ some functions darcsum.el uses.  While per definition cl should not be
+ required at runtime by user libraries, I don't see an easier way yet
+ to tackle that issue.
+] 
+[Add definition of line-beginning-position for XEmacs
+Christian Neukirchen <chneukirchen@gmail.com>**20050918102018
+ Aaron Kaplan <kaplan@cs.rochester.edu> writes:
+ > darcsum-whatsnew doesn't work on xemacs because
+ > line-beginning-position is undefined.  I found a definition in the
+ > following file, and now that I've evaluated that definition, darcsum
+ > seems to be working fine.
+ >
+ > http://www.jl42.de/linux/boxquote.el
+] 
+[Checking darcsum-mode in destructive interactive commands
+Christian Neukirchen <chneukirchen@gmail.com>**20050923155541
+ Lukasz Pankowski writes:
+ > Some of the interactive commands in darcsum.el are destructive. Most
+ > will replace whole content of the current buffer with darcsum-mode
+ > stuff (as darcsum-add) and one (darcsum-quit) will kill the buffer.
+ > 
+ > Their current behaviour makes sense only in the darcsum-mode. The
+ > attached patch checks this is the case. I did not add check in all
+ > interactive commands such as darcs-next-line which only move around
+ > the buffer.
+] 
+[Don't record with an empty record comment
+Christian Neukirchen <chneukirchen@gmail.com>**20050926124017
+ Ryszard Kubiak writes:
+ > 2. On C-c C-c please check if the first line of the buffer
+ > offered by "c" contains any visible characters. If the line
+ > is empty darcs asks for the patch name which darcsum is not
+ > aware off. darcs creates then a lock file which blocks subsequent
+ > actions. By inspecting the first line darcsum may prevent darcs
+ > from doing that.
+] 
+[Remove shortcut for darcsum-remove
+Christian Neukirchen <chneukirchen@gmail.com>**20050926125203
+ Ryszard Kubiak writes:
+ > 5. Please change the meaning of "r". I am absolutely convinced
+ > that removing both the file its repo contents in one step
+ > is a very bad habbit. There are very many means in the operating
+ > system and in Emacs for removing files. Removing a file, even
+ > if preceded with a query, may be not what the user wants to achieve.
+ > For example if a file has been included to darcs's "boring"
+ > category then one may want to remove its changes from the repo but
+ > not the file as such. If you insist that the behaviour is something
+ > most users are happy with then add an option to the query that follows
+ > "r", asking whether the file should stay.
+] 
+[Small documentation improvements
+Christian Neukirchen <chneukirchen@gmail.com>**20050926125451
+ Suggested by Ryszard Kubiak.
+] 
+[Propose the root of the repository not current directory
+lele@metapensiero.it**20051004134441
+ Now darcsum-whatsnew and darcsum-view propose the root of the darcs
+ repository, found by looking for the closer "_darcs" up in the parents,
+ instead of current-directory.
+] 
+[Added darcsum-diff-switches
+Pekka.Pessi@nokia.com**20050908092016
+ darcsum-diff-switches are extra arguments given to diff
+] 
+[Added "?" command to darcs-mode.
+Pekka.Pessi@nokia.com**20050908092043] 
+[Use point-at-bol as line-beginning-position a'la XEmacs 
+Pekka Pessi <Pekka.Pessi@iki.fi>**20051005212805] 
+[Allow darcsum-whatsnew to show changes within a single directory in repo.
+Pekka Pessi <Pekka.Pessi@iki.fi>**20051006122336] 
+[Added darcsum-whatsnew-switches.
+Pekka Pessi <Pekka.Pessi@iki.fi>**20051006123658] 
+[Fix default-directory for GNU Emacs
+Christian Neukirchen <chneukirchen@gmail.com>**20051007160738] 
+[Document most interactive commands.
+lele@metapensiero.it**20051007101155] 
+[Fix prompt, there is no apply involved.
+lele@metapensiero.it**20051007101259] 
+[Small bugfix for darcsum-repository-root
+Christian Neukirchen <chneukirchen@gmail.com>**20051105112101
+ David Wallin writes:
+ > Attached is a small patch that you might incorporate. The reason for
+ > the patch is that if I do M-x darcsum-whatsnew on the *scratch*
+ > buffer, the function `darcsum-repository-root' gets stuck in an
+ > infinite loop (my default-directory being "~/")
+] 
+[ Use `read-file-name' if `read-directory-name' not available.
+Dave Love <fx@gnu.org>**20051123105323] 
+[Several fixes.
+Dave Love <fx@gnu.org>**20051123111653
+ (add-log, cl): Require (only) at compile time.
+ (darcsum): Remove :version.
+ (darcsum-make-temp-file): Test for feature, not XEmacs.
+ (darcsum-whatsnew-switches): Move before use.
+] 
+[Replace make-variable-buffer-local, string-to-int.
+Dave Love <fx@gnu.org>**20051123112759
+ The former is a mistake, the latter warned about in Emacs 22.
+ (string-to-number is long available.)
+] 
+[Doc and message fixes.
+Dave Love <fx@gnu.org>**20051123114009] 
+[Misc fixes.
+Dave Love <fx@gnu.org>**20051123114205
+ (line-beginning-position): Use `defalias', not `fset'.
+ (darcsum-show-context): Declare.
+ (darcsum-parse-changeset): Fix assertion.
+] 
+[Fix darcsum-next-entity.
+Dave Love <fx@gnu.org>**20051123152222
+ (darcsum-line-is): New.
+ (darcsum-next-entity): Use dotimes.  Check change lines correctly
+ when showing context.
+] 
+[Use file-truename when determining the repository root to handle symlinks
+lele@metapensiero.it**20051123192616] 
+[Make find-file functions like pcvs.
+Dave Love <fx@gnu.org>**20051123153018
+ (darcsum-find-file-other-window): New.
+ (darcsum-find-file): Use new args.  Maybe go to change position.
+] 
+[Add menu.
+Dave Love <fx@gnu.org>**20051123183942
+ (darcsum-mode-map): Define in defvar.
+ (darcsum-menu): New.
+] 
+[Use environment to suppress darcs highlighting.
+Dave Love <fx@gnu.org>**20051124125705
+ Set DARCS_DONT_ESCAPE_TRAILING_SPACES and DARCS_DONT_COLOR in process
+ environment rather than TERM, and remove ansi-color stuff.
+] 
+[Use easy-menu-add to display the menu on XEmacs 
+Christian Neukirchen <chneukirchen@gmail.com>**20051201131833
+ Matthias Radestock writes:
+ > the latest darcsum.el at
+ >   http://chneukirchen.org/repos/darcsum/darcsum.el
+ > doesn't display the darcs menu under XEmacs. I believe the fix is to add
+ >  (easy-menu-add darcsum-menu darcsum-mode-map)
+ > to the mode declaration, i.e.
+ > ...
+ > That certainly seems to work for me, but I am not an Emacs expert.
+] 
+[Make darcsum-whatsnew work properly when the user accepts the default root directory.
+Aaron Kaplan <kaplan@cs.rochester.edu>**20051220125145
+ Without this patch, if I just hit return when prompted for the
+ directory in which to run darcs whatsnew, it uses the current
+ directory rather than the one it proposed.  I wonder if this behavior
+ depends on the emacs version--I'm using xemacs 21.4p17.
+] 
+[Look for _darcs/pristine as well as _darcs/current.
+Dave Love <fx@gnu.org>**20060108010228] 
+[Doc and message fixes.
+Dave Love <fx@gnu.org>**20051123151003] 
+[Derive darcsum-comment-mode from indented-text-mode.
+Dave Love <fx@gnu.org>**20051123152630
+ (darcsum-comment-mode): Use define-derived-mode.
+ (darcsum-comment-mode-map): Re-written.
+ (darcsum-comment-mode-hook): Remove defcustom.
+] 
+[darcs-path changes.
+Dave Love <fx@gnu.org>**20060108155213
+ Make it a defun and use file-name-as-directory.  Use it elsewhere.
+] 
+[Use `diff-switches'.
+Dave Love <fx@gnu.org>**20060108155515] 
+[darcsum-mode-related changes.
+Dave Love <fx@gnu.org>**20060110185207
+ Don't call font-lock-mode (unnecessary) or use-local-map (redundant).
+ Use mode-class 'special.  Add :group.  Don't use easy-menu-add in Emacs.
+ Add trailing-whitespace option to mode hook and fix
+ darcsum-display-changeset not to use trailing whitespace.
+] 
+[Shows a buffer with the output from darcs when there is an error
+brunomlopes@gmail.com**20060317191644] 
+[xemacs does not support the 'weight' and 'slant' face attributes
+Matthias Radestock <matthias@sorted.org>**20060325111545
+ use (:italic t) instead of (:slant italic) and (:bold t) instead of
+ (:weight bold) - these seem to work fine in both Emacs and XEmacs
+] 
+[always display existing *darcs comment* buffer when recording a change
+Matthias Radestock <matthias@sorted.org>**20060325171312] 
+[Error when trying to diff a non-recorded file
+Christian Neukirchen <chneukirchen@gmail.com>**20060503152130
+ From: Nic <nferrier@tapsellferrier.co.uk>
+ > Anyway, here's a patch for a problem I found with diff. I'm not sure
+ > this does the right thing but it's better than the error I got in the
+ > first place:
+] 
+[handle patch -> change rename in darcs 1.0.7
+hanwen@lilypond.org**20060519115945] 
+[Relaying "Waiting for lock" messages to emacs.
+Pekka.Pessi@nokia.com**20060527202157] 
+[Killing buffer when darcs gives up waiting for lock.
+Pekka.Pessi@nokia.com**20060530104943] 
+[Trying to fix darcs seeking problems.
+Pekka.Pessi@nokia.com**20060530105600
+ 
+ Sometimes darcs has read extra input from terminal and it tries to return
+ the already read characters back to input stream by seeking backwards in
+ stream. However, this is not allowed by runtime library and darcs dies with
+ runtime error. 
+ 
+ I try to avoid this bug by just sending "y" or "n" to darcs process. 
+ However, this kludge does not work if the input stream is handled in cooked
+ mode (line-by-line, as opposed to raw character-by-character mode).
+] 
+[Send linefeed to "do you really want" question, too.
+Pekka.Pessi@nokia.com**20060530180942] 
+[darcsum-process-sentinel displays message from unexpectedly dying darcs.
+Pekka.Pessi@nokia.com**20060531075126] 
+[Using clone-buffer only where available.
+Pekka.Pessi@nokia.com**20060607163829] 
+[Speed up in darcsum-process-filter.
+Pekka.Pessi@nokia.com**20060607164946
+ 
+ Do not check for changeset until complete change has been read to buffer.
+ 
+] 
+[Updates to darcsum-whatsnew.
+Pekka.Pessi@nokia.com**20060607170041
+   
+ Added darcsum-whatsnew-at-toplevel and gave it default value of t.
+ If darcsum-whatsnew-at-toplevel is nil, use cwd as default value.
+ 
+ Allow running darcsum-whatsnew also in subdirectory of repo, too. I have lot
+ of subdirs and I don't want to clutter my view with them.
+ 
+ When calling darsum-whatsnew interactively, do look-for-adds if
+ darcsum-look-for-adds or prefix-arg is given. It looks like call to
+ (interactive) was broken and --look-for-adds was always used. 
+ --look-for-adds is awfully slow becase darcs likes to read all the
+ non-boring files in the repo to the memory.
+ 
+ Using (interactive-p) to prohibit extra (message)s.
+] 
+[darcsum-process-filter: removed let y n used for debugging
+Pekka.Pessi@nokia.com**20060607203511] 
+[darcsum-start-process: added.
+Pekka.Pessi@nokia.com**20060607203722
+ 
+ Start darcsum process, set up environment and avoid pty's. 
+ If we use pty on Linux (2.6.16), darcs (1.0.7) fails always with seek error
+ after change #245 on XEmacs (21.4.15).
+] 
+[darcsum-process-sentinel: fixed spelling mistake
+Pekka.Pessi@nokia.com**20060607204441] 
+[Added support for replace, toggling file "visibility".
+Pekka.Pessi@nokia.com**20060818162247
+ 
+ In order to support "replace", the changeset format had to be updated first. 
+ For each non-hunk change, there are two symbols, e.g., -replace and replace. 
+ The replace is visible, -replace is not. These symbols can now be toggled.
+ 
+ Also suppporting file-level "visibility". addfile, newfile, rmfile and
+ binary are toggled at file level, "visible" files are shown with *.
+ 
+ Added functions (darcsum-toggle-item) to toggle item (from visible to
+ invisible, and vice versa), (darcsum-item-visible-p) to test if item is
+ visible, (darcsum-visible-item) to turn item to visible and
+ (darcsum-invisible-item) to turn item to invisible.
+ 
+ Everything that is not negative number and/or special invisible symbol are
+ considered visible.
+ 
+ Added function darcsum-change-< which is used to compare changes when adding
+ and merging changesets. For this reason, addfile, newfile, rmfile and binary
+ are sorted first.
+] 
+[Fixed "Waiting for lock" regexp.
+Pekka.Pessi@nokia.com**20060818162452] 
+[era's trivial trailing whitespace fixes
+era eriksson <era+darcs@iki.fi>**20061002145020] 
+[era's elisp convention fixes (arguments in UPPERCASE, full stop at end).
+era eriksson <era+darcs@iki.fi>**20061002145159] 
+[era's documentation fixes part II: documentation for darcsum-whatsnew
+era eriksson <era+darcs@iki.fi>**20061002164334
+ 
+ Documenting the function which is advertised as the main entry point
+ to the code kind of makes sense ...
+] 
+[era's documentation fixes part III: explain marked vs. visible
+era eriksson <era+darcs@iki.fi>**20061002164500
+ 
+ This updates the documentation and some comments to better reflect how
+ (I understand) the code works wrt "marked" vs "visible" changes in the
+ darcsum buffer
+] 
+[era's additional typo / consistency fixes (comments && punctuation)
+era eriksson <era+darcs@iki.fi>**20061002174744
+ 
+ These changes I'm slightly less confident in, but of course, they're
+ not changing anything too drastically, and anyway, easy enough to back
+ out. Humor me for wanting these in a separate commit ...
+] 
+[era's trivial line-wrapping changes (80 columns max)
+era eriksson <era+darcs@iki.fi>**20061002174757] 
+[era's documentation fixes part IIb: documentation string for darcsum-view
+era eriksson <era+darcs@iki.fi>**20061002180436
+ 
+ The other entry point to the code, as per the ;;;###autoload comments
+] 
+[era's TODO comments
+era eriksson <era+darcs@iki.fi>**20061003042715] 
+[era's window configuration fix: remove variable `darcsum-register'
+era eriksson <era+darcs@iki.fi>**20061003140505
+ 
+ Instead, introduce `darcs-window-configuration-temp' into which the
+ actual window configuration is stored. That way, we avoid trampling
+ any user data in a register.
+] 
+[darcsum-changes
+Henrik Hjelte <henrik@evahjelte.com>**20070210123327] 
+[darcsum-changes how-many argument
+Henrik Hjelte <henrik@evahjelte.com>**20070210151244] 
+[darcsum-amend
+Henrik Hjelte <henrik@evahjelte.com>**20070210191952] 
+[return value from darcs-changes, needed by darcs-amend
+Henrik Hjelte <henrik@evahjelte.com>**20070211104648] 
+[darcsum-comment-hook
+nik gaffney <nik@fo.am>**20070226144656
+ added a run-hook at the end of darcs-record, to enable hooks to be run during record (eg. on the comment buffer)
+] 
+[Added DARCS_DONT_ESCAPE_TRAILING_CR to process environment
+dag.hoidahl@fix.no**20070307091842] 
+[darcsum-ediff opens pristine version read only, restores old window configuration.
+stucchio@math.rutgers.edu**20070517204637
+ 
+ Function darcsum-ediff causes emacs to open _darcs/pristine/filename as well as
+ filename for editing. This is simply behavior of ediff. However, 
+ _darcs/pristine/filename should not be edited. It is now opened as read only.
+ 
+ Also, the old window configuration is restored after ediff is closed.
+] [Match change in move case
+clinton@unknownlamer.org**20070828232046
+ Fixes darcsum hanging when a file move is in the current changeset
+] 

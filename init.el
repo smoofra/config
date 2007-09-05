@@ -1,5 +1,7 @@
 (require 'cl)
 
+;;feh
+
 (setq inferior-lisp-program  "sbcl")
 ;;(setq inferior-lisp-program  "sbcl.cvs")
 ;;(setq inferior-lisp-program  "/home/larry/allegro/acl62_trial/alisp")

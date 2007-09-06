@@ -1866,6 +1866,15 @@
   (with-single-undo
    (orig-kmacro-exec-ring-item item arg)))
 
+;;from antifuchs 
+(put 'package 'safe-local-variable 'symbolp)
+(put 'Package 'safe-local-variable 'symbolp)
+(put 'syntax 'safe-local-variable 'symbolp)
+(put 'Syntax 'safe-local-variable 'symbolp)
+(put 'Base 'safe-local-variable 'integerp)
+(put 'base 'safe-local-variable 'integerp)
+
+
 (site-init-late)
 
 

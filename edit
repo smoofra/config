@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+if [[ -z "$EMACS" ]] ; then
+   vi "$@"
+else 
+   emacsclient "$@"
+fi
+

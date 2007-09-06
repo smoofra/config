@@ -156,9 +156,13 @@
 	"*grep*"
 	(get-buffer "*grep*"))
   
-  (def-slime-selector-method ?k
+  (def-slime-selector-method ?K
     "chat"
     (chat))
+  
+  (def-slime-selector-method ?k
+    "#yourmom"
+    (get-buffer "#yourmom"))
   
   (def-slime-selector-method ?C
 	"*compilation* buffer"
@@ -470,7 +474,8 @@
 (global-set-key "\C-x\C-p" 'diff-current-buffer-with-file)
 (global-set-key "\C-x`"    'delete-other-windows)
 (global-set-key "\M-o"     'switch-to-buffer)
-(global-set-key "\M-e"     'call-last-kbd-macro)
+;;(global-set-key "\M-e"     'call-last-kbd-macro)
+(global-set-key "\M-e"     'kmacro-call-macro)
 (global-set-key "\C-xm"    'comp)
 (global-set-key "\C-x\C-m" 'compi)
 (define-key ctl-x-map [(control 59)] mule-keymap) ;;; 59 is semicolon
@@ -1806,6 +1811,54 @@
       (replace-match (prin1-to-string (+ 1 (car (read-from-string (match-string 1))))))
     (error "not an integer")))
 
+
+(defun big-undo-dummy-function ())
+
+(defun big-undo-boundary ()
+  (interactive)
+  (undo-boundary)
+  (push '(apply big-undo-dummy-function) buffer-undo-list))
+
+(defun remove-little-boundaries (orig &optional things)
+  (interactive (list buffer-undo-list))
+  (if (null buffer-undo-list)
+      (progn
+        (setq buffer-undo-list orig)
+        (error "no big undo boundary"))
+    (let ((x (pop buffer-undo-list)))
+      (if (null x)
+          (remove-little-boundaries orig things)
+        (if (equal x '(apply big-undo-dummy-function))
+            (dolist (thing things)
+              (push thing buffer-undo-list))
+          (remove-little-boundaries orig (cons x things)))))))
+
+(defmacro with-single-undo (&rest body)
+  `(progn
+     (big-undo-boundary)
+     (unwind-protect
+         (progn ,@body)
+       (call-interactively 'remove-little-boundaries))))
+
+(defmacro grab-orig-def (from to)
+  `(condition-case err
+       (symbol-function ',to)
+     (error nil (setf 
+                 (symbol-function ',to)
+                 (symbol-function ',from)))))
+
+
+(grab-orig-def kmacro-call-macro orig-kmacro-call-macro)
+(defun kmacro-call-macro (arg &optional no-repeat end-macro)
+  (interactive "p")
+  (with-single-undo
+   (orig-kmacro-call-macro arg no-repeat end-macro)))
+
+
+(grab-orig-def kmacro-exec-ring-item orig-kmacro-exec-ring-item)
+(defun kmacro-exec-ring-item (item arg)
+  (with-single-undo
+   (orig-kmacro-exec-ring-item item arg)))
 
 
 (site-init-late)

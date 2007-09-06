@@ -129,7 +129,7 @@
 
 (setq i-have-slime (load "slime" t))
 (when i-have-slime
-  (require 'slime-fuzzy)
+  (require 'slime-fancy)
   (setq slime-net-coding-system 'utf-8-unix)
   (slime-setup)
   
@@ -1866,6 +1866,14 @@
   (with-single-undo
    (orig-kmacro-exec-ring-item item arg)))
 
+
+(eval-after-load  'w3m
+  (quote
+   (progn
+     (define-jk w3m-mode-map)
+     (define-key w3m-mode-map "C-cd" 'w3m-download-this-url))))
+
+
 ;;from antifuchs 
 (put 'package 'safe-local-variable 'symbolp)
 (put 'Package 'safe-local-variable 'symbolp)
@@ -1875,7 +1883,25 @@
 (put 'base 'safe-local-variable 'integerp)
 
 
+;; handle multiple qualifires correctly
+(defun lisp-indent-defmethod (path state indent-point sexp-column
+				   normal-indent)
+  "Indentation function defmethod."
+  (let ((n 0))
+    (save-excursion (goto-char (elt state 1))
+                    (forward-char 1)
+                    (forward-sexp 2)
+                    (while (looking-at "[[:space:]]*[^([:space:]]")
+                      (incf n)
+                      (forward-sexp 1)))
+    (lisp-indent-259 (append (times 4 (+ n 1)) '((&whole 4 &rest 4) &body))
+                     path state indent-point sexp-column normal-indent)))
+
+(put 'make-cform 'common-lisp-indent-function '(&lambda &body))
+(put 'def 'common-lisp-indent-function 0)
+
 (site-init-late)
+
 
 
 

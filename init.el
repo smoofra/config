@@ -1847,19 +1847,24 @@
                  (symbol-function ',to)
                  (symbol-function ',from)))))
 
+(defmacro redefine (name ll &rest body)
+  (let ((orig (intern (concat "orig-" (symbol-name name)))))
+    `(progn
+       (grab-orig-def ,name ,orig)
+       (defun ,name ,ll 
+       ,(documentation orig)
+       ,@body))))
 
-(grab-orig-def kmacro-call-macro orig-kmacro-call-macro)
-(defun kmacro-call-macro (arg &optional no-repeat end-macro)
+(setf (get 'redefine 'lisp-indent-function) 2)
+
+(redefine kmacro-call-macro (arg &optional no-repeat end-macro)
   (interactive "p")
-  (with-single-undo
-   (orig-kmacro-call-macro arg no-repeat end-macro)))
+    (with-single-undo
+     (orig-kmacro-call-macro arg no-repeat end-macro)))
 
-
-(grab-orig-def kmacro-exec-ring-item orig-kmacro-exec-ring-item)
-(defun kmacro-exec-ring-item (item arg)
+(redefine kmacro-exec-ring-item (item arg)
   (with-single-undo
    (orig-kmacro-exec-ring-item item arg)))
-
 
 (site-init-late)
 

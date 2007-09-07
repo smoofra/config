@@ -789,12 +789,12 @@
         (backward-char))
        (t (when (and (not newlines)
                      (not (buffer-is-cc-mode))
-                     (not (= (char-before (point)) ?[))
-                     (not (= (char-before (point)) ?{))
-                     (not (= (char-before (point)) ?`))
-                     (not (= (char-before (point)) ?'))
-                     (not (= (char-before (point)) ?())
-                     (not (= (char-before (point)) ? )))
+                     (not (= (char-before (point)) ?\[ ))
+                     (not (= (char-before (point)) ?\{ ))
+                     (not (= (char-before (point)) ?\` ))
+                     (not (= (char-before (point)) ?\' ))
+                     (not (= (char-before (point)) ?\( ))
+                     (not (= (char-before (point)) ?\  )))
             (insert " "))
           (when newlines 
             ;;(lisp-newline-and-indent)
@@ -802,7 +802,7 @@
             (indent-according-to-mode))
           (forward-sexp)
           (insert c)
-          (backward-char))))))))
+          (backward-char))))))
 
 (defun lisp-ctrla ()
   (interactive)
@@ -1843,15 +1843,16 @@
 
 (defmacro grab-orig-def (from to)
   `(condition-case err
-       (symbol-function ',to)
+       (symbol-function ,to)
      (error nil (setf 
-                 (symbol-function ',to)
-                 (symbol-function ',from)))))
+                 (symbol-function ,to)
+                 (symbol-function ,from)))))
 
 (defmacro redefine (name ll &rest body)
   (let ((orig (intern (concat "orig-" (symbol-name name)))))
+    (grab-orig-def name orig)
     `(progn
-       (grab-orig-def ,name ,orig)
+       (grab-orig-def ',name ',orig)
        (defun ,name ,ll 
        ,(documentation orig)
        ,@body))))
@@ -1859,7 +1860,7 @@
 (setf (get 'redefine 'lisp-indent-function) 2)
 
 (redefine kmacro-call-macro (arg &optional no-repeat end-macro)
-  (interactive "p")
+    (interactive "p")
     (with-single-undo
      (orig-kmacro-call-macro arg no-repeat end-macro)))
 

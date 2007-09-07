@@ -20,6 +20,7 @@
   '(setq svn-status-default-log-arguments '("--verbose"   "--limit=20")))
 (autoload 'darcsum-whatsnew "darcsum" "" t)
 (autoload 'paredit-mode "paredit" "" t)
+(add-hook 'lisp-mode-hook (lambda () (paredit-mode +1)))
 
 
 (setq load-path (cons "/usr/share/maxima/5.9.1/emacs/" load-path))
@@ -1899,6 +1900,11 @@
 
 (put 'make-cform 'common-lisp-indent-function '(&lambda &body))
 (put 'def 'common-lisp-indent-function 0)
+
+
+(defun my-hask-hook ()
+  (define-key haskell-mode-map "\r" 'newline-and-indent))
+(add-hook 'haskell-mode-hook 'my-hask-hook)
 
 (site-init-late)
 

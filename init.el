@@ -1904,6 +1904,7 @@
 
 
 (defun my-hask-hook ()
+  (define-key haskell-mode-map "\C-c;" 'comment-region)
   (define-key haskell-mode-map "\r" 'newline-and-indent))
 (add-hook 'haskell-mode-hook 'my-hask-hook)
 

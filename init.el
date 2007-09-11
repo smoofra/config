@@ -1334,9 +1334,7 @@
 
 (put 'downcase-region 'disabled nil)
 
-(setf (get 'bind 'common-lisp-indent-function) 2)
-(setf (get 'defmethod/cc 'common-lisp-indent-function)
-      'lisp-indent-defmethod)
+
 
 (defun open-inspector-helper ()
   (slime-eval-async '(swank:init-inspector "utils::*future-inspectee*") 'slime-open-inspector))
@@ -1767,7 +1765,7 @@
 
 (setq-default abbrev-mode t)
 (setq scroll-step 1)
-(setq scroll-conservatively 1)
+(setq scroll-conservatively 1000)
 
 (defmacro alist-set (place key thing)
   (let ((cons (gensym)))
@@ -1857,7 +1855,7 @@
        ,(documentation orig)
        ,@body))))
 
-(setf (get 'redefine 'lisp-indent-function) 2)
+
 
 (redefine kmacro-call-macro (arg &optional no-repeat end-macro)
     (interactive "p")
@@ -1899,8 +1897,11 @@
     (lisp-indent-259 (append (times 4 (+ n 1)) '((&whole 4 &rest 4) &body))
                      path state indent-point sexp-column normal-indent)))
 
-(put 'make-cform 'common-lisp-indent-function '(&lambda &body))
-(put 'def 'common-lisp-indent-function 0)
+(setf (get 'redefine 'lisp-indent-function) 2)
+(setf (get 'bind 'common-lisp-indent-function) 2)
+(setf (get 'defmethod/cc 'common-lisp-indent-function)
+      'lisp-indent-defmethod)
+
 
 
 (defun my-hask-hook ()

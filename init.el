@@ -975,6 +975,7 @@
     (define-my-lisp-keys-on-map slime-scratch-mode-map)
     (define-key slime-repl-mode-map "\C-j" 'slime-repl-backwards-kill-line)
     (define-key slime-repl-mode-map "\r"   'slime-repl-return)
+    (define-key slime-repl-mode-map [home] 'SDO)
     (define-key slime-repl-mode-map "\C-a" 'slime-repl-bol))
   (define-my-lisp-keys-on-map emacs-lisp-mode-map)
   (define-my-lisp-keys-on-map lisp-interaction-mode-map)

@@ -6,6 +6,7 @@
 ;;(setq inferior-lisp-program  "sbcl.cvs")
 ;;(setq inferior-lisp-program  "/home/larry/allegro/acl62_trial/alisp")
 ;;(setq inferior-lisp-program  "/home/larry/lisp/acl81_express/alisp")
+;;(setq inferior-lisp-program  "/home/larry/lisp/abcl-0.0.10/abcl")
 ;;(setq inferior-lisp-program  "lisp")
 ;;(setq inferior-lisp-program  "clisp")
 ;;(setq inferior-lisp-program  "env SBCL_HOME=/home/larry/usrsbcl/lib/sbcl /home/larry/usrsbcl/bin/sbcl")
@@ -131,6 +132,7 @@
 (setq i-have-slime (load "slime" t))
 (when i-have-slime
   (require 'slime-fancy)
+  ;; (setq slime-net-coding-system 'iso-latin-1-unix)
   (setq slime-net-coding-system 'utf-8-unix)
   (slime-setup)
   
@@ -164,6 +166,10 @@
   (def-slime-selector-method ?k
     "#yourmom"
     (get-buffer "#yourmom"))
+  
+  (def-slime-selector-method ?L
+    "#lisp"
+    (get-buffer "#lisp"))
   
   (def-slime-selector-method ?C
 	"*compilation* buffer"
@@ -952,6 +958,7 @@
   (my-lisp-define-key "\C-j"    'backwards-kill-line)
   (my-lisp-define-key "\C-cd"   'mark-defun)
   (when i-have-slime
+    (define-key slime-mode-map "\C-\M-a" 'slime-beginning-of-defun)
     (define-jk slime-inspector-mode-map)
     (define-key slime-inspector-mode-map "l" 'slime-inspector-pop)
     (define-key slime-inspector-mode-map "D" 'slime-inspector-describe)
@@ -1373,10 +1380,12 @@
 
 (eval-after-load 'erc
   (quote
-   (progn (add-hook 'erc-join-hook 'bitlbee-identify)
-          ;;(define-key erc-mode-map "\M-q" 'silly-scroll-down-one-hack )
-          (setq erc-auto-query 'buffer)
-          (define-key erc-mode-map [home]  'SDO))))
+   (progn 
+     (erc-scrolltobottom-enable)
+     (add-hook 'erc-join-hook 'bitlbee-identify)
+     ;;(define-key erc-mode-map "\M-q" 'silly-scroll-down-one-hack )
+     (setq erc-auto-query 'buffer)
+     (define-key erc-mode-map [home]  'SDO))))
 
 (defun bitlbee-identify ()
   "If we're on the bitlbee server, send the identify command to the #bitlbee channel."
@@ -1653,13 +1662,13 @@
  '(blink-cursor-alist (quote ((box . box) (t . box))))
  '(c-basic-offset 4)
  '(c-default-style (quote ((c-mode . "k&r") (java-mode . "java") (awk-mode . "awk") (other . "gnu"))))
- '(cperl-invalid-face (quote default) t)
+ '(cperl-invalid-face (quote default))
  '(delete-selection-mode nil)
  '(diff-switches "-u")
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
  '(fill-column 80)
  '(indent-tabs-mode nil)
- '(safe-local-variable-values (quote ((Package . Memoization) (Package . COMMON-LISP-CONTROLLER) (Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
+ '(safe-local-variable-values (quote ((Package . HUNCHENTOOT) (Syntax . COMMON-LISP) (Package . FLEXI-STREAMS) (Package . Memoization) (Package . COMMON-LISP-CONTROLLER) (Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
  '(slime-backend "swank-loader.lisp")
  '(slime-enable-evaluate-in-emacs t)
  '(slime-multiprocessing t)
@@ -1765,7 +1774,7 @@
 
 (setq-default abbrev-mode t)
 (setq scroll-step 1)
-(setq scroll-conservatively 1000)
+(setq scroll-conservatively 10000)
 
 (defmacro alist-set (place key thing)
   (let ((cons (gensym)))

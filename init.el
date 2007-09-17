@@ -129,9 +129,9 @@
   (other-window 1)
   (switch-to-buffer "#yourmom"))
 
+(add-hook 'slime-load-hook '(lambda () (require 'slime-asdf) (require 'slime-fancy)))
 (setq i-have-slime (load "slime" t))
 (when i-have-slime
-  (require 'slime-fancy)
   ;; (setq slime-net-coding-system 'iso-latin-1-unix)
   (setq slime-net-coding-system 'utf-8-unix)
   (slime-setup)
@@ -1371,7 +1371,7 @@
   (interactive)
   (erc-select :server "localhost" :port 6666 :nick "smoofra"))
 
-(autoload 'erc-select "erc")
+;;(autoload 'erc-select "erc")
 
 ;; (defun silly-scroll-down-one-hack ()
 ;;   (interactive)
@@ -1379,14 +1379,13 @@
 ;;   (scroll-down-one 1)
 ;;   (next-line))
 
-(eval-after-load 'erc
-  (quote
-   (progn 
-     (erc-scrolltobottom-enable)
-     (add-hook 'erc-join-hook 'bitlbee-identify)
-     ;;(define-key erc-mode-map "\M-q" 'silly-scroll-down-one-hack )
-     (setq erc-auto-query 'buffer)
-     (define-key erc-mode-map [home]  'SDO))))
+(require 'erc)
+(progn 
+  (erc-scrolltobottom-enable)
+  (add-hook 'erc-join-hook 'bitlbee-identify)
+  ;;(define-key erc-mode-map "\M-q" 'silly-scroll-down-one-hack )
+  (setq erc-auto-query 'buffer)
+  (define-key erc-mode-map [home]  'SDO))
 
 (defun bitlbee-identify ()
   "If we're on the bitlbee server, send the identify command to the #bitlbee channel."
@@ -1911,6 +1910,17 @@
 (setf (get 'bind 'common-lisp-indent-function) 2)
 (setf (get 'defmethod/cc 'common-lisp-indent-function)
       'lisp-indent-defmethod)
+
+
+;;; keybinds for weird putty function keys
+(global-set-key "Os" (quote scroll-up-half))
+(global-set-key "Op" (quote repeat))
+(global-set-key "Oy" (quote scroll-down-half))
+(global-set-key "[11" (quote putty-f1))
+(defun putty-f1 ()
+  (interactive)
+  (read-event)
+  (call-interactively 'delete-other-windows))
 
 
 

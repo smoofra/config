@@ -1564,6 +1564,7 @@
 ;; amazing fucking awesome quicksilver-like thing
 (defvar i-have-anything (load "anything" t))
 (when i-have-anything 
+  (setq anything-iswitchb-idle-delay 1)
   (define-key anything-map  "\C-n" 'anything-next-line)
   (define-key anything-map  "\C-p" 'anything-previous-line)
   (anything-iswitchb-setup))
@@ -1668,7 +1669,7 @@
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
  '(fill-column 80)
  '(indent-tabs-mode nil)
- '(safe-local-variable-values (quote ((Package . HUNCHENTOOT) (Syntax . COMMON-LISP) (Package . FLEXI-STREAMS) (Package . Memoization) (Package . COMMON-LISP-CONTROLLER) (Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
+ '(safe-local-variable-values (quote ((Package SERIES :use "COMMON-LISP" :colon-mode :external) (Package . HUNCHENTOOT) (Syntax . COMMON-LISP) (Package . FLEXI-STREAMS) (Package . Memoization) (Package . COMMON-LISP-CONTROLLER) (Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
  '(slime-backend "swank-loader.lisp")
  '(slime-enable-evaluate-in-emacs t)
  '(slime-multiprocessing t)
@@ -1883,7 +1884,7 @@
      (define-key w3m-mode-map "C-cd" 'w3m-download-this-url))))
 
 
-;;from antifuchs 
+;;from antifuchs, file variables safe
 (put 'package 'safe-local-variable 'symbolp)
 (put 'Package 'safe-local-variable 'symbolp)
 (put 'syntax 'safe-local-variable 'symbolp)

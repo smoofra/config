@@ -476,6 +476,7 @@
     (global-set-key "\C-\M-y"  'my-insert-parentheses)
   (global-set-key "\C-\M-y"  'insert-parentheses))
 
+(global-set-key "\C-c;"     'comment-region)
 (global-set-key "\C-\M-j"  'join-line)
 (global-set-key "\C-xp"    'my-revert-buffer)
 (global-set-key "\C-x\C-p" 'diff-current-buffer-with-file)

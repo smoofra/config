@@ -70,7 +70,13 @@
 (define-abbrev-table 'diff-mode-abbrev-table '(
     ))
 
+(define-abbrev-table 'docTeX-mode-abbrev-table '(
+    ))
+
 (define-abbrev-table 'doctex-mode-abbrev-table '(
+    ))
+
+(define-abbrev-table 'emaxima-mode-abbrev-table '(
     ))
 
 (define-abbrev-table 'erc-mode-abbrev-table '(
@@ -89,9 +95,12 @@
     ("nessicary" "necessary" nil 1)
     ("nessiccary" "necessary" nil 1)
     ("parallellism" "parallelism" nil 1)
-    ("propper" "proper" nil 2)
+    ("propper" "proper" nil 6)
     ("recurrance" "recurrence" nil 2)
     ("relys" "relies" nil 1)
+    ))
+
+(define-abbrev-table 'gnus-article-edit-mode-abbrev-table '(
     ))
 
 (define-abbrev-table 'grep-mode-abbrev-table '(
@@ -107,6 +116,9 @@
     ))
 
 (define-abbrev-table 'idl-mode-abbrev-table '(
+    ))
+
+(define-abbrev-table 'inferior-maxima-mode-abbrev-table '(
     ))
 
 (define-abbrev-table 'inferior-python-mode-abbrev-table '(
@@ -128,9 +140,9 @@
     ))
 
 (define-abbrev-table 'lisp-mode-abbrev-table '(
-    ("inp" "in-package" nil 8)
+    ("inp" "in-package" nil 10)
     ("mvb" "multiple-value-bind" nil 4)
-    ("mvl" "multiple-value-list" nil 3)
+    ("mvl" "multiple-value-list" nil 4)
     ))
 
 (define-abbrev-table 'lisppaste-mode-abbrev-table '(
@@ -160,10 +172,16 @@
 (define-abbrev-table 'makefile-mode-abbrev-table '(
     ))
 
+(define-abbrev-table 'maxima-noweb-mode-abbrev-table '(
+    ))
+
 (define-abbrev-table 'message-mode-abbrev-table '(
     ))
 
 (define-abbrev-table 'objc-mode-abbrev-table '(
+    ))
+
+(define-abbrev-table 'outline-mode-abbrev-table '(
     ))
 
 (define-abbrev-table 'perl-mode-abbrev-table '(
@@ -238,6 +256,12 @@
     ))
 
 (define-abbrev-table 'text-mode-abbrev-table '(
+    ("beg" "" latex-begin 2)
+    ("tbf" "" latex-textbf 0)
+    ("tit" "" latex-textit 2)
+    ("trm" "" latex-textrm 0)
+    ("tsf" "" latex-textsf 0)
+    ("ttt" "" latex-texttt 3)
     ))
 
 (define-abbrev-table 'vc-annotate-mode-abbrev-table '(

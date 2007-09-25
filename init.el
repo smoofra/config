@@ -1762,12 +1762,24 @@
 
 (setq skeleton-pair t)
 
-(defun my-latex-mode-hook ()
-  (define-key latex-mode-map "\C-c>" 'latex-close-block)
-  (define-key latex-mode-map ""  'newline-and-indent)
-  (define-key latex-mode-map [(control tab)] 'tab-to-tab-stop)
-  (define-key latex-mode-map "\C-j" 'backwards-kill-line))
+(defun define-my-latex-keys (map)
+  (define-key map "\C-c>" 'latex-close-block)
+  (define-key map ""  'newline-and-indent)
+  (define-key map [(control tab)] 'tab-to-tab-stop)
+  (define-key map "\C-j" 'backwards-kill-line))
 
+
+(defun my-latex-mode-hook ()
+  (define-my-latex-keys latex-mode-map))
+
+(defun my-LaTeX-mode-hook ()
+  (define-key LaTeX-mode-map "{" 'TeX-insert-braces)
+  (define-key LaTeX-mode-map "}" 'up-list)
+  (define-key LaTeX-mode-map "\C-c>" 'LaTeX-close-environment)
+  (define-my-latex-keys LaTeX-mode-map))
+   
+
+(add-hook 'LaTeX-mode-hook 'my-LaTeX-mode-hook)
 (add-hook 'latex-mode-hook 'my-latex-mode-hook)
 
 

@@ -1763,6 +1763,7 @@
 (setq skeleton-pair t)
 
 (defun my-latex-mode-hook ()
+  (define-key latex-mode-map "\C-c>" 'latex-close-block)
   (define-key latex-mode-map ""  'newline-and-indent)
   (define-key latex-mode-map [(control tab)] 'tab-to-tab-stop)
   (define-key latex-mode-map "\C-j" 'backwards-kill-line))

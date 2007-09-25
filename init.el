@@ -24,7 +24,7 @@
 (add-hook 'lisp-mode-hook (lambda () (paredit-mode +1)))
 
 
-(setq load-path (cons "/usr/share/maxima/5.9.1/emacs/" load-path))
+(setq load-path (cons "/usr/share/emacs/site-lisp/maxima/" load-path))
 
 (setq load-path (cons "~/config" load-path))
 (setq load-path (cons "~/config/emacslisp" load-path))

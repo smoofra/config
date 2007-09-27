@@ -182,6 +182,10 @@
   (def-slime-selector-method ?S
     "*scratch* buffer."
     (get-buffer "*scratch*"))
+  
+  (def-slime-selector-method ?s
+    "*slime-scratch* buffer."
+    (get-buffer "*slime-scratch*"))
 
   (def-slime-selector-method ?I
     "*Slime Inspector* buffer."
@@ -1943,6 +1947,10 @@
   (define-key haskell-mode-map "\C-c;" 'comment-region)
   (define-key haskell-mode-map "\r" 'newline-and-indent))
 (add-hook 'haskell-mode-hook 'my-hask-hook)
+
+(defun prompt-insert-char (char)
+  (interactive "n")
+  (insert (make-string 1 char)))
 
 (site-init-late)
 

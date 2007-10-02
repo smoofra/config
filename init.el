@@ -129,7 +129,10 @@
   (other-window 1)
   (switch-to-buffer "#yourmom"))
 
-(add-hook 'slime-load-hook '(lambda () (require 'slime-asdf) (require 'slime-fancy)))
+(add-hook 'slime-load-hook '(lambda () 
+                              (require 'slime-asdf)
+                              (require 'slime-fancy)
+                              (slime-asdf-init)))
 (setq i-have-slime (load "slime" t))
 (when i-have-slime
   ;; (setq slime-net-coding-system 'iso-latin-1-unix)

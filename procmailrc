@@ -96,6 +96,11 @@ $MAILDIR/lisp
 
 
 :0 
+*^Mailing-List:.*grassfed
+$MAILDIR/grassfed
+
+
+:0 
 $MAILDIR/inbox
 
 

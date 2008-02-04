@@ -105,7 +105,7 @@ color underline   yellow default  #
 
 color index yellow  default '~t ldanna@wam.umd.edu'
 color index yellow  default '~c ldanna@wam.umd.edu'
-#color index blue default '~t ldanna@math.umd.edu' 
+#color index yellow default '~t ldanna@math.umd.edu' 
 #color index blue default '~f umd.edu' 
 color index cyan default '~t larry@melkor.elder-gods.org'
 color index cyan default '~c larry@melkor.elder-gods.org'

@@ -1374,7 +1374,7 @@
 
 (defun wjoe ()
   (interactive)
-  (erc-select :server "localhost" :port "ircd" :nick "smoofra")
+  (erc-select :server "localhost" :port "ircd" :nick "ldanna")
   (erc-join-channel "#yourmom"))
 
 (defun bitlbee ()

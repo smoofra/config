@@ -1959,7 +1959,4 @@
 
 (site-init-late)
 
-
-
-
-
+;;; when slime highlights the stuff that isn't compiled, it's slime-highlight-edits-mode

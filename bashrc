@@ -1,3 +1,4 @@
+#feh
 
 alias sr='. ~/.transient-environment'
 #export EDITOR='emacsclient --alternate-editor vi'

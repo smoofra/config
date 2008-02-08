@@ -244,10 +244,10 @@ set pager_context=4
 set quote_regexp="^ *>"   # NO!
 set reply_regexp="^((re|r e|aw|antw.|antwort):[ \t]*)*"
 #set  print_cmd="a2ps -nn -ns -H  -p -1 -B -F10 -nL | lpr"
-set alias_file=~/.mutt.aliases
+set alias_file=~/config/mutt-aliases
 set folder=~/mail
 set tmpdir="/tmp" 
-source ~/.mutt.aliases
+source ~/config/mutt-aliases
 #set signature="/home/larry/.sig"
 save-hook "~A" "=inbox.save"
 set spoolfile='=inbox'
@@ -328,7 +328,7 @@ set mail_check=10
 
 set certificate_file=/home/larry/.certs
 
-set imap_home_namespace='mail/' 
+#set imap_home_namespace='mail/' 
 
 auto_view text/html
 auto_view text/english

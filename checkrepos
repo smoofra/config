@@ -1,0 +1,44 @@
+#!/usr/bin/perl -w
+
+
+
+
+my $euid = $>;
+
+my @repos = qw:
+                bin
+                config
+                delicious
+                public_html/gregarius
+                lisp/lisputils
+                maddox
+                patches
+                ronpaul
+                slime
+                lisp/blog
+                crypto
+                lulz
+                notes
+                public_html
+                sbcl
+                thepain  :; 
+
+if ($euid == 0) {
+  push @repos, qw: /etc/ /var/www :;
+} else {
+  print "NOT ROOT\n\n";
+}
+
+
+for $repo (@repos) {
+  chdir '/home/larry' or die $!;
+  chdir $repo or die $!; 
+  my $out = `git status`; 
+  if ($out !~ /nothing to commit \(working directory clean\)/) {
+    print "******  $repo\n";
+    print "============================================================\n";
+    print "$out";
+    print "============================================================\n\n";
+  }
+}
+

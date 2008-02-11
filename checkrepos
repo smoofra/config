@@ -21,10 +21,11 @@ my @repos = qw:
                 notes
                 public_html
                 sbcl
-                thepain  :; 
+                thepain  
+                /var/www :; 
 
 if ($euid == 0) {
-  push @repos, qw: /etc/ /var/www :;
+  push @repos, qw: /etc/  :;
 } else {
   print "NOT ROOT\n\n";
 }

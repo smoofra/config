@@ -1,8 +1,24 @@
-#!/bin/sh
+#!/bin/bash
 
 cd `dirname $0`
 cd ..
-echo -n  '===== importing in '
-pwd
-echo git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime
-git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime
+
+if [[ $1 == '-v' ]]; then
+    echo -n  '===== importing in '
+    pwd
+    echo git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime
+    git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime
+else 
+    output=$(git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime 2>&1)
+    if [[ $? != 0 ]]; then
+        echo -n  '===== ERROR importing in '
+        pwd
+        echo $output
+    fi;
+fi;
+
+
+        
+
+
+

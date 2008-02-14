@@ -1,0 +1,8 @@
+#!/bin/sh
+
+cd `dirname $0`
+cd ..
+echo -n  '===== importing in '
+pwd
+echo git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime
+git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime

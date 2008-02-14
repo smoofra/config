@@ -9,7 +9,8 @@ my @repos = qw:
                 bin
                 config
                 delicious
-                public_html/gregarius
+                gregarius
+                gregarius-data
                 lisp/lisputils
                 maddox
                 patches

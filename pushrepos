@@ -1,0 +1,13 @@
+#!/bin/sh 
+
+
+
+cd ~/bin; git push
+cd ~/config; git push
+cd ~/lisp/blog; git push
+cd ~/lisp/lisputils; git push
+cd ~/maddox; git push
+cd ~/ronpaul; git push
+cd ~/sbcl; git push
+cd ~/slime; git push
+cd ~/thepain; git push

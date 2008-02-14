@@ -13,12 +13,7 @@ else
     if [[ $? != 0 ]]; then
         echo -n  '===== ERROR importing in '
         pwd
+        echo git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime
         echo $output
     fi;
 fi;
-
-
-        
-
-
-

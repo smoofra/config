@@ -3,6 +3,14 @@
 cd `dirname $0`
 cd ..
 
+
+if ! test -e .git; then
+    echo -n  "==== ERROR importing in "
+    pwd
+    echo "not a git working directory!"
+    exit 1;
+fi
+
 if [[ $1 == '-v' ]]; then
     echo -n  '===== importing in '
     pwd

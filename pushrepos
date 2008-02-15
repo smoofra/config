@@ -1,0 +1,30 @@
+#!/bin/sh 
+
+
+
+echo ==== ~/bin
+cd ~/bin; git push
+
+echo ==== ~/config
+cd ~/config; git push
+
+echo ==== ~/lisp/blog
+cd ~/lisp/blog; git push
+
+echo ==== ~/lisp/lisputils
+cd ~/lisp/lisputils; git push
+
+echo ==== ~/maddox
+cd ~/maddox; git push
+
+echo ==== ~/ronpaul
+cd ~/ronpaul; git push
+
+echo ==== ~/sbcl
+cd ~/sbcl; git push
+
+echo ==== ~/slime
+cd ~/slime; git push
+
+echo ==== ~/thepain
+cd ~/thepain; git push

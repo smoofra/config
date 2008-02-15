@@ -1957,6 +1957,13 @@
   (interactive "n")
   (insert (make-string 1 char)))
 
+(defun open-char ()
+  (interactive)
+  (insert " ")
+  (backward-char))
+
+(global-set-key "\C-x " 'open-char)
+
 (site-init-late)
 
 ;;; when slime highlights the stuff that isn't compiled, it's slime-highlight-edits-mode

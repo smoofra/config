@@ -1,0 +1,17 @@
+#!/bin/sh
+
+echo pull.sh running
+
+GIT=$HOME/usr/bin/git
+
+for d in $HOME/repos/*; do
+	cd $d
+	if ! $GIT fetch >~/.git-output 2>&1; then
+		echo '**** git fetch FAILED in ' $d 
+		cat ~/.git-output
+	else
+		echo '**** git fetch in ' $d
+		cat ~/.git-output 
+	fi;
+	
+done;

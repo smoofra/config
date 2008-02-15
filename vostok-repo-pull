@@ -1,5 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
+if [[ $(hostname) != vostok ]]; then
+    echo 'THIS ISNT VOSTOK'
+    exit 1;
+fi;
 
 GIT=$HOME/usr/bin/git
 

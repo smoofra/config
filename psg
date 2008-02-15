@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+use File::Basename; 
+BEGIN {push @INC, dirname($0)."/perl";};
+use Utils;
+
+my $regex = shift;
+
+my @pids = grep {/^\d+$/} slurpdir '/proc/'; 
+
+my @good;
+
+for $pid (@pids) {
+  my $cmd = slurp "/proc/$pid/cmdline";
+  if ($pid != $$ && $cmd =~ $regex) {
+    push @good, $pid;
+  }
+}
+
+if (@good) {
+  exec 'ps', 'up', @good;
+} else {
+  print "none found\n";
+}
+
+
+
+
+
+

@@ -1,6 +1,5 @@
 #!/bin/sh
 
-echo pull.sh running
 
 GIT=$HOME/usr/bin/git
 
@@ -10,8 +9,9 @@ for d in $HOME/repos/*; do
 		echo '**** git fetch FAILED in ' $d 
 		cat ~/.git-output
 	else
-		echo '**** git fetch in ' $d
-		cat ~/.git-output 
-	fi;
+		true
+		#echo '**** git fetch in ' $d
+		#cat ~/.git-output 
+	fi
 	
 done;

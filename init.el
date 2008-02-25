@@ -1127,7 +1127,7 @@
 (defun SUO (x) (interactive "p")  (scroll-up-one x) (next-line x))
 (defun SDO (x) (interactive "p") (scroll-down-one x) (previous-line x))
 
-(eval-after-load 'cperl 
+(eval-after-load 'cperl-mode 
   (quote
    (progn
      (defun cperl-mark-active ()
@@ -1956,6 +1956,13 @@
 (defun prompt-insert-char (char)
   (interactive "n")
   (insert (make-string 1 char)))
+
+(defun open-char ()
+  (interactive)
+  (insert " ")
+  (backward-char))
+
+(global-set-key "\C-x " 'open-char)
 
 (site-init-late)
 

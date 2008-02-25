@@ -1959,4 +1959,7 @@
 
 (site-init-late)
 
+
+;; coding-system stuff is at C-x C-; 
+
 ;;; when slime highlights the stuff that isn't compiled, it's slime-highlight-edits-mode

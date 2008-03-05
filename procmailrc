@@ -1,4 +1,4 @@
-MAILDIR=$HOME/mail
+MAILDIR=$HOME/Maildir
 
 #:0 c
 #backup
@@ -13,11 +13,11 @@ MAILDIR=$HOME/mail
 
 :0
 *^From: blockbuster@custhelp.com
-$MAILDIR/inbox
+$MAILDIR/
 
 :0
 *^From: [^ ]*@blockbuster.com
-$MAILDIR/inbox
+$MAILDIR/
 
 
 
@@ -26,17 +26,17 @@ $MAILDIR/inbox
 
 :0
 *^List-Id:.*darcs-devel.darcs.net
-$MAILDIR/darcs
+$MAILDIR/.darcs/
 
 
 :0
 *^Sender: .*FYI@LISTSERV.UMD.EDU
-$MAILDIR/spam
+$MAILDIR/.spam/
 
 :0
 *^From:.*Borders Rewards
 *^Subject:.*the Shortlist
-$MAILDIR/spam
+$MAILDIR/.spam/
 
 
 #:0 wf 
@@ -51,7 +51,7 @@ SCORE=| /usr/bin/spamprobe train
 | formail -I "X-SpamProbe: $SCORE"
 :0 a
 *^X-SpamProbe: SPAM
-spam
+$MAILDIR/.spam/
 
 
 :0 
@@ -65,43 +65,43 @@ spam
 
 :0 
 *^X-Spam-Status: YES
-spam.new
+$MAILDIR/.spam/
 
 
 :0
 *^List-Subscribe: .*madman
-$MAILDIR/madman
+$MAILDIR/.madman/
 
 
 :0
 *^List-Id: .*slime-devel
-$MAILDIR/lisp
+$MAILDIR/.lisp/
 
 
 :0
 *^List-Id: .*sbcl-devel
-$MAILDIR/lisp
+$MAILDIR/.lisp/
 
 :0
 *^List-Id: .*bese-devel
-$MAILDIR/lisp
+$MAILDIR/.lisp/
 
 :0
 *^List-Id: .*cffi-devel
-$MAILDIR/lisp
+$MAILDIR/.lisp/
 
 :0
 *^List-Id: .*iterate-devel
-$MAILDIR/lisp
+$MAILDIR/.lisp/
 
 
 :0 
 *^Mailing-List:.*grassfed
-$MAILDIR/grassfed
+$MAILDIR/.grassfed/
 
 
 :0 
-$MAILDIR/inbox
+$MAILDIR/
 
 
 

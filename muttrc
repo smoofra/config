@@ -245,12 +245,12 @@ set quote_regexp="^ *>"   # NO!
 set reply_regexp="^((re|r e|aw|antw.|antwort):[ \t]*)*"
 #set  print_cmd="a2ps -nn -ns -H  -p -1 -B -F10 -nL | lpr"
 set alias_file=~/config/mutt-aliases
-set folder=~/mail
+set folder=~/Maildir
 set tmpdir="/tmp" 
 source ~/config/mutt-aliases
 #set signature="/home/larry/.sig"
-save-hook "~A" "=inbox.save"
-set spoolfile='=inbox'
+save-hook "~A" "=.inbox.save"
+set spoolfile='~/Maildir'
 
 set allow_8bit
 set noarrow_cursor
@@ -282,7 +282,7 @@ set noautoedit
 set nomove
 set copy=yes
 set use_from=yes
-set record='=sent-mail'
+set record='~/mail/.sent-mail'
 unset save_name
 unset force_name
 set nosig_dashes
@@ -334,7 +334,7 @@ auto_view text/html
 auto_view text/english
 auto_view application/msword
 
-set postponed="=postponed"
+set postponed="=.postponed"
 
 
 alternative_order text/html text/enriched text/plain text/*

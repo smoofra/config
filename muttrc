@@ -249,7 +249,7 @@ set folder=~/Maildir
 set tmpdir="/tmp" 
 source ~/config/mutt-aliases
 #set signature="/home/larry/.sig"
-save-hook "~A" "=.inbox.save"
+save-hook "~A" "=.inbox_save"
 set spoolfile='~/Maildir'
 
 set allow_8bit
@@ -308,7 +308,7 @@ hdr_order From Subject: From: Reply-To: To: Cc: Newsgroups: Date: X-SpamProbe:
 macro index ci C=.inbox\n
 macro index cl C=.lisp\n
 macro index cr C=.sent-mail\n
-macro index cs C=.inbox.save\n
+macro index cs C=.inbox_save\n
 macro pager ci C=.inbox\n
 macro pager cr C=.sent-mail\n
 macro pager cs C=.inbox_save\n

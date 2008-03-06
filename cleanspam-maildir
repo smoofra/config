@@ -1,0 +1,50 @@
+#!/usr/bin/perl -w 
+
+use Mail::Box::Manager;
+use Time::Piece;
+use Date::Parse;
+use Time::Seconds;
+use Data::Dumper;
+use Mail::Message::Field::Full; 
+
+
+my %ignore = ('<1181245635@melkor>' => 1,
+              '<1204562734@melkor>' => 1);
+
+my $count = 0; 
+
+my $path = "$ENV{HOME}/Maildir/.spam";
+
+my $man = Mail::Box::Manager->new or die $!;
+
+
+my $fold =  $man->open(remove_when_empty => 0, access => 'rw', folder => $path) or die $!;
+
+for my $msg($fold->messages) { 
+  my @recv = map { $_->comment }  $msg->head->get("Received");
+  my $recv = shift @recv;
+
+  my $diff;
+
+  if (not defined $recv or $recv eq '') { 
+    $id = $msg->get("Message-Id");
+    unless ($ignore{$id}) {
+      warn "message $id has no Received\n";
+    }
+    $diff = 0
+  } else {
+    $tp = Time::Piece->new(str2time $recv) or die "can't parse time\n"; 
+    $now = localtime;
+    $diff = $now - $tp;
+  }
+
+  if ($diff >= ONE_WEEK) {
+    $count++;
+    $msg->delete;
+  }
+}
+
+print "deleted $count\n";
+
+$fold->close or die "couldn't close $path\n";
+

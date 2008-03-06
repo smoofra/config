@@ -125,7 +125,7 @@
   (interactive)
   (delete-other-windows)
   (split-window-vertically)
-  (switch-to-buffer "#lisp")
+  (switch-to-buffer "mgwyer")
   (other-window 1)
   (switch-to-buffer "#yourmom"))
 

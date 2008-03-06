@@ -1,0 +1,6 @@
+#!/bin/bash
+
+
+(git-diff-files --name-only -z; git-ls-files  --others -z) | git-update-index --remove --add -z --stdin
+
+

@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
 # my little git diff
 
-git diff "$@" | eless -d 
+
+git-diff --exit-code --quiet >/dev/null || git diff "$@" | eless -d 

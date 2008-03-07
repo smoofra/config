@@ -1057,6 +1057,8 @@
     (term "echo"))
   (when i-have-escreen
     (define-key term-raw-map "\M-`" escreen-map))
+  (define-key term-raw-map "\C-p" 'term-send-up)
+  (define-key term-raw-map "\C-n" 'term-send-down)
   (define-key term-raw-map "\C-x" ctl-x-map)
   (define-key term-raw-map "\C-c\C-y" 'term-paste)
   (define-key term-raw-map "\M-x" 'execute-extended-command)

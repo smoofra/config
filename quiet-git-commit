@@ -7,10 +7,7 @@ fi;
 
 cd $1
 
-(git-diff-files --name-only -z; git-ls-files --exclude-per-directory=.gitignore --others -z) | \
-    git-update-index --remove --add -z --stdin
-
-
+git-addall
 if [[ $? != 0 ]]; then
     echo ERROR $?
     exit

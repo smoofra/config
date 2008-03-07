@@ -1,0 +1,4 @@
+#!/bin/bash
+
+btdownloadheadless --max_upload_rate 300 "$@"
+

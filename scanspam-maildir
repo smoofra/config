@@ -1,0 +1,34 @@
+#!/usr/bin/perl -w
+
+
+use Data::Dumper;
+use Mail::Box::Manager;
+
+my $man = Mail::Box::Manager->new or die $!;
+
+
+sub scanspam {
+  my ($inpath,$outpath, $action) = @_;
+
+  my $in =  $man->open(remove_when_empty => 0, access => 'rw', folder => $inpath) or die $!;
+  my $out = $man->open(remove_when_empty => 0, access => 'rw', folder => $outpath) or die $!; 
+
+  for ($in->messages) {
+    my $fh;
+    open $fh, "|-", "/usr/bin/spamprobe", $action or die "couldn't start spamprobe: $!";
+    $_->write($fh);
+    close $fh;
+    $?==0 or die "spamprobe returned an error!!\n";
+    $_->moveTo($out) or die "couln't move message: $!";
+  }
+
+  $in->close or die "couldn't close $inpath\n";
+  $out->close or die "couldn't close $outpath\n";
+}
+
+scanspam "$ENV{HOME}/Maildir/.spam.new", "$ENV{HOME}/Maildir/.spam", 'spam';
+scanspam "$ENV{HOME}/Maildir/.notspam", "$ENV{HOME}/Maildir",        'good';
+
+
+
+

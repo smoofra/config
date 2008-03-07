@@ -1,0 +1,11 @@
+#!/bin/bash
+
+. git-sh-setup
+
+
+ef=$(git-config core.excludesfile)
+if [[ "$ef" == "" ]]; then
+    ef=/dev/null
+fi
+
+exec git-ls-files  --exclude-per-directory=.gitignore --exclude-from="$GIT_DIR/info/exclude" --exclude-from="$ef" "$@"

@@ -2,29 +2,29 @@
 
 
 
-echo ==== ~/bin
+echo; echo ==== ~/bin
 cd ~/bin; git push
 
-echo ==== ~/config
+echo; echo ==== ~/config
 cd ~/config; git push
 
-echo ==== ~/lisp/blog
+echo; echo ==== ~/lisp/blog
 cd ~/lisp/blog; git push
 
-echo ==== ~/lisp/lisputils
+echo; echo ==== ~/lisp/lisputils
 cd ~/lisp/lisputils; git push
 
-echo ==== ~/maddox
+echo; echo ==== ~/maddox
 cd ~/maddox; git push
 
-echo ==== ~/ronpaul
+echo; echo ==== ~/ronpaul
 cd ~/ronpaul; git push
 
-echo ==== ~/sbcl
+echo; echo ==== ~/sbcl
 cd ~/sbcl; git push
 
-echo ==== ~/slime
+echo; echo ==== ~/slime
 cd ~/slime; git push
 
-echo ==== ~/thepain
+echo; echo ==== ~/thepain
 cd ~/thepain; git push

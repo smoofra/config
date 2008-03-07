@@ -13,6 +13,8 @@ my @repos = qw:
                 gregarius-data
                 lisp/lisputils
                 maddox
+                Pictures
+                random
                 patches
                 ronpaul
                 slime

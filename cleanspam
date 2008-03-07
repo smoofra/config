@@ -19,14 +19,17 @@ flock $ifh, LOCK_EX or die "can't acquire lock: $!";
 
 system "cat /dev/null >$out"; 
 
-my $fold = Email::Folder->new($in); 
+my $fold = Email::Folder->new($in);
+
+my %ignore = ('<1181245635@melkor>' => 1,
+              '<1204562734@melkor>' => 1);
 
 while (my $msg  = $fold->next_message()) { 
   my $recv = $msg->header("Received");
   my $diff;
   if (not defined $recv) { 
     $id = $msg->header("Message-Id");
-    unless ($id eq '<1181245635@melkor>') {
+    unless ($ignore{$id}) {
       warn "message $id has no Received\n";
     }
     $diff = 0

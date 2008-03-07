@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-$ENV{PATH} = $ENV{NOT_FUCKED_PATH};
+$ENV{PATH} = $ENV{NOT_FUCKED_PATH} if defined $ENV{NOT_FUCKED_PATH};
   
 my $file;
 my $tmp  = 0;

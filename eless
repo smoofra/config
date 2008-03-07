@@ -1,6 +1,7 @@
-#!/usr/bin/perl -w 
+#!/usr/bin/perl -w
 
-
+$ENV{PATH} = $ENV{NOT_FUCKED_PATH};
+  
 my $file;
 my $tmp  = 0;
 
@@ -14,15 +15,24 @@ if (@ARGV) {
 } else {
   $file = "/tmp/${$}eless";
   $tmp = 1;
-  !(system "cat >$file") or die;
+  open FH, ">$file" or die $!;
+  while (<>) {
+    print FH $_;
+  }
+  close FH;
 }
 
 my $lisp = $diff ? 
     "(find-diff-file \"$file\")" :
     "(view-file \"$file\")";
 
-!(system qw/ emacsclient -a eless-alternate-editor -e /, $lisp)
-  or !(system qw/ less -c /, $file)
+
+@command = (qw: emacsclient -a eless-alternate-editor --eval :, $lisp);
+
+#print join(' ', map {"'$_'"} @command), "\n";
+
+!(system @command)
+  or $ENV{TERM} ne 'emacs' && !(system qw/ less -c /, $file)
   or die;
 
 unlink $file if $tmp;

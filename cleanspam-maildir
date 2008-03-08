@@ -44,7 +44,7 @@ for my $msg($fold->messages) {
   }
 }
 
-print "deleted $count\n";
+# print "deleted $count\n";
 
 $fold->close or die "couldn't close $path\n";
 

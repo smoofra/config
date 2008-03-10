@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PATH=~larry/bin:$PATH
+export PATH=$(dirname $0):$PATH
 
 (git-diff-files --name-only -z; git-ls-files-with-excludes --others -z) | \
      git-update-index --remove --add -z --stdin

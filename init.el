@@ -1604,6 +1604,12 @@
   (setq after-make-frame-functions 
         (cons 'set-nice-font after-make-frame-functions)))
 
+;;;; put this in your .site-init.el to set the font
+;; (defun site-init-late ()
+;; 	(set-default-font "Bitstream Vera Sans Mono-22")
+;; 	(set-nice-font-setter))
+
+
 
 
 ;;;;; C-g fucked up, fix it.

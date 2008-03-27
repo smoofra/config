@@ -26,5 +26,3 @@ cd ~/sbcl; git push
 echo; echo ==== ~/slime
 cd ~/slime; git push
 
-echo; echo ==== ~/thepain
-cd ~/thepain; git push

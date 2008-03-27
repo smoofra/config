@@ -24,7 +24,6 @@ my @repos = qw:
                 notes
                 public_html
                 sbcl
-                thepain  
                 /var/www :; 
 
 if ($euid == 0) {

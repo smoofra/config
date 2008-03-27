@@ -14,6 +14,8 @@ while (<>) {
 
 #print Dumper \%m;
 
+system "ifconfig $iface up";
+
 $_ = `iwlist $iface scan`;
 
 while (/^ \s* ESSID:"([^"]+)"/mxg) {

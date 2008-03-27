@@ -15,15 +15,12 @@ cd ..
 export GIT_DIR=.git 
 
 
-#echo ^^^^^^^^ `pwd` $GIT_DIR
-
 if ! git-clean-p; then 
-    echo working directory is not clean, cannot push >&2 
+    echo working directory or index is not clean, cannot push >&2 
     exit 1
 fi
 
 
-#echo ^^^^^^^^^^^^^^^ yay >&2
 exit 0
  
 

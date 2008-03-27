@@ -2,7 +2,7 @@
 
 export PATH=$(dirname $0):$PATH
 
-if [[ -z "$(git-ls-files-with-excludes --others)" && -z "$(git-diff-files --name-only)" ]]; then 
+if [[   -z "$(git-diff-index --cached --name-only HEAD)" && -z "$(git-ls-files-with-excludes --others)" && -z "$(git-diff-files --name-only)" ]]; then 
     exit 0
 else 
     exit 1

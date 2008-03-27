@@ -1,0 +1,34 @@
+#!/usr/bin/perl -w
+
+use Data::Dumper;
+
+my $iface = shift;
+my %m;
+
+while (<>) {
+  if (/^ \s* ([^\s]+) \s* (.*)/x) {
+    my ($name, $essid) = ($1, $2);
+    $m{$essid} = $name;
+  }
+}
+
+#print Dumper \%m;
+
+$_ = `iwlist $iface scan`;
+
+while (/^ \s* ESSID:"([^"]+)"/mxg) {
+  my $essid = $1;
+  #print "feh: $essid\n";
+  if (defined $m{$essid}) {
+    print $m{$essid}, "\n";
+    exit 0;
+  }
+}
+
+
+exit 1;
+
+
+
+
+

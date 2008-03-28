@@ -1595,8 +1595,6 @@
       (kill-buffer "*scratch*"))
     (find-file "~/scratch.el")))
 
-(setq x-select-enable-clipboard t)
-
 (defvar nice-font "Bitstream Vera Sans Mono-13")
 
 ;;dont' forget to remove any default font from .custom.el
@@ -1669,10 +1667,9 @@
 (setq make-backup-files nil)
 
 
-
 ;;; to get the x clipboard selection use x-clipboard-yank
 ;;; to get the primary selection just yank 
-
+(setq x-select-enable-clipboard nil)
 
 
 (setq custom-file "~/config/init.el")

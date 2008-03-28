@@ -133,6 +133,13 @@
                               (require 'slime-asdf)
                               (require 'slime-fancy)
                               (slime-asdf-init)))
+
+(defun reload-slime ()
+  (interactive)
+  (load "slime")
+  (load "slime-asdf")
+  (load "slime-fancy"))
+
 (setq i-have-slime (load "slime" t))
 (when i-have-slime
   ;; (setq slime-net-coding-system 'iso-latin-1-unix)

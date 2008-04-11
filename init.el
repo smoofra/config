@@ -341,6 +341,8 @@
 
 (defvar my-function-places nil)
 
+
+(autoload 'find-function-read "find-func")
 (defun my-find-function (function)
   (interactive (find-function-read))
   (push  (copy-marker (point)) my-function-places)

@@ -430,7 +430,9 @@
   (interactive)
   (check-coding-system buffer-file-coding-system)
   (let ((coding-system-for-read buffer-file-coding-system))
-    (revert-buffer t)))
+    (revert-buffer t)
+    (ignore-errors 
+      (delete-file buffer-auto-save-file-name))))
 
 ;;; keymap properties aren't overlays!
 (defun remove-keymap-prop (begin end)

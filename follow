@@ -1,0 +1,18 @@
+#!/usr/bin/perl -w 
+
+use File::Basename;
+
+
+my $f = shift;
+
+print "$f\n";
+
+while (-l $f) {
+  $n = readlink $f or die $!;
+  if ($n !~ m:^/:) {
+    $f = dirname($f) . '/' . $n; 
+  } else {
+    $f = $n;
+  }
+  print "$f\n";
+}

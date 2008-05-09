@@ -133,6 +133,13 @@
                               (require 'slime-asdf)
                               (require 'slime-fancy)
                               (slime-asdf-init)))
+
+(defun reload-slime ()
+  (interactive)
+  (load "slime")
+  (load "slime-asdf")
+  (load "slime-fancy"))
+
 (setq i-have-slime (load "slime" t))
 (when i-have-slime
   ;; (setq slime-net-coding-system 'iso-latin-1-unix)
@@ -334,6 +341,8 @@
 
 (defvar my-function-places nil)
 
+
+(autoload 'find-function-read "find-func")
 (defun my-find-function (function)
   (interactive (find-function-read))
   (push  (copy-marker (point)) my-function-places)
@@ -430,7 +439,9 @@
   (interactive)
   (check-coding-system buffer-file-coding-system)
   (let ((coding-system-for-read buffer-file-coding-system))
-    (revert-buffer t)))
+    (revert-buffer t)
+    (ignore-errors 
+      (delete-file buffer-auto-save-file-name))))
 
 ;;; keymap properties aren't overlays!
 (defun remove-keymap-prop (begin end)
@@ -1521,10 +1532,10 @@
        (newline)
        (c-indent-command))
      (define-key c-mode-map "\C-c;"  'comment-region)
-     (define-key c-mode-map "\""     'skeleton-pair-insert-maybe)
-     (define-key c-mode-map "("      'skeleton-pair-insert-maybe)
-     (define-key c-mode-map "{"      'curly-braces)
-     (define-key c-mode-map "["      'skeleton-pair-insert-maybe)
+     ;; (define-key c-mode-map "\""     'skeleton-pair-insert-maybe)
+     ;; (define-key c-mode-map "("      'skeleton-pair-insert-maybe)
+     ;; (define-key c-mode-map "{"      'curly-braces)
+     ;; (define-key c-mode-map "["      'skeleton-pair-insert-maybe)
      (define-key c-mode-map "\C-o"   'c-open-line)
      (define-key c-mode-map "\C-k"   'c-kill-line)
      (define-key c-mode-map "\M-_"   'c-unwrap-next-sexp)
@@ -1587,8 +1598,6 @@
     (ignore-errors
       (kill-buffer "*scratch*"))
     (find-file "~/scratch.el")))
-
-(setq x-select-enable-clipboard t)
 
 (defvar nice-font "Bitstream Vera Sans Mono-13")
 
@@ -1662,10 +1671,9 @@
 (setq make-backup-files nil)
 
 
-
 ;;; to get the x clipboard selection use x-clipboard-yank
 ;;; to get the primary selection just yank 
-
+(setq x-select-enable-clipboard nil)
 
 
 (setq custom-file "~/config/init.el")
@@ -1687,6 +1695,7 @@
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
  '(fill-column 80)
  '(indent-tabs-mode nil)
+ '(iswitchb-default-method (quote samewindow))
  '(safe-local-variable-values (quote ((Package SERIES :use "COMMON-LISP" :colon-mode :external) (Package . HUNCHENTOOT) (Syntax . COMMON-LISP) (Package . FLEXI-STREAMS) (Package . Memoization) (Package . COMMON-LISP-CONTROLLER) (Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
  '(slime-backend "swank-loader.lisp")
  '(slime-enable-evaluate-in-emacs t)

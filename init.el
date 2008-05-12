@@ -138,10 +138,15 @@
   (interactive)
   (load "slime")
   (load "slime-asdf")
-  (load "slime-fancy"))
+  (load "slime-fancy")
+  (fix-slime-selector))
 
 (setq i-have-slime (load "slime" t))
-(when i-have-slime
+
+(when i-have-slime 
+  (fix-slime-selector))
+
+(defun fix-slime-selector ()
   ;; (setq slime-net-coding-system 'iso-latin-1-unix)
   (setq slime-net-coding-system 'utf-8-unix)
   (slime-setup)

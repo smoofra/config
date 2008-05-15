@@ -143,8 +143,7 @@
 
 (setq i-have-slime (load "slime" t))
 
-(when i-have-slime 
-  (fix-slime-selector))
+
 
 (defun fix-slime-selector ()
   ;; (setq slime-net-coding-system 'iso-latin-1-unix)
@@ -222,6 +221,9 @@
   (def-slime-selector-method ?b
     "*Backtrace* buffer"
     (get-buffer "*Backtrace*")))
+
+(when i-have-slime 
+  (fix-slime-selector))
 
 (defun link-url-at-point ()
   (interactive)

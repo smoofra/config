@@ -536,6 +536,23 @@ then to the end of the line."
       (Screen-lines-end-of-line (ad-get-arg 0))
     ad-do-it))
 
+
+(defadvice move-beginning-of-line
+  (around screen-lines last activate compile preactivate)
+  "Screen lines minor mode version.  Work in terms of screen lines."
+  (interactive "p")
+  (if (screen-lines-mode-p)
+      (Screen-lines-beginning-of-line (ad-get-arg 0))
+    ad-do-it))
+
+(defadvice move-end-of-line
+  (around screen-lines last activate compile preactivate)
+  "Screen lines minor mode version.  Work in terms of screen lines."
+  (interactive "p")
+  (if (screen-lines-mode-p)
+      (Screen-lines-end-of-line (ad-get-arg 0))
+    ad-do-it))
+
 (defadvice kill-line
   (around screen-lines last activate compile preactivate)
   "Screen lines minor mode version.  Work in terms of screen lines."

@@ -629,7 +629,8 @@
                                sh-mode
                                java-mode
                                makefile-mode
-                               diff-mode))
+                               diff-mode
+                               latex-mode))
 
 
 (defun c-unwrap-next-sexp (&optional kill-n-sexps)

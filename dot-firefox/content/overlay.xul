@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
-<!DOCTYPE overlay SYSTEM "chrome://helloworld/locale/overlay.dtd">
-<overlay id="dot-firefox-overlay"
-         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="overlay.js"/>
+  <keyset id="mainKeyset">
+    <key key="k" oncommand="goDoCommand('cmd_scrollLineUp')" />
+    <key key="h" oncommand="goDoCommand('cmd_scrollLeft')" />
+    <key key="j" oncommand="goDoCommand('cmd_scrollLineDown')" />
+    <key key="l" oncommand="goDoCommand('cmd_scrollRight')" />
+    <key key="d" oncommand="goDoCommand('cmd_scrollPageDown')" />
+    <key key="u" oncommand="goDoCommand('cmd_scrollPageUp')" />
+    <key modifiers="shift" key="B" oncommand="BrowserBack()" />
+    <key modifiers="shift" key="F" oncommand="BrowserForward()" />
+    <key key="." oncommand="tabRelativeSelect(1)" />
+    <key key="," oncommand="tabRelativeSelect(-1)" />
+  </keyset>
 </overlay>

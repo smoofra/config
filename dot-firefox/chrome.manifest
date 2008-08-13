@@ -1,0 +1,2 @@
+content	dot-firefox	content/
+overlay	chrome://browser/content/browser.xul	chrome://dot-firefox/content/overlay.xul

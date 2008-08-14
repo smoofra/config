@@ -82,6 +82,10 @@ $MAILDIR/.lisp/
 *^List-Id: .*sbcl-devel
 $MAILDIR/.lisp/
 
+:0 
+*^List-Id: <hah.mozdev.org>
+$MAILDIR/.hah/ 
+
 :0
 *^List-Id: .*bese-devel
 $MAILDIR/.lisp/

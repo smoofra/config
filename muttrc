@@ -305,7 +305,7 @@ unignore X-SpamProbe:
 unhdr_order *
 hdr_order From Subject: From: Reply-To: To: Cc: Newsgroups: Date: X-SpamProbe: 
 
-macro index ci C=.inbox\n
+macro index ci C=\n
 macro index cl C=.lisp\n
 macro index cr C=.sent-mail\n
 macro index cs C=.inbox_save\n

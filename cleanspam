@@ -1,0 +1,57 @@
+#!/usr/bin/perl -w 
+
+use Email::LocalDelivery;
+use Email::Folder;
+use Email::Simple;
+use Time::Piece;
+use Date::Parse;
+use Time::Seconds;
+use Data::Dumper;
+use Fcntl ':flock'; 
+
+my $in = "$ENV{HOME}/mail/spam";
+my $out = "$ENV{HOME}/mail/spam.tmp";
+
+
+open $ifh, "+<$in"; 
+
+flock $ifh, LOCK_EX or die "can't acquire lock: $!"; 
+
+system "cat /dev/null >$out"; 
+
+my $fold = Email::Folder->new($in);
+
+my %ignore = ('<1181245635@melkor>' => 1,
+              '<1204562734@melkor>' => 1);
+
+while (my $msg  = $fold->next_message()) { 
+  my $recv = $msg->header("Received");
+  my $diff;
+  if (not defined $recv) { 
+    $id = $msg->header("Message-Id");
+    unless ($ignore{$id}) {
+      warn "message $id has no Received\n";
+    }
+    $diff = 0
+  } else { 
+    $recv =~ s/^.*;//; 
+    $tp = Time::Piece->new(str2time $recv); 
+    $now = localtime;
+    $diff = $now - $tp;
+  }
+  #print $ofh $msg->as_string() if $diff < ONE_WEEK;
+  #print Dumper $msg;
+  Email::LocalDelivery->deliver($msg->as_string(), $out) if $diff < ONE_WEEK; 
+}
+
+
+seek $ifh, 0, 0 or die "can't seek $!"; 
+open $ofh, "<$out" or die "can't open $out: $!"; 
+print $ifh $_ while (defined ($_ = <$ofh>)); 
+close $ofh;
+system "rm -f $out";
+truncate $ifh, tell($ifh) or die "cant truncate: $!"; 
+flock $ifh, LOCK_UN; 
+close $ifh; 
+
+

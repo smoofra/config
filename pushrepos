@@ -26,3 +26,6 @@ cd ~/sbcl; git push
 echo; echo ==== ~/slime
 cd ~/slime; git push
 
+echo; echo ==== ~/watcher
+cd ~/watcher; git push
+

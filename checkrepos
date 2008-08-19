@@ -6,6 +6,7 @@
 my $euid = $>;
 
 my @repos = qw:
+                watcher
                 bin
                 config
                 delicious

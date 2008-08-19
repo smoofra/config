@@ -1,0 +1,38 @@
+{
+  cgilink => "http://elder-gods.org/~larry/watcher.cgi",
+  pages => [
+            { name => 'test',
+              url => "http://elder-gods.org/test.html"},
+            { name => 'maddox',
+              url => 'http://maddox.xmission.com/',
+              posthook => sub {
+                my $item = shift;
+                if (defined $item->{content}) {
+                  my $re = qr/people think I'm right about everything/; 
+                  $item->{content} =~ s/[^\n]*$re.*//s;
+                  return $item;
+                }
+              }
+            },
+            { name => 'theory of everything comics',
+              url => 'http://www.theoryofeverythingcomics.com/comics.htm',
+            },
+            {
+             name => 'the pain',
+             url => 'http://thepaincomics.com/new_index.htm'
+            },
+            {
+             name => 'cartoon guide to lob\'s theorem',
+             url => 'http://www.overcomingbias.com/2008/08/lobs-theorem.html'
+            },
+            {
+             name => 'Moral Error and Moral Disagreement',
+             url => 'http://www.overcomingbias.com/2008/08/moral-disagreem/comments/page/2/'
+            },
+            {
+             url => 'http://www.overcomingbias.com/2008/08/no-self-trust.html',
+             name => 'You Provably Can\'t Trust Yourself',
+            },
+            
+           ]
+}

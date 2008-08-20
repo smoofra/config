@@ -1,3 +1,51 @@
+
+
+use HTML::TreeBuilder;
+use HTML::Element;
+use HTML::Tree;
+
+sub strip_ob_sidebar {
+  my $data = shift;
+  my $html = HTML::TreeBuilder->new;
+  $html->utf8_mode(1);
+  $html->parse($data);
+  my @bad; 
+  $html->traverse ([
+                    sub {
+                      my $x = shift;
+                      if (ref $x eq 'HTML::Element' and
+                          $x->tag eq 'div' and
+                          defined $x->attr('class')) {
+                        my $class = $x->attr ('class');
+                        if ($class =~ /module-archives/ or
+                            $class =~ /module-widget/ or
+                            $class =~ /module-typelist/ or
+                            $class =~ /module-syndicate/ or
+                            $class =~ /module-calendar/ or
+                            $class =~ /module-category-cloud/ or
+                            $class =~ /module-recent-comments/) {
+                          push @bad, $x;
+                          return HTML::Element::PRUNE;
+                        }
+                      }
+                      return HTML::Element::OK;                      
+                    }
+                   ]);
+  for (@bad) {
+    $_->detach; 
+  }
+  return $html->as_HTML;
+}
+
+sub obhook {
+  my $item = shift;
+  if (defined $item->{content}) {
+    $item->{content} = strip_ob_sidebar $item->{content};
+    return $item;
+  }
+}
+
+
 {
   cgilink => "http://elder-gods.org/~larry/watcher.cgi",
   pages => [
@@ -23,15 +71,18 @@
             },
             {
              name => 'cartoon guide to lob\'s theorem',
-             url => 'http://www.overcomingbias.com/2008/08/lobs-theorem.html'
+             url => 'http://www.overcomingbias.com/2008/08/lobs-theorem.html',
+             posthook => \&obhook,
             },
             {
              name => 'Moral Error and Moral Disagreement',
-             url => 'http://www.overcomingbias.com/2008/08/moral-disagreem/comments/page/2/'
+             url => 'http://www.overcomingbias.com/2008/08/moral-disagreem/comments/page/2/',
+             posthook => \&obhook,
             },
             {
              url => 'http://www.overcomingbias.com/2008/08/no-self-trust.html',
              name => 'You Provably Can\'t Trust Yourself',
+             posthook => \&obhook,
             },
             
            ]

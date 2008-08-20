@@ -84,6 +84,11 @@ sub obhook {
              name => 'You Provably Can\'t Trust Yourself',
              posthook => \&obhook,
             },
+            {
+             url => 'http://www.overcomingbias.com/2008/08/are-ufos-aliens.html',
+             name => 'Are UFOs Aliens?',
+             posthook => \&obhook,
+            },
             
            ]
 }

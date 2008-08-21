@@ -1,0 +1,5 @@
+<UserScriptConfig>
+	<Script filename="esuserjs.user.js" name="es.user.js" namespace="http://elder-gods.org/wtf" description="navigation for errant story" enabled="true" basedir="esuserjs">
+		<Include>http://www.errantstory.com/*</Include>
+	</Script>
+</UserScriptConfig>

@@ -89,6 +89,10 @@ sub obhook {
              name => 'Are UFOs Aliens?',
              posthook => \&obhook,
             },
-            
+            {
+             url => 'http://www.overcomingbias.com/2008/08/no-human-licens.html',
+             name => 'No License To Be Human',
+             posthook => \&obhook,
+            },
            ]
 }

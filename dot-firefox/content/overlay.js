@@ -25,3 +25,42 @@ function tabRelativeSelect(delta)
   if (newTab && newTab != oldTab)
     gBrowser.selectedTab = newTab;
 }
+
+
+function fookey(keyCode, type) { 
+	var doc = gBrowser.contentDocument; 
+	var e = doc.createEvent("KeyEvents"); 
+	e.initKeyEvent(type, true, true, doc.defaultView,
+				   false, false, false, false,
+				   keyCode, 0);
+	doc.dispatchEvent(e); 
+}
+
+function fooup(event) {
+	var utils = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor).getInterface(Components.interfaces.nsIDOMWindowUtils);
+// 	utils.sendKeyEvent("keydown",  KeyEvent["DOM_VK_UP"], 0, 0);
+// 	utils.sendKeyEvent("keypress", KeyEvent["DOM_VK_UP"], 0, 0);
+// 	utils.sendKeyEvent("keyup",    KeyEvent["DOM_VK_UP"], 0, 0);
+// 	utils.sendKeyEvent("keydown",  38, 0, 0);
+// 	utils.sendKeyEvent("keypress", 38, 0, 0);
+// 	utils.sendKeyEvent("keyup",    38, 0, 0);
+	fookey(KeyEvent["DOM_VK_UP"], "keyup"); 
+	fookey(KeyEvent["DOM_VK_UP"], "keypress"); 
+	fookey(KeyEvent["DOM_VK_UP"], "keyup"); 
+
+}
+
+
+function foodown(event) {
+	var utils = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor).getInterface(Components.interfaces.nsIDOMWindowUtils);
+// 	utils.sendKeyEvent("keydown",  40, 0, 0);
+// 	utils.sendKeyEvent("keypress", 40, 0, 0);
+// 	utils.sendKeyEvent("keyup",    40, 0, 0);
+// 	utils.sendKeyEvent("keydown",  KeyEvent["DOM_VK_DOWN"], 0, 0);
+// 	utils.sendKeyEvent("keypress", KeyEvent["DOM_VK_DOWN"], 0, 0);
+// 	utils.sendKeyEvent("keyup",    KeyEvent["DOM_VK_DOWN"], 0, 0);
+	fookey(KeyEvent["DOM_VK_DOWN"], "keydown"); 
+	fookey(KeyEvent["DOM_VK_DOWN"], "keypress"); 
+	fookey(KeyEvent["DOM_VK_DOWN"], "keyup"); 
+}
+

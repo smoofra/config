@@ -2,4 +2,8 @@
 	<Script filename="esuserjs.user.js" name="es.user.js" namespace="http://elder-gods.org/wtf" description="navigation for errant story" enabled="true" basedir="esuserjs">
 		<Include>http://www.errantstory.com/*</Include>
 	</Script>
+	<Script filename="sluggy_nav.user.js" name="sluggy nav" namespace="http://elder-gods.org/wtf" description="navigation for sluggy freelance" enabled="true" basedir="sluggy_nav">
+		<Include>http://sluggy.com/*</Include>
+		<Include>http://www.sluggy.com/*</Include>
+	</Script>
 </UserScriptConfig>

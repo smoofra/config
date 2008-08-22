@@ -34,7 +34,7 @@ sub strip_ob_sidebar {
   for (@bad) {
     $_->detach; 
   }
-  return $html->as_HTML;
+  return $html->as_HTML('<>&', "\t");
 }
 
 sub obhook {

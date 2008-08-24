@@ -4,10 +4,17 @@
   <!-- <script src="EventUtils.js" /> -->
   <script src="overlay.js"/>
   <keyset id="mainKeyset">
-    <key key="j" oncommand="goDoCommand('cmd_scrollLineDown')" />
-    <key key="k" oncommand="goDoCommand('cmd_scrollLineUp')" />
-    <key modifiers="alt" key="j" oncommand="foodown(event)" />
-    <key modifiers="alt" key="k" oncommand="fooup(event)" />
+    <!-- <key key="j" oncommand="goDoCommand('cmd_scrollLineDown')" /> -->
+    <!-- <key key="k" oncommand="goDoCommand('cmd_scrollLineUp')" /> -->
+    <!-- <key modifiers="alt" key="j" oncommand="foodown(event)" /> -->
+    <!-- <key modifiers="alt" key="k" oncommand="fooup(event)" /> -->
+
+    <!-- <key key="j" oncommand="foodown(event)" /> -->
+    <!-- <key key="k" oncommand="fooup(event)" /> -->
+    
+    <key key="j" oncommand="normalj()" />
+    <key key="k" oncommand="normalk()" />
+
     <key key="h" oncommand="goDoCommand('cmd_scrollLeft')" />
     <key key="l" oncommand="goDoCommand('cmd_scrollRight')" />
     <key key="d" oncommand="goDoCommand('cmd_scrollPageDown')" />

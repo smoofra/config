@@ -956,7 +956,9 @@
   (message "you're in jk mode dumbass"))
 
 (defvar jk-keymap nil)
+(defvar jk-implies-readonly t)
 (progn
+  (make-variable-buffer-local 'jk-implies-readonly)
   (setq jk-keymap (make-keymap))
   (loop for i from 32 to 126 
         do (define-key jk-keymap (char-to-string i) 'jk-warn))
@@ -966,8 +968,15 @@
     "a lightweight version view mode with vilike movement key "
     :init-value nil
     :lighter " jk"
-    :keymap jk-keymap))
+    :keymap jk-keymap
+    (if jk-implies-readonly
+        (if jk-mode
+            (progn 
+              (setq jk-buffer-read-only buffer-read-only)
+              (toggle-read-only 1))
+          (toggle-read-only (if jk-buffer-read-only 1 -1))))))
 
+ 
 
 ;;lisp keybinds
 (progn
@@ -1430,7 +1439,8 @@
 ;;   (next-line))
 
 (require 'erc)
-(progn 
+(progn
+  (add-hook 'erc-mode-hook '(lambda () (setq jk-implies-readonly nil)))
   (erc-scrolltobottom-enable)
   (add-hook 'erc-join-hook 'bitlbee-identify)
   ;;(define-key erc-mode-map "\M-q" 'silly-scroll-down-one-hack )

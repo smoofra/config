@@ -126,6 +126,13 @@
   (interactive)
   (if  (get-register ?C)
       (progn (jump-to-register ?C)
+             (let ((win (selected-window))
+                   (done nil))
+               (while (not done)
+                 (end-of-buffer)
+                 (other-window 1)
+                 (when (eq win (selected-window))
+                   (setq done t))))
              (current-buffer))
     (progn
       (delete-other-windows)

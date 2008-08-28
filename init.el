@@ -1993,5 +1993,6 @@
 
 
 ;; coding-system stuff is at C-x C-; 
+;; to figure out where a command is, or to find the key it's bound to, use where-is
 
 ;;; when slime highlights the stuff that isn't compiled, it's slime-highlight-edits-mode

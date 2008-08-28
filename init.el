@@ -22,6 +22,7 @@
 (autoload 'darcsum-whatsnew "darcsum" "" t)
 (autoload 'paredit-mode "paredit" "" t)
 (add-hook 'lisp-mode-hook (lambda () (paredit-mode +1)))
+(add-hook 'emacs-lisp-mode-hook (lambda () (paredit-mode +1)))
 
 
 (setq load-path (cons "/usr/share/emacs/site-lisp/maxima/" load-path))
@@ -624,13 +625,18 @@
                                ruby-mode
                                shell-script-mode
                                asm-mode
+                               nxml-mode
                                pascal-mode
                                html-mode
                                sh-mode
                                java-mode
+                               sgml-mode
                                makefile-mode
                                diff-mode
                                latex-mode))
+
+
+
 
 
 (defun c-unwrap-next-sexp (&optional kill-n-sexps)

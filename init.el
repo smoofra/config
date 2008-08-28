@@ -124,11 +124,15 @@
 
 (defun chat () 
   (interactive)
-  (delete-other-windows)
-  (split-window-vertically)
-  (switch-to-buffer "mgwyer")
-  (other-window 1)
-  (switch-to-buffer "#yourmom"))
+  (if  (get-register ?C)
+      (progn (jump-to-register ?C)
+             (current-buffer))
+    (progn
+      (delete-other-windows)
+      (split-window-vertically)
+      (switch-to-buffer "mgwyer")
+      (other-window 1)
+      (switch-to-buffer "#yourmom"))))
 
 (add-hook 'slime-load-hook '(lambda () 
                               (require 'slime-asdf)

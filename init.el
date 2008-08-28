@@ -624,13 +624,18 @@
                                ruby-mode
                                shell-script-mode
                                asm-mode
+                               nxml-mode
                                pascal-mode
                                html-mode
                                sh-mode
                                java-mode
+                               sgml-mode
                                makefile-mode
                                diff-mode
                                latex-mode))
+
+
+
 
 
 (defun c-unwrap-next-sexp (&optional kill-n-sexps)

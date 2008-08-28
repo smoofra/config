@@ -1050,6 +1050,13 @@
    (progn 
      (define-jk apropos-mode-map))))
 
+(defun comint-recenter ()
+  (interactive)
+  (when comint-dynamic-list-completions-config
+    (set-window-configuration comint-dynamic-list-completions-config)
+    (setq comint-dynamic-list-completions-config nil))
+  (comint-postoutput-scroll-to-bottom ""))
+
 (defun comint-previous-matching-input-feh () 
   (interactive)
   (comint-previous-matching-input (car minibuffer-history-search-history) 1))
@@ -1066,6 +1073,7 @@
      (define-key comint-mode-map "\M-\C-p" 'comint-previous-matching-input-feh)
      (define-key comint-mode-map "\M-\C-n" 'comint-next-matching-input-feh)
      (define-key comint-mode-map "\M-/" 'comint-dynamic-list-filename-completions)
+     (define-key comint-mode-map "\C-l" 'comint-recenter)
      (define-key comint-mode-map "\M-?" 'help)
      (define-key comint-mode-map "\C-z" 'scroll-up-one)
      (define-key comint-mode-map "\C-q" 'scroll-down-one))))

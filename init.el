@@ -2020,6 +2020,8 @@
  ("=>" ?⇒)
  ("<=" ?⇐) 
  ("::" ?∷)
+ ("\\partial" ?∂)
+ ("\\del" ?∇)
  ("\\forces" ?⊩)
  ("\\proves" ?⊦))
 (set-input-method nil)

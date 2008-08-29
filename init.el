@@ -1651,6 +1651,7 @@
 
 (defvar nice-font "Bitstream Vera Sans Mono-13")
 
+;; to find your current font, (frame-parameter nil 'font)
 ;;dont' forget to remove any default font from .custom.el
 (defun set-nice-font (&optional x)
   (let ((f (selected-frame)))
@@ -2054,3 +2055,7 @@
 ;; to figure out where a command is, or to find the key it's bound to, use where-is
 
 ;;; when slime highlights the stuff that isn't compiled, it's slime-highlight-edits-mode
+
+
+
+;;; (debiafy) in .site init for debian crap

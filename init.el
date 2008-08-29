@@ -1626,7 +1626,8 @@
       (kill-buffer "*scratch*"))
     (find-file "~/scratch.el")))
 
-(defvar nice-font "Bitstream Vera Sans Mono-13")
+;; (defvar nice-font "Bitstream Vera Sans Mono-13")
+(defvar nice-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-20-*-*-*-m-0-iso10646-1")
 
 ;; to find your current font, (frame-parameter nil 'font)
 ;;dont' forget to remove any default font from .custom.el

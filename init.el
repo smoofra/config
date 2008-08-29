@@ -631,30 +631,7 @@
 
 (transient-mark-mode -1)
 
-(setq font-lock-global-modes '(c-mode
-                               c++-mode
-                               perl-mode
-                               haskell-mode
-                               lisp-mode
-                               xml-mode
-                               cperl-mode	
-                               emacs-lisp-mode
-                               ruby-mode
-                               shell-script-mode
-                               asm-mode
-                               nxml-mode
-                               pascal-mode
-                               html-mode
-                               sh-mode
-                               java-mode
-                               sgml-mode
-                               makefile-mode
-                               diff-mode
-                               latex-mode))
-
-
-
-
+(setq font-lock-global-modes t)
 
 (defun c-unwrap-next-sexp (&optional kill-n-sexps)
   "Convert (x ...) to ..."

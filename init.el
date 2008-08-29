@@ -1043,6 +1043,7 @@
 (eval-after-load "paredit" 
   (quote
    (progn
+     (define-key paredit-mode-map "\M-q"  'scroll-down-one)
      (define-key paredit-mode-map "\M-r"  'replace-regexp-region)
      (define-key paredit-mode-map "\C-\M-n" 'semi-forward-sexp)
      (define-key paredit-mode-map "\C-\M-p" 'semi-backward-sexp)
@@ -2036,6 +2037,11 @@
 (set-input-method "TeX")
 (quail-define-rules 
  ((append . t))
+ ("->" ?→)
+ ("<-" ?←)
+ ("=>" ?⇒)
+ ("<=" ?⇐) 
+ ("::" ?∷)
  ("\\forces" ?⊩)
  ("\\proves" ?⊦))
 (set-input-method nil)

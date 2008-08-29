@@ -604,6 +604,8 @@
 (add-to-list 'auto-mode-alist '("\\.asd$" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.jl$" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+(add-to-list 'auto-mode-alist '("\\.hs$" . haskell-mode))
+
 ;;(add-to-list 'auto-mode-alist '("\\.js" . javascript-mode))
 ;;(add-to-list 'magic-mode-alist (cons "#!.*perl" 'cperl-mode))
 
@@ -632,6 +634,7 @@
 (setq font-lock-global-modes '(c-mode
                                c++-mode
                                perl-mode
+                               haskell-mode
                                lisp-mode
                                xml-mode
                                cperl-mode	
@@ -2013,6 +2016,7 @@
 
 
 (defun my-hask-hook ()
+  (turn-on-haskell-indent)
   (define-key haskell-mode-map "\C-c;" 'comment-region)
   (define-key haskell-mode-map "\r" 'newline-and-indent))
 (add-hook 'haskell-mode-hook 'my-hask-hook)
@@ -2027,6 +2031,15 @@
   (backward-char))
 
 (global-set-key "\C-x " 'open-char)
+
+;;; to insert a unicode chacter M-x ucs-insert 
+(set-input-method "TeX")
+(quail-define-rules 
+ ((append . t))
+ ("\\forces" ?⊩)
+ ("\\proves" ?⊦))
+(set-input-method nil)
+
 
 (site-init-late)
 

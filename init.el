@@ -28,6 +28,8 @@
 (setq load-path (cons "/usr/share/emacs/site-lisp/maxima/" load-path))
 
 (setq load-path (cons "~/config" load-path))
+(setq load-path (cons "~/slime" load-path))
+(setq load-path (cons "~/slime/contrib" load-path))
 (setq load-path (cons "~/config/emacslisp" load-path))
 
 (autoload 'lisppaste-paste-region "lisppaste" "lisppaste" t)

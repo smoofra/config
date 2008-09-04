@@ -1722,6 +1722,7 @@
  '(delete-selection-mode nil)
  '(diff-switches "-u")
  '(erc-fill-column 69)
+ '(erc-track-exclude-server-buffer t)
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
  '(fill-column 80)
  '(indent-tabs-mode nil)

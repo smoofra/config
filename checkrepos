@@ -4,10 +4,12 @@ my $euid = $>;
 
 my @repos = grep { $_ !~ /^\.{1,2}$/ } glob "$ENV{HOME}/repos.tocheck/*";
 
-if ($euid == 0) {
-  push @repos, qw: /etc/ /home/meghan/public_html :;
-} else {
-  print "NOT ROOT\n\n";
+if (`hostname` eq 'melkor') {
+  if ($euid == 0) {
+    push @repos, qw: /etc/ /home/meghan/public_html :;
+  } else {
+    print "NOT ROOT\n\n";
+  }
 }
 
 

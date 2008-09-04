@@ -4,3 +4,4 @@ add control = Control_L
 ! remap right control to capslock
 keycode 109 = Caps_Lock
 add lock = Caps_Lock
+clear lock

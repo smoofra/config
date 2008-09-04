@@ -28,6 +28,8 @@
 (setq load-path (cons "/usr/share/emacs/site-lisp/maxima/" load-path))
 
 (setq load-path (cons "~/config" load-path))
+(setq load-path (cons "~/slime" load-path))
+(setq load-path (cons "~/slime/contrib" load-path))
 (setq load-path (cons "~/config/emacslisp" load-path))
 
 (autoload 'lisppaste-paste-region "lisppaste" "lisppaste" t)
@@ -602,6 +604,8 @@
 (add-to-list 'auto-mode-alist '("\\.asd$" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.jl$" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.css$" . css-mode))
+(add-to-list 'auto-mode-alist '("\\.hs$" . haskell-mode))
+
 ;;(add-to-list 'auto-mode-alist '("\\.js" . javascript-mode))
 ;;(add-to-list 'magic-mode-alist (cons "#!.*perl" 'cperl-mode))
 
@@ -627,29 +631,7 @@
 
 (transient-mark-mode -1)
 
-(setq font-lock-global-modes '(c-mode
-                               c++-mode
-                               perl-mode
-                               lisp-mode
-                               xml-mode
-                               cperl-mode	
-                               emacs-lisp-mode
-                               ruby-mode
-                               shell-script-mode
-                               asm-mode
-                               nxml-mode
-                               pascal-mode
-                               html-mode
-                               sh-mode
-                               java-mode
-                               sgml-mode
-                               makefile-mode
-                               diff-mode
-                               latex-mode))
-
-
-
-
+(setq font-lock-global-modes t)
 
 (defun c-unwrap-next-sexp (&optional kill-n-sexps)
   "Convert (x ...) to ..."
@@ -1038,6 +1020,7 @@
 (eval-after-load "paredit" 
   (quote
    (progn
+     (define-key paredit-mode-map "\M-q"  'scroll-down-one)
      (define-key paredit-mode-map "\M-r"  'replace-regexp-region)
      (define-key paredit-mode-map "\C-\M-n" 'semi-forward-sexp)
      (define-key paredit-mode-map "\C-\M-p" 'semi-backward-sexp)
@@ -1643,8 +1626,10 @@
       (kill-buffer "*scratch*"))
     (find-file "~/scratch.el")))
 
-(defvar nice-font "Bitstream Vera Sans Mono-13")
+;; (defvar nice-font "Bitstream Vera Sans Mono-13")
+(defvar nice-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-20-*-*-*-m-0-iso10646-1")
 
+;; to find your current font, (frame-parameter nil 'font)
 ;;dont' forget to remove any default font from .custom.el
 (defun set-nice-font (&optional x)
   (let ((f (selected-frame)))
@@ -2011,6 +1996,7 @@
 
 
 (defun my-hask-hook ()
+  (turn-on-haskell-indent)
   (define-key haskell-mode-map "\C-c;" 'comment-region)
   (define-key haskell-mode-map "\r" 'newline-and-indent))
 (add-hook 'haskell-mode-hook 'my-hask-hook)
@@ -2026,6 +2012,23 @@
 
 (global-set-key "\C-x " 'open-char)
 
+;;; to insert a unicode chacter M-x ucs-insert 
+(set-input-method "TeX")
+(quail-define-rules 
+ ((append . t))
+ ("->" ?→)
+ ("<-" ?←)
+ ("=>" ?⇒)
+ ("<=" ?⇐) 
+ ("\\sqrt" ?√)
+ ("::" ?∷)
+ ("\\partial" ?∂)
+ ("\\del" ?∇)
+ ("\\forces" ?⊩)
+ ("\\proves" ?⊦))
+(set-input-method nil)
+
+
 (site-init-late)
 
 
@@ -2033,3 +2036,7 @@
 ;; to figure out where a command is, or to find the key it's bound to, use where-is
 
 ;;; when slime highlights the stuff that isn't compiled, it's slime-highlight-edits-mode
+
+
+
+;;; (debiafy) in .site init for debian crap

@@ -2042,6 +2042,6 @@
 
 ;;; when slime highlights the stuff that isn't compiled, it's slime-highlight-edits-mode
 
-
+;; to switch to a buffer that's visible in another window, use C-x 4 b iswitchb-buffer-other-window
 
 ;;; (debiafy) in .site init for debian crap

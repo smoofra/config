@@ -1,4 +1,4 @@
-
+# -*- mode: cperl; -*- 
 
 use HTML::TreeBuilder;
 use HTML::Element;
@@ -63,7 +63,7 @@ sub obhook {
               }
             },
             { name => 'theory of everything comics',
-              url => 'http://www.theoryofeverythingcomics.com/comics.htm',
+              url => 'http://www.theoryofeverythingcomics.com/',
             },
             {
              name => 'the pain',

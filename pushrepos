@@ -1,31 +1,14 @@
 #!/bin/sh 
 
 
+for x in ~/repos.topush/*; do
+    x=$(readlink $x)
+    echo; 
+    echo === $x
+    cd $x
+    git push
+done
 
-echo; echo ==== ~/bin
-cd ~/bin; git push
 
-echo; echo ==== ~/config
-cd ~/config; git push
 
-echo; echo ==== ~/lisp/blog
-cd ~/lisp/blog; git push
-
-echo; echo ==== ~/lisp/lisputils
-cd ~/lisp/lisputils; git push
-
-echo; echo ==== ~/maddox
-cd ~/maddox; git push
-
-echo; echo ==== ~/ronpaul
-cd ~/ronpaul; git push
-
-echo; echo ==== ~/sbcl
-cd ~/sbcl; git push
-
-echo; echo ==== ~/slime
-cd ~/slime; git push
-
-echo; echo ==== ~/watcher
-cd ~/watcher; git push
 

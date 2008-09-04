@@ -1468,7 +1468,11 @@
    (progn
      (define-key nxml-mode-map "\C-c/" 'nxml-finish-element)
      (define-key nxml-mode-map "\C-\M-f" 'nxml-forward-element)
-     (define-key nxml-mode-map "\C-\M-b" 'nxml-backward-element))))
+     (define-key nxml-mode-map "\C-\M-b" 'nxml-backward-element)
+     (define-key nxml-mode-map "\M-f" 'nxml-forward-balanced-item)
+     (define-key nxml-mode-map "\M-b" '(lambda () 
+                                         (interactive)
+                                         (nxml-forward-balanced-item -1))))))
 
 (eval-after-load 'sgml-mode
   (quote

@@ -631,30 +631,7 @@
 
 (transient-mark-mode -1)
 
-(setq font-lock-global-modes '(c-mode
-                               c++-mode
-                               perl-mode
-                               haskell-mode
-                               lisp-mode
-                               xml-mode
-                               cperl-mode	
-                               emacs-lisp-mode
-                               ruby-mode
-                               shell-script-mode
-                               asm-mode
-                               nxml-mode
-                               pascal-mode
-                               html-mode
-                               sh-mode
-                               java-mode
-                               sgml-mode
-                               makefile-mode
-                               diff-mode
-                               latex-mode))
-
-
-
-
+(setq font-lock-global-modes t)
 
 (defun c-unwrap-next-sexp (&optional kill-n-sexps)
   "Convert (x ...) to ..."
@@ -1649,8 +1626,10 @@
       (kill-buffer "*scratch*"))
     (find-file "~/scratch.el")))
 
-(defvar nice-font "Bitstream Vera Sans Mono-13")
+;; (defvar nice-font "Bitstream Vera Sans Mono-13")
+(defvar nice-font "-unknown-DejaVu Sans Mono-normal-normal-normal-*-20-*-*-*-m-0-iso10646-1")
 
+;; to find your current font, (frame-parameter nil 'font)
 ;;dont' forget to remove any default font from .custom.el
 (defun set-nice-font (&optional x)
   (let ((f (selected-frame)))
@@ -2043,6 +2022,8 @@
  ("<=" ?⇐) 
  ("\\sqrt" ?√)
  ("::" ?∷)
+ ("\\partial" ?∂)
+ ("\\del" ?∇)
  ("\\forces" ?⊩)
  ("\\proves" ?⊦))
 (set-input-method nil)
@@ -2055,3 +2036,7 @@
 ;; to figure out where a command is, or to find the key it's bound to, use where-is
 
 ;;; when slime highlights the stuff that isn't compiled, it's slime-highlight-edits-mode
+
+
+
+;;; (debiafy) in .site init for debian crap

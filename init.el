@@ -431,7 +431,7 @@
            (when (and (not (null buffer-to-revert-if-no-diff))
                       (equal 0 code))
              (set-buffer buffer-to-revert-if-no-diff)
-             (revert-buffer t t t))
+             (my-revert-buffer t t))
            (setq diff-return-code code))))
  
 
@@ -447,7 +447,6 @@
     (cond 
      ((equal diff-return-code 0)
       (message "no diff")
-      ;;(read-char nil nil .5)
       (sit-for .5)
       (set-window-configuration wc))
      (t 
@@ -456,11 +455,11 @@
         (toggle-read-only 1))))))
 
 
-(defun my-revert-buffer () 
+(defun my-revert-buffer (&optional noconfirm preserve-modes) 
   (interactive)
   (check-coding-system buffer-file-coding-system)
   (let ((coding-system-for-read buffer-file-coding-system))
-    (revert-buffer t)
+    (revert-buffer t noconfirm preserve-modes)
     (ignore-errors 
       (delete-file buffer-auto-save-file-name))))
 

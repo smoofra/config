@@ -47,7 +47,7 @@ sub obhook {
 
 
 {
-  cgilink => "http://elder-gods.org/~larry/watcher.cgi",
+  link => "http://elder-gods.org/~larry/watcher.cgi",
   pages => [
             { name => 'test',
               url => "http://elder-gods.org/test.html"},
@@ -84,11 +84,6 @@ sub obhook {
              name => 'You Provably Can\'t Trust Yourself',
              posthook => \&obhook,
             },
-            # {
-#              url => 'http://www.overcomingbias.com/2008/08/are-ufos-aliens.html',
-#              name => 'Are UFOs Aliens?',
-#              posthook => \&obhook,
-#             },
             {
              url => 'http://www.overcomingbias.com/2008/08/no-human-licens.html',
              name => 'No License To Be Human',

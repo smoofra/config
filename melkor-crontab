@@ -1,0 +1,24 @@
+
+
+# minute hour dayofmonth month dayofweek
+
+0  * * * *  /home/larry/bin/scanspam-maildir
+30 5 * * *  /home/larry/bin/cleanspam-maildir
+30 6 * * *  /home/larry/bin/quiet-git-commit /home/larry/Maildir
+0 0 * * *   /home/larry/maddox/update.pl
+0 0 * * *   /home/larry/repos/slime-tracker/.git/import
+0 0 * * *   /home/larry/delicious/update.pl
+0 0 * * *   /home/larry/ronpaul/update.pl
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   crontab -l > /home/larry/config/melkor-crontab
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/watcher/watcher update
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/boc2rss /home/larry/public_html/boc.rss
+0,10,20,30,40,50 * * * * /home/larry/lisp/blog/check
+0 15 * * 1,2,3,4,5  /home/larry/bin/remind fill out your timesheet NOW
+
+
+#0 0 * * *   /home/larry/gregarius-data/update.pl
+#0,30 * * * *   /home/larry/public_html/updatebookmarks
+#0 0,12,16 * * *   /home/larry/thepain/update.pl
+#0,30 * * * *     /home/larry/public_html/slashdot.sh
+#30   0   *   *   *      wget -q -O /dev/null http://elder-gods.org/~larry/gregarius/update.php?silent
+

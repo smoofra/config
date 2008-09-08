@@ -504,12 +504,24 @@
       (bury-buffer)
     (delete-window)))
 
-(global-set-key "\C-c\C-c"  'my-server-done)
-;(global-set-key "\C-o"      'myblink)
+(defun bury-all ()
+  (interactive)
+  (let ((bufs 
+         (loop for x in (window-list)
+               collect (window-buffer x))))
+    (delete-other-windows)
+    (loop for x in bufs
+          do (progn
+               (set-buffer x)
+               (bury-buffer)))))
+
+(global-set-key "\C-c\C-c" 'my-server-done)
 (global-set-key "\\" 'indent-region)
 (global-set-key [C-return] 'open-line)
-(global-set-key [(f1)]     'delete-other-windows)
-(global-set-key [(f12)]    'bury)
+(global-set-key [(f1)] 'delete-other-windows)
+(global-set-key [(f12)] 'bury)
+(global-set-key [(control x) (f12)] 'bury-all)
+
 (global-set-key [(f2)]     'next-error)
 (global-set-key "\C-xe"    'next-error)
 (global-set-key "\C-xd"    'beginning-of-defun)

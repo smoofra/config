@@ -100,7 +100,7 @@ sub obhook {
                  $md5->add($item->{content});
                  $item->{content} = "MD5:" . $md5->hexdigest();
                }
-               $item->{url} = 'http://homestarrunner.com'; 
+               $item->{url} = 'http://homestarrunner.com/main1.html'; 
                return $item;
              }
             }

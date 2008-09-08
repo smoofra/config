@@ -3,6 +3,7 @@
 use HTML::TreeBuilder;
 use HTML::Element;
 use HTML::Tree;
+use Digest::MD5; 
 
 sub strip_ob_sidebar {
   my $data = shift;
@@ -58,8 +59,8 @@ sub obhook {
                 if (defined $item->{content}) {
                   my $re = qr/people think I'm right about everything/; 
                   $item->{content} =~ s/[^\n]*$re.*//s;
-                  return $item;
                 }
+                return $item; 
               }
             },
             { name => 'theory of everything comics',
@@ -89,5 +90,18 @@ sub obhook {
              name => 'No License To Be Human',
              posthook => \&obhook,
             },
+            {
+             url => 'http://homestarrunner.com/main1.swf',
+             name => 'Homestar Runner',
+             posthook => sub {
+               my $item = shift;
+               my $md5 = Digest::MD5->new;
+               if (defined $item->{content}) {
+                 $md5->add($item->{content});
+                 $item->{content} = $md5->hexdigest();
+               } 
+               return $item;
+             }
+            }
            ]
 }

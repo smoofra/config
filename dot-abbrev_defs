@@ -1,45 +1,33 @@
 ;;-*-coding: emacs-mule;-*-
-(define-abbrev-table 'apropos-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'Buffer-menu-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'awk-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'apropos-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'c++-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'awk-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'c-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'c++-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'change-log-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'c-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'comint-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'change-log-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'conf-colon-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'comint-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'conf-javaprop-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'conf-colon-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'conf-ppd-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'conf-javaprop-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'conf-space-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'conf-ppd-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'conf-unix-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'conf-space-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'conf-windows-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'conf-unix-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'conf-xdefaults-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'conf-windows-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'cperl-mode-abbrev-table '(
-    ("=head1" "=head1" cperl-electric-pod 0)
+(define-abbrev-table 'conf-xdefaults-mode-abbrev-table '(    ))
+
+(define-abbrev-table 'cperl-mode-abbrev-table '(    ("=head1" "=head1" cperl-electric-pod 0)
     ("=head2" "=head2" cperl-electric-pod 0)
     ("=over" "=over" cperl-electric-pod 0)
     ("=pod" "=pod" cperl-electric-pod 0)
@@ -61,36 +49,30 @@
     ("while" "while" cperl-electric-keyword 0)
     ))
 
-(define-abbrev-table 'darcsum-comment-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'darcsum-comment-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'darcsum-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'darcsum-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'diff-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'diff-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'docTeX-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'docTeX-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'doctex-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'doctex-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'emaxima-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'emaxima-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'erc-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'erc-list-menu-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'fundamental-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'erc-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'global-abbrev-table '(
-    ("actuall" "actual" nil 2)
-    ("allready" "already" nil 6)
+(define-abbrev-table 'fundamental-mode-abbrev-table '(    ))
+
+(define-abbrev-table 'global-abbrev-table '(    ("actuall" "actual" nil 2)
+    ("allready" "already" nil 8)
+    ("already" "allready" nil 0)
     ("engeneer" "engineer" nil 4)
     ("foce" "force" nil 2)
-    ("necissary" "necessary" nil 4)
+    ("necissary" "necessary" nil 6)
     ("nesiccary" "necessary" nil 2)
     ("nessicary" "necessary" nil 1)
     ("nessiccary" "necessary" nil 1)
@@ -100,38 +82,27 @@
     ("relys" "relies" nil 1)
     ))
 
-(define-abbrev-table 'gnus-article-edit-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'gnus-article-edit-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'grep-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'grep-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'haskell-indent-stand-alone-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'haskell-indent-stand-alone-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'haskell-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'haskell-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'html-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'html-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'idl-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'idl-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'inferior-maxima-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'inferior-maxima-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'inferior-python-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'inferior-python-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'java-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'java-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'jython-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'jython-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'latex-mode-abbrev-table '(
-    ("beg" "" latex-begin 1)
+(define-abbrev-table 'latex-mode-abbrev-table '(    ("beg" "" latex-begin 1)
     ("tbf" "" latex-textbf 0)
     ("tit" "" latex-textit 1)
     ("trm" "" latex-textrm 0)
@@ -139,124 +110,87 @@
     ("ttt" "" latex-texttt 3)
     ))
 
-(define-abbrev-table 'lisp-mode-abbrev-table '(
-    ("inp" "in-package" nil 10)
+(define-abbrev-table 'lisp-mode-abbrev-table '(    ("inp" "in-package" nil 10)
     ("mvb" "multiple-value-bind" nil 4)
     ("mvl" "multiple-value-list" nil 4)
     ))
 
-(define-abbrev-table 'lisppaste-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'lisppaste-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'literate-haskell-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'literate-haskell-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'log-edit-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'log-edit-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'makefile-automake-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'makefile-automake-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'makefile-bsdmake-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'makefile-bsdmake-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'makefile-gmake-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'makefile-gmake-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'makefile-imake-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'makefile-imake-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'makefile-makepp-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'makefile-makepp-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'makefile-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'makefile-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'maxima-noweb-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'maxima-noweb-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'message-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'message-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'objc-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'objc-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'outline-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'outline-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'perl-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'perl-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'php-mode-abbrev-table '(
-    ("GL" "GLOBAL" nil 0)
+(define-abbrev-table 'php-mode-abbrev-table '(    ("GL" "GLOBAL" nil 0)
     ("ex" "extends" nil 0)
     ("fu" "function" nil 0)
     ("req" "require(" nil 0)
     ("ret" "return" nil 0)
     ))
 
-(define-abbrev-table 'pike-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'pike-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'plain-tex-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'plain-tex-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'python-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'python-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'select-tags-table-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'select-tags-table-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'sgml-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'sgml-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'sh-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'sh-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'shell-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'shell-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'sldb-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'sldb-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'slime-compiler-notes-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'slime-compiler-notes-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'slime-connection-list-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'slime-connection-list-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'slime-fuzzy-completions-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'slime-fuzzy-completions-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'slime-inspector-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'slime-inspector-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'slime-thread-control-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'slime-thread-control-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'slime-xref-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'slime-xref-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'slitex-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'slitex-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'svn-log-edit-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'svn-log-edit-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'svn-log-view-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'svn-log-view-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'svn-status-diff-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'svn-status-diff-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'tex-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'tex-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'tex-shell-abbrev-table '(
-    ))
+(define-abbrev-table 'tex-shell-abbrev-table '(    ))
 
-(define-abbrev-table 'text-mode-abbrev-table '(
-    ("beg" "" latex-begin 2)
+(define-abbrev-table 'text-mode-abbrev-table '(    ("beg" "" latex-begin 2)
     ("tbf" "" latex-textbf 0)
     ("tit" "" latex-textit 2)
     ("trm" "" latex-textrm 0)
@@ -264,9 +198,7 @@
     ("ttt" "" latex-texttt 3)
     ))
 
-(define-abbrev-table 'vc-annotate-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'vc-annotate-mode-abbrev-table '(    ))
 
-(define-abbrev-table 'vc-dired-mode-abbrev-table '(
-    ))
+(define-abbrev-table 'vc-dired-mode-abbrev-table '(    ))
 

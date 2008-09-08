@@ -1436,6 +1436,23 @@
   (setq erc-auto-query 'buffer)
   (define-key erc-mode-map [home]  'SDO))
 
+(defun strjoin (d l)
+  (cond 
+   ((null l) "")
+   ((null (cdr l)) (car l))
+   (t (concat (car l) d (strjoin (cdr l))))))
+
+(defun erc-track-string ()
+  (strjoin "," (mapcar (lambda (x) (buffer-name (car x))) erc-modified-channels-alist)))
+
+
+(defun erc-record-track ()
+  (with-temp-buffer
+    (insert (erc-track-string))
+    (write-region (point-min) (point-max) "/home/larry/.http-notification/erctrack")))
+
+(add-hook 'erc-track-list-changed-hook 'erc-record-track)
+
 (defun bitlbee-identify ()
   "If we're on the bitlbee server, send the identify command to the #bitlbee channel."
   (when (and (string= "localhost" erc-session-server)

@@ -98,8 +98,9 @@ sub obhook {
                my $md5 = Digest::MD5->new;
                if (defined $item->{content}) {
                  $md5->add($item->{content});
-                 $item->{content} = $md5->hexdigest();
-               } 
+                 $item->{content} = "MD5:" . $md5->hexdigest();
+               }
+               $item->{url} = 'http://homestarrunner.com'; 
                return $item;
              }
             }

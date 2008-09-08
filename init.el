@@ -498,12 +498,18 @@
     (when (eql (current-buffer) (cadr x))
       (call-interactively 'server-edit))))
 
+(defun bury ()
+  (interactive)
+  (if (= 1 (length (window-list)))
+      (bury-buffer)
+    (delete-window)))
+
 (global-set-key "\C-c\C-c"  'my-server-done)
 ;(global-set-key "\C-o"      'myblink)
 (global-set-key "\\" 'indent-region)
 (global-set-key [C-return] 'open-line)
 (global-set-key [(f1)]     'delete-other-windows)
-(global-set-key [(f12)]    'delete-window)
+(global-set-key [(f12)]    'bury)
 (global-set-key [(f2)]     'next-error)
 (global-set-key "\C-xe"    'next-error)
 (global-set-key "\C-xd"    'beginning-of-defun)
@@ -1440,11 +1446,10 @@
   (cond 
    ((null l) "")
    ((null (cdr l)) (car l))
-   (t (concat (car l) d (strjoin (cdr l))))))
+   (t (concat (car l) d (strjoin d (cdr l))))))
 
 (defun erc-track-string ()
   (strjoin "," (mapcar (lambda (x) (buffer-name (car x))) erc-modified-channels-alist)))
-
 
 (defun erc-record-track ()
   (with-temp-buffer

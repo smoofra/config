@@ -72,7 +72,8 @@ function fooj(event) {
 }
 
 function foolistener(event) { 
-	if (gBrowser.contentDocument.location.toString().indexOf("http://www.google.com/reader") == 0) {
+	if (   gBrowser.contentDocument.location.toString().indexOf("http://www.google.com/reader") == 0
+		|| gBrowser.contentDocument.location.toString().indexOf("https://www.google.com/reader") == 0 ) {
 		if (event.altKey) {
 			if (String.fromCharCode(event.charCode) == "j")
 				fooj(event); 

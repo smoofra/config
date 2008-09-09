@@ -1,7 +1,14 @@
 #!/usr/bin/perl
 
 use IPC::Run qw( run timeout ) ;
-use Data::Dumper; 
+use Data::Dumper;
+use Getopt::Long;
+
+
+Getopt::Long::Configure ("bundling");
+my $justgrep; 
+GetOptions ( "grep|g" => \$justgrep) or die "couln't get options $!";
+
 
 sub go {
   my $err; 
@@ -36,8 +43,10 @@ pop @grexpr;
 my $dir = '/home/larry/tv';
 my $htmldir = '/home/larry/public_html'; 
 
-go [qw/tv_grab_na_dd/], ">", "$dir/tv.new.xml";
-rename "$dir/tv.new.xml", "$dir/tv.xml" or die "can't rename $!";
+unless ($justgrep) {
+  go [qw/tv_grab_na_dd/], ">", "$dir/tv.new.xml";
+  rename "$dir/tv.new.xml", "$dir/tv.xml" or die "can't rename $!";
+}
 go ['tv_grep', @grexpr, "$dir/tv.xml"], ">", "$dir/myshows.xml";
 go ['tv2rss', "$dir/myshows.xml"], ">", "$dir/myshows.rss"; 
 

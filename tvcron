@@ -41,7 +41,8 @@ for (@shows) {
 pop @grexpr;
 
 my $dir = '/home/larry/tv';
-my $htmldir = '/home/larry/public_html'; 
+my $htmldir = '/home/larry/public_html';
+$ENV{PATH} = "/home/larry/bin:$ENV{PATH}"; 
 
 unless ($justgrep) {
   go [qw/tv_grab_na_dd/], ">", "$dir/tv.new.xml";

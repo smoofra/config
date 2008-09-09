@@ -9,7 +9,7 @@
 0 0 * * *   /home/larry/repos/slime-tracker/.git/import
 0 0 * * *   /home/larry/delicious/update.pl
 0 0 * * *   /home/larry/ronpaul/update.pl
-0 0 * * *   /home/larry/bin/tvcron
+0 1 * * *   /home/larry/bin/tvcron
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /usr/bin/crontab -l > /home/larry/config/melkor-crontab
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/watcher/watcher update
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/boc2rss /home/larry/public_html/boc.rss

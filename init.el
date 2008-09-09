@@ -502,7 +502,9 @@
   (interactive)
   (if (= 1 (length (window-list)))
       (bury-buffer)
-    (delete-window)))
+    (progn
+      (bury-buffer)
+      (delete-window))))
 
 (defun bury-all ()
   (interactive)

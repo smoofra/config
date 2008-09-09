@@ -20,45 +20,40 @@ Getopt::Long::Configure ("bundling");
 my $rsstitle = 'XML TV';
 GetOptions ( "title|t" => \$rsstitle) or die "couln't get options $!";
 
-my $data = @ARGV ? XMLTV::parsefile(shift) : XMLTV::parsefile('/dev/fd/0');
-
-
-my ($encoding, $credits, $ch, $progs) = @$data;
-
-
 my $rss = new XML::RSS (version => '1.0');
 $rss->channel(title => $rsstitle);
 
-  
+@ARGV = '/dev/fd/0' unless (@ARGV);
 
-foreach $prog (@$progs) {
-  my $chanid = $prog->{channel};
-  my $chan = $ch->{$chanid};
-  my ($channame) = @{XMLTV::best_name(['en'], $chan->{'display-name'})};
-  my $time = parse_date $prog->{start};
-  my $timestr = UnixDate($time, "%a %b %e %r");
-  my ($title) = @{XMLTV::best_name (['en'], $prog->{title})};
-  my ($desc) = defined $prog->{desc} ? @{XMLTV::best_name (['en'], $prog->{desc})}
-    : undef;
-  my ($subtitle) = defined $prog->{'sub-title'} ? @{XMLTV::best_name (['en'], $prog->{'sub-title'})}
-    : undef;
+sub process {
+  my $data = XMLTV::parsefile(shift);
+  my ($encoding, $credits, $ch, $progs) = @$data;  
 
-  $description = '';
-  $description .= sprintf "<h4>%s</h4>\n", htmlencode($subtitle) if defined $subtitle;
-  $description .= sprintf "<p>%s</p>\n",   htmlencode($desc)     if defined $desc;
-  $description .= sprintf "<p>On %s.</p>\n",   htmlencode($channame); 
-  
-  $rss->add_item(link => '',
-                 title => "[TV] $title @ $timestr", 
-                 description => $description
-                ); 
-  
-#   print "$title on channel $channame at time $timestr\n";
-#   print "    $subtitle\n" if defined $subtitle; 
-#   print "    $desc\n" if defined $desc;
-#   print "\n";
+  foreach $prog (@$progs) {
+    my $chanid = $prog->{channel};
+    my $chan = $ch->{$chanid};
+    my ($channame) = @{XMLTV::best_name(['en'], $chan->{'display-name'})};
+    my $time = parse_date $prog->{start};
+    my $timestr = UnixDate($time, "%a %b %e %r");
+    my ($title) = @{XMLTV::best_name (['en'], $prog->{title})};
+    my ($desc) = defined $prog->{desc} ? @{XMLTV::best_name (['en'], $prog->{desc})}
+      : undef;
+    my ($subtitle) = defined $prog->{'sub-title'} ? @{XMLTV::best_name (['en'], $prog->{'sub-title'})}
+      : undef;
 
+    $description = '';
+    $description .= sprintf "<h4>%s</h4>\n", htmlencode($subtitle) if defined $subtitle;
+    $description .= sprintf "<p>%s</p>\n",   htmlencode($desc)     if defined $desc;
+    $description .= sprintf "<p>On %s.</p>\n",   htmlencode($channame); 
+  
+    $rss->add_item(link => '',
+                   title => "[TV] $title @ $timestr", 
+                   description => $description
+                  ); 
+  }
 }
+
+process $_ for @ARGV;
 
 print $rss->as_string;
 

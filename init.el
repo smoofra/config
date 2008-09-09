@@ -522,6 +522,7 @@
 (global-set-key [C-return] 'open-line)
 (global-set-key [(f1)] 'delete-other-windows)
 (global-set-key [(f12)] 'bury)
+(global-set-key [(f9)] 'chat)
 (global-set-key [(control x) (f12)] 'bury-all)
 
 (global-set-key [(f2)]     'next-error)

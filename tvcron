@@ -1,0 +1,46 @@
+#!/usr/bin/perl
+
+use IPC::Run qw( run timeout ) ;
+use Data::Dumper; 
+
+sub go {
+  my $err; 
+  my $r = run @_, "2>", \$err;
+  unless ($r) {
+    print STDERR "command falied: ", join(' ', @{$_[0]}), "\n";
+    print STDERR "output follows:\n\n";
+    print STDERR $err;
+    exit (1);
+  }
+}
+
+my @shows = (['--title', '^Heroes$',             '--not', '--previously-shown', ''],
+             ['--title', '^Lost$',               '--not', '--previously-shown', ''],
+             ['--title', '^No Reservations$',    '--not', '--previously-shown', '', '--channel', "I11180.labs.zap2it.com"],
+             ['--title', '^South Park$',         '--not', '--previously-shown', ''],
+             ['--title', 'Iron Chef America',    '--not', '--previously-shown', ''],
+             ['--title', 'Good Eats',            '--not', '--previously-shown', '' ],
+             ['--title', 'Big Love',             '--not', '--previously-shown', '' ],
+             ['--title', 'Battlestar Galactica', '--not', '--previously-shown', '' ],
+             ['--title', '^Dirty Jobs$',         '--not', '--previously-shown', '' ],
+             ['--title', '^House$',              '--not', '--previously-shown', '' ]);
+
+
+my @grexpr;
+for (@shows) {
+  push @grexpr, @$_;
+  push @grexpr, '--or',
+}
+pop @grexpr;
+
+my $dir = '/home/larry/tv';
+my $htmldir = '/home/larry/public_html'; 
+
+go [qw/tv_grab_na_dd/], ">", "$dir/tv.new.xml";
+rename "$dir/tv.new.xml", "$dir/tv.xml" or die "can't rename $!";
+go ['tv_grep', @grexpr, "$dir/tv.xml"], ">", "$dir/myshows.xml";
+go ['tv2rss', "$dir/myshows.xml"], ">", "$dir/myshows.rss"; 
+
+exit 0;
+
+

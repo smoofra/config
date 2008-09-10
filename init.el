@@ -1467,6 +1467,7 @@
   (strjoin "," (mapcar (lambda (x) (buffer-name (car x))) erc-modified-channels-alist)))
 
 (defun erc-record-track ()
+  (interactive)
   (with-temp-buffer
     (insert (erc-track-string))
     (write-region (point-min) (point-max) "/home/larry/.http-notification/erctrack"

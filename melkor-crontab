@@ -5,7 +5,6 @@
 0  * * * *  /home/larry/bin/scanspam-maildir
 30 5 * * *  /home/larry/bin/cleanspam-maildir
 30 6 * * *  /home/larry/bin/quiet-git-commit /home/larry/Maildir
-0 0 * * *   /home/larry/maddox/update.pl
 0 0 * * *   /home/larry/repos/slime-tracker/.git/import
 0 0 * * *   /home/larry/delicious/update.pl
 0 1 * * *   /home/larry/bin/tvcron

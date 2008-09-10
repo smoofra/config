@@ -1,0 +1,84 @@
+#!/usr/bin/perl -w 
+
+use HTML::Parser;
+package RonPaul;
+use base "HTML::Parser";
+
+chdir "/home/larry/ronpaul" or die $!;
+
+system "rm -f legis_tst.htm";
+system "wget --quiet http://www.house.gov/paul/legis_tst.htm";
+$?==0 or die "wget failed\n";
+
+
+
+#$html = parse_htmlfile "legis_tst.html" or die $!;
+
+open OUT, ">ronpaul.rss" or die $!;
+print OUT <<"END";
+<?xml version="1.0"?>
+<rss version="2.0">
+<channel>
+<title>Ron Paul : Texas Straight Talk</title>
+<link>http://www.house.gov/paul/legis_tst.htm</link>
+END
+
+my $count = 15; 
+
+sub start {
+  my ($self, $tag, $attr, $attrseq) = @_;
+  return unless lc($tag) eq 'option';
+  $self->{optionValue} = $attr->{value};
+  $self->{optionText} = '';
+}
+
+sub text {
+  my ($self, $text) = @_;
+  return unless $self->{optionValue};
+  $self->{optionText} .= $text;
+}
+
+sub end {
+  my ($self, $tag) = @_;
+  return unless lc($tag) eq 'option';
+  return unless $self->{optionValue};
+  return if $self->{optionText} =~ /^_+$/;
+
+
+  my $text = $self->{optionText}; 
+  my $link = $self->{optionValue};
+  my $date = '';
+  if ($text =~ s/^ \s* (\w{3,}) \s* (\d+) \s* ,? \s* (\d+) \s* (\: | \-\-) \s* //x) { 
+    my ($m, $d, $y) = ($1, $2, $3);
+    $m =~ s/^(\w)(\w\w).*/ uc($1) . lc($2) /e; 
+    $date = "$d $m $y";
+  }
+
+  $text =~ s/\&/&amp;/g; 
+  $text =~ s/\</&lt;/g;
+
+  $text =~ s/[\200-\377]/??/g;    
+
+  print OUT <<"END" unless $count <= 0;
+<item>
+<title>$text</title>
+<description>$text</description>
+<link>$link</link>
+<pubDate>$date</pubDate>
+</item>
+END
+
+  $count--;
+
+  $self->{optionValue} = undef;  
+}
+
+$p = RonPaul->new();
+$p->parse_file ('legis_tst.htm');
+
+print OUT <<"END";
+</channel>
+</rss>
+END
+close OUT;
+

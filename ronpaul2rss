@@ -1,27 +1,28 @@
 #!/usr/bin/perl -w 
 
+use LWP::UserAgent;
 use HTML::Parser;
+use XML::RSS;
+
 package RonPaul;
+
 use base "HTML::Parser";
 
-chdir "/home/larry/ronpaul" or die $!;
 
-system "rm -f legis_tst.htm";
-system "wget --quiet http://www.house.gov/paul/legis_tst.htm";
-$?==0 or die "wget failed\n";
+my $ua = LWP::UserAgent->new;
+$ua->timeout(10);
+my $response = $ua->get('http://www.house.gov/paul/legis_tst.htm');
+
+$response->is_success or die "request failed: " . $response->status_line; 
 
 
 
-#$html = parse_htmlfile "legis_tst.html" or die $!;
+my $rss = new XML::RSS (version => '1.0');
 
-open OUT, ">ronpaul.rss" or die $!;
-print OUT <<"END";
-<?xml version="1.0"?>
-<rss version="2.0">
-<channel>
-<title>Ron Paul : Texas Straight Talk</title>
-<link>http://www.house.gov/paul/legis_tst.htm</link>
-END
+$rss->channel(title => "Ron Paul : Texas Straight Talk",
+              link => 'http://www.house.gov/paul/legis_tst.htm',);
+
+
 
 my $count = 15; 
 
@@ -59,26 +60,25 @@ sub end {
 
   $text =~ s/[\200-\377]/??/g;    
 
-  print OUT <<"END" unless $count <= 0;
-<item>
-<title>$text</title>
-<description>$text</description>
-<link>$link</link>
-<pubDate>$date</pubDate>
-</item>
-END
-
+  $rss->add_item(title => $text, description => $text, link => $link, pubDate => $date);
+  
   $count--;
 
   $self->{optionValue} = undef;  
 }
 
 $p = RonPaul->new();
-$p->parse_file ('legis_tst.htm');
+$p->parse($response->content);
+$p->eof;
 
-print OUT <<"END";
-</channel>
-</rss>
-END
-close OUT;
+my $fh = \*STDOUT;
+if (@ARGV) {
+  open $fh, ">", shift or die $!; 
+}
+print $fh $rss->as_string;     
+
+
+
+
+
 

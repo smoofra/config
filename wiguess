@@ -4,11 +4,13 @@ use Data::Dumper;
 
 my $iface = shift;
 my %m;
+my @pri; 
 
 while (<>) {
   if (/^ \s* ([^\s]+) \s* (.*)/x) {
     my ($name, $essid) = ($1, $2);
     $m{$essid} = $name;
+    push @pri, $name; 
   }
 }
 
@@ -18,14 +20,26 @@ system "ifconfig $iface up";
 
 $_ = `iwlist $iface scan`;
 
+my %found; 
+
 while (/^ \s* ESSID:"([^"]+)"/mxg) {
   my $essid = $1;
   #print "feh: $essid\n";
   if (defined $m{$essid}) {
-    print $m{$essid}, "\n";
-    exit 0;
+    #print $m{$essid}, "\n";
+    #exit 0;
+    $found{$m{$essid}} = 1; 
   }
 }
+
+for $x (@pri) {
+  if (defined $found{$x}) {
+    print "$x\n";
+    exit 0; 
+  } ;
+}
+
+die "WTF" if @pri;
 
 
 exit 1;

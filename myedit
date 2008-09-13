@@ -2,8 +2,8 @@
 
 
 if [[ -z "$EMACS" ]] ; then
-   vi "$@"
+    /usr/bin/vi "$@"
 else 
-   emacsclient "$@"
+    emacsclient "$@"
 fi
 

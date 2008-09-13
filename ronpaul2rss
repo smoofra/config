@@ -1,0 +1,84 @@
+#!/usr/bin/perl -w 
+
+use LWP::UserAgent;
+use HTML::Parser;
+use XML::RSS;
+
+package RonPaul;
+
+use base "HTML::Parser";
+
+
+my $ua = LWP::UserAgent->new;
+$ua->timeout(10);
+my $response = $ua->get('http://www.house.gov/paul/legis_tst.htm');
+
+$response->is_success or die "request failed: " . $response->status_line; 
+
+
+
+my $rss = new XML::RSS (version => '1.0');
+
+$rss->channel(title => "Ron Paul : Texas Straight Talk",
+              link => 'http://www.house.gov/paul/legis_tst.htm',);
+
+
+
+my $count = 15; 
+
+sub start {
+  my ($self, $tag, $attr, $attrseq) = @_;
+  return unless lc($tag) eq 'option';
+  $self->{optionValue} = $attr->{value};
+  $self->{optionText} = '';
+}
+
+sub text {
+  my ($self, $text) = @_;
+  return unless $self->{optionValue};
+  $self->{optionText} .= $text;
+}
+
+sub end {
+  my ($self, $tag) = @_;
+  return unless lc($tag) eq 'option';
+  return unless $self->{optionValue};
+  return if $self->{optionText} =~ /^_+$/;
+
+
+  my $text = $self->{optionText}; 
+  my $link = $self->{optionValue};
+  my $date = '';
+  if ($text =~ s/^ \s* (\w{3,}) \s* (\d+) \s* ,? \s* (\d+) \s* (\: | \-\-) \s* //x) { 
+    my ($m, $d, $y) = ($1, $2, $3);
+    $m =~ s/^(\w)(\w\w).*/ uc($1) . lc($2) /e; 
+    $date = "$d $m $y";
+  }
+
+  $text =~ s/\&/&amp;/g; 
+  $text =~ s/\</&lt;/g;
+
+  $text =~ s/[\200-\377]/??/g;    
+
+  $rss->add_item(title => $text, description => $text, link => $link, pubDate => $date);
+  
+  $count--;
+
+  $self->{optionValue} = undef;  
+}
+
+$p = RonPaul->new();
+$p->parse($response->content);
+$p->eof;
+
+my $fh = \*STDOUT;
+if (@ARGV) {
+  open $fh, ">", shift or die $!; 
+}
+print $fh $rss->as_string;     
+
+
+
+
+
+

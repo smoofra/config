@@ -1,39 +1,22 @@
 #!/usr/bin/perl -w
 
-
-
-
 my $euid = $>;
 
-my @repos = qw:
-                bin
-                config
-                delicious
-                gregarius
-                gregarius-data
-                lisp/lisputils
-                maddox
-                Pictures
-                random
-                patches
-                ronpaul
-                slime
-                lisp/blog
-                crypto
-                lulz
-                notes
-                public_html
-                sbcl
-                /var/www :; 
+my @repos = grep { $_ !~ /^\.{1,2}$/ } glob "$ENV{HOME}/repos.tocheck/*";
 
-if ($euid == 0) {
-  push @repos, qw: /etc/ /home/meghan/public_html :;
-} else {
-  print "NOT ROOT\n\n";
+if (`hostname` =~ /^ \s* melkor (\.elder-gods\.org)? \s* $/x) {
+  if ($euid == 0) {
+    push @repos, qw: /etc/ /home/meghan/public_html :;
+  } else {
+    print "NOT ROOT\n\n";
+  }
 }
 
 
 for $repo (@repos) {
+  while (-l $repo) {
+    $repo = readlink $repo; 
+  }
   chdir '/home/larry' or die $!;
   chdir $repo or die $!; 
   my $out = `git status`; 

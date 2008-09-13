@@ -1,0 +1,65 @@
+#!/usr/bin/perl -w -CO
+
+use utf8; 
+use Data::Dumper;
+use HTML::TreeBuilder;
+use HTML::Element;
+use HTML::Tree;
+use LWP::UserAgent;
+use XML::RSS;
+use Date::Manip;
+use Encode; 
+
+
+
+my $ua = LWP::UserAgent->new;
+$ua->timeout(10);
+my $response = $ua->get('http://www.craigslist.org/about/best/all/');
+
+#print decode 'Windows-1252', $response->content;
+#exit; 
+
+if ($response->is_success) {
+    my $html = HTML::TreeBuilder->new;
+    #$html->utf8_mode(1);
+    $html->parse(decode 'Windows-1252', $response->content);
+    #$html->parse('<html> <body> <p> <a href="/about/best/lax/641609489.html">For Sale—One (1) Wife, slightly used, 1964 Model</a> </p> </body> </html>') ; 
+    $html->eof;
+
+
+    my $rss = new XML::RSS (version => '1.0');
+
+    $rss->channel(
+                  title => "best-of-craigslist",
+                  link => "http://www.craigslist.org/about/best/all/",
+                 );
+
+    $html->traverse ([
+                      sub {
+                        my $x = shift;
+                        if (ref $x eq 'HTML::Element' 
+                            and $x->tag eq 'a' 
+                            and defined $x->attr('href')
+                           ) {
+                          my $href = $x->attr ('href');
+                          if ($href =~ m:^/about/best/\w+/\d+.html$: ) {
+                            my $title = join (' ', map { ref $_ eq 'HTML::Element' ? $_->as_HTML : $_ } $x->content_list);
+                            #my $title = $x->as_HTML;
+                            #print Dumper [ $x->content_list ] ; 
+                            #print $title, "\n"; 
+                            $rss->add_item(title => $title,
+                                           link  => "http://www.craigslist.org$href");
+                          }
+                        }
+                        return HTML::Element::OK;
+                      }
+                     ]);
+    my $fh = \*STDOUT;
+    if (@ARGV) {
+      open $fh, ">", shift; 
+    }
+    print $fh $rss->as_string;     
+  
+} else {
+  die "get failed: " . $response->status_line; 
+}

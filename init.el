@@ -195,6 +195,10 @@
     "#yourmom"
     (get-buffer "#yourmom"))
   
+  (def-slime-selector-method ?m
+    "mgwyer"
+    (get-buffer "mgwyer"))
+  
   (def-slime-selector-method ?L
     "#lisp"
     (get-buffer "#lisp"))

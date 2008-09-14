@@ -34,7 +34,8 @@ sub doselect {
 }
 
 sub waitbox {
-  my $path = shift; 
+  my $path = shift;
+  my $timeout = shift; 
   my $inotify = new Linux::Inotify2 or die "$!";
   $inotify->watch ("$path/new",
                    IN_MOVED_FROM | IN_MOVED_TO
@@ -44,14 +45,16 @@ sub waitbox {
                    IN_MOVED_FROM | IN_MOVED_TO
                    | IN_MODIFY | IN_DELETE
                    | IN_CREATE | IN_MOVE_SELF) or die $!;
-  doselect($inotify->{fd}, undef);
+  doselect($inotify->{fd}, $timeout);
 }
 
 
 use Getopt::Long;
 Getopt::Long::Configure ("bundling");
 my ($daemon);
-GetOptions ("daemon|d" => \$daemon) or die "couln't get options $!";
+my $timeout = 2 * 60; 
+GetOptions ("daemon|d" => \$daemon,
+            "timeout|t" => \$timeout) or die "couln't get options $!";
 
 @ARGV == 3 or die "usage: monitor_mailbox <name> <mailbox path> <notify path>\n"; 
 
@@ -76,7 +79,7 @@ if ($daemon) {
 
 eval {
   while (1) {
-    waitbox $path;
+    waitbox $path, $timeout;
     my $s = checkfolder($path) ? $name : "";
     my $fh;
     open $fh, ">", $npath or die $!;

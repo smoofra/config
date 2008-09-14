@@ -30,7 +30,7 @@ sub doselect {
   vec($rin,$fd,1) = 1;
   vec($win,$fd,1) = 1;
   $ein = $rin | $win;
-  select($rin, $win, $ein, $timeout) > 0 or die $!;
+  select($rin, $win, $ein, $timeout) >=  0 or die $!;
 }
 
 sub waitbox {
@@ -54,7 +54,7 @@ Getopt::Long::Configure ("bundling");
 my ($daemon);
 my $timeout = 2 * 60; 
 GetOptions ("daemon|d" => \$daemon,
-            "timeout|t" => \$timeout) or die "couln't get options $!";
+            "timeout|t=i" => \$timeout) or die "couln't get options $!";
 
 @ARGV == 3 or die "usage: monitor_mailbox <name> <mailbox path> <notify path>\n"; 
 
@@ -90,9 +90,10 @@ eval {
 
 my $fh;
 open $fh, ">", $npath or die $!;
-print $fh "$npath (!dead!)";
+print $fh "$name (!dead!)";
 close $fh;
-  
+
+print STDERR $@; 
 
 
 

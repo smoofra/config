@@ -1,0 +1,98 @@
+#!/usr/bin/perl -w
+
+use Mail::Box::Manager;
+use Time::HiRes qw/ usleep /;
+use Linux::Inotify2;
+use POSIX qw(setsid);
+
+my $man = Mail::Box::Manager->new or die $!;
+
+sub checkfolder {
+  my $path = shift; 
+  my $box =  $man->open(remove_when_empty => 0,
+                        access => 'r',
+                        folder => $path) or die $!;
+  for ($box->messages) {
+    if (!$_->label('seen')) {
+      $box->close;
+      return 1; 
+    }
+  }
+  $box->close;
+  return 0; 
+}
+
+sub doselect {
+  my $fd = shift;
+  my $timeout = shift; 
+  my ($rin, $win, $ein);
+  $rin = $win = $ein = '';
+  vec($rin,$fd,1) = 1;
+  vec($win,$fd,1) = 1;
+  $ein = $rin | $win;
+  select($rin, $win, $ein, $timeout) > 0 or die $!;
+}
+
+sub waitbox {
+  my $path = shift; 
+  my $inotify = new Linux::Inotify2 or die "$!";
+  $inotify->watch ("$path/new",
+                   IN_MOVED_FROM | IN_MOVED_TO
+                   | IN_MODIFY | IN_DELETE
+                   | IN_CREATE | IN_MOVE_SELF) or die $!;
+  $inotify->watch ("$path/cur",
+                   IN_MOVED_FROM | IN_MOVED_TO
+                   | IN_MODIFY | IN_DELETE
+                   | IN_CREATE | IN_MOVE_SELF) or die $!;
+  doselect($inotify->{fd}, undef);
+}
+
+
+use Getopt::Long;
+Getopt::Long::Configure ("bundling");
+my ($daemon);
+GetOptions ("daemon|d" => \$daemon) or die "couln't get options $!";
+
+@ARGV == 3 or die "usage: monitor_mailbox <name> <mailbox path> <notify path>\n"; 
+
+my $name = shift; 
+my $path = shift;
+my $npath = shift; 
+
+my $box =  $man->open(remove_when_empty => 0,
+                   access => 'r',
+                   folder => $path) or die $!;
+ref $box eq 'Mail::Box::Maildir' or die "don't know how to handle this type of mailbox";
+$box->close;
+
+if ($daemon) {
+  open STDIN, '/dev/null'   or die "Can't read /dev/null: $!";
+  open STDOUT, '>/dev/null' or die "Can't write to /dev/null: $!";
+  open STDERR, '>/dev/null' or die "Can't write to /dev/null: $!";
+  defined(my $pid = fork)   or die "Can't fork: $!";
+  exit if $pid;
+  setsid                    or die "Can't start a new session: $!";
+}
+
+eval {
+  while (1) {
+    waitbox $path;
+    my $s = checkfolder($path) ? $name : "";
+    my $fh;
+    open $fh, ">", $npath or die $!;
+    print $fh $s;
+    close $fh;
+  }
+};
+
+my $fh;
+open $fh, ">", $npath or die $!;
+print $fh "$npath (!dead!)";
+close $fh;
+  
+
+
+
+
+
+

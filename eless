@@ -1,5 +1,9 @@
 #!/usr/bin/perl -w
 
+
+use Cwd qw/cwd/;
+
+
 $ENV{PATH} = $ENV{NOT_FUCKED_PATH} if defined $ENV{NOT_FUCKED_PATH};
   
 my $file;
@@ -10,8 +14,11 @@ Getopt::Long::Configure ("bundling");
 my ($diff);
 GetOptions ("diff|d" => \$diff) or die "couln't get options $!";
 
-if (@ARGV) { 
+if (@ARGV) {
   $file = shift;
+  if ($file !~ m:^/:) {
+    $file = cwd . "/" . $file; 
+  }
 } else {
   $file = "/tmp/${$}eless";
   $tmp = 1;

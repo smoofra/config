@@ -1472,10 +1472,7 @@
 
 (defun erc-record-track ()
   (interactive)
-  (with-temp-buffer
-    (insert (erc-track-string))
-    (write-region (point-min) (point-max) "/home/larry/.http-notification/erctrack"
-                  nil 0)))
+  (call-process "notify" nil nil nil "-p" "--file" "/home/larry/.http-notification/erctrack" (erc-track-string)))
 
 (add-hook 'erc-track-list-changed-hook 'erc-record-track)
 

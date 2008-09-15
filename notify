@@ -1,26 +1,40 @@
 #!/usr/bin/perl -w 
 
 use File::Temp qw/tempfile/;
+use File::Basename; 
 use Getopt::Long;
 Getopt::Long::Configure ("bundling");
 
 my $permanant;
-my $clear; 
-GetOptions ( "permanant|p" => \$permanant,
+my $clear;
+my $file; 
+GetOptions ( "file=s"      => \$file,
+             "permanant|p" => \$permanant,
              "clear|c"     => \$clear) or die "couln't get options $!";
 
 system "rm -f $ENV{HOME}/.http-notification/notify.*" if $clear;
 
-if (@ARGV) {
-  my ($fh, $fn) = tempfile "notify.XXXXX", DIR => "$ENV{HOME}/.http-notification";
-  $fh or die "can't generate tempfile: $!\n";
 
+my $dir = "$ENV{HOME}/.http-notification"; 
+
+if (@ARGV) {
+  my ($fh, $fn) = tempfile ".notify.XXXXX", DIR => $dir;
+  $fh or die "can't generate tempfile: $!\n";
   print $fh join(',', @ARGV);
-  close $fh; 
+  close $fh;
+  my $fn2;
+  if (defined $file) {
+    $fn2 = $file;
+  } else {  
+    $fn2 = basename $fn;
+    $fn2 =~ s/^\.//;
+    $fn2 = "$dir/$fn2";
+  }
+  rename $fn, $fn2 or die $!; 
 
   unless ($permanant) {
     sleep 1;
-    unlink $fn;
+    unlink $fn2;
   }
 }
 

@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 
+use File::Temp qw/tempfile/;
+use File::Basename; 
 use Mail::Box::Manager;
 use Time::HiRes qw/ usleep /;
 use Linux::Inotify2;
@@ -56,11 +58,12 @@ my $timeout = 2 * 60;
 GetOptions ("daemon|d" => \$daemon,
             "timeout|t=i" => \$timeout) or die "couln't get options $!";
 
-@ARGV == 3 or die "usage: monitor_mailbox <name> <mailbox path> <notify path>\n"; 
+@ARGV == 3 or die "usage: monitor_mailbox [--daemon|-d] [--timeout|-t=<n>] <name> <mailbox path> <notify path>\n"; 
 
 my $name = shift; 
 my $path = shift;
-my $npath = shift; 
+my $npath = shift;
+my $ndir = dirname $npath; 
 
 my $box =  $man->open(remove_when_empty => 0,
                    access => 'r',
@@ -77,21 +80,35 @@ if ($daemon) {
   setsid                    or die "Can't start a new session: $!";
 }
 
+my $last = 0;
+
+sub notify {
+  my $s = shift; 
+  my ($fh, $fn) = tempfile ".notify.XXXXX", DIR => $ndir;
+  $fh or die "can't generate tempfile: $!\n";
+  print $fh $s;
+  close $fh;
+  rename $fn, $npath or die $!;
+} 
+
 eval {
   while (1) {
-    waitbox $path, $timeout;
+    if (time - $last <  30) {
+      my $ss = 30 - time + $last; 
+      print "sleeping $ss\n";
+      sleep $ss;
+    }
+    $last = time; 
     my $s = checkfolder($path) ? $name : "";
     my $fh;
-    open $fh, ">", $npath or die $!;
-    print $fh $s;
-    close $fh;
+    print "notifying $s\n";
+    notify $s;
+    waitbox $path, $timeout;
+    print "woke\n"; 
   }
 };
 
-my $fh;
-open $fh, ">", $npath or die $!;
-print $fh "$name (!dead!)";
-close $fh;
+notify "$name (!dead!)"; 
 
 print STDERR $@; 
 

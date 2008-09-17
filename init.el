@@ -195,6 +195,10 @@
     "#yourmom"
     (get-buffer "#yourmom"))
   
+  (def-slime-selector-method ?m
+    "mgwyer"
+    (get-buffer "mgwyer"))
+  
   (def-slime-selector-method ?L
     "#lisp"
     (get-buffer "#lisp"))
@@ -1468,10 +1472,8 @@
   (strjoin "," (mapcar (lambda (x) (buffer-name (car x))) erc-modified-channels-alist)))
 
 (defun erc-record-track ()
-  (with-temp-buffer
-    (insert (erc-track-string))
-    (write-region (point-min) (point-max) "/home/larry/.http-notification/erctrack"
-                  nil 0)))
+  (interactive)
+  (call-process "notify" nil nil nil "-p" "--file" "/home/larry/.http-notification/erctrack" (erc-track-string)))
 
 (add-hook 'erc-track-list-changed-hook 'erc-record-track)
 

@@ -1178,7 +1178,8 @@
 
 
 (add-hook 'before-make-frame-hook '(lambda () (menu-bar-mode -1)))
-(add-hook 'window-setup-hook '(lambda () (scroll-bar-mode -1)))
+(add-hook 'window-setup-hook '(lambda () (menu-bar-mode -1)
+                                         (scroll-bar-mode -1)))
 ;(add-hook 'emacs-startup-hook '(lambda () (menu-bar-mode -1)))
 
 (define-key text-mode-map "\M-s" 'ispell-region)
@@ -1770,6 +1771,7 @@
  '(fill-column 80)
  '(indent-tabs-mode nil)
  '(iswitchb-default-method (quote samewindow))
+ '(octave-block-offset 4)
  '(safe-local-variable-values (quote ((Package SERIES :use "COMMON-LISP" :colon-mode :external) (Package . HUNCHENTOOT) (Syntax . COMMON-LISP) (Package . FLEXI-STREAMS) (Package . Memoization) (Package . COMMON-LISP-CONTROLLER) (Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
  '(slime-backend "swank-loader.lisp")
  '(slime-enable-evaluate-in-emacs t)
@@ -2071,6 +2073,19 @@
  ("\\forces" ?⊩)
  ("\\proves" ?⊦))
 (set-input-method nil)
+
+
+(eval-after-load 'octave
+  (quote
+   (progn
+     (setq octave-end-keywords
+           '("endfor" "endfunction" "endif" "endswitch" "end_try_catch"
+             "end_unwind_protect" "endwhile" "until" "end"))
+     (setq octave-block-end-regexp
+           (concat "\\<\\("
+                   (mapconcat 'identity octave-end-keywords "\\|")
+                   "\\)\\>"))
+     (define-key octave-mode-map "C-j" 'backwards-kill-line))))
 
 
 (site-init-late)

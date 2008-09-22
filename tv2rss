@@ -25,6 +25,12 @@ $rss->channel(title => $rsstitle);
 
 @ARGV = '/dev/fd/0' unless (@ARGV);
 
+sub mypd {
+  my $x = shift;
+  $x =~ s/\s+.*$//;
+  return parse_date $x;
+}
+
 sub process {
   my $data = XMLTV::parsefile(shift);
   my ($encoding, $credits, $ch, $progs) = @$data;  
@@ -33,7 +39,8 @@ sub process {
     my $chanid = $prog->{channel};
     my $chan = $ch->{$chanid};
     my ($channame) = @{XMLTV::best_name(['en'], $chan->{'display-name'})};
-    my $time = parse_date $prog->{start};
+    my $time = XMLTV::Date::parse_date $prog->{start};
+    $time = Date_ConvTZ($time,"","EDT"); 
     my $timestr = UnixDate($time, "%a %b %e %r");
     my ($title) = @{XMLTV::best_name (['en'], $prog->{title})};
     my ($desc) = defined $prog->{desc} ? @{XMLTV::best_name (['en'], $prog->{desc})}

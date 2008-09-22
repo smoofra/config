@@ -13,6 +13,7 @@
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/watcher/watcher update
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/boc2rss /home/larry/public_html/boc.rss
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/ronpaul2rss /home/larry/public_html/ronpaul.rss
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/warnerd /home/larry/public_html/warnerd.rss
 
 0,10,20,30,40,50 * * * * /home/larry/lisp/blog/check
 

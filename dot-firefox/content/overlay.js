@@ -89,12 +89,14 @@ function foolistener(event) {
 }
 
 function normalj () { 
-	if (gBrowser.contentDocument.location.toString().indexOf("http://www.google.com/reader") != 0) 
+	if (gBrowser.contentDocument.location.toString().indexOf("http://www.google.com/reader") != 0 && 
+		gBrowser.contentDocument.location.toString().indexOf("https://www.google.com/reader") != 0) 
 		goDoCommand('cmd_scrollLineDown');
 }
 
 function normalk () { 
-	if (gBrowser.contentDocument.location.toString().indexOf("http://www.google.com/reader") != 0) 
+	if (gBrowser.contentDocument.location.toString().indexOf("http://www.google.com/reader") != 0 &&
+		gBrowser.contentDocument.location.toString().indexOf("https://www.google.com/reader") != 0)
 		goDoCommand('cmd_scrollLineUp');
 }
 

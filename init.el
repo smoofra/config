@@ -1443,7 +1443,7 @@
 
 (defun bitlbee ()
   (interactive)
-  (erc-select :server "localhost" :port 6666 :nick "smoofra"))
+  (erc-select :server "localhost" :port 7777 :nick "smoofra"))
 
 ;;(autoload 'erc-select "erc")
 
@@ -1480,7 +1480,7 @@
 (defun bitlbee-identify ()
   "If we're on the bitlbee server, send the identify command to the #bitlbee channel."
   (when (and (string= "localhost" erc-session-server)
-             (= 6666 erc-session-port)
+             (= 7777 erc-session-port)
              (string= "&bitlbee" (buffer-name)))
     (erc-message "PRIVMSG" (format "%s identify %s" (erc-default-target) my-stupid-passwd))))
 
@@ -1768,6 +1768,7 @@
  '(delete-selection-mode nil)
  '(diff-switches "-u")
  '(erc-fill-column 69)
+ '(erc-track-exclude (quote ("&bitlbee")))
  '(erc-track-exclude-server-buffer t)
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
  '(fill-column 80)

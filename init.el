@@ -2081,6 +2081,7 @@
 (eval-after-load 'octave
   (quote
    (progn
+     (setq octave-comment-char ?%)
      (setq octave-end-keywords
            '("endfor" "endfunction" "endif" "endswitch" "end_try_catch"
              "end_unwind_protect" "endwhile" "until" "end"))

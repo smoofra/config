@@ -10,7 +10,7 @@ use base "HTML::Parser";
 
 
 my $ua = LWP::UserAgent->new;
-$ua->timeout(10);
+$ua->timeout(120);
 my $response = $ua->get('http://www.house.gov/paul/legis_tst.htm');
 
 $response->is_success or die "request failed: " . $response->status_line; 

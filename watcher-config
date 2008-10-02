@@ -104,9 +104,6 @@ sub obhook {
                return $item;
              }
             },
-            {
-             url => 'http://boomerang.blogs.com/optimist/2008/09/two-ways-to-lea.html',
-             name => "two ways...",
-            },
+
            ],
 }

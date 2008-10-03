@@ -1,4 +1,17 @@
-#feh
+
+if test -z "$OPS1"; then
+    OPS1="$PS1"
+fi
+
+function longps1() {
+    PS1=$(perl -e '$_ = shift; s/^/\\n/; s/\\\$(\s*)$/\\n\\\$$1/; print' "$OPS1")
+}
+
+
+function shortps1() {
+    PS1="$OPS1"
+}
+
 
 alias sr='. ~/.transient-environment'
 #export EDITOR='emacsclient --alternate-editor vi'

@@ -143,6 +143,14 @@
       (other-window 1)
       (switch-to-buffer "#yourmom"))))
 
+(defun chat-yourmom ()
+  (interactive)
+  (switch-to-buffer "#yourmom"))
+
+(defun chat-mgwyer ()
+  (interactive)
+  (switch-to-buffer "mgwyer"))
+
 (add-hook 'slime-load-hook '(lambda () 
                               (require 'slime-asdf)
                               (require 'slime-fancy)
@@ -526,6 +534,8 @@
 (global-set-key [C-return] 'open-line)
 (global-set-key [(f1)] 'delete-other-windows)
 (global-set-key [(f12)] 'bury)
+(global-set-key [(f7)] 'chat-yourmom)
+(global-set-key [(f8)] 'chat-mgwyer)
 (global-set-key [(f9)] 'chat)
 (global-set-key [(control x) (f12)] 'bury-all)
 

@@ -2078,7 +2078,7 @@
 (set-input-method nil)
 
 
-(eval-after-load 'octave
+(eval-after-load 'octave-mod
   (quote
    (progn
      (setq octave-comment-char ?%)

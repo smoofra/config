@@ -55,6 +55,10 @@
 (defvar emacsmerge-out nil)
 (defvar emacsmerge-pid nil)
 
+(defun tt ()
+  (interactive)
+  (toggle-truncate-lines))
+
 (defun done-emacsmerge ()
   (interactive)
   (when pending-emacsmerge
@@ -1670,9 +1674,10 @@
 ;; amazing fucking awesome quicksilver-like thing
 (defvar i-have-anything (load "anything" t))
 (when i-have-anything 
-  (setq anything-iswitchb-idle-delay 1)
+  (setq anything-iswitchb-idle-delay 100000)
   (define-key anything-map  "\C-n" 'anything-next-line)
   (define-key anything-map  "\C-p" 'anything-previous-line)
+  (global-set-key "\C-x\M-b" 'anything)
   (anything-iswitchb-setup))
 
 (defun open-scratches ()
@@ -1717,6 +1722,7 @@
 (eval-after-load 'shell
   (quote
    (progn
+     (define-key comint-mode-map "\C-c\\" 'comint-kill-subjob)
      (add-hook 'shell-mode-hook 'my-shell-hook)
      (load-library "ansi-color")
      (ansi-color-for-comint-mode-on)
@@ -2086,7 +2092,6 @@
  ("\\forces" ?⊩)
  ("\\proves" ?⊦))
 (set-input-method nil)
-
 
 (eval-after-load 'octave-mod
   (quote

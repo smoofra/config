@@ -140,6 +140,10 @@ sub hsrwikihook {
 #                return $item;
 #              }
 #             },
+            {
+             url => 'http://penny-arcade.com/presents/',
+             name => 'Penny Arcade Presents',
+            },
 
            ],
 }

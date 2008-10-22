@@ -46,6 +46,27 @@ sub obhook {
   }
 }
 
+sub hsrwikihook {
+  my $item = shift;
+  $item->{url} = 'http://www.hrwiki.org/index.php?title=H*R.com_updates_2008';
+  return $item unless defined $item->{content};
+  my $html = HTML::TreeBuilder->new;
+  $html->utf8_mode(1);
+  $html->parse(join '', $item->{content});
+  my $content =  'WTF'; 
+  $html->traverse ([
+                    sub {
+                      my $x = shift;
+                      if (ref $x eq 'HTML::Element' and
+                          $x->tag eq 'textarea') {
+                        $content = join '', $x->content_list();
+                      }
+                      return HTML::Element::OK;
+                    }]);
+  $item->{content} = $content;
+  return $item;
+}
+
 
 {
   link => "http://elder-gods.org/~larry/watcher.cgi",
@@ -101,8 +122,9 @@ sub obhook {
              posthook => \&obhook,
             },
             {
-             url => 'http://www.hrwiki.org/index.php/H*R.com_updates_2008',
+             url => 'http://www.hrwiki.org/index.php?title=H*R.com_updates_2008&action=edit',
              name => 'H*R wiki updates page',
+             posthook => \&hsrwikihook,
             },
             {
              url => 'http://homestarrunner.com/main1.swf',

@@ -96,6 +96,11 @@ sub obhook {
              posthook => \&obhook,
              },
             {
+             url => 'http://www.overcomingbias.com/2008/10/ethics-notes.html',
+             name => 'Ethics Notes',
+             posthook => \&obhook,
+            },
+            {
              url => 'http://homestarrunner.com/main1.swf',
              name => 'Homestar Runner',
              posthook => sub {

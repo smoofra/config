@@ -126,20 +126,20 @@ sub hsrwikihook {
              name => 'H*R wiki updates page',
              posthook => \&hsrwikihook,
             },
-            {
-             url => 'http://homestarrunner.com/main1.swf',
-             name => 'Homestar Runner',
-             posthook => sub {
-               my $item = shift;
-               my $md5 = Digest::MD5->new;
-               if (defined $item->{content}) {
-                 $md5->add($item->{content});
-                 $item->{content} = "MD5:" . $md5->hexdigest();
-               }
-               $item->{url} = 'http://homestarrunner.com/main1.html'; 
-               return $item;
-             }
-            },
+#             {
+#              url => 'http://homestarrunner.com/main1.swf',
+#              name => 'Homestar Runner',
+#              posthook => sub {
+#                my $item = shift;
+#                my $md5 = Digest::MD5->new;
+#                if (defined $item->{content}) {
+#                  $md5->add($item->{content});
+#                  $item->{content} = "MD5:" . $md5->hexdigest();
+#                }
+#                $item->{url} = 'http://homestarrunner.com/main1.html'; 
+#                return $item;
+#              }
+#             },
 
            ],
 }

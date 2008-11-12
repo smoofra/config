@@ -88,7 +88,7 @@ sub notify {
   $fh or die "can't generate tempfile: $!\n";
   print $fh $s;
   close $fh;
-  rename $fn, $npath or die $!;
+  rename $fn, $npath or die "rename $fn $npath failed: $!";
 } 
 
 eval {

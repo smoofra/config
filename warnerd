@@ -20,10 +20,10 @@ $document = $parser->parse ($response->content) or die;
 
 sub incat {
   my ($e, $cat) = @_;
-  for (@{$e->{Contents}}) {
-    if ($_->isa('XML::Grove::Element') &&
-        $_->{Name} eq 'category' &&
-        $_->{Attributes}->{term} =~ $cat) {
+  for my $x (@{$e->{Contents}}) {
+    if ($x->isa('XML::Grove::Element') &&
+        $x->{Name} eq 'category' &&
+        join ('', map {$_->as_string} @{$x->{Contents}}) =~ $cat) {
       return 1;
     }
   }
@@ -34,17 +34,22 @@ sub filterfeed {
   my $f = shift;
   my @nc; 
   for my $e (@{$f->{Contents}}) {
-    if (!$e->isa('XML::Grove::Element') ||
-        !$e->{Name} eq 'entry'  || 
-        incat($e, qr/war nerd/i)) {
-      push @nc, $e; 
-    } 
+    if ($e->isa('XML::Grove::Element')) {
+      if ($e->{Name} eq 'item') {
+        push @nc, $e if (incat($e, qr/war nerd/i))
+      } else {
+        &filterfeed ($e);
+        push @nc, $e; 
+      }
+    } else {
+      push @nc, $e;
+    }
   }
   $f->{Contents} = [ @nc ]; 
 };
 
 
-filterfeed $document->{Contents}->[0];
+filterfeed $document; 
 
 my $fh = \*STDOUT;
 if (@ARGV) {

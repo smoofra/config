@@ -6,4 +6,8 @@
 		<Include>http://sluggy.com/*</Include>
 		<Include>http://www.sluggy.com/*</Include>
 	</Script>
+	<Script filename="ostrich.user.js" name="ostrich" namespace="http://elder-gods.org/wtf" description="" enabled="true" basedir="ostrich">
+		<Include>http://www.reddit.com/</Include>
+		<Include>http://www.reddit.com/*</Include>
+	</Script>
 </UserScriptConfig>

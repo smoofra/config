@@ -19,7 +19,7 @@
 0,10,20,30,40,50 * * * * /home/larry/lisp/blog/check
 
 0 15 * * 5  /home/larry/bin/remind fill out your timesheet NOW
-
+0 15 15 * * /home/larry/bin/remind pay student loan, credit cards NOW
 
 #0 0 * * *   /home/larry/gregarius-data/update.pl
 #0,30 * * * *   /home/larry/public_html/updatebookmarks

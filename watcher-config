@@ -92,41 +92,6 @@ sub hsrwikihook {
              url => 'http://thepaincomics.com/new_index.htm'
             },
             {
-             name => 'cartoon guide to lob\'s theorem',
-             url => 'http://www.overcomingbias.com/2008/08/lobs-theorem/comments/page/2/',
-             posthook => \&obhook,
-            },
-            {
-             name => 'Moral Error and Moral Disagreement',
-             url => 'http://www.overcomingbias.com/2008/08/moral-disagreem/comments/page/2/',
-             posthook => \&obhook,
-            },
-            {
-             url => 'http://www.overcomingbias.com/2008/08/no-self-trust.html',
-             name => 'You Provably Can\'t Trust Yourself',
-             posthook => \&obhook,
-            },
-            {
-             url => 'http://www.overcomingbias.com/2008/08/no-human-licens.html',
-             name => 'No License To Be Human',
-             posthook => \&obhook,
-            },
-            {
-             url => 'http://www.overcomingbias.com/2008/10/my-bayesian-enl.html',
-             name => 'My Bayesian Enlightenment',
-             posthook => \&obhook,
-             },
-            {
-             url => 'http://www.overcomingbias.com/2008/10/ethics-notes.html',
-             name => 'Ethics Notes',
-             posthook => \&obhook,
-            },
-            {
-             url => 'http://www.overcomingbias.com/2008/10/economic-defini.html',
-             name => 'Economic Definition of Intelligence',
-             posthook => \&obhook,
-            },
-            {
              url => 'http://www.hrwiki.org/index.php?title=H*R.com_updates_2008&action=edit',
              name => 'H*R wiki updates page',
              posthook => \&hsrwikihook,

@@ -9,7 +9,7 @@ use XML::Parser::PerlSAX;
 
 my $ua = LWP::UserAgent->new;
 $ua->timeout(10);
-my $response = $ua->get('http://exiledonline.com/feed/atom/');
+my $response = $ua->get('http://exiledonline.com/feed/');
 
 $response->is_success or die "request failed: " . $response->status_line;
 

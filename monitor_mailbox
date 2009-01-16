@@ -54,11 +54,13 @@ sub waitbox {
 use Getopt::Long;
 Getopt::Long::Configure ("bundling");
 my ($daemon);
-my $timeout = 2 * 60; 
-GetOptions ("daemon|d" => \$daemon,
+my $timeout = 2 * 60;
+my $pidfile;
+GetOptions ("pidfile|p=s" => \$pidfile, 
+            "daemon|d" => \$daemon,
             "timeout|t=i" => \$timeout) or die "couln't get options $!";
 
-@ARGV == 3 or die "usage: monitor_mailbox [--daemon|-d] [--timeout|-t=<n>] <name> <mailbox path> <notify path>\n"; 
+@ARGV == 3 or die "usage: monitor_mailbox [--pidfile|-p pidfile] [--daemon|-d] [--timeout|-t=<n>] <name> <mailbox path> <notify path>\n"; 
 
 my $name = shift; 
 my $path = shift;
@@ -71,6 +73,27 @@ my $box =  $man->open(remove_when_empty => 0,
 ref $box eq 'Mail::Box::Maildir' or die "don't know how to handle this type of mailbox";
 $box->close;
 
+
+if (defined $pidfile and -e $pidfile) {
+  my $fh;
+  open $fh, "<", $pidfile or die "Can't read pidfile: $!\n";
+  my $pid = <$fh>;
+  close $fh;
+  chomp $pid;
+  $pid =~ /^[\d]+$/ or die "Invalid pid: $pid\n";
+  if (-e "/proc/$pid") {
+    open $fh, "<", "/proc/$pid/cmdline" or die "Can't open /proc/$pid/cmdline: $!\n"; 
+    my $cmdline = join '', <$fh>;
+    close $fh;
+    my (@cmdline) = split "\x00", $cmdline;
+    ($cmdline[0] eq '/usr/bin/perl' and $cmdline[1] eq '-w' and $cmdline[2] =~ /monitor_mailbox$/)
+      or die "pidfile seems to be invalid\n";
+    exit 0; 
+  } else {
+    print STDERR "old daemon seems to be dead, starting up\n"; 
+  }
+}
+
 if ($daemon) {
   open STDIN, '/dev/null'   or die "Can't read /dev/null: $!";
   open STDOUT, '>/dev/null' or die "Can't write to /dev/null: $!";
@@ -78,6 +101,12 @@ if ($daemon) {
   defined(my $pid = fork)   or die "Can't fork: $!";
   exit if $pid;
   setsid                    or die "Can't start a new session: $!";
+}
+
+if (defined $pidfile) {
+  open $fh, ">", $pidfile or die "Can't write pidfile: $!\n";
+  print $fh $$, "\n";
+  close $fh; 
 }
 
 my $last = 0;

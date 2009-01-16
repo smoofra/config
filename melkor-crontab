@@ -17,6 +17,7 @@
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/zeropunctuation /home/larry/public_html/zp.rss
 
 0,10,20,30,40,50 * * * * /home/larry/lisp/blog/check
+0,10,20,30,40,50 * * * * /home/larry/bin/monitor_mailbox -d  -p /home/larry/.mmpid =inbox /home/larry/Maildir/ /home/larry/.http-notification/inbox 
 
 0 15 * * 5  /home/larry/bin/remind fill out your timesheet NOW
 0 15 15 * * /home/larry/bin/remind pay student loan, credit cards NOW

@@ -67,11 +67,13 @@ my $path = shift;
 my $npath = shift;
 my $ndir = dirname $npath; 
 
+
 my $box =  $man->open(remove_when_empty => 0,
-                   access => 'r',
-                   folder => $path) or die $!;
+                      access => 'r',
+                      folder => $path) or die $!;
 ref $box eq 'Mail::Box::Maildir' or die "don't know how to handle this type of mailbox";
-$box->close;
+$box->close (write => 'NEVER');
+
 
 
 if (defined $pidfile and -e $pidfile) {

@@ -18,7 +18,8 @@ system "rm -f $ENV{HOME}/.http-notification/notify.*" if $clear;
 my $dir = "$ENV{HOME}/.http-notification"; 
 
 if (@ARGV) {
-  my ($fh, $fn) = tempfile ".notify.XXXXX", DIR => $dir;
+  my ($fh, $fn) = tempfile ".notify.XXXXX", DIR => $ENV{HOME};
+  #print "fn = $fn\n";
   $fh or die "can't generate tempfile: $!\n";
   print $fh join(',', @ARGV);
   close $fh;
@@ -33,7 +34,7 @@ if (@ARGV) {
   rename $fn, $fn2 or die $!; 
 
   unless ($permanant) {
-    sleep 1;
+    sleep 2;
     unlink $fn2;
   }
 }

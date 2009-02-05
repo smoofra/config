@@ -48,7 +48,7 @@ sub obhook {
 
 sub hsrwikihook {
   my $item = shift;
-  $item->{url} = 'http://www.hrwiki.org/index.php?title=H*R.com_updates_2008';
+  $item->{url} = 'http://www.hrwiki.org/index.php?title=H*R.com_updates_2009';
   return $item unless defined $item->{content};
   my $html = HTML::TreeBuilder->new;
   $html->utf8_mode(1);
@@ -92,8 +92,8 @@ sub hsrwikihook {
              url => 'http://thepaincomics.com/new_index.htm'
             },
             {
-             url => 'http://www.hrwiki.org/index.php?title=H*R.com_updates_2008&action=edit',
-             name => 'H*R wiki updates page',
+             url => 'http://www.hrwiki.org/index.php?title=H*R.com_updates_2009&action=edit',
+             name => 'H*R wiki updates page, 2009',
              posthook => \&hsrwikihook,
             },
 #             {

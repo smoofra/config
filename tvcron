@@ -53,7 +53,8 @@ unless ($justgrep or $justrss) {
 unless ($justrss)  {
  go ['tv_grep', @grexpr, "$dir/tv.xml"], ">", "$dir/myshows.xml";
 }
-go ['tv2rss', "$dir/myshows.xml"], ">", "$dir/myshows.rss"; 
+go ['tv2rss', "-t", "xmltv", "$dir/myshows.xml"], ">", "$dir/myshows.rss";
+go ['tv2rss', "-T", "-t", "xmltv TOMORROW", "$dir/myshows.xml"], ">", "$dir/myshowstomorrow.rss"; 
 
 exit 0;
 

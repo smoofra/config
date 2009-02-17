@@ -1823,10 +1823,19 @@
  (t
   (set-face-background 'default "#000000")))
 
-(defun find-diff-file (file)
+(defun find-diff-file (file &optional dir )
   (interactive)
   (find-file file)
+  (when dir
+    (setq default-directory dir))
   (diff-mode))
+
+(defun find-grep-file (file &optional dir)
+  (interactive)
+  (find-file file)
+  (when dir
+    (setq default-directory dir))
+  (grep-mode))
 
 ;;;;;; how to find out how to bind a particular key interactively 
 ;;; M-x global-set-key

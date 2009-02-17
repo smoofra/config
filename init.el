@@ -211,6 +211,10 @@
     "mgwyer"
     (get-buffer "mgwyer"))
   
+  (def-slime-selector-method ?b 
+    "bobbyisosceles"
+    (get-buffer "bobbyisosceles"))
+  
   (def-slime-selector-method ?L
     "#lisp"
     (get-buffer "#lisp"))
@@ -248,7 +252,7 @@
     (slime-list-threads)
     "*slime-threads*")
 
-  (def-slime-selector-method ?b
+  (def-slime-selector-method ?B
     "*Backtrace* buffer"
     (get-buffer "*Backtrace*")))
 

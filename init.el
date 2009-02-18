@@ -1678,6 +1678,11 @@
 ;; amazing fucking awesome quicksilver-like thing
 (defvar i-have-anything (load "anything" t))
 (when i-have-anything 
+  (setq anything-sources 
+        (cons '((name . "Extra Files")
+                (candidates . anything-extra-files)
+                (type . file))
+              anything-sources))
   (setq anything-iswitchb-idle-delay 100000)
   (define-key anything-map  "\C-n" 'anything-next-line)
   (define-key anything-map  "\C-p" 'anything-previous-line)

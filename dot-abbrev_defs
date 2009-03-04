@@ -69,7 +69,7 @@
 
 (define-abbrev-table 'global-abbrev-table '(    ("actuall" "actual" nil 2)
     ("allready" "already" nil 8)
-    ("already" "allready" nil 0)
+    ("already" "already" nil 0)
     ("engeneer" "engineer" nil 4)
     ("foce" "force" nil 2)
     ("necissary" "necessary" nil 6)

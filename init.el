@@ -1222,6 +1222,10 @@
      (define-key cperl-mode-map "\r" 'newline-and-indent)
      (define-key cperl-mode-map "\C-j" 'backwards-kill-line))))
 
+(add-hook 'cperl-mode-hook
+          (lambda ()
+            (setq local-abbrev-table nil)))
+
 (add-hook 'ruby-mode-hook
 	  (lambda () 
 	    (define-key ruby-mode-map "\C-j" 'backwards-kill-line)))

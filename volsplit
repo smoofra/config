@@ -1,0 +1,78 @@
+#!/usr/bin/perl -w 
+
+use File::Spec::Functions;
+use Getopt::Long;
+use IPC::Run qw/run/; 
+
+Getopt::Long::Configure ("bundling");
+
+my $max = '600m';
+
+GetOptions ("volume-size|s=s" => \$max);
+
+
+if ($max =~ /^ (\d+) m $/xi) {
+  $max = $1 * 1024;
+}
+if ($max =~ /^ (\d+) g $/xi) {
+  $max = $1 * 1024 * 1024;
+}
+if ($max =~ /^ (\d+) k $/xi) {
+  $max = $1;
+}
+unless ($max =~ /^ (\d+) $/xi) {
+  die "i don't understand the size $max\n";
+}
+
+die "i need a target directory\n" unless @ARGV;
+my $target = shift;
+die "wtf\n" if @ARGV;
+
+die "$target not a directory\n" unless -d $target;
+
+our $cursize;
+our $curvolfh;
+our $curvolindex = 0;
+
+sub newvol {
+  $curvolindex++;
+  close $curvolfh if defined $curvolfh;
+  open $curvolfh, ">", "vol_$curvolindex" or die "couldn't open vol_$curvolindex : $!\n";
+  $cursize = 0; 
+}
+
+sub take {
+  my ($target, $size) = @_;
+  print $curvolfh $target, "\n";
+  $cursize += $size;  
+}
+
+sub traverse {
+  my $target = shift;
+  opendir my $dh, $target or die "can't opendir $target: $!\n";
+  for my $thing (readdir $dh) {
+    next if $thing eq '.';
+    next if $thing eq '..';
+    my $duout;
+    $thing = catfile($target,$thing);
+    -f $thing or -d $thing or die "wtf is $thing\n";
+    run [qw/du -sk /, $thing], '>', \$duout or die "du returned $?\n";
+    $duout =~ /^ \s* (\d+) \s /x or die "bad du output: $duout\n";
+    my $thingsize = $1;
+    if ($thingsize + $cursize < $max) {
+      take $thing, $thingsize;
+    } elsif (-f $thing) {
+      die "$thing is too big\n" if ($thingsize > $max);
+      newvol;
+      take $thing, $thingsize;
+    } else {
+      &traverse ($thing);
+    }
+  }
+  close $dh;
+}
+
+newvol;
+traverse $target;
+
+

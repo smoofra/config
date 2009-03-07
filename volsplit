@@ -2,13 +2,19 @@
 
 use File::Spec::Functions;
 use Getopt::Long;
+use Data::Dumper;
 use IPC::Run qw/run/; 
 
 Getopt::Long::Configure ("bundling");
 
 my $max = '600m';
+my $outdir; 
 
-GetOptions ("volume-size|s=s" => \$max);
+GetOptions ("outdir|o=s" => \$outdir,
+            "volume-size|s=s" => \$max);
+
+my @outdir;
+push @outdir, $outdir if defined $outdir; 
 
 
 if ($max =~ /^ (\d+) m $/xi) {
@@ -25,10 +31,13 @@ unless ($max =~ /^ (\d+) $/xi) {
 }
 
 die "i need a target directory\n" unless @ARGV;
-my $target = shift;
+my $toptarget = shift;
 die "wtf\n" if @ARGV;
 
-die "$target not a directory\n" unless -d $target;
+die "$toptarget not a directory\n" unless -d $toptarget;
+
+
+
 
 our $cursize;
 our $curvolfh;
@@ -37,7 +46,8 @@ our $curvolindex = 0;
 sub newvol {
   $curvolindex++;
   close $curvolfh if defined $curvolfh;
-  open $curvolfh, ">", "vol_$curvolindex" or die "couldn't open vol_$curvolindex : $!\n";
+  my $of = catfile(@outdir, "vol_$curvolindex");
+  open $curvolfh, ">",  $of or die "couldn't open $of : $!\n";
   $cursize = 0; 
 }
 
@@ -48,21 +58,23 @@ sub take {
 }
 
 sub traverse {
-  my $target = shift;
-  opendir my $dh, $target or die "can't opendir $target: $!\n";
+  my @target = @_ ;
+  my $targetpath = catfile($toptarget, @target); 
+  opendir my $dh, $targetpath or die "can't opendir $targetpath: $!\n";
   for my $thing (readdir $dh) {
     next if $thing eq '.';
     next if $thing eq '..';
     my $duout;
-    $thing = catfile($target,$thing);
-    -f $thing or -d $thing or die "wtf is $thing\n";
-    run [qw/du -sk /, $thing], '>', \$duout or die "du returned $?\n";
+    $thing = catfile(@target,$thing);
+    $thingpath = catfile($toptarget, $thing);
+    -f $thingpath or -d $thingpath or die "wtf is $thingpath\n";
+    run [qw/du -sk /, $thingpath], '>', \$duout or die "du returned $?\n";
     $duout =~ /^ \s* (\d+) \s /x or die "bad du output: $duout\n";
     my $thingsize = $1;
     if ($thingsize + $cursize < $max) {
       take $thing, $thingsize;
-    } elsif (-f $thing) {
-      die "$thing is too big\n" if ($thingsize > $max);
+    } elsif (-f $thingpath) {
+      die "$thingpath is too big\n" if ($thingsize > $max);
       newvol;
       take $thing, $thingsize;
     } else {
@@ -73,6 +85,6 @@ sub traverse {
 }
 
 newvol;
-traverse $target;
+traverse; 
 
 

@@ -17,11 +17,11 @@ my @outdir;
 push @outdir, $outdir if defined $outdir; 
 
 
-if ($max =~ /^ (\d+) m $/xi) {
-  $max = $1 * 1024;
+if ($max =~ /^ (\d+(\.\d+)?) m $/xi) {
+  $max = int($1 * 1024);
 }
-if ($max =~ /^ (\d+) g $/xi) {
-  $max = $1 * 1024 * 1024;
+if ($max =~ /^ (\d+(\.\d+)?) g $/xi) {
+  $max = int($1 * 1024 * 1024);
 }
 if ($max =~ /^ (\d+) k $/xi) {
   $max = $1;

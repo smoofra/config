@@ -8,10 +8,19 @@ use IPC::Run qw/run/;
 Getopt::Long::Configure ("bundling");
 
 my $max = '600m';
-my $outdir; 
+my $outdir;
+my $pathspec;
+my @exclude;
 
-GetOptions ("outdir|o=s" => \$outdir,
+GetOptions ("exclude-regexp|X=s" => sub { my ($cb, $arg) = @_;
+                                        push @exclude, qr/$arg/; },
+            "exclude|x=s" => sub { my ($cb, $arg) = @_;
+                                   push @exclude, quotemeta($arg) },
+            "pathspec|p" => \$pathspec,
+            "outdir|o=s" => \$outdir,
             "volume-size|s=s" => \$max);
+
+
 
 my @outdir;
 push @outdir, $outdir if defined $outdir; 
@@ -52,8 +61,16 @@ sub newvol {
 }
 
 sub take {
-  my ($target, $size) = @_;
-  print $curvolfh $target, "\n";
+  my ($target, $path, $size) = @_;
+  die "paths can't have newlines" if $target =~ /\n/; 
+  if ($pathspec) {
+    die "paths can't have newlines" if $path =~ /\n/; 
+    die "paths can't have equal signs\n" if $target =~ /=/;
+    die "paths can't have equal signs\n" if $path =~ /=/;
+    print $curvolfh "$target=$path\n"; 
+  } else { 
+    print $curvolfh $target, "\n";
+  }
   $cursize += $size;  
 }
 
@@ -61,22 +78,26 @@ sub traverse {
   my @target = @_ ;
   my $targetpath = catfile($toptarget, @target); 
   opendir my $dh, $targetpath or die "can't opendir $targetpath: $!\n";
+ TF:
   for my $thing (readdir $dh) {
     next if $thing eq '.';
     next if $thing eq '..';
     my $duout;
     $thing = catfile(@target,$thing);
+    for (@exclude) {
+      next TF if $thing =~ /$_/;
+    }
     $thingpath = catfile($toptarget, $thing);
     -f $thingpath or -d $thingpath or die "wtf is $thingpath\n";
     run [qw/du -sk /, $thingpath], '>', \$duout or die "du returned $?\n";
     $duout =~ /^ \s* (\d+) \s /x or die "bad du output: $duout\n";
     my $thingsize = $1;
     if ($thingsize + $cursize < $max) {
-      take $thing, $thingsize;
+      take $thing, $thingpath, $thingsize;
     } elsif (-f $thingpath) {
       die "$thingpath is too big\n" if ($thingsize > $max);
       newvol;
-      take $thing, $thingsize;
+      take $thing, $thingpath, $thingsize;
     } else {
       &traverse ($thing);
     }

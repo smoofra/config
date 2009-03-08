@@ -7,6 +7,7 @@ Getopt::Long::Configure ("bundling");
 my $delim = q/\s+/;
 my $field = 0;
 my $chomp = 1;
+my $odelim; 
 
 GetOptions ("chomp|c=s" => sub { shift;
                                  my $x = shift;
@@ -19,15 +20,57 @@ GetOptions ("chomp|c=s" => sub { shift;
                                  }
                                },
             "delimiter|d=s"  => \$delim,
+            "output-delimiter|D=s" => \$odelim,
             "field|f=s"  => \$field)
   or die "couldn't get options\n";
 
+$odelim = $delim unless defined $odelim; 
 
-while (<>) {
-  chomp if $chomp;
-  @f = split $delim, $_;
-  print $f[$field], "\n"; 
+if ($field =~ /^ (\d+) $/x) {
+  while (<>) {
+    chomp if $chomp;
+    @f = split $delim, $_;
+    do {print "\n";next} if $field >= @f; 
+    print $f[$field], "\n"; 
+  }
+  exit 0;
 }
+
+if ($field =~ /^ (\d+),(\d+) $/x) {
+  my ($f1,$f2) = ($1,$2); 
+  while (<>) {
+    chomp if $chomp;
+    @f = split $delim, $_;
+    $f2 = @f-1 if $f2 >= @f;
+    do {print "\n";next} if $f1 >= @f;     
+    print join ($odelim, @f[$f1,$f2]), "\n"; 
+  }
+  exit 0;
+}
+
+
+if ($field =~ /^ ,(\d+) $/x) {
+  $field = $1; 
+  while (<>) {
+    chomp if $chomp;
+    @f = split $delim, $_;
+    $field = @f-1 if $field >= @f;
+    print join ($odelim, @f[0,$field]), "\n"; 
+  }
+  exit 0;
+}
+
+if ($field =~ /^ (\d+), $/x) {
+  $field = $1; 
+  while (<>) {
+    chomp if $chomp;
+    @f = split $delim, $_;
+    do {print "\n";next} if $field >= @f; 
+    print join ($odelim, @f[$field, scalar(@f) - 1]), "\n"; 
+  }
+  exit 0;
+}
+
 			
 
 

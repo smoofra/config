@@ -2127,6 +2127,12 @@
      (define-key octave-mode-map "\C-j" 'backwards-kill-line))))
 
 
+
+(defun ffap ()
+  (interactive)
+  (call-interactively 'find-file-at-point))
+
+
 (site-init-late)
 
 

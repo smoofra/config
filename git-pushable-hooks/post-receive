@@ -4,6 +4,6 @@ cd ..
 export GIT_DIR=.git 
 
 git reset --hard HEAD
-git-clean
+git-clean -f
 
 

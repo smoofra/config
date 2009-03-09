@@ -5,11 +5,12 @@ use File::Basename;
 use Getopt::Long;
 Getopt::Long::Configure ("bundling");
 
-my $permanant;
+my $permanant = 1;
 my $clear;
 my $file; 
 GetOptions ( "file=s"      => \$file,
-             "permanant|p" => \$permanant,
+             "permanant|p" => sub { $permanant = 1},
+             "ephemeral|e" => sub { $permanant = 0},
              "clear|c"     => \$clear) or die "couln't get options $!";
 
 system "rm -f $ENV{HOME}/.http-notification/notify.*" if $clear;

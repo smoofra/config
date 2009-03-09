@@ -1214,13 +1214,17 @@
    (progn
      (defun cperl-mark-active ()
        (and transient-mark-mode (mark)))
-     (setq cperl-electric-parens t)
+     (setq cperl-electric-parens nil)
      (setq cperl-electric-parens-mark t)
      (setq cperl-invalid-face 'default)
      (define-key cperl-mode-map "\M-_"   'c-unwrap-next-sexp)
      (define-key cperl-mode-map "\C-c{" 'curly-braces)
      (define-key cperl-mode-map "\r" 'newline-and-indent)
      (define-key cperl-mode-map "\C-j" 'backwards-kill-line))))
+
+(add-hook 'cperl-mode-hook
+          (lambda ()
+            (setq local-abbrev-table nil)))
 
 (add-hook 'ruby-mode-hook
 	  (lambda () 

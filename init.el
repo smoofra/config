@@ -640,6 +640,7 @@
 (add-to-list 'auto-mode-alist '("\\.sawfishrc$" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.mak$" . makefile-mode))
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
+(add-to-list 'auto-mode-alist '("\\.m$". octave-mode))
 (add-to-list 'auto-mode-alist '("\\.pl$" . cperl-mode))
 (add-to-list 'auto-mode-alist '("\\.ph$" . cperl-mode))
 (add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))

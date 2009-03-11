@@ -13,6 +13,8 @@
 
 (define-abbrev-table 'comint-mode-abbrev-table '(    ))
 
+(define-abbrev-table 'completion-list-mode-abbrev-table '(    ))
+
 (define-abbrev-table 'conf-colon-mode-abbrev-table '(    ))
 
 (define-abbrev-table 'conf-javaprop-mode-abbrev-table '(    ))
@@ -41,7 +43,7 @@
     ("formy" "formy" cperl-electric-keyword 0)
     ("head1" "head1" cperl-electric-pod 0)
     ("head2" "head2" cperl-electric-pod 0)
-    ("if" "if" cperl-electric-keyword 0)
+    ("if" "if" cperl-electric-keyword 1)
     ("over" "over" cperl-electric-pod 0)
     ("pod" "pod" cperl-electric-pod 0)
     ("unless" "unless" cperl-electric-keyword 0)
@@ -68,11 +70,11 @@
 (define-abbrev-table 'fundamental-mode-abbrev-table '(    ))
 
 (define-abbrev-table 'global-abbrev-table '(    ("actuall" "actual" nil 2)
-    ("allready" "already" nil 8)
-    ("already" "allready" nil 0)
+    ("allready" "already" nil 10)
+    ("already" "already" nil 2)
     ("engeneer" "engineer" nil 4)
     ("foce" "force" nil 2)
-    ("necissary" "necessary" nil 6)
+    ("necissary" "necessary" nil 8)
     ("nesiccary" "necessary" nil 2)
     ("nessicary" "necessary" nil 1)
     ("nessiccary" "necessary" nil 1)
@@ -180,6 +182,8 @@
 
 (define-abbrev-table 'slitex-mode-abbrev-table '(    ))
 
+(define-abbrev-table 'special-mode-abbrev-table '(    ))
+
 (define-abbrev-table 'svn-log-edit-mode-abbrev-table '(    ))
 
 (define-abbrev-table 'svn-log-view-mode-abbrev-table '(    ))
@@ -201,4 +205,6 @@
 (define-abbrev-table 'vc-annotate-mode-abbrev-table '(    ))
 
 (define-abbrev-table 'vc-dired-mode-abbrev-table '(    ))
+
+(define-abbrev-table 'vc-svn-log-view-mode-abbrev-table '(    ))
 

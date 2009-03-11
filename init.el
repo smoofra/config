@@ -2040,6 +2040,17 @@
    (orig-kmacro-exec-ring-item item arg)))
 
 
+(defun restore-named-kmacro (name)
+  (interactive "aKeyboard macro to restore: ")
+  (kmacro-push-ring)
+  (let ((kmacro (kmacro-extract-lambda (symbol-function name))))
+    (setq last-kbd-macro (car kmacro))
+    (setq kmacro-counter (nth 1 kmacro))
+    (setq kmacro-counter-format (nth 2 kmacro))))
+
+(global-set-key "\C-x\C-k\C-r" 'restore-named-kmacro)
+
+    
 (eval-after-load  'w3m
   (quote
    (progn

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-svn status |  grep '^?'  | pcut -f1  | perl -MFile::Basename -ne 'chomp; print(dirname($_), "\0", basename($_), "\0")' \
+svn status |  perl -ne 'print if s/^\?\s*//' | perl -MFile::Basename -ne 'chomp; print(dirname($_), "\0", basename($_), "\0")' \
     | xargs -0  -n2 sh -c 'svn propget svn:ignore "$0" >/tmp/f; echo "$1" >>/tmp/f; svn propset svn:ignore -F /tmp/f "$0"'
 
 

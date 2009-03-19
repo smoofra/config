@@ -18,7 +18,7 @@ else
     foo=" -or "
 fi
 
-find $dir \
+exec find $dir \
          -name .git -prune   \
      -or -name .svn -prune   \
    $foo "$@"

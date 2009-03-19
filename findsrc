@@ -1,5 +1,12 @@
 #!/bin/bash
 
-find -name .svn -prune -or -name .git -prune "$@"
+if [[ -z "$1" ]]; then
+    foo=" -or -true "
+else
+    foo=" -or "
+fi
 
+find     -name .git -prune   \
+     -or -name .svn -prune   \
+   $foo "$@"
 

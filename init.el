@@ -1218,6 +1218,10 @@
      (setq cperl-electric-parens nil)
      (setq cperl-electric-parens-mark t)
      (setq cperl-invalid-face 'default)
+     (setq cperl-electric-keywords nil)
+     (setq cperl-electric-keyword nil)
+     (define-key cperl-mode-map "\M-'" 'forward-delete-space)
+     (define-key cperl-mode-map "\C-c(" 'my-insert-parentheses)
      (define-key cperl-mode-map "\M-_"   'c-unwrap-next-sexp)
      (define-key cperl-mode-map "\C-c{" 'curly-braces)
      (define-key cperl-mode-map "\r" 'newline-and-indent)
@@ -2037,6 +2041,17 @@
    (orig-kmacro-exec-ring-item item arg)))
 
 
+(defun restore-named-kmacro (name)
+  (interactive "aKeyboard macro to restore: ")
+  (kmacro-push-ring)
+  (let ((kmacro (kmacro-extract-lambda (symbol-function name))))
+    (setq last-kbd-macro (car kmacro))
+    (setq kmacro-counter (nth 1 kmacro))
+    (setq kmacro-counter-format (nth 2 kmacro))))
+
+(global-set-key "\C-x\C-k\C-r" 'restore-named-kmacro)
+
+    
 (eval-after-load  'w3m
   (quote
    (progn

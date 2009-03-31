@@ -12,5 +12,6 @@
 	</Script>
 	<Script filename="google_reader_sort_on_un.user.js" name="Google Reader Sort On Unread Items" namespace="tag://udaypandey.com/greasemonkey" description="Keyboard shortcuts to sort feed based on unread items." enabled="true" basedir="google_reader_sort_on_un">
 		<Include>http://www.google.com/reader/view/*</Include>
+		<Include>https://www.google.com/reader/view/*</Include>
 	</Script>
 </UserScriptConfig>

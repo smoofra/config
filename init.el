@@ -1809,6 +1809,9 @@
  '(fill-column 80)
  '(indent-tabs-mode nil)
  '(iswitchb-default-method (quote samewindow))
+ '(matlab-comment-region-s "%")
+ '(matlab-fill-code nil)
+ '(matlab-verify-on-save-flag nil)
  '(octave-block-offset 4)
  '(safe-local-variable-values (quote ((Package SERIES :use "COMMON-LISP" :colon-mode :external) (Package . HUNCHENTOOT) (Syntax . COMMON-LISP) (Package . FLEXI-STREAMS) (Package . Memoization) (Package . COMMON-LISP-CONTROLLER) (Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
  '(slime-backend "swank-loader.lisp")
@@ -1823,7 +1826,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(anything-header ((t (:background "grey" :foreground "black" :weight bold))))
+ '(anything-header ((t (:background "grey" :foreground "black" :weight bold))) t)
  '(cursor ((t (:background "#ffffff"))))
  '(diff-changed ((nil (:foreground "yellow"))))
  '(diff-file-header ((((class color) (min-colors 88) (background dark)) (:foreground "cyan" :weight bold))))

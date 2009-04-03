@@ -1,0 +1,11 @@
+# -*- mode: conf -*- 
+
+source ~/config/muttrc-common
+
+set folder=imap://ldanna@drtex02/
+set spoolfile=imap://ldanna@drtex02/
+
+set from="Larry D'Anna <ldanna@drti.com>" 
+
+
+

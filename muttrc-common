@@ -1,0 +1,271 @@
+
+
+
+bind attach ' ' select-entry
+bind attach \Cg exit
+
+bind index  P recall-message 
+bind index  R group-reply     
+bind index  L list-reply
+bind index  \t   next-unread
+bind index  ,\t  previous-unread
+bind index zt current-top
+bind index zz current-middle
+bind index zb current-bottom
+bind index <pagedown> next-page
+bind index <pageup>   previous-page
+bind index C change-folder
+bind index n   next-unread
+bind index F forward-message
+bind index "\Cr" read-subthread
+bind index "\Ct" read-thread
+macro index i "Wn"
+
+
+bind pager  P    recall-message # 'R'ecall-message move to 'P' [0.46]
+bind pager  R group-reply     
+bind pager  L list-reply
+bind pager \t  next-unread
+bind pager ,\t previous-unread
+bind pager /   search
+bind pager f   forward-message   
+bind pager m   mail              
+bind pager r   reply     
+bind pager backspace   previous-line     
+bind pager :  enter-command      
+bind pager <down>  next-line
+bind pager <up>  previous-line
+bind pager d half-down
+bind pager u half-up
+bind pager C change-folder
+bind pager j next-line
+bind pager k previous-line
+bind pager "\Cr" read-subthread
+bind pager "\Ct" read-thread
+bind pager   n   next-unread
+bind pager   D  delete-message
+bind pager   U  undelete-message
+bind pager <space> next-unread
+
+
+macro generic Sc ':set arrow_cursor'\n
+macro generic SC ':set noarrow_cursor'\n
+macro generic Ss ':set from="Larry D'\''Anna <smoof-ra@elder-gods.org>"'\n
+macro generic Sl ':set from="Larry D'\''Anna <larry@elder-gods.org>"'\n
+macro generic Sw ':set from="Larry D'\''Anna <ldanna@wam.umd.edu>"'\n
+macro generic Sm ':set from="Larry D'\''Anna <ldanna@math.umd.edu>"'\n
+macro pager V ':set pager_index_lines='
+macro index V ':set pager_index_lines='
+macro index x "s=spam_new\n"
+macro pager x "s=spam_new\n"
+
+color attachment  green  default  # ..
+color bold        green  default  # ..
+color error       red    white  # global
+color header      yellow   default  "^cc: "
+color header      yellow default  "^date: "
+color header      white  red    "^newsgroups: "
+color header      red    default  "^reply-to: "
+color header      white  blue   "^subject: "
+color header      black green  "^to: "
+color header      magenta default  "^x-mailer: "
+color header      default  red     "^message-id: .*pine"
+color header      black  red   "^from:"
+color hdrdefault  default   default  # 
+color indicator   white  blue   # index
+color markers     red    default  # index
+color message     white  blue   # index
+color normal      white  default  # pager body
+color quoted      cyan   default  # pager body
+color quoted1     yellow default  # pager body
+color quoted2     cyan   default  # pager body
+color quoted3     yellow default  # pager body
+color signature   red    default  # pager body
+color status      white  blue   # index status bar default: default white
+color tilde       blue   default  # pager body
+color tree        red    default  # index
+color underline   yellow default  # 
+
+
+color index yellow  default '~t ldanna@wam.umd.edu'
+color index yellow  default '~c ldanna@wam.umd.edu'
+color index cyan default '~t larry@melkor.elder-gods.org'
+color index cyan default '~c larry@melkor.elder-gods.org'
+color index cyan default '~t smoof-ra@melkor.elder-gods.org'
+color index cyan default '~c smoof-ra@melkor.elder-gods.org'
+color index cyan default '~t larry@elder-gods.org'
+color index cyan default '~c larry@elder-gods.org'
+color index cyan default '~t smoof-ra@elder-gods.org'
+color index cyan default '~c smoof-ra@elder-gods.org'
+color index cyan default '~t ldanna@math.umd.edu'
+color index cyan default '~c ldanna@math.umd.edu'
+color index cyan default '~t smoofra@gmail.com'
+color index cyan default '~c smoofra@gmail.com'
+color index green default "~s '\\[(Linux-bcom4301-priv|iterate-devel|darcs-devel|Bese-devel|Sbcl-devel|slime-devel|madman-discuss|cffi-devel)\\]'"
+#color index red  default '~h "X-SpamProbe: SPAM"'
+#color index red default '~h "X-Spam-Flag: YES"' 
+
+
+
+
+#color index red default " \( ~t ldanna@wam.umd.edu \) "
+#color index red default "( ~t ldanna@wam.umd.edu  | ~c ldanna@wam.umd.edu ) !(~t larry@melkor.elder-gods.org)"
+#color index red default "( ~t ldanna@wam.umd.edu  | ~c ldanna@wam.umd.edu ) !(~t smoof-ra@elder-gods.org | ~c smoof-ra@elder-gods.org | ~t larry@elder-gods.org | ~c larry@elder-gods.org | ~t larry@melkor.elder-gods.org )"
+#color index cyan default '~t smoof-ra@elder-gods.org | ~c smoof-ra@elder-gods.org | ~t larry@elder-gods.org | ~c larry@elder-gods.org | ~t smoof-ra@melkor.elder-gods.org | ~c smoof-ra@melkor.elder-gods.org | ~t larry@melkor.elder-gods.org | ~c larry@melkor.elder-gods.org | ~t ldanna@math.umd.edu | ~c ldanna@math.umd.edu'
+
+
+
+# Command formats for gpg.
+# 
+# This version uses gpg-2comp from 
+#   http://muppet.faveve.uni-stuttgart.de/~gero/gpg-2comp.tar.gz
+#
+# $Id: gpg.rc,v 1.12 2001/12/11 09:33:57 roessler Exp $
+#
+# %p    The empty string when no passphrase is needed,
+#       the string "PGPPASSFD=0" if one is needed.
+#
+#       This is mostly used in conditional % sequences.
+#
+# %f    Most PGP commands operate on a single file or a file
+#       containing a message.  %f expands to this file's name.
+#
+# %s    When verifying signatures, there is another temporary file
+#       containing the detached signature.  %s expands to this
+#       file's name.
+#
+# %a    In "signing" contexts, this expands to the value of the
+#       configuration variable $pgp_sign_as.  You probably need to
+#       use this within a conditional % sequence.
+#
+# %r    In many contexts, mutt passes key IDs to pgp.  %r expands to
+#       a list of key IDs.
+
+# Note that we explicitly set the comment armor header since GnuPG, when used
+# in some localiaztion environments, generates 8bit data in that header, thereby
+# breaking PGP/MIME.
+
+# decode application/pgp
+set pgp_decode_command="/usr/bin/gpg   %?p?--passphrase-fd 0? --no-verbose --quiet  --batch  --output - %f"
+
+# verify a pgp/mime signature
+set pgp_verify_command="/usr/bin/gpg   --no-verbose --quiet  --batch  --output - --verify %s %f"
+
+# decrypt a pgp/mime attachment
+set pgp_decrypt_command="/usr/bin/gpg   --passphrase-fd 0 --no-verbose --quiet  --batch  --output - %f"
+
+# create a pgp/mime signed attachment
+# set pgp_sign_command="/usr/bin/gpg-2comp --comment '' --no-verbose --batch  --output - --passphrase-fd 0 --armor --detach-sign --textmode %?a?-u %a? %f"
+set pgp_sign_command="/usr/bin/gpg    --no-verbose --batch --quiet   --output - --passphrase-fd 0 --armor --detach-sign --textmode %?a?-u %a? %f"
+
+# create a application/pgp signed (old-style) message
+# set pgp_clearsign_command="/usr/bin/gpg-2comp --comment ''  --no-verbose --batch  --output - --passphrase-fd 0 --armor --textmode --clearsign %?a?-u %a? %f"
+set pgp_clearsign_command="/usr/bin/gpg   --no-verbose --batch --quiet   --output - --passphrase-fd 0 --armor --textmode --clearsign %?a?-u %a? %f"
+
+# create a pgp/mime encrypted attachment
+# set pgp_encrypt_only_command="pgpewrap gpg-2comp  -v --batch  --output - --encrypt --textmode --armor --always-trust -- -r %r -- %f"
+set pgp_encrypt_only_command="pgpewrap /usr/bin/gpg    --batch  --quiet  --no-verbose --output - --encrypt --textmode --armor --always-trust -- -r %r -- %f"
+
+# create a pgp/mime encrypted and signed attachment
+# set pgp_encrypt_sign_command="pgpewrap gpg-2comp  --passphrase-fd 0 -v --batch  --output - --encrypt --sign %?a?-u %a? --armor --always-trust -- -r %r -- %f"
+set pgp_encrypt_sign_command="pgpewrap /usr/bin/gpg  --passphrase-fd 0  --batch --quiet  --no-verbose  --textmode --output - --encrypt --sign %?a?-u %a? --armor --always-trust -- -r %r -- %f"
+
+# import a key into the public key ring
+set pgp_import_command="/usr/bin/gpg  --no-verbose --import -v %f"
+
+# export a key from the public key ring
+set pgp_export_command="/usr/bin/gpg   --no-verbose --export --armor %r"
+
+# verify a key
+set pgp_verify_key_command="/usr/bin/gpg   --verbose --batch  --fingerprint --check-sigs %r"
+
+# read in the public key ring
+set pgp_list_pubring_command="/usr/bin/gpg   --no-verbose --batch --quiet   --with-colons --list-keys %r" 
+
+# read in the secret key ring
+set pgp_list_secring_command="/usr/bin/gpg   --no-verbose --batch --quiet   --with-colons --list-secret-keys %r" 
+
+# fetch keys
+# set pgp_getkeys_command="pkspxycwrap %r"
+
+# pattern for good signature - may need to be adapted to locale!
+
+# set pgp_good_sign="^gpg: Good signature from"
+
+# OK, here's a version which uses gnupg's message catalog:
+set pgp_good_sign="`gettext -d gnupg -s 'Good signature from "' | tr -d '"'`"
+#save pgp encrypted messages in $record in the clear
+set fcc_clear=no
+#set pgp_encryptself
+#
+# End
+#
+
+
+set forward_format="Fw: %s"
+set status_format="%v: %f (%s) [%M/%m new=%n,*=%t,postponed=%p]"
+set index_format="%4C %Z %{%b %d} %-30.30F (%4l) %s"
+set pager_format="[%C %Z] %n (%l) %s"      
+set folder_format="%N %-20f %20d %F %-8.8u %-8.8g %8s"
+set to_chars=" TtCFL"
+set pager_context=4
+#set quote_regexp="^ *[a-zA-Z]*[]>|}()%:=-][]>|}():=-]*"  # YESS!!
+set quote_regexp="^ *>"   # NO!
+set reply_regexp="^((re|r e|aw|antw.|antwort):[ \t]*)*"
+set tmpdir="/tmp" 
+set allow_8bit
+set noarrow_cursor
+set envelope_from
+set attribution="* %n (%a) [%(%y%m%d %H:%M)]:"
+set noconfirmappend
+set confirmcreate
+set delete=ask-yes
+set edit_headers 
+set history=100
+set include
+set nomark_old 
+set mime_forward=ask-yes
+set nomove  
+set pager_index_lines=10  
+set pager_stop
+set noprompt_after
+set write_inc=75
+set read_inc=75
+set recall=no  
+set reply_to=ask-yes
+set reverse_alias  
+set noreverse_name   
+set sort=date
+set status_on_top
+set tilde  
+set noautoedit
+set nomove
+set copy=yes
+set use_from=yes
+unset save_name
+unset force_name
+set nosig_dashes
+#set editor="emacs -nw  -f muttland"
+#set editor="emacsclient -a emacs-nw"
+set editor="emacsclient"
+set sort=date
+set timeout=10
+set mail_check=10
+
+
+ignore *
+unignore from date subject to cc reply-to:
+unignore organization organisation
+unignore newsgroups: posted-to:
+unignore X-SpamProbe:
+
+unhdr_order *
+hdr_order From Subject: From: Reply-To: To: Cc: Newsgroups: Date: X-SpamProbe: 
+
+auto_view text/html
+auto_view text/english
+auto_view application/msword
+alternative_order text/html text/enriched text/plain text/*
+
+
+

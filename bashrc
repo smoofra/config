@@ -16,7 +16,8 @@ function shortps1() {
 
 export EDITOR=myedit
 export PATH=$($HOME/bin/addpath $HOME/bin.local $HOME/bin $HOME/usr/bin "$PATH")
-export MANPATH=$(addpath ~/usr/share/man)
+export MANPATH=$(addpath ~/usr/share/man "$MANPATH")
+export PYTHONPATH=$(addpath ~/usr/lib/python "$PYTHONPATH")
 
 alias rerc='. ~/config/bashrc'
 alias sr='. ~/.transient-environment'

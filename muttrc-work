@@ -9,3 +9,4 @@ set from="Larry D'Anna <ldanna@drti.com>"
 
 
 
+set sendmail="msmtp -a work" 

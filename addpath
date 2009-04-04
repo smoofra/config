@@ -1,0 +1,25 @@
+#!/usr/bin/perl -w
+
+
+@ARGV or die "???";
+
+
+my @stuff = map {split /:/} @ARGV; 
+
+my %has;
+my @out; 
+
+for $thing (@stuff) {
+  next if $has{$thing};
+  $has{$thing} = 1;
+  push @out, $thing;
+}
+
+print join (":", @out), "\n";
+
+
+
+
+
+
+

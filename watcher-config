@@ -87,6 +87,9 @@ sub hsrwikihook {
             { name => 'theory of everything comics',
               url => 'http://www.theoryofeverythingcomics.com/',
             },
+            { name => 'gothsicles news',
+              url => 'http://www.thegothsicles.com/news.html',
+            },
             {
              name => 'the pain',
              url => 'http://thepaincomics.com/new_index.htm'

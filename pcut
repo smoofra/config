@@ -8,6 +8,7 @@ my $delim = q/\s+/;
 my $field = 0;
 my $chomp = 1;
 my $odelim; 
+my $strip;
 
 GetOptions ("chomp|c=s" => sub { shift;
                                  my $x = shift;
@@ -19,17 +20,25 @@ GetOptions ("chomp|c=s" => sub { shift;
                                    die "huh?";
                                  }
                                },
+            "strip|s" => \$strip,
             "delimiter|d=s"  => \$delim,
             "output-delimiter|D=s" => \$odelim,
             "field|f=s"  => \$field)
   or die "couldn't get options\n";
 
-$odelim = $delim unless defined $odelim; 
+$odelim = $delim unless defined $odelim;
+
+sub splitline {
+  my $line = shift;
+  my @f = split $delim, $_;
+  shift @f while $strip && $f[0] eq '';
+  return @f;
+}
 
 if ($field =~ /^ (\d+) $/x) {
   while (<>) {
     chomp if $chomp;
-    @f = split $delim, $_;
+    @f = splitline $_; 
     do {print "\n";next} if $field >= @f; 
     print $f[$field], "\n"; 
   }
@@ -40,7 +49,7 @@ if ($field =~ /^ (\d+),(\d+) $/x) {
   my ($f1,$f2) = ($1,$2); 
   while (<>) {
     chomp if $chomp;
-    @f = split $delim, $_;
+    @f = splitline $_;
     $f2 = @f-1 if $f2 >= @f;
     do {print "\n";next} if $f1 >= @f;     
     print join ($odelim, @f[$f1,$f2]), "\n"; 
@@ -53,7 +62,7 @@ if ($field =~ /^ ,(\d+) $/x) {
   $field = $1; 
   while (<>) {
     chomp if $chomp;
-    @f = split $delim, $_;
+    @f = splitline $_;
     $field = @f-1 if $field >= @f;
     print join ($odelim, @f[0,$field]), "\n"; 
   }
@@ -64,7 +73,7 @@ if ($field =~ /^ (\d+), $/x) {
   $field = $1; 
   while (<>) {
     chomp if $chomp;
-    @f = split $delim, $_;
+    @f = splitline $_;
     do {print "\n";next} if $field >= @f; 
     print join ($odelim, @f[$field, scalar(@f) - 1]), "\n"; 
   }

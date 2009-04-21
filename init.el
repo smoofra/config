@@ -1620,17 +1620,16 @@
 ;; (global-set-key "\C-x " 'lambdamark)
 ;;;; don't need this, use C-u C-x C-x
 
-
+(defun c-newline-and-indent ()
+  (interactive)
+  (newline)
+  (c-indent-command))
 
 (eval-after-load 'cc-mode
   (quote
    (progn 
      (defun buffer-is-cc-mode ()
        c-buffer-is-cc-mode)
-     (defun c-newline-and-indent ()
-       (interactive)
-       (newline)
-       (c-indent-command))
      (define-key c-mode-map "\C-c;"  'comment-region)
      ;; (define-key c-mode-map "\""     'skeleton-pair-insert-maybe)
      ;; (define-key c-mode-map "("      'skeleton-pair-insert-maybe)
@@ -1689,10 +1688,10 @@
 (defvar anything-extra-files nil)
 (when i-have-anything 
   (setq anything-sources 
-        (cons '((name . "Extra Files")
-                (candidates . anything-extra-files)
-                (type . file))
-              anything-sources))
+        (concatenate 'list  anything-sources
+                     (list '((name . "Extra Files")
+                             (candidates . anything-extra-files)
+                             (type . file)))))
   (setq anything-iswitchb-idle-delay 100000)
   (define-key anything-map  "\C-n" 'anything-next-line)
   (define-key anything-map  "\C-p" 'anything-previous-line)

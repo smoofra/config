@@ -2146,7 +2146,8 @@
            (concat "\\<\\("
                    (mapconcat 'identity octave-end-keywords "\\|")
                    "\\)\\>"))
-     (define-key octave-mode-map "\C-j" 'backwards-kill-line))))
+     (define-key octave-mode-map "\C-j" 'backwards-kill-line)
+     (define-key octave-mode-map "\M-_" 'c-unwrap-next-sexp))))
 
 
 

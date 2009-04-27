@@ -1801,6 +1801,7 @@
  '(cperl-invalid-face (quote default))
  '(delete-selection-mode nil)
  '(diff-switches "-u")
+ '(dns-mode-soa-auto-increment-serial nil)
  '(erc-fill-column 69)
  '(erc-track-exclude (quote ("&bitlbee")))
  '(erc-track-exclude-server-buffer t)

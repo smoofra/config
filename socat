@@ -1,0 +1,5 @@
+#!/bin/bash
+
+
+
+daemonize -p ~/.socat.pid socat  tcp-listen:5353,reuseaddr,fork udp:localhost:53

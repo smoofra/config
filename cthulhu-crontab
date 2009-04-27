@@ -16,7 +16,7 @@
 
 0,10,20,30,40,50 * * * * /home/larry/lisp/blog/check
 0,10,20,30,40,50 * * * * /home/larry/bin/checkreader
-
+0,10,20,30,40,50 * * * * /home/larry/config/socat
 0,10,20,30,40,50 * * * * /home/larry/bin/monitor_mailbox -d  -p /home/larry/.mmpid =inbox /home/larry/Maildir/ /home/larry/.http-notification/inbox 
 
 0 15 * * 5  /home/larry/bin/remind fill out your timesheet NOW

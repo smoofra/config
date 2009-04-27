@@ -1,0 +1,12 @@
+#!/usr/bin/perl -w
+
+my $mod = shift;
+
+$mod =~ s,::,/,g;
+$mod = $mod . '.pm';
+
+for my $dir (@INC) {
+  if (-e "$dir/$mod") { 
+    print "$dir/$mod\n";
+  }
+}

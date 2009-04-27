@@ -1,0 +1,72 @@
+#!/usr/bin/perl -w
+
+
+use POSIX qw(setsid);
+use Getopt::Long;
+use Data::Dumper;
+
+Getopt::Long::Configure ("bundling", "require_order");
+my $pidfile;
+my $loop;
+
+GetOptions ("pidfile|p=s" => \$pidfile,
+            "loop|l" => \$loop,
+           ) or die "couln't get options $!";
+
+my @cmd = @ARGV; 
+
+if (defined $pidfile and -e $pidfile) {
+  my $fh;
+  open $fh, "<", $pidfile or die "Can't read pidfile: $!\n";
+  my $pid = <$fh>;
+  close $fh;
+  chomp $pid;
+  $pid =~ /^[\d]+$/ or die "Invalid pid: $pid\n";
+  if (-e "/proc/$pid") {
+    open $fh, "<", "/proc/$pid/cmdline" or die "Can't open /proc/$pid/cmdline: $!\n"; 
+    my $cmdline = join '', <$fh>;
+    close $fh;
+    my (@cmdline) = split "\x00", $cmdline;
+    ($cmdline[0] eq '/usr/bin/perl' and $cmdline[1] eq '-w' and $cmdline[2] =~ /daemonize/)
+      or die "pidfile seems to be invalid\n";
+    exit 0; 
+  } else {
+    print STDERR "old daemon seems to be dead, starting up\n"; 
+  }
+}
+
+open STDIN, '/dev/null'   or die "Can't read /dev/null: $!";
+open STDOUT, '>/dev/null' or die "Can't write to /dev/null: $!";
+open STDERR, '>/dev/null' or die "Can't write to /dev/null: $!";
+defined(my $pid = fork)   or die "Can't fork: $!";
+exit if $pid;
+setsid                    or die "Can't start a new session: $!";
+
+
+if (defined $pidfile) {
+  open $fh, ">", $pidfile or die "Can't write pidfile: $!\n";
+  print $fh $$, "\n";
+  close $fh; 
+}
+
+
+my $child;
+
+$SIG{TERM} = sub {
+  kill 15, $child if $child;
+  exit(0); 
+};
+
+while (1) {
+  $child = fork;
+  if (not $child) {
+    #we are the child;
+    exec @cmd; 
+  }
+  waitpid $child, 0;
+  undef $child;
+  last unless $loop; 
+}
+
+
+

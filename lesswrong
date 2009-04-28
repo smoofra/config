@@ -1,0 +1,62 @@
+#!/usr/bin/perl -w
+
+$lw_user = '';
+$lw_pass = '';
+
+require "$ENV{HOME}/.lesswrong";
+
+
+use WWW::Mechanize;
+use Data::Dumper;
+use HTML::Form;
+use XML::RSS;
+
+
+my $mech = WWW::Mechanize->new();
+
+$mech->get("http://lesswrong.com/login")->is_success or die "couldn't get login page\n";
+
+my ($fn, $formnumber);          # 
+for my $form ($mech->forms()) {
+  $fn++;
+  my $id = $form->attr('id');
+  next unless defined $id;
+  next unless $id eq 'login_login';
+  $formnumber = $fn;
+  last;
+}
+
+die "no form with id login_login\n" unless $formnumber;
+
+$mech->submit_form(form_number => $formnumber,
+                   fields => {user_login => $lw_user,
+                              passwd_login => $lw_pass})->is_success or die "couldn't log in\n";
+
+
+my $r = $mech->get('http://lesswrong.com/message/inbox/.rss');
+$r->is_success or die "couldn't get inbox\n";
+
+$r->header('Content-type') =~ m:^text/xml: or die "inbox has bad content type\n";
+
+
+my $rss = new XML::RSS;
+$rss->parse($mech->content);
+my @items = @{$rss->{items}};
+$rss->{items} = []; 
+for my $item (reverse @items) {
+  $item->{title} =~ s/sent .* ago \s* $//x;
+  $rss->add_item( mode => 'insert', %$item);     
+}
+
+my $fh = \*STDOUT;
+if (@ARGV) {
+  open $fh, ">", shift or die $!; 
+}
+print $fh $rss->as_string;
+
+
+
+
+
+
+

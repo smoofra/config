@@ -11,11 +11,14 @@
 0 1 * * *   (wget --quiet -O -  http://moto4lin.sourceforge.net/wiki/Category:Models | grep -qi vu204) && ~/bin/remind 'moto4lin works with your phone'
 
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /usr/bin/crontab -l > /home/larry/config/cthulhu-crontab
+
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/watcher/watcher update
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/boc2rss /home/larry/public_html/boc.rss
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/ronpaul2rss /home/larry/public_html/ronpaul.rss
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/warnerd /home/larry/public_html/warnerd.rss
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/zeropunctuation /home/larry/public_html/zp.rss
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/lesswrong /home/larry/public_html/lesswrong.rss
+
 
 0,10,20,30,40,50 * * * * /home/larry/lisp/blog/check
 0,10,20,30,40,50 * * * * /home/larry/bin/checkreader

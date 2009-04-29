@@ -26,7 +26,16 @@ GetOptions ("quiet|q" => \$quiet,
            ) or die "couln't get options $!";
 @ARGV or die "get what?";
 my $path = shift @ARGV;
-my @args = @ARGV;
+
+my @auth; 
+Getopt::Long::Configure (qw/pass_through/);
+GetOptions ("authentication-file|A=s" => sub { push @auth, "-A", $_[1]; }
+           ) or die "GetOptions failed when it shouldn't have!\n";
+my $defaultauth = "$ENV{HOME}/.smbauth";
+@auth = ("-A", $defaultauth) if (-f $defaultauth && !@auth);
+
+
+my @args = (@ARGV, @auth);
 
 my $tmpfh;
 if ($output eq '-') {
@@ -36,7 +45,7 @@ if ($output eq '-') {
 my @q;
 @q = ('>', '/dev/null', '2>', '/dev/null') if $quiet; 
 
-run ['smbclient', smbpath2args($path, $output), @args], @q or die "smbclient returned $?";
+run ['smbclient', smbpath2args($path, $output), @args], @q or die "smbclient failed\n";
 
 if ($tmpfh) {
   my $pid = fork;

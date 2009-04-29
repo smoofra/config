@@ -8,9 +8,13 @@ use Data::Dumper;
 Getopt::Long::Configure ("bundling", "require_order");
 my $pidfile;
 my $loop;
+my $logfile;
+my $append; 
 
 GetOptions ("pidfile|p=s" => \$pidfile,
             "loop|l" => \$loop,
+            "log|L=s" => \$logfile,
+            "append|a" => \$append, 
            ) or die "couln't get options $!";
 
 my @cmd = @ARGV; 
@@ -35,9 +39,12 @@ if (defined $pidfile and -e $pidfile) {
   }
 }
 
-open STDIN, '/dev/null'   or die "Can't read /dev/null: $!";
-open STDOUT, '>/dev/null' or die "Can't write to /dev/null: $!";
-open STDERR, '>/dev/null' or die "Can't write to /dev/null: $!";
+my $logmode = $append ? '>>' : '>';
+$logfile = '/dev/null' unless defined $logfile; 
+
+open STDIN,  '<', '/dev/null'   or die "Can't read /dev/null: $!";
+open STDOUT, $logmode, $logfile or die "Can't write to $logfile: $!";
+open STDERR, $logmode, $logfile or die "Can't write to $logfile: $!";
 defined(my $pid = fork)   or die "Can't fork: $!";
 exit if $pid;
 setsid                    or die "Can't start a new session: $!";

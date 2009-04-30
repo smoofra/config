@@ -10,9 +10,10 @@ GetOptions ("primary|p" => sub { $xsel = "-p" },
             "clipboard|b" => sub { $xsel = "-b" })
   or die "couln't get options $!";
 
-if (not defined($xsel) && not @ARGV) {
+if (!defined($xsel) && !scalar(@ARGV)) {
   $xsel = '-b'; 
 }
+
 
 my $path;
 if ($xsel) {
@@ -20,6 +21,7 @@ if ($xsel) {
 } else {
   $path = shift @ARGV;
 }
+
 
 $path =~ s/^\s*//;
 $path =~ s/\s*$//;

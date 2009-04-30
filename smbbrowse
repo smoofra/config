@@ -1,0 +1,40 @@
+#!/usr/bin/perl -w 
+
+use IPC::Run qw/run/;
+use Getopt::Long;
+
+my $xsel = '-b';
+Getopt::Long::Configure (qw/bundling/);
+GetOptions ("argv|a" => sub { undef $xsel; }, 
+            "primary|p" => sub { $xsel = "-p" },
+            "secondary|s" => sub { $xsel = "-s" },
+            "clipboard|b" => sub { $xsel = "-b" })
+  or die "couln't get options $!";
+
+
+my $path;
+if ($xsel) {
+  run [qw/xsel/, $xsel], '>', \$path or die "xsel failed\n";
+} else {
+  @ARGV or die "browse what?";
+  $path = shift @ARGV;
+}
+
+$path =~ s/^\s*//;
+$path =~ s/\s*$//;
+
+if ($path =~ m:^\\\\:) {
+  $path =~ s:\\:/:g;
+  $path =~ s/^/smb:/;
+} elsif ($path =~ m:^//:) {
+  $path =~ s/^/smb:/;
+}
+
+exec 'nautilus', $path;
+
+
+
+  
+
+
+  

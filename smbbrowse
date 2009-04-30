@@ -24,12 +24,16 @@ if ($xsel) {
 $path =~ s/^\s*//;
 $path =~ s/\s*$//;
 
+$path =~ s/^file://; 
+
 if ($path =~ m:^\\\\:) {
   $path =~ s:\\:/:g;
   $path =~ s/^/smb:/;
 } elsif ($path =~ m:^//:) {
   $path =~ s/^/smb:/;
 }
+
+print "browsing $path\n"; 
 
 exec 'nautilus', $path;
 

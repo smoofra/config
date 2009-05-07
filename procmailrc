@@ -44,11 +44,14 @@ $MAILDIR/.spam/
 #| formail -I "X-Spam-Flag-YES: YES"
 
 
-
+# if you set the output to a variable, it doesn't consider the mail delivered
 :0
 SCORE=| /usr/bin/spamprobe train
+
+# run the mail through a filter to add a spamprobe header
 :0 wf
 | formail -I "X-SpamProbe: $SCORE"
+
 :0 a
 *^X-SpamProbe: SPAM
 $MAILDIR/.spam/

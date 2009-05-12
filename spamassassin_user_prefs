@@ -40,3 +40,6 @@ score DNS_FROM_RFC_POST 	1.6
 
 whitelist_from jend_707@netzero.com
 
+
+report_safe 0 
+

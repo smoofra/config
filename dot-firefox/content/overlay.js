@@ -72,6 +72,11 @@ function fooj(event) {
 }
 
 function foolistener(event) { 
+	// 59 == ';' 
+	if (  event.ctrlKey  && !event.shiftKey && !event.altKey && !event.metaKey && event.charCode==59) { 
+		scuttle_add(); 
+		return false; 
+	}
 	if (   gBrowser.contentDocument.location.toString().indexOf("http://www.google.com/reader") == 0
 		|| gBrowser.contentDocument.location.toString().indexOf("https://www.google.com/reader") == 0 ) {
 		if (event.altKey) {

@@ -14,8 +14,9 @@ set spoolfile='~/Maildir'
 set record='~/Maildir/.sent-mail'
 set postponed="=postponed"
 
-macro index ci C=\n
+macro index ci C=inbox\n
 macro index cl C=lisp\n
+macro index cL C=lol\n
 macro index cr C=sent-mail\n
 macro index cs C=inbox_save\n
 macro pager ci C=inbox\n

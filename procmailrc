@@ -39,33 +39,53 @@ $MAILDIR/.spam/
 $MAILDIR/.spam/
 
 
-#:0 wf 
-#*^X-Spam-Flag: YES
-#| formail -I "X-Spam-Flag-YES: YES"
+
+##
+## BEGIN SPAM RECIPIES
+##
+
+# run it through spamassassin if it hasn't been already
+:0 
+* !^X-Spam-Status: YES
+{
+:0fw: /home/larry/.spamassassin.lock
+| /usr/bin/spamassassin
+}
 
 
+# don't do any further spam processing if the user is in the whitelist
+:0 
+* !^X-Spam-Status:.*USER_IN_WHITELIST
+{
 
+# run it through spamprobe and store the result in SCORE
+# if you set the output to a variable, it doesn't consider the mail delivered
 :0
 SCORE=| /usr/bin/spamprobe train
+
+# run the mail through a filter to add a spamprobe header
 :0 wf
 | formail -I "X-SpamProbe: $SCORE"
+
+# put it in =spam if spamprobe or spamassin thought it was spam
 :0 a
 *^X-SpamProbe: SPAM
 $MAILDIR/.spam/
 
-
-:0 
-* !^X-Spam-Status: YES
-{
-
-:0fw: /home/larry/.spamassassin.lock
-| /usr/bin/spamassassin
-
-}
-
 :0 
 *^X-Spam-Status: YES
 $MAILDIR/.spam/
+
+}
+
+##
+## END SPAM RECIPIES
+##
+
+
+
+
+
 
 
 :0

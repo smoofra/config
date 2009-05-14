@@ -11,9 +11,12 @@ use WebService::Google::Reader;
 
 my $reader = WebService::Google::Reader->new(username => $gr_user,
                                              password => $gr_pass,
-                                            );
+                                            ) ; 
 
 my @counts = $reader->counts;
+
+die "couldn't connect to google reader: " . $reader->error . "\n" if defined $reader->error; 
+
 
 my $n = 0; 
 

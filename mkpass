@@ -10,10 +10,12 @@ run [qw/pwgen -1 --secure/, $length], '>', \$pass or die "pwgen failed\n";
 
 $pass =~ s/\s*//g;
 
+print $pass, "\n";
+
 run [qw/xsel -i/], '<', \$pass or die "xsel failed\n";
 run [qw/xsel -ib/], '<', \$pass or die "xsel failed\n";
 
-print $pass, "\n";
+
 
 
 

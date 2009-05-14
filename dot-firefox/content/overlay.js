@@ -72,8 +72,8 @@ function fooj(event) {
 }
 
 function foolistener(event) { 
-	// 59 == ';' 
-	if (  event.ctrlKey  && !event.shiftKey && !event.altKey && !event.metaKey && event.charCode==59) { 
+	if (  event.ctrlKey  && !event.shiftKey && !event.altKey && !event.metaKey && 
+		  String.fromCharCode(event.charCode)=="c") { 
 		scuttle_add(); 
 		return false; 
 	}

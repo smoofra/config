@@ -1623,6 +1623,7 @@
 (defun c-newline-and-indent ()
   (interactive)
   (newline)
+  (insert " ") 
   (c-indent-command))
 
 (eval-after-load 'cc-mode
@@ -1811,6 +1812,7 @@
  '(iswitchb-default-method (quote samewindow))
  '(matlab-comment-region-s "%")
  '(matlab-fill-code nil)
+ '(matlab-indent-level 4)
  '(matlab-verify-on-save-flag nil)
  '(octave-block-offset 4)
  '(safe-local-variable-values (quote ((Package SERIES :use "COMMON-LISP" :colon-mode :external) (Package . HUNCHENTOOT) (Syntax . COMMON-LISP) (Package . FLEXI-STREAMS) (Package . Memoization) (Package . COMMON-LISP-CONTROLLER) (Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
@@ -1971,6 +1973,25 @@
     (my-revert-buffer)
     nil)
   "revert this buffer"))
+
+
+(alist-set
+ save-some-buffers-action-alist
+ ?d 
+ (list 
+  (lambda (buf) ;; from files.el
+    (if (null buffer-file-name)
+        (message "Not applicable: no file")
+      (save-window-excursion (diff-buffer-with-file buf))
+      (if (not enable-recursive-minibuffers)
+          (progn (display-buffer (get-buffer-create "*Diff*"))
+                 (setq other-window-scroll-buffer "*Diff*"))
+        (view-buffer (get-buffer-create "*Diff*")
+                     (lambda (_) (exit-recursive-edit)))
+        (recursive-edit)))
+    ;; Return nil to ask about BUF again.
+    nil)
+  "view changes in this buffer"))
 
 
 (defun arithmatic-on-number-at-point (form)
@@ -2148,6 +2169,7 @@
                    (mapconcat 'identity octave-end-keywords "\\|")
                    "\\)\\>"))
      (define-key octave-mode-map "\C-j" 'backwards-kill-line)
+     (define-key octave-mode-map "\C-\M-j" 'join-line)
      (define-key octave-mode-map "\M-_" 'c-unwrap-next-sexp))))
 
 

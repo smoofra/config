@@ -654,9 +654,12 @@
 
 (add-to-list 'interpreter-mode-alist '("perl" . cperl-mode))
 
-(when (>= emacs-major-version 22)
-  (add-to-list 'auto-mode-alist 
-	       (cons "^/tmp/mutt-" 'message-mode)))
+;; (when (>= emacs-major-version 22)
+;;   (add-to-list 'auto-mode-alist 
+;; 	       (cons "^/tmp/mutt-" 'message-mode)))
+;; (add-hook 'message-mode-hook 
+;; 	  '(lambda ()
+;; 	     (define-key message-mode-map "\C-cs" 'skip-to-body)))
 
 (defun setup-nxml-crap ()
   (add-to-list 'auto-mode-alist
@@ -1342,9 +1345,6 @@
 ;		     (point)))))
              
    
-(add-hook 'message-mode-hook 
-	  '(lambda ()
-	     (define-key message-mode-map "\C-cs" 'skip-to-body)))
 
 (setq truncate-partial-width-windows nil)
 
@@ -1802,6 +1802,7 @@
  '(cperl-invalid-face (quote default))
  '(delete-selection-mode nil)
  '(diff-switches "-u")
+ '(dns-mode-soa-auto-increment-serial nil)
  '(erc-fill-column 69)
  '(erc-track-exclude (quote ("&bitlbee")))
  '(erc-track-exclude-server-buffer t)

@@ -1,9 +1,9 @@
 
 
 
-melkor-crontab:
+cthulhu-crontab:
 	crontab -l > $@
 
 
-.PHONY: melkor-crontab
+.PHONY: cthulhu-crontab
 

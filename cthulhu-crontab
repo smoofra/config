@@ -7,6 +7,7 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/usr/lib/git-core
 30 6 * * *  /home/larry/bin/quiet-git-commit /home/larry/Maildir
 0 0 * * *   /home/larry/repos/slime-tracker/.git/import
 0 0 * * *   /home/larry/delicious/update.pl
+0 0 * * *   /home/larry/scuttlebackup/update
 0 1 * * *   /home/larry/bin/tvcron
 
 

@@ -3,11 +3,15 @@
 
 for x in ~/repos.topush/*; do
     x=$(readlink $x)
-    echo; 
-    echo === $x
     cd $x
-    git push
+    if git-needs-push -q; then
+        echo; 
+        echo === $x
+        git push
+    fi
 done
+
+
 
 
 

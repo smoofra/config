@@ -23,7 +23,11 @@ sub parseCommit {
   my $commit = {};
   pos($str) = 0; 
   while ($str =~ /\G ([^\s]+) \s+ (.*) \n/gxc) {
-    $commit->{$1} = $2;
+    if ($1 eq 'parent')  {
+      push @{$commit->{parents}}, $2;
+    } else { 
+      $commit->{$1} = $2;
+    }
   }
   scalar(keys %$commit) or die "malformed commit message (no headers)\n"; 
   $str =~ /\G\n/g or die "malformed commit message (missing newline after headers)\n";
@@ -81,8 +85,12 @@ sub lookup {
 my $master = revparse 'master';
 my $originmaster = revparse 'origin/master';
 
-for (my $c = lookup $originmaster; defined $c->{parent}; $c = lookup $c->{parent}) {
-  if ($c->{commit} eq $master) {
+my %visited; 
+my @tosearch = $originmaster;
+
+while (@tosearch) {
+  my $hash = shift @tosearch;
+  if ($hash eq $master) {
     if ($quiet) {
       exit 1; 
     } else {
@@ -90,7 +98,14 @@ for (my $c = lookup $originmaster; defined $c->{parent}; $c = lookup $c->{parent
       exit 0;
     }
   }
+  $visited{$hash} = 1;
+  my $c = lookup $hash;
+  for $p (@{$c->{parents}}) {
+    next if $visited{$p};
+    push @tosearch, $p;
+  }
 }
+
 print "yes\n" unless $quiet;
 exit 0;
 

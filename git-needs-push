@@ -5,8 +5,9 @@ use Data::Dumper;
 
 use Getopt::Long;
 Getopt::Long::Configure ("bundling");
-my ($quiet);
-GetOptions ("quiet|q" => \$quiet, 
+my ($quiet, $fetch);
+GetOptions ("fetch|f" => \$fetch, 
+            "quiet|q" => \$quiet, 
             "chdir|C=s" => sub { chdir $_[1] or die "can't chdir to $_[1]: $!\n"; })
   or die "couldn't get options $!\n";
 
@@ -58,7 +59,7 @@ sub revparse {
 
   
 
-runordie qw/git fetch/;
+runordie qw/git fetch/ if $fetch;
 
 my $h = start [qw:git log --pretty=raw -z origin/master:], '>pipe', \*LOG, '2>&1'
   or die $!;

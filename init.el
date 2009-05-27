@@ -1807,12 +1807,13 @@
  '(erc-track-exclude (quote ("&bitlbee")))
  '(erc-track-exclude-server-buffer t)
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
+ '(erc-track-when-inactive t)
  '(fill-column 80)
  '(indent-tabs-mode nil)
  '(iswitchb-default-method (quote samewindow))
  '(matlab-comment-region-s "%")
  '(matlab-fill-code nil)
- '(matlab-indent-level 4)
+ '(matlab-indent-level 4) 
  '(matlab-verify-on-save-flag nil)
  '(octave-block-offset 4)
  '(safe-local-variable-values (quote ((Package SERIES :use "COMMON-LISP" :colon-mode :external) (Package . HUNCHENTOOT) (Syntax . COMMON-LISP) (Package . FLEXI-STREAMS) (Package . Memoization) (Package . COMMON-LISP-CONTROLLER) (Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
@@ -1880,7 +1881,8 @@
    (progn 
      ;; C-, 
      (define-key php-mode-map (quote [67108908]) (quote html-tag))
-     ;(define-key php-mode-map ")" 'up-list))))
+     ;;(define-key php-mode-map ")" 'up-list)
+     )))
 
 
 (define-skeleton latex-begin 

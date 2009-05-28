@@ -1482,11 +1482,26 @@
 
 (require 'erc)
 (progn
+  
+  (progn ;;; this stuff is copypasta from erc-track.el  
+         ;;; because erc-track-when-inactive is tottally borked 
+    (setq erc-buffer-activity-timeout 300)
+    (add-hook 'window-configuration-change-hook 'erc-user-is-active)
+    (add-hook 'erc-send-completed-hook 'erc-user-is-active)
+    (add-hook 'erc-server-001-functions 'erc-user-is-active)
+    (defun erc-buffer-visible (buffer)
+      "Return non-nil when the buffer is visible."
+      (when erc-buffer-activity         ; could be nil
+        (and (erc-track-get-buffer-window buffer erc-track-visibility)
+             (<= (erc-time-diff erc-buffer-activity (erc-current-time))
+                 erc-buffer-activity-timeout)))))
+  
   (add-hook 'erc-mode-hook '(lambda () (setq jk-implies-readonly nil)))
   (erc-scrolltobottom-enable)
   (add-hook 'erc-join-hook 'bitlbee-identify)
   ;;(define-key erc-mode-map "\M-q" 'silly-scroll-down-one-hack )
   (setq erc-auto-query 'buffer)
+  
   (define-key erc-mode-map [home]  'SDO))
 
 (defun strjoin (d l)
@@ -1807,7 +1822,7 @@
  '(erc-track-exclude (quote ("&bitlbee")))
  '(erc-track-exclude-server-buffer t)
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
- '(erc-track-when-inactive t)
+ '(erc-track-when-inactive nil)
  '(fill-column 80)
  '(indent-tabs-mode nil)
  '(iswitchb-default-method (quote samewindow))

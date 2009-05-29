@@ -23,6 +23,7 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/usr/lib/git-core
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/lesswrong /home/larry/public_html/lesswrong.rss
 
 
+0,10,20,30,40,50 * * * * daemonize -p /home/larry/.sage.pid sage -notebook port=8082
 0,10,20,30,40,50 * * * * /home/larry/lisp/blog/check
 0,10,20,30,40,50 * * * * /home/larry/bin/checkreader
 0,10,20,30,40,50 * * * * /home/larry/config/startsocat

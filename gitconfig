@@ -1,3 +1,6 @@
 [core]
         pager = cat
 
+[user]
+	name = Larry D'Anna
+	email = larry@elder-gods.org

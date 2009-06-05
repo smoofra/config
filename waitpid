@@ -1,0 +1,21 @@
+#!/usr/bin/perl -w
+
+die "???" unless @ARGV == 1;
+my $pid = shift @ARGV;
+
+open IH, '<', "/proc/$pid/status" or die $!;
+my $name = do {
+  local $/;
+  $_ = <IH>;
+  /^Name:\s*(.*?)\s*$/m or die "bad status file";
+  $1;
+};
+
+while (-e "/proc/$pid") {
+  sleep 1;
+}
+
+exec qw/notify/, "$name($pid) DONE";
+
+
+

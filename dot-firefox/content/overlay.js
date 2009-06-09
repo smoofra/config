@@ -72,12 +72,6 @@ function fooj(event) {
 }
 
 function foolistener(event) { 
-	if (  event.ctrlKey  && !event.shiftKey && !event.altKey && !event.metaKey && 
-		  String.fromCharCode(event.charCode)=="d") { 
-		scuttle_add(); 
-		event.stopPropagation(); 
-		return false; 
-	}
 	if (   gBrowser.contentDocument.location.toString().indexOf("http://www.google.com/reader") == 0
 		|| gBrowser.contentDocument.location.toString().indexOf("https://www.google.com/reader") == 0 ) {
 		if (event.altKey) {
@@ -109,6 +103,6 @@ function normalk () {
 
 window.addEventListener("keypress", foolistener, true); 
 window.document.getElementById("addBookmarkAsKb").removeAttribute('command');
-
+window.document.getElementById("addBookmarkAsKb").setAttribute('oncommand', 'scuttle_add()'); 
 
 

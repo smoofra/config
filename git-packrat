@@ -1,0 +1,106 @@
+#!/usr/bin/perl -w
+
+
+use IPC::Run qw/run start finish/;
+use Getopt::Long;
+use File::Temp qw/tempfile/;
+use File::stat; 
+
+Getopt::Long::Configure ("bundling");
+my ($message);
+GetOptions ("message|m=s" => \$message) or die "couldn't get options $!\n";
+
+sub runordie {
+  my $message;
+  my $output; 
+  run [@_], '>', \$output, '2>', \$message
+    or die join(' ', @_) . " failed:\n$message\n";
+  chomp $output; 
+  return $output; 
+}
+
+my $cur_branch;
+my $branches = runordie qw/git branch/;
+my %branches; 
+for my $line (split /\n/, $branches) {
+  $line =~ (/(\* | \s) \s (.*)/x) or die "bad branch line: $line";
+  my ($c, $branch) = ($1,$2);
+  $curbranch = $branch if ($c eq '*');
+  my $hash = runordie qw/git rev-parse/, $branch;
+  $branches{$branch} = $hash; 
+}
+
+if (not defined $branches{master}) {
+  die "no master branch??\n";
+}
+
+if (not defined $curbranch) {
+  die "not on any branch??\n";
+}
+
+my $tempbranch = 'packrat';
+my $i = 0; 
+while (defined $branches{$tempbranch}) {
+  $i++;
+  $tempbranch = "packrat$i";
+}
+
+my $branchlist = ''; 
+for my $branch (sort {$a cmp $b} grep {$_ ne 'archive'} keys %branches) {
+  $branchlist .= "$branches{$branch} $branch\n";
+}
+
+if (defined $branches{archive}) {
+  my $body = runordie qw/git log -n1 archive/, '--pretty=format:%b';
+  $body =~ /^--- git-packrat branch list ---($)\n(.*)/sm
+    or die "the tip of archive doesn't look like a git-packrat commit\n";
+  my ($a, $b) = ($2, $branchlist);
+  for ($a, $b) {
+    s/^\s*//;
+    s/\s*$//;
+  }
+  if ($a eq $b) {
+    print STDERR "nothing to commit\n";
+    exit 0; 
+  }
+}
+
+if (!defined $message) {
+  die "no \$EDITOR\n" if !defined $ENV{EDITOR};  
+  my ($fh, $fn) = tempfile();
+  print $fh "\n#enter your commit message\n" ;
+  close $fh;
+  my $s = stat($fn) or die "stat failed: $!\n";
+  my $mtime = $s->mtime; 
+  run [$ENV{EDITOR}, $fn] or die "edior failed\n";
+  $s = stat($fn) or die "stat failed: $!\n";
+  die "message file not changed!\n" if $s->mtime == $mtime; 
+  open $fh, "<", $fn or die "open failed: $!\n";
+  local $/;
+  $message = <$fh>;
+  close $fh;
+  unlink $fn or die "unlink failed: $!\n";
+}
+
+$message =~ s/^\s*#.*$//gm; 
+$message =~ s/\s*$/\n\n/;
+$message .= "--- git-packrat branch list ---\n"; 
+$message .= $branchlist; 
+
+runordie qw:git symbolic-ref HEAD refs/heads/archive:;
+my $git_dir = runordie qw/sh -c/, '. git-sh-setup; echo $GIT_DIR'; 
+unlink "$git_dir/index" or die "couldn't remove index: $!\n";
+
+if (!defined $branches{archive}) {
+  runordie qw/git commit --allow-empty -m/, "git-packrat initial commit"; 
+}
+
+open MH, ">", "$git_dir/MERGE_HEAD" or die "couldn't open MERGE_HEAD: $!\n";
+my @tomerge = sort { return -1 if $a eq 'archive'; return 1 if $b eq 'archive'; return 0 } keys %branches;
+print MH "$branches{$_}\n" for @tomerge;
+close MH;
+runordie qw/git commit --allow-empty -m/, $message;
+runordie qw/git checkout -f /, $curbranch;
+
+
+

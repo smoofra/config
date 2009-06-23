@@ -545,6 +545,7 @@
 (global-set-key [(f7)] 'chat-yourmom)
 (global-set-key [(f8)] 'chat-mgwyer)
 (global-set-key [(f9)] 'chat)
+(global-set-key [(f10)] 'erc-next-channel)
 (global-set-key [(control x) (f12)] 'bury-all)
 
 (global-set-key [(f2)]     'next-error)
@@ -1465,7 +1466,7 @@
 
 (defun wjoe ()
   (interactive)
-  (erc-select :server "localhost" :port "ircd" :nick "ldanna")
+  (erc-select :server "localhost" :port "ircd" :nick "ldanna" :password my-stupid-passwd)
   (erc-join-channel "#yourmom"))
 
 (defun bitlbee ()
@@ -1498,6 +1499,11 @@
 
 (defun erc-track-string ()
   (strjoin "," (mapcar (lambda (x) (buffer-name (car x))) erc-modified-channels-alist)))
+
+(defun erc-next-channel ()
+  (interactive)
+  (when erc-modified-channels-alist
+    (switch-to-buffer (caar erc-modified-channels-alist))))
 
 (defun erc-record-track ()
   (interactive)

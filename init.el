@@ -1502,6 +1502,7 @@
 
 (defun erc-next-channel ()
   (interactive)
+  (erc-user-is-active)
   (when erc-modified-channels-alist
     (switch-to-buffer (caar erc-modified-channels-alist))))
 

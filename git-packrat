@@ -1,14 +1,12 @@
 #!/usr/bin/perl -w
 
-
 use IPC::Run qw/run start finish/;
 use Getopt::Long;
-use File::Temp qw/tempfile/;
-use File::stat; 
 
-Getopt::Long::Configure ("bundling");
-my ($message);
-GetOptions ("message|m=s" => \$message) or die "couldn't get options $!\n";
+sub mktimestamp {
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+  sprintf "%4d-%02d-%02d_%02d-%02d", $year +1900,$mon+1,$mday,$hour,$min;
+}
 
 sub runordie {
   my $message;
@@ -19,88 +17,72 @@ sub runordie {
   return $output; 
 }
 
-my $cur_branch;
-my $branches = runordie qw/git branch/;
-my %branches; 
-for my $line (split /\n/, $branches) {
-  $line =~ (/(\* | \s) \s (.*)/x) or die "bad branch line: $line";
-  my ($c, $branch) = ($1,$2);
-  $curbranch = $branch if ($c eq '*');
-  my $hash = runordie qw/git rev-parse/, $branch;
-  $branches{$branch} = $hash; 
+sub ls_refs {
+  my $remote = '.';
+  $remote = shift if @_;
+  my $go = runordie qw/git ls-remote/, $remote;
+  return map { s/^[a-fA-F0-9]{40} \s+//x && ($_ ne '') or die "bad output from git ls-remote\n";
+               $_ }
+    split /\n/, $go;
 }
 
-if (not defined $branches{master}) {
-  die "no master branch??\n";
-}
-
-if (not defined $curbranch) {
-  die "not on any branch??\n";
-}
-
-my $tempbranch = 'packrat';
-my $i = 0; 
-while (defined $branches{$tempbranch}) {
-  $i++;
-  $tempbranch = "packrat$i";
-}
-
-my $branchlist = ''; 
-for my $branch (sort {$a cmp $b} grep {$_ ne 'archive'} keys %branches) {
-  $branchlist .= "$branches{$branch} $branch\n";
-}
-
-if (defined $branches{archive}) {
-  my $body = runordie qw/git log -n1 archive/, '--pretty=format:%b';
-  $body =~ /^--- git-packrat branch list ---($)\n(.*)/sm
-    or die "the tip of archive doesn't look like a git-packrat commit\n";
-  my ($a, $b) = ($2, $branchlist);
-  for ($a, $b) {
-    s/^\s*//;
-    s/\s*$//;
-  }
-  if ($a eq $b) {
-    print STDERR "nothing to commit\n";
-    exit 0; 
+sub symbolic_ref {
+  my $ref = shift;
+  my $ret;
+  my $er; 
+  if (run [qw/git symbolic-ref/, $ref], '>', \$ret, '2>', \$er) { 
+    chomp $ret; 
+    return $ret;
+  } else {
+    if ($er =~ /is not a symbolic ref/i) { 
+      return undef;
+    } else {
+      die "git symbolic-ref $ref failed\n";
+    }
   }
 }
 
-if (!defined $message) {
-  die "no \$EDITOR\n" if !defined $ENV{EDITOR};  
-  my ($fh, $fn) = tempfile();
-  print $fh "\n#enter your commit message\n" ;
-  close $fh;
-  my $s = stat($fn) or die "stat failed: $!\n";
-  my $mtime = $s->mtime; 
-  run [$ENV{EDITOR}, $fn] or die "edior failed\n";
-  $s = stat($fn) or die "stat failed: $!\n";
-  die "message file not changed!\n" if $s->mtime == $mtime; 
-  open $fh, "<", $fn or die "open failed: $!\n";
-  local $/;
-  $message = <$fh>;
-  close $fh;
-  unlink $fn or die "unlink failed: $!\n";
+sub rev_parse {
+  my $ref = shift;
+  return runordie qw/git rev-parse/, $ref;
 }
 
-$message =~ s/^\s*#.*$//gm; 
-$message =~ s/\s*$/\n\n/;
-$message .= "--- git-packrat branch list ---\n"; 
-$message .= $branchlist; 
-
-runordie qw:git symbolic-ref HEAD refs/heads/archive:;
-my $git_dir = runordie qw/sh -c/, '. git-sh-setup; echo $GIT_DIR'; 
-unlink "$git_dir/index" or die "couldn't remove index: $!\n";
-
-if (!defined $branches{archive}) {
-  runordie qw/git commit --allow-empty -m/, "git-packrat initial commit"; 
+sub update_ref {
+  my ($ref, $new) = @_;
+  runordie qw/git update-ref/, $ref, $new
 }
 
-open MH, ">", "$git_dir/MERGE_HEAD" or die "couldn't open MERGE_HEAD: $!\n";
-my @tomerge = sort { return -1 if $a eq 'archive'; return 1 if $b eq 'archive'; return 0 } keys %branches;
-print MH "$branches{$_}\n" for @tomerge;
-close MH;
-runordie qw/git commit --allow-empty -m/, $message;
-runordie qw/git checkout -f /, $curbranch;
+sub update_symbolic_ref {
+  my ($ref, $new) = @_;
+  runordie qw/git symbolic-ref/, $ref, $new
+}
+
+my @refs = ls_refs;
+
+my $timestamp = mktimestamp;
+
+my $prefix = "refs/packrat/$timestamp/";
+my $prefixre = quotemeta $prefix; 
+for (@refs) {
+  die "wait a minute!\n" if /^$prefixre/;
+}
+
+@refs = grep {  m:^refs/: } @refs;
+@refs = grep { !m:^refs/remotes/: } @refs;
+@refs = grep { !m:^refs/packrat/: } @refs;
 
 
-
+for (@refs) {
+  my $readlink = symbolic_ref $_;
+  my $aref = $prefix . $_; 
+  if (defined $readlink) {
+    $readlink = $prefix . $readlink;
+    print "$aref = $readlink\n";
+    update_symbolic_ref $aref, $readlink;
+  } else {
+    my $sha = rev_parse $_; 
+    print "$aref = $sha\n";
+    update_ref $aref, $sha;
+  }
+}
+  

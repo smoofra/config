@@ -3,6 +3,11 @@
 use IPC::Run qw/run start finish/;
 use Getopt::Long;
 
+my $dryrun = 0;
+Getopt::Long::Configure ("bundling");
+GetOptions ("dry-run" => \$dryrun,
+           ) or die "couln't get options $!";
+
 sub mktimestamp {
   my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
   sprintf "%4d-%02d-%02d_%02d-%02d", $year +1900,$mon+1,$mday,$hour,$min;
@@ -70,6 +75,7 @@ for (@refs) {
 @refs = grep {  m:^refs/: } @refs;
 @refs = grep { !m:^refs/remotes/: } @refs;
 @refs = grep { !m:^refs/packrat/: } @refs;
+@refs = grep { !m/\^\{\}/ } @refs;
 
 
 for (@refs) {
@@ -78,11 +84,11 @@ for (@refs) {
   if (defined $readlink) {
     $readlink = $prefix . $readlink;
     print "$aref = $readlink\n";
-    update_symbolic_ref $aref, $readlink;
+    update_symbolic_ref $aref, $readlink unless $dryrun;
   } else {
     my $sha = rev_parse $_; 
     print "$aref = $sha\n";
-    update_ref $aref, $sha;
+    update_ref $aref, $sha unless $dryrun;
   }
 }
   

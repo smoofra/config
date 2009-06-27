@@ -2,5 +2,13 @@
         pager = cat
 
 [user]
-	name = Larry D'Anna
+	name = "Larry D'Anna"
 	email = larry@elder-gods.org
+
+[sendemail]
+        chainreplyto = false
+
+
+
+
+

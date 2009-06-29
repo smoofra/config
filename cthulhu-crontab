@@ -26,7 +26,10 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/usr/lib/git-core
 0,10,20,30,40,50 * * * * /home/larry/lisp/blog/check
 0,10,20,30,40,50 * * * * /home/larry/bin/checkreader
 0,10,20,30,40,50 * * * * /home/larry/config/startsocat
-0,10,20,30,40,50 * * * * /home/larry/bin/monitor_mailbox -d  -p /home/larry/.mmpid =inbox /home/larry/Maildir/ /home/larry/.http-notification/inbox 
+
+
+0,10,20,30,40,50 * * * * /home/larry/bin/monitor_mailbox -d  -p /home/larry/.mmpid  =inbox /home/larry/Maildir/      /home/larry/.http-notification/inbox 
+0,10,20,30,40,50 * * * * /home/larry/bin/monitor_mailbox -d  -p /home/larry/.mmpid2 =lisp  /home/larry/Maildir/.lisp /home/larry/.http-notification/lisp 
 
 0 15 * * 5  /home/larry/bin/remind fill out your timesheet NOW
 0 15 15 * * /home/larry/bin/remind pay student loan, credit cards NOW

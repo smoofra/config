@@ -39,3 +39,11 @@ setkey article article_page_down                 "d"
 setkey article article_page_up                   "u" 
 setkey article article_line_down               "j"
 setkey article article_line_up                 "k"
+
+setkey article delete_thread                   "^t"
+
+
+setkey article quit "Q"
+setkey article hide_article "q"
+setkey article hide_article "h"
+

@@ -9,6 +9,18 @@
         chainreplyto = false
 
 
+[alias]
+        dlog = log --date=relative --pretty=fuller
+
+
+# [alias]
+#         ws=  ! git-ls-files -c -m | xargs -n10 -d\\\\n perl -i -pe 's/\\s*$/\\n/' 
+
+
+
+
+
+
 
 
 

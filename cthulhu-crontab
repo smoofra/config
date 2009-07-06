@@ -4,7 +4,7 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/usr/lib/git-core
 
 0  * * * *  /home/larry/bin/scanspam-maildir
 30 5 * * *  /home/larry/bin/cleanspam-maildir
-30 6 * * *  /home/larry/bin/quiet-git-commit /home/larry/Maildir
+30 6 * * *  /home/larry/bin/quiet-git-commit --git-dir /home/larry/Maildir.git /home/larry/Maildir
 0 0 * * *   /home/larry/repos/slime-tracker/.git/import
 0 0 * * *   /home/larry/delicious/update.pl
 0 0 * * *   /home/larry/scuttlebackup/update

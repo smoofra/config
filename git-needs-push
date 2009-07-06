@@ -1,13 +1,12 @@
 #!/usr/bin/perl -w
 
-use IPC::Run qw/run start finish/;
+use IPC::Run qw/run start finish harness/;
 use Data::Dumper;
 
 use Getopt::Long;
 Getopt::Long::Configure ("bundling");
-my ($quiet, $fetch);
-GetOptions ("fetch|f" => \$fetch, 
-            "quiet|q" => \$quiet, 
+my ($quiet);
+GetOptions ("quiet|q" => \$quiet, 
             "chdir|C=s" => sub { chdir $_[1] or die "can't chdir to $_[1]: $!\n"; })
   or die "couldn't get options $!\n";
 
@@ -16,6 +15,19 @@ sub runordie {
   my $message;
   run [@_], '>', \$message, '2>&1'
     or die join(' ', @_) . " failed:\n$message\n";
+  return $message; 
+}
+
+sub runordieE {
+  my $message = '';
+  my $output = '';
+  my $cmd = join(' ', @_); 
+  my $harness = harness([@_], '>', \$output, '2>', \$message);
+  $harness->start;
+  $harness->finish;
+  die join(' ', @_) . " failed:\n$message\n" if $message ne ''; 
+  chomp $output; 
+  return $output; 
 }
 
 sub parseCommit {
@@ -61,52 +73,114 @@ sub revparse {
   return $hash;
 }
 
-  
 
-runordie qw/git fetch/ if $fetch;
-
-my $h = start [qw:git log --pretty=raw -z origin/master:], '>pipe', \*LOG, '2>&1'
-  or die $!;
-
-my %commits; 
-while (defined ($_ = readRecord \*LOG)) {
-  my $commit = parseCommit($_);
-  $commits{$commit->{commit}} = $commit;
-}
-finish $h or die $!;
-
-
-sub lookup {
-  my $hash = shift;
-  die "couldn't find commit $hash\n" unless defined $commits{$hash};
-  return  $commits{$hash};
+sub find_push_remote {
+  my $bo = runordie qw/git branch/;
+  my $curbranch; 
+  $curbranch = $1 if $bo =~ /^\* \s (.*)$/mx;
+  my $remote = 'origin';
+  if (defined $curbranch) {
+    my $co = runordieE qw/git config --get/, "branch.$curbranch.remote";
+    $remote = $co if $co ne '';
+  }
+  return $remote; 
 }
 
-my $master = revparse 'master';
-my $originmaster = revparse 'origin/master';
+sub lookup_remote_ref {
+  my ($ref, $remote) = @_;
+  my $out = runordie qw/ git ls-remote /, $remote, $ref ;
+  return undef if $out eq ''; 
+  my $refre = quotemeta $ref; 
+  $out =~ /([0-9a-f]{40}) \t $refre \s* $/xi or die "bad output from git ls-remote";
+  return $1; 
+}
 
-my %visited; 
-my @tosearch = $originmaster;
+sub needs_push {
+  my ($from, $to) = @_;
+  my $message; 
+  my $h = start [qw:git log --pretty=raw -z:, $to], '>pipe', \*LOG, '2>', \$message
+    or die $!;
 
-while (@tosearch) {
-  my $hash = shift @tosearch;
-  if ($hash eq $master) {
-    if ($quiet) {
-      exit 1; 
-    } else {
-      print "no\n";
-      exit 0;
+  my %commits;
+
+  my $lookup = sub {
+    my $hash = shift;
+    die "couldn't find commit $hash\n" unless defined $commits{$hash};
+    return  $commits{$hash};
+  };
+
+  while (defined ($_ = readRecord \*LOG)) {
+    my $commit = parseCommit($_);
+    $commits{$commit->{commit}} = $commit;
+  }
+  finish $h or die "git log failed\n"; 
+
+  my %visited; 
+  my @tosearch = $to;
+
+  while (@tosearch) {
+    my $hash = shift @tosearch;
+    if ($hash eq $from) {
+      return 0; 
+    }
+    $visited{$hash} = 1;
+    my $c = $lookup->($hash);
+    for $p (@{$c->{parents}}) {
+      next if $visited{$p};
+      push @tosearch, $p;
     }
   }
-  $visited{$hash} = 1;
-  my $c = lookup $hash;
-  for $p (@{$c->{parents}}) {
-    next if $visited{$p};
-    push @tosearch, $p;
-  }
+  return 1;
 }
 
-print "yes\n" unless $quiet;
-exit 0;
+my $message;
+my $out; 
+run [qw/git push --dry-run --porcelain/], '>', \$out, '2>', \$message;
+my $ec = $?;
+my @out = split /\n/, $out;
+if (($ec != 0 && $ec != 256) ||
+    ($ec == 256 && @out ==0)) {
+  print STDERR "git push failed, output follows:\n\n";
+  print STDERR $message;
+  exit 1;
+}
+
+my $needspush; 
+my $remote = find_push_remote;
+
+for my $line (@out) {
+  my ($flag, $refspec, $message) = split /\t/, $line;
+  if ($refspec =~ /^:/) {
+    $needspush = 1;
+    print "yes $refspec\n" unless $quiet; 
+    next;
+  }
+  $refspec =~ /^ [^:]+ : [^:]+ $/x or die "bad refspec: $refspec\n"; 
+  my ($from, $to) = split /:/, $refspec;
+  my $fromsha = revparse $from;
+  my $tosha = lookup_remote_ref $to, $remote;
+  if (!defined $tosha) {
+    $needspush = 1;
+    print "yes $refspec\n" unless $quiet; 
+    next;
+  }
+  my $error; 
+  run [qw/git log -n1 --pretty=format:/, $tosha], '>', \$error, '2>&1';
+  if ($error =~ /bad object/i) {
+    runordie qw/git fetch/, $remote, $to;
+  }
+  my $np =  needs_push $fromsha, $tosha;
+  print (($np ? "yes " : "no  "), $refspec, "\n") unless $quiet; 
+  $needspush ||= $np; 
+}  
+  
+  
+if ($quiet) {
+  exit $needspush ? 0 : 1;
+} else {
+  #print $needspush ? "yes\n" : "no\n";
+  exit 0; 
+}
+
 
 

@@ -176,7 +176,7 @@ for my $line (@out) {
   
   
 if ($quiet) {
-  exit $needspush ? 0 : 1;
+  exit ($needspush ? 0 : 1);
 } else {
   #print $needspush ? "yes\n" : "no\n";
   exit 0; 

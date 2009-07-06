@@ -91,7 +91,7 @@ sub lookup_remote_ref {
   my $out = runordie qw/ git ls-remote /, $remote, $ref ;
   return undef if $out eq ''; 
   my $refre = quotemeta $ref; 
-  $out =~ /([0-9a-f]{40}) \t $refre \s* $/xi or die "bad output from git ls-remote";
+  $out =~ /^ ([0-9a-f]{40}) \t $refre \s* $/mxi or die "bad output from git ls-remote:\n$out";
   return $1; 
 }
 

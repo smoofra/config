@@ -12,6 +12,9 @@
 [alias]
         dlog = log --date=relative --pretty=fuller
 
+[push]
+        default = matching
+
 
 # [alias]
 #         ws=  ! git-ls-files -c -m | xargs -n10 -d\\\\n perl -i -pe 's/\\s*$/\\n/' 

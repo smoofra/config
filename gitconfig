@@ -11,9 +11,13 @@
 
 [alias]
         dlog = log --date=relative --pretty=fuller
+        tpush = push --dry-run --summary
+        fetchs = fetch --summary
 
 [push]
         default = matching
+
+
 
 
 # [alias]

@@ -176,6 +176,11 @@
   (setq slime-net-coding-system 'utf-8-unix)
   (slime-setup)
   
+  
+  (def-slime-selector-method ?j
+    "next erc channel"
+    (erc-next-channel))
+  
   (def-slime-selector-method ?o
 	"*Shell Command Output*"
 	(get-buffer "*Shell Command Output*"))

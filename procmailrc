@@ -97,6 +97,10 @@ $MAILDIR/.madman/
 *^List-Id: .*slime-devel
 $MAILDIR/.lisp/
 
+:0
+*^List-ID: <git.vger.kernel.org>
+$MAILDIR/.git/ 
+
 
 :0
 *^List-Id: .*sbcl-devel

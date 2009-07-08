@@ -5,8 +5,11 @@ set realname "Larry D'Anna"
 
 set replyto  "Larry D'Anna <larry@elder-gods.org"
 
-server "news.gmane.org" ".jnewsrc"
+server "news.gmane.org" ".jnewsrc-gmane"
+server "news.eternal-september.org" ".jnewsrc-september"
 
+
+include .slrnrc.pass 
 
 %
 %% 10. Group mode key bindings

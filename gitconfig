@@ -12,7 +12,7 @@
 [alias]
         dlog = log --date=relative --pretty=fuller
         tpush = push --dry-run --summary
-        fetchs = fetch --summary
+        f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary
 
 [push]
         default = matching

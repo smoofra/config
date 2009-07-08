@@ -62,13 +62,14 @@ channel.  Assumes it will only be called when current-buffer
 is in `erc-mode'."
   (lexical-let* ((this-channel (or (erc-default-target)
                                    (buffer-name (current-buffer))))
-                 (excluded (or (member this-channel erc-track-exclude)
-                               (and erc-track-exclude-server-buffer
-                                    (erc-server-buffer-p))
-                               (erc-message-type-member
-                                (or (erc-find-parsed-property)
-                                    (point-min))
-                                erc-track-exclude-types))))
+                 (chanexcluded (or (member this-channel erc-track-exclude)
+                                   (and erc-track-exclude-server-buffer
+                                        (erc-server-buffer-p))))
+                 (excluded     (or chanexcluded 
+                                   (erc-message-type-member
+                                    (or (erc-find-parsed-property)
+                                        (point-min))
+                                    erc-track-exclude-types))))
     (cond
      ((and (not excluded)
            (not (erc-buffer-visible (current-buffer))))
@@ -88,7 +89,7 @@ is in `erc-mode'."
                          (erc-track-add-channel-to-alist buffer this-channel faces)))))
       (erc-track-rm-channel-from-alist (current-buffer)))
      ((and (or (erc-buffer-visible (current-buffer))
-               excluded))
+               chanexcluded))
       (erc-track-rm-channel-from-alist (current-buffer))))))
 
 (setq erc-buffer-activity-timeout 300)

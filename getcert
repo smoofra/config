@@ -1,0 +1,18 @@
+#!/bin/bash
+
+out=`tempfile`
+err=`tempfile`
+
+if openssl s_client -connect $1 </dev/null 2>$err >$out; then
+    openssl x509 -text < $out
+    rm -f $err $out 
+else
+    echo openssl failed:
+    echo
+    cat $err
+    rm -f $err $out
+fi
+
+
+
+    

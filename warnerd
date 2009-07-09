@@ -15,7 +15,10 @@ $response->is_success or die "request failed: " . $response->status_line;
 
 $grove_builder = XML::Grove::Builder->new or die;
 $parser = XML::Parser::PerlSAX->new ( Handler => $grove_builder ) or die;
-$document = $parser->parse ($response->content) or die;
+
+$_ = $response->content;
+s/^ \s*//x;
+$document = $parser->parse ($_) or die;
 
 
 sub incat {

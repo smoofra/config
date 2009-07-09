@@ -15,16 +15,11 @@
         dlog = log --date=relative --pretty=fuller
         tpush = push --dry-run --summary
         s = status
-        f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary
+        b = branch -v
+        f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary=200
 
 [push]
         default = matching
-
-
-
-
-# [alias]
-#         ws=  ! git-ls-files -c -m | xargs -n10 -d\\\\n perl -i -pe 's/\\s*$/\\n/' 
 
 
 

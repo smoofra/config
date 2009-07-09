@@ -1,0 +1,102 @@
+#!/usr/bin/perl -w
+
+use IPC::Run qw/run/;
+use Getopt::Long;
+use File::Temp;
+use Net::NNTP;
+
+my $jnewsrc = "$ENV{HOME}/.jnewsrc-september";
+my $passfile = "$ENV{HOME}/.slrnrc.pass";
+my $outfile = "$ENV{HOME}/.http-notification/news";
+
+sub map2 (&@) {
+  my $sub = shift;
+  my @r;
+  while (@_) {
+    local $a = shift;
+    local $b = shift;
+    push @r, $sub->();
+  }
+  return @r;
+}
+
+sub sset_parse {
+  my $ranges = shift;
+  my @ranges = split /,/, $ranges;
+  my @ret;
+  for my $range (@ranges) {
+    $range =~ /(\d+) - (\d+)/x or die "bad range: $range\n";
+    my ($from, $to) = ($1, $2);
+    push @ret, $from, $to;
+  }
+  return [@ret];
+}
+
+sub range_diff {
+  my ($al, $ar, $bl, $br) = @_;
+  if ($br < $al || $bl > $ar) {
+    return ($al, $ar);
+  }
+  if ($bl <= $al && $br >= $ar) {
+    return ();
+  }
+  if ($bl > $al && $br < $ar) {
+    return ($al, $bl-1, $br+1, $ar);
+  }
+  if ($bl <= $al) {
+    return ($br+1, $ar);
+  }
+  if ($br >= $ar) {
+    return ($al, $bl-1);
+  }
+  die "WTF $al $ar $bl $br";
+}
+
+
+
+use Data::Dumper;
+
+#return $a - $b
+sub sset_diff {
+  my ($a, $b) = @_;
+  my @a = @$a;
+  my @b = @$b;
+  while (@b) {
+    my $bl = shift @b;
+    my $br = shift @b;
+    @a = map2 { range_diff $::a, $::b, $bl, $br } @a;
+  }
+  return [@a];
+}
+
+
+open JNEWSRC, '<', $jnewsrc or die "can't open $jnewsrc: $!\n";
+
+open PASS, '<', $passfile or die "can't open $passfile";
+$_ = do {local $/; <PASS>};
+close PASS;
+my ($server, $username, $pass) =  /^ nnrpaccess \s* "([^"]+)" \s+ "([^"]+)" \s+ "([^"]+)" /xm;
+defined $pass or die "can't find server info\n";
+my $nntp = Net::NNTP->new($server) or die "can't connect: $!\n";
+$nntp->authinfo($username, $pass) or die "auth failed\n";
+
+my @unread;
+
+while (<JNEWSRC>) {
+  next if /!/;
+  /^ ([^:]+) : \s* ([-0-9,]+) \s* $/x or die "bad jnewsrc line:\n$_\n";
+  my ($group, $ranges) = ($1, $2);
+  $nntp->group($group) or die "server doesn't like $group\n";
+  my ($num, $first, $last) = $nntp->group($group);
+  my $diff = sset_diff [$first, $last], (sset_parse $ranges);
+  if (@$diff) {
+    push @unread, $group;
+    #print "$group: ", join(' ', map2 {"$a-$b"} @$diff), "\n";
+  }
+}
+$nntp->quit();
+
+open OUT, '>', $outfile or die "can't open $outfile\n";
+print OUT 'news' if @unread;
+close OUT;
+exit 0;

@@ -23,6 +23,14 @@ alias rerc='. ~/config/bashrc'
 alias sr='. ~/.transient-environment'
 alias ls='ls --color=auto'
 alias bsg='mplayer -idx -softvol -softvol-max 1000'
-alias gname='env NNTPSERVER=news.gmane.org HOSTNAME=cthulhu.elder-gods.org slrn'
-#alias news='env NNTPSERVER=textnews.news.cambrium.nl HOSTNAME=cthulhu.elder-gods.org slrn'
-alias slrn='env NNTPSERVER=news.eternal-september.org HOSTNAME=cthulhu.elder-gods.org slrn'
+
+function gmane() { 
+    /usr/bin/slrn -h news.gmane.org "$@"
+}
+
+function slrn() { 
+    /usr/bin/slrn -h news.eternal-september.org "$@"
+    bak checknews
+}
+
+

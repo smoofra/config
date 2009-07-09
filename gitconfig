@@ -10,8 +10,11 @@
 
 
 [alias]
+        dc = diff --color
+        dw = diff --color-words
         dlog = log --date=relative --pretty=fuller
         tpush = push --dry-run --summary
+        s = status
         f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary
 
 [push]

@@ -17,6 +17,9 @@
         s = status
         b = branch -v
         f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary=200
+	wsfix = "!\n. \"$(git --exec-path)\"/git-sh-setup\nif git-diff --quiet --exit-code; then\n    if git diff --cached --check >/dev/null; then\n        exit 0;\n    fi\n    echo fixing\n    git diff --cached > $GIT_DIR/wsfix.diff\n    git apply -R $GIT_DIR/wsfix.diff\n    git apply --whitespace=fix $GIT_DIR/wsfix.diff\n    rm -f $GIT_DIR/wsfix.diff\nelse\n    echo wokring tree is dirty\\!\nfi\n"
+
+
 
 [push]
         default = matching

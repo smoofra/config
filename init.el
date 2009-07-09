@@ -1487,6 +1487,7 @@
 ;;   (next-line))
 
 (require 'erc)
+(require 'erc-track)
 (progn
   (load "erc-track-patch")
   (add-hook 'erc-mode-hook '(lambda () (setq jk-implies-readonly nil)))

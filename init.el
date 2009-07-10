@@ -176,6 +176,11 @@
   (setq slime-net-coding-system 'utf-8-unix)
   (slime-setup)
   
+  
+  (def-slime-selector-method ?j
+    "next erc channel"
+    (erc-next-channel))
+  
   (def-slime-selector-method ?o
 	"*Shell Command Output*"
 	(get-buffer "*Shell Command Output*"))
@@ -545,6 +550,7 @@
 (global-set-key [(f7)] 'chat-yourmom)
 (global-set-key [(f8)] 'chat-mgwyer)
 (global-set-key [(f9)] 'chat)
+(global-set-key [(f10)] 'erc-next-channel)
 (global-set-key [(control x) (f12)] 'bury-all)
 
 (global-set-key [(f2)]     'next-error)
@@ -1047,12 +1053,12 @@
     (define-key slime-inspector-mode-map "l" 'slime-inspector-pop)
     (define-key slime-inspector-mode-map "D" 'slime-inspector-describe)
     (define-key slime-mode-map "\M-." 'my-slime-edit-definition)
-    (slime-define-key "\M-c" 'my-unhighlight)
-    (slime-define-key "\t" 'slime-indent-and-complete-symbol)  
-    (slime-define-key [(control tab)]   'tab-to-tab-stop)
+    (define-key slime-mode-map "\M-c" 'my-unhighlight)
+    (define-key slime-mode-map "\t" 'slime-indent-and-complete-symbol)  
+    (define-key slime-mode-map [(control tab)]   'tab-to-tab-stop)
     (define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression)
-    (slime-define-key "\C-ce" 'slime-insert-expand-last-expression)
-    (slime-define-key "\M-/" 'slime-fuzzy-complete-symbol)
+    (define-key slime-mode-map "\C-ce" 'slime-insert-expand-last-expression)
+    (define-key slime-mode-map "\M-/" 'slime-fuzzy-complete-symbol)
     (define-key slime-repl-mode-map "\M-/" 'slime-fuzzy-complete-symbol)
     (define-my-lisp-keys-on-map slime-mode-map)
     (define-my-lisp-keys-on-map slime-repl-mode-map)
@@ -1483,11 +1489,13 @@
 ;;   (next-line))
 
 (require 'erc)
+(require 'erc-track)
 (progn
   (load "erc-track-patch")
   (add-hook 'erc-mode-hook '(lambda () (setq jk-implies-readonly nil)))
   (erc-scrolltobottom-enable)
   (add-hook 'erc-join-hook 'bitlbee-identify)
+  (add-hook 'erc-after-connect 'wjoe-identify)
   ;;(define-key erc-mode-map "\M-q" 'silly-scroll-down-one-hack )
   (setq erc-auto-query 'buffer)
   (define-key erc-mode-map [home]  'SDO))
@@ -1501,6 +1509,12 @@
 (defun erc-track-string ()
   (strjoin "," (mapcar (lambda (x) (buffer-name (car x))) erc-modified-channels-alist)))
 
+(defun erc-next-channel ()
+  (interactive)
+  (erc-user-is-active)
+  (when erc-modified-channels-alist
+    (switch-to-buffer (caar erc-modified-channels-alist))))
+
 (defun erc-record-track ()
   (interactive)
   (call-process "notify" nil nil nil "-p" "--file" "/home/larry/.http-notification/erctrack" (erc-track-string)))
@@ -1509,10 +1523,19 @@
 
 (defun bitlbee-identify ()
   "If we're on the bitlbee server, send the identify command to the #bitlbee channel."
-  (when (and (string= "localhost" erc-session-server)
-             (= 7777 erc-session-port)
-             (string= "&bitlbee" (buffer-name)))
+  (when (ignore-errors 
+          (and (string= "localhost" erc-session-server)
+               (= 7777 erc-session-port)
+               (string= "&bitlbee" (buffer-name))))
     (erc-message "PRIVMSG" (format "%s identify %s" (erc-default-target) my-stupid-passwd))))
+
+(defun wjoe-identify (&rest x)
+  "If we're on wjoe, send the identify command to NickServ channel."
+  (when (ignore-errors
+          (and (string= "localhost" erc-session-server)
+               (string= erc-session-port "ircd")
+               (string= "localhost:ircd" (buffer-name))))
+    (erc-message "PRIVMSG" (format "NickServ identify %s" my-stupid-passwd))))
 
 (setq manual-program  "man")
 

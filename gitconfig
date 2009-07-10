@@ -23,6 +23,10 @@
 	ec = "!sh -c 'tmp=`tempfile`; git config \"$@\" >$tmp && $EDITOR $tmp && git config \"$@\" \"$(cat $tmp)\" && rm -f $tmp' - "
 	egc = ! git ec --file ~/.gitconfig
 
+        lsf = ls-files --exclude-standard --directory
+
+        one = log --oneline --left-right
+
 
 
 [push]

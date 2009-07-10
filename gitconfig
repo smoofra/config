@@ -1,3 +1,7 @@
+# -*- mode: conf-unix -*-
+
+
+
 [core]
         pager = cat
 

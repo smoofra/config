@@ -609,6 +609,8 @@
 (global-set-key "\C-r" 'isearch-backward-regexp)
 (global-set-key "\C-v" 'jk-mode)
 (global-set-key "\M-j" 'jk-mode)
+;;; \C--
+(global-set-key (quote [67108909]) 'toggle-truncate-lines)
 
 
 ;(global-set-key   "\M-\C-z"   'scroll-up-half)

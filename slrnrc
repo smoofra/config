@@ -3,7 +3,7 @@ set username "larry"
 set hostname "elder-gods.org"
 set realname "Larry D'Anna"
 
-set replyto  "Larry D'Anna <larry@elder-gods.org"
+set replyto  "Larry D'Anna <larry@elder-gods.org>"
 
 server "news.gmane.org" ".jnewsrc-gmane"
 server "news.eternal-september.org" ".jnewsrc-september"

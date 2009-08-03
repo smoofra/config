@@ -1,39 +1,29 @@
 
-# ============================================================
-# Fwiffo's .nethackrc
-# ============================================================
+OPTIONS=ignintr
 
-# == Try these for a while ===================================
 OPTIONS=!cmdassist,!help,suppress_alert:3.4.3,showrace,hpmon
-# so I can lay eggs if polymorphed
-# OPTIONS=gender:female
+OPTIONS=gender:female
 
-# == Do some stuff automatically =============================
+
 OPTIONS=autodig,autopickup
-# !!DANGEROUS!! could quiver cursed/unknown
 OPTIONS=autoquiver
 OPTIONS=pickup_types:$="+!?/
 
-# == Make things look nice ===================================
 OPTIONS=color,DECgraphics,hilite_pet,lit_corridor
 OPTIONS=standout,use_inverse
 OPTIONS=menustyle:full,sortloot:full
 OPTIONS=menu_headings:inverse
 
-# == Show extra stuff ========================================
 OPTIONS=showexp,showscore,time
 OPTIONS=disclose:+i +a +v +g +c 
 OPTIONS=scores:5 top scores/4 around my score/own scores
 
-# == Custom names=============================================
 OPTIONS=catname:murkey
-OPTIONS=dogname:Dog
-OPTIONS=horsename:Stranger
+OPTIONS=dogname:dog
+OPTIONS=horsename:anonymous
 OPTIONS=boulder:0
-#OPTIONS=fruit:can of whoop-ass
-#OPTIONS=runmode:walk
 
-# == Miscellaneous ===========================================
+
 OPTIONS=mail,silent,checkpoint
 OPTIONS=msg_window:full
 
@@ -56,7 +46,6 @@ OPTIONS=msg_window:full
 #
 #TRAPS=   0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 226 0 0 0 0
 
-# == Config for the menucolors patch =========================
 OPTIONS=menucolors
 
 # Blessed, cursed and uncursed

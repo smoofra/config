@@ -22,7 +22,7 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/home/larry/usr/l
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/lesswrong /home/larry/public_html/lesswrong.rss
 
 
-0,30 * * * *   /home/larry/bin/checknews
+#0,30 * * * *   /home/larry/bin/checknews
 
 0,10,20,30,40,50 * * * * daemonize -p /home/larry/.sage.pid sage -notebook port=8082
 0,10,20,30,40,50 * * * * /home/larry/lisp/blog/check

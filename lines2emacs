@@ -1,0 +1,28 @@
+#!/usr/bin/perl -w
+
+use IPC::Run qw/run/;
+use File::Temp qw/tempfile/;
+use Getopt::Long;
+
+Getopt::Long::Configure ("bundling");
+my $var = 'foo'; 
+GetOptions ("var|v=s" => \$var) or die "couln't get options $!";
+
+my @lisplines;
+while (<>) {
+  chomp;
+  my @nums = unpack "C*", $_;
+  push @lisplines, sprintf "(concat '(%s))", join(' ', @nums);
+}
+
+my ($fh, $filename) = tempfile();
+printf $fh "(setq %s (list \n%s\n))", $var, join("\n", @lisplines);
+close $fh;
+my $lisp = qq:(load-file "$filename"):; 
+
+my @command = (qw/emacsclient -e/, $lisp);
+
+run [@command], qw: > /dev/null 2> /dev/null : or die "emacsclient failed!\n";
+
+unlink $filename or die "cannot delete $filename\n";
+

@@ -1,0 +1,22 @@
+#!/usr/bin/perl -w
+
+$ENV{PATH} = $ENV{NOT_FUCKED_PATH} if defined $ENV{NOT_FUCKED_PATH};
+
+sub lquote {
+  my $x = shift;
+  $x =~ s/\\/\\\\/g;
+  $x =~ s/"/\\"/g;
+  return qq:"$x":;
+}
+use Getopt::Long;
+Getopt::Long::Configure ("bundling");
+my $woman; 
+GetOptions ("woman|w" => \$woman) or die "couln't get options $!";
+my $man = $woman ? 'woman' : 'man';
+my $lisp; 
+die "usage: eman [-w|--woman] <topic>\n" unless @ARGV;
+$lisp = sprintf "($man %s)", lquote(join ' ', @ARGV); 
+
+@command = (qw: emacsclient -a eless-alternate-editor --eval :, $lisp);
+!(system @command) or die "emacsclient failed\n"; 
+

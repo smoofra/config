@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [[   -z "$(git-diff-index --cached --name-only HEAD)" && -z "$(git-ls-files --exclude-standard --others)" && -z "$(git-diff-files --name-only)" ]]; then 
+    exit 0
+else 
+    exit 1
+fi
+

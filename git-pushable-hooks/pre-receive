@@ -1,0 +1,33 @@
+#!/bin/bash
+
+wd=`pwd`
+me=$0
+while readlink "$me" >/dev/null; do
+    l=`readlink "$me"`
+    cd $(dirname "$l")
+    me=$(basename "$l")
+done;
+PATH=`pwd`/..:$PATH
+cd "$wd"
+
+
+cd .. 
+export GIT_DIR=.git 
+
+
+if ! git-clean-p; then 
+    echo working directory or index is not clean, cannot push >&2 
+    exit 1
+fi
+
+
+exit 0
+ 
+
+
+
+
+
+
+
+

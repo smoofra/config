@@ -1,6 +1,13 @@
 #!/bin/bash
 
-export PATH=$(dirname $0):$PATH
+export PATH=$(dirname $0):/usr/lib/git-core:$PATH
+
+if [[ $1 == '--git-dir' ]]; then 
+    shift;
+    export GIT_DIR="$1"
+    shift;
+fi;
+
 
 if [[ $1 == '' ]]; then
     echo 'useage: quiet-git-commit <dir>'

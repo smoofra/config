@@ -1,0 +1,47 @@
+#!/usr/bin/perl -w
+
+$fn = "$ENV{HOME}/.http-notification/reader"; 
+$gr_user = '';
+$gr_pass = '';
+
+require "$ENV{HOME}/.googlereader";
+
+  
+use WebService::Google::Reader;
+
+my $reader = WebService::Google::Reader->new(username => $gr_user,
+                                             password => $gr_pass,
+                                            ) ; 
+
+my @counts = $reader->counts;
+
+die "couldn't connect to google reader: " . $reader->error . "\n" if defined $reader->error; 
+
+
+my $n = 0; 
+
+for $count (@counts) {
+  next unless $count->{id} =~ /reading-list$/;
+  $n = $count->{count}
+}
+
+
+open IN, "<", $fn or die $!;
+my $foo = <IN>;
+close IN;
+my $state = (defined $foo and $foo =~ /[^\s]/) ? 1 : 0; 
+
+if ($n && !$state) {
+  open OUT, ">", $fn or die $!;
+  print OUT "reader\n";
+  close OUT
+}
+
+if ($state && !$n) {
+  open OUT, ">", $fn or die $!;
+  close OUT
+}
+
+# use Data::Dumper;
+# print Dumper [@counts];
+

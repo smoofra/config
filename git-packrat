@@ -1,0 +1,94 @@
+#!/usr/bin/perl -w
+
+use IPC::Run qw/run start finish/;
+use Getopt::Long;
+
+my $dryrun = 0;
+Getopt::Long::Configure ("bundling");
+GetOptions ("dry-run" => \$dryrun,
+           ) or die "couln't get options $!";
+
+sub mktimestamp {
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+  sprintf "%4d-%02d-%02d_%02d-%02d", $year +1900,$mon+1,$mday,$hour,$min;
+}
+
+sub runordie {
+  my $message;
+  my $output; 
+  run [@_], '>', \$output, '2>', \$message
+    or die join(' ', @_) . " failed:\n$message\n";
+  chomp $output; 
+  return $output; 
+}
+
+sub ls_refs {
+  my $remote = '.';
+  $remote = shift if @_;
+  my $go = runordie qw/git ls-remote/, $remote;
+  return map { s/^[a-fA-F0-9]{40} \s+//x && ($_ ne '') or die "bad output from git ls-remote\n";
+               $_ }
+    split /\n/, $go;
+}
+
+sub symbolic_ref {
+  my $ref = shift;
+  my $ret;
+  my $er; 
+  if (run [qw/git symbolic-ref/, $ref], '>', \$ret, '2>', \$er) { 
+    chomp $ret; 
+    return $ret;
+  } else {
+    if ($er =~ /is not a symbolic ref/i) { 
+      return undef;
+    } else {
+      die "git symbolic-ref $ref failed\n";
+    }
+  }
+}
+
+sub rev_parse {
+  my $ref = shift;
+  return runordie qw/git rev-parse/, $ref;
+}
+
+sub update_ref {
+  my ($ref, $new) = @_;
+  runordie qw/git update-ref/, $ref, $new
+}
+
+sub update_symbolic_ref {
+  my ($ref, $new) = @_;
+  runordie qw/git symbolic-ref/, $ref, $new
+}
+
+my @refs = ls_refs;
+
+my $timestamp = mktimestamp;
+
+my $prefix = "refs/packrat/$timestamp/";
+my $prefixre = quotemeta $prefix; 
+for (@refs) {
+  die "wait a minute!\n" if /^$prefixre/;
+}
+
+@refs = grep {  m:^refs/: } @refs;
+@refs = grep { !m:^refs/remotes/: } @refs;
+@refs = grep { !m:^refs/packrat/: } @refs;
+@refs = grep { !m/\^\{\}/ } @refs;
+
+
+for (@refs) {
+  my $readlink = symbolic_ref $_;
+  my $aref = $prefix . $_; 
+  if (defined $readlink) {
+    $readlink = $prefix . $readlink;
+    print "$aref = $readlink\n";
+    update_symbolic_ref $aref, $readlink unless $dryrun;
+  } else {
+    my $sha = rev_parse $_; 
+    print "$aref = $sha\n";
+    update_ref $aref, $sha unless $dryrun;
+  }
+}
+  

@@ -26,7 +26,7 @@ sub scanspam {
   $out->close or die "couldn't close $outpath\n";
 }
 
-scanspam "$ENV{HOME}/Maildir/.spam.new", "$ENV{HOME}/Maildir/.spam", 'spam';
+scanspam "$ENV{HOME}/Maildir/.spam_new", "$ENV{HOME}/Maildir/.spam", 'spam';
 scanspam "$ENV{HOME}/Maildir/.notspam", "$ENV{HOME}/Maildir",        'good';
 
 

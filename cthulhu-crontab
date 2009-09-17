@@ -8,7 +8,7 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/home/larry/usr/l
 0 0 * * *   /home/larry/repos/slime-tracker/.git/import
 0 0 * * *   /home/larry/delicious/update.pl
 0 0 * * *   /home/larry/scuttlebackup/update
-0 1 * * *   /home/larry/bin/tvcron
+# 0 1 * * *   /home/larry/bin/tvcron
 
 
 0 1 * * *   (wget --quiet -O -  http://moto4lin.sourceforge.net/wiki/Category:Models | grep -qi vu204) && ~/bin/remind 'moto4lin works with your phone'
@@ -31,8 +31,8 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/home/larry/usr/l
 
 
 0,10,20,30,40,50 * * * * /home/larry/bin/monitor_mailbox -d  -p /home/larry/.mmpid  =inbox /home/larry/Maildir/      /home/larry/.http-notification/inbox 
-0,10,20,30,40,50 * * * * /home/larry/bin/monitor_mailbox -d  -p /home/larry/.mmpid2 =lisp  /home/larry/Maildir/.lisp /home/larry/.http-notification/lisp 
-0,10,20,30,40,50 * * * * /home/larry/bin/monitor_mailbox -d  -p /home/larry/.mmpid3 =git   /home/larry/Maildir/.git  /home/larry/.http-notification/git 
+#0,10,20,30,40,50 * * * * /home/larry/bin/monitor_mailbox -d  -p /home/larry/.mmpid2 =lisp  /home/larry/Maildir/.lisp /home/larry/.http-notification/lisp 
+#0,10,20,30,40,50 * * * * /home/larry/bin/monitor_mailbox -d  -p /home/larry/.mmpid3 =git   /home/larry/Maildir/.git  /home/larry/.http-notification/git 
 
 0 15 * * 5  /home/larry/bin/remind fill out your timesheet NOW
 0 15 15 * * /home/larry/bin/remind pay student loan, credit cards NOW

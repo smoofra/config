@@ -25,9 +25,13 @@ sub sset_parse {
   my @ranges = split /,/, $ranges;
   my @ret;
   for my $range (@ranges) {
-    $range =~ /(\d+) - (\d+)/x or die "bad range: $range\n";
-    my ($from, $to) = ($1, $2);
-    push @ret, $from, $to;
+    if ($range =~ /^\d+$/) {
+      push @ret, $range, $range; 
+    } else {
+      $range =~ /(\d+) - (\d+)/x or die "bad range: $range\n";
+      my ($from, $to) = ($1, $2);
+      push @ret, $from, $to;
+    }
   }
   return [@ret];
 }

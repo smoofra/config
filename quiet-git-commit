@@ -23,7 +23,7 @@ if [[ $? != 0 ]]; then
 fi;
 
 
-git-diff-index --cached --quiet HEAD 
+git diff-index --cached --quiet HEAD 
 r=$?
 
 if [[ $r == 0 ]]; then

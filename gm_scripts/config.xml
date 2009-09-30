@@ -14,4 +14,7 @@
 		<Include>http://www.google.com/reader/view/*</Include>
 		<Include>https://www.google.com/reader/view/*</Include>
 	</Script>
+	<Script filename="leadpaint_nav.user.js" name="leadpaint_nav" namespace="http://elder-gods.org/wtf" description="" enabled="true" basedir="leadpaint_nav">
+		<Include>http://www.leadpaintcomics.com/*</Include>
+	</Script>
 </UserScriptConfig>

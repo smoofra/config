@@ -17,4 +17,7 @@
 	<Script filename="leadpaint_nav.user.js" name="leadpaint_nav" namespace="http://elder-gods.org/wtf" description="" enabled="true" basedir="leadpaint_nav">
 		<Include>http://www.leadpaintcomics.com/*</Include>
 	</Script>
+	<Script filename="no_experts_exchange.user.js" name="No Experts Exchange" namespace="JRice" description="We HATES them, Exchange, dirty Expertsses!" enabled="true" basedir="no_experts_exchange">
+		<Include>http://www.google.com/*</Include>
+	</Script>
 </UserScriptConfig>

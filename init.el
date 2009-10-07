@@ -2204,7 +2204,11 @@
 
 (defun ffap ()
   (interactive)
-  (call-interactively 'find-file-at-point))
+  (if transient-mark-mode 
+      (progn
+        (transient-mark-mode)
+        (find-file (buffer-substring (region-beginning) (region-end))))
+    (call-interactively 'find-file-at-point)))
 
 
 (site-init-late)

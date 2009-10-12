@@ -1515,6 +1515,14 @@
   (when erc-modified-channels-alist
     (switch-to-buffer (caar erc-modified-channels-alist))))
 
+(defun nc ()
+  (interactive)
+  (erc-next-channel))
+
+(defun bs ()
+  (interactive)
+  (push 92 unread-command-events))
+
 (defun erc-record-track ()
   (interactive)
   (call-process "notify" nil nil nil "-p" "--file" "/home/larry/.http-notification/erctrack" (erc-track-string)))

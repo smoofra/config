@@ -120,6 +120,24 @@ $MAILDIR/.math/
 
 
 :0
+* To:.*colloq@math.umd.edu
+* !^To:.*elder-gods.org
+* !^To:.*smoofra@gmail.com
+* !^Cc:.*elder-gods.org
+* !^Cc:.*smoofra@gmail.com
+$MAILDIR/.math/
+
+
+:0
+* Cc:.*colloq@math.umd.edu
+* !^To:.*elder-gods.org
+* !^To:.*smoofra@gmail.com
+* !^Cc:.*elder-gods.org
+* !^Cc:.*smoofra@gmail.com
+$MAILDIR/.math/
+
+
+:0
 *^List-Subscribe: .*madman
 $MAILDIR/.madman/
 

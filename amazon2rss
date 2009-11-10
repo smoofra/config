@@ -3,7 +3,9 @@
 $token = '';
 $secret = '';
 
-@authors = ('Anthony Bourdain',
+@authors = (
+            'Charles Stross', 
+            'Anthony Bourdain',
             'Michael Ruhlman',
             'Alastair Reynolds',
             'John Scalzi',

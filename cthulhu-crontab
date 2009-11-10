@@ -14,6 +14,9 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/home/larry/usr/l
 0 1 * * *   (wget --quiet -O -  http://moto4lin.sourceforge.net/wiki/Category:Models | grep -qi vu204) && ~/bin/remind 'moto4lin works with your phone'
 
 
+0 1 * * * /home/larry/bin/amazon2rss -o /home/larry/public_html/amazon.rss -q 
+
+
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/watcher/watcher update
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/boc2rss /home/larry/public_html/boc.rss
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/ronpaul2rss /home/larry/public_html/ronpaul.rss

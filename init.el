@@ -2219,6 +2219,14 @@
     (call-interactively 'find-file-at-point)))
 
 
+(defvar pre nil)
+(defun pre ()
+  (interactive)
+  (if pre
+      (set-face-attribute 'modeline nil :inverse-video t)
+    (set-face-attribute 'modeline nil :inverse-video nil))
+  (setq pre (not pre)))
+
 (site-init-late)
 
 

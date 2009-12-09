@@ -71,6 +71,7 @@ for my $author (@authors) {
       @item = (title       => "$author : " . $prop->title,
                link        => "http://www.amazon.com/product/dp/" . $prop->ASIN, 
                description => $prop->ProductDescription);
+      next unless defined($prop->OurPrice) && ($prop->OurPrice  ne '');
       if ($prop->publication_date ne '') {
         push @item, dc => {date => $prop->publication_date};
       }

@@ -29,6 +29,7 @@
         one = log --oneline --left-right
 	dh = "!f() {  x=$1; shift; git one \"$@\" \"$x@{1}...$x\"; }; f"
 	dhc = "!f() {  x=$1; shift; git one --color \"$@\" \"$x@{1}...$x\"; }; f"
+        detach = ! git checkout `git-rev-parse HEAD`
 
 
 

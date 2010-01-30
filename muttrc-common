@@ -243,6 +243,7 @@ set nomove
 set copy=yes
 set use_from=yes
 unset save_name
+unset followup_to
 unset force_name
 set nosig_dashes
 #set editor="emacs -nw  -f muttland"

@@ -1,0 +1,93 @@
+#!/usr/bin/perl -w
+
+$token = '';
+$secret = '';
+
+@authors = (
+            'Charles Stross', 
+            'Anthony Bourdain',
+            'Michael Ruhlman',
+            'Alastair Reynolds',
+            'John Scalzi',
+            'Vernor Vinge',
+            'Iain M Banks',
+            'Neil Gaiman',
+            'Susanna Clarke',
+            'Larry Niven',
+            'Brenda Cooper',
+            'Ursula Leguin',
+            'Neal Stephenson',
+           ); 
+
+
+require "$ENV{HOME}/.amazon";
+
+use Net::Amazon;
+use Data::Dumper;
+use Net::Amazon::Request::Author;
+use XML::RSS;
+
+# use Log::Log4perl qw(:easy);
+# Log::Log4perl->easy_init($DEBUG);
+
+use Getopt::Long;
+Getopt::Long::Configure ("bundling");
+my ($outfile, $quiet);
+GetOptions ("quiet|q" => \$quiet,
+            "out|o=s" => \$outfile,
+           ) or die "couln't get options $!";
+@authors = @ARGV if (@ARGV); 
+
+
+my $out = \*STDOUT;
+if (defined $outfile) {
+  open $out, ">", $outfile or die $!;
+}
+binmode $out, ":utf8";
+
+
+
+  
+my $ua = Net::Amazon->new(max_pages => 10,
+                          token => $token,
+                          secret_key => $secret);
+
+my $rss = new XML::RSS (version => '1.0');
+$rss->channel(
+              title        => "amazon.com",
+              description  => "amazon.com",
+             );
+
+
+for my $author (@authors) {
+  print STDERR "fetching $author...." unless $quiet;
+
+  my $response = $ua->search(author => $author);
+
+  
+  if ($response->is_success()) {
+    print STDERR $response->total_results(), "\n" unless $quiet;
+    for my $prop ($response->properties) {
+      @item = (title       => "$author : " . $prop->title,
+               link        => "http://www.amazon.com/product/dp/" . $prop->ASIN, 
+               description => $prop->ProductDescription);
+      next unless defined($prop->OurPrice) && ($prop->OurPrice  ne '');
+      if ($prop->publication_date ne '') {
+        push @item, dc => {date => $prop->publication_date};
+      }
+      $rss->add_item(@item);
+      # print "title: ", $prop->title, "\n";
+      # print "url: ", $prop->url, "\n";
+      # print "description: ", $prop->ProductDescription, "\n";
+      # print "\n\n"; 
+    }
+    #print "total results: ", $response->total_results(), "\n"; 
+    #print $response->as_string(), "\n";
+  } else {
+    die  "Error: " . $response->message() . "\n";
+  }
+}
+
+
+
+print $out $rss->as_string;

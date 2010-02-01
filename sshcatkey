@@ -1,4 +1,4 @@
 #!/bin/bash
 
-ssh "$@" 'cat >>.ssh/authorized_keys2' <~/.ssh/id_dsa.pub
+ssh "$@" 'mkdir -p .ssh; cat >>.ssh/authorized_keys2' <~/.ssh/id_dsa.pub
 

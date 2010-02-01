@@ -29,7 +29,7 @@ if (`hostname` =~ /^ \s* cthulhu (\.elder-gods\.org)? \s* $/x) {
 
 for $repo (@repos) {
   $repo = follow $repo;
-  chdir $repo or die $!; 
+  chdir $repo or die "can't chdir to $repo: $!\n";
   my $out = `git status`; 
   if ($out !~ /nothing to commit \(working directory clean\)/) {
     print "******  $repo\n";

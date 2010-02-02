@@ -1473,12 +1473,12 @@
 
 (defun wjoe ()
   (interactive)
-  (erc-select :server "localhost" :port "ircd" :nick "ldanna")
+  (erc-select :server "localhost" :port 7778 :nick "ldanna" :password (concat "larry:" my-dumb-passwd ":wjoe"))
   (erc-join-channel "#yourmom"))
 
 (defun bitlbee ()
   (interactive)
-  (erc-select :server "localhost" :port 7777 :nick "smoofra"))
+  (erc-select :server "localhost" :port 7778 :nick "smoofra") :password (concat "larry:" my-dumb-passwd ":bitlbee"))
 
 ;;(autoload 'erc-select "erc")
 
@@ -1654,15 +1654,14 @@
 ;; (global-set-key "\C-x " 'lambdamark)
 ;;;; don't need this, use C-u C-x C-x
 
-(defun c-newline-and-indent ()
-  (interactive)
-  (newline)
-  (insert " ") 
-  (c-indent-command))
-
 (eval-after-load 'cc-mode
   (quote
    (progn 
+     (defun c-newline-and-indent ()
+       (interactive)
+       (newline)
+       (insert " ")
+       (c-indent-command))
      (defun buffer-is-cc-mode ()
        c-buffer-is-cc-mode)
      (define-key c-mode-map "\C-c;"  'comment-region)

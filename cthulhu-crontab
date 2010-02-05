@@ -28,7 +28,7 @@ IEUA='Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0; SLCC2; .NE
 
 
 #0,30 * * * *   /home/larry/bin/checknews -o $HOME/.http-notification/news  -r $HOME/.jnewsrc-september -p $HOME/.slrnrc.pass
-#0,30 * * * *   /home/larry/bin/checknews -o $HOME/.http-notification/gmane -r .jnewsrc-gmane -s news.gmane.org -m gmane
+#0,30 * * * *   /home/larry/bin/checknews -o $HOME/.http-notification/gmane -r $HOME/.jnewsrc-gmane -s news.gmane.org -m gmane
 
 0,10,20,30,40,50 * * * * daemonize -p /home/larry/.sage.pid sage -notebook port=8082
 0,10,20,30,40,50 * * * * /home/larry/lisp/blog/check

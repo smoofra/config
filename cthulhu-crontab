@@ -18,6 +18,11 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/home/larry/usr/l
 
 IEUA='Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)'
 
+
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * * wget --user smoofra --password $(cat $HOME/.twitterpass) https://twitter.com/statuses/friends_timeline.rss -O $HOME/public_html/twitter_friends.rss
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * * wget --user smoofra --password $(cat $HOME/.twitterpass) https://twitter.com/statuses/replies.rss -O $HOME/public_html/twitter_replies.rss
+
+
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   wget -q -U "$IEUA" -O /home/larry/public_html/fbnotes.rss 'http://www.facebook.com/feeds/friends_notes.php?id=645588298&key=462df2e56a&format=rss20'
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/watcher/watcher update
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/boc2rss /home/larry/public_html/boc.rss

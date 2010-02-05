@@ -2,6 +2,7 @@
 
 use IPC::Run qw/run start finish harness/;
 use Data::Dumper;
+use Cwd;
 
 use Getopt::Long;
 Getopt::Long::Configure ("bundling");
@@ -145,34 +146,39 @@ if (($ec != 0 && $ec != 256) ||
   exit 1;
 }
 
-my $needspush; 
-my $remote = find_push_remote;
+my ($needspush, $remote); 
 
-for my $line (@out) {
-  my ($flag, $refspec, $message) = split /\t/, $line;
-  if ($refspec =~ /^:/) {
-    $needspush = 1;
-    print "yes $refspec\n" unless $quiet; 
-    next;
+eval { 
+
+  $remote = find_push_remote;
+
+  for my $line (@out) {
+    my ($flag, $refspec, $message) = split /\t/, $line;
+    if ($refspec =~ /^:/) {
+      $needspush = 1;
+      print "yes $refspec\n" unless $quiet; 
+      next;
+    }
+    $refspec =~ /^ [^:]+ : [^:]+ $/x or die "bad refspec: $refspec\n"; 
+    my ($from, $to) = split /:/, $refspec;
+    my $fromsha = revparse $from;
+    my $tosha = lookup_remote_ref $to, $remote;
+    if (!defined $tosha) {
+      $needspush = 1;
+      print "yes $refspec\n" unless $quiet; 
+      next;
+    }
+    my $error; 
+    run [qw/git log -n1 --pretty=format:/, $tosha], '>', \$error, '2>&1';
+    if ($error =~ /bad object/i) {
+      runordie qw/git fetch/, $remote, $to;
+    }
+    my $np =  needs_push $fromsha, $tosha;
+    print (($np ? "yes " : "no  "), $refspec, "\n") unless $quiet; 
+    $needspush ||= $np; 
   }
-  $refspec =~ /^ [^:]+ : [^:]+ $/x or die "bad refspec: $refspec\n"; 
-  my ($from, $to) = split /:/, $refspec;
-  my $fromsha = revparse $from;
-  my $tosha = lookup_remote_ref $to, $remote;
-  if (!defined $tosha) {
-    $needspush = 1;
-    print "yes $refspec\n" unless $quiet; 
-    next;
-  }
-  my $error; 
-  run [qw/git log -n1 --pretty=format:/, $tosha], '>', \$error, '2>&1';
-  if ($error =~ /bad object/i) {
-    runordie qw/git fetch/, $remote, $to;
-  }
-  my $np =  needs_push $fromsha, $tosha;
-  print (($np ? "yes " : "no  "), $refspec, "\n") unless $quiet; 
-  $needspush ||= $np; 
-}  
+  1; 
+} || die (sprintf("[[ git-needs-push on %s ]]\n", getcwd) . $@);
   
   
 if ($quiet) {

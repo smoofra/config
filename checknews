@@ -5,9 +5,27 @@ use Getopt::Long;
 use File::Temp;
 use Net::NNTP;
 
-my $jnewsrc = "$ENV{HOME}/.jnewsrc-september";
-my $passfile = "$ENV{HOME}/.slrnrc.pass";
-my $outfile = "$ENV{HOME}/.http-notification/news";
+# my $jnewsrc = "$ENV{HOME}/.jnewsrc-september";
+# my $passfile = "$ENV{HOME}/.slrnrc.pass";
+# my $outfile = "$ENV{HOME}/.http-notification/news";
+
+my ($jnewsrc,$passfile,$outfile,$server);
+my $message = "news"; 
+sub usage {
+  print "usage: checknews [-m message] [-o outfile] -r rcfile (-p passwordfile | -s server) \n";
+  exit 1; 
+}
+  
+GetOptions ("-h" => \&usage,
+            "m=s" => \$message, 
+            "o=s" => \$outfile,
+            "r=s" => \$jnewsrc,
+            "-p=s" => \$passfile,
+            "-s=s" => \$server) or die "couln't get options $!";
+
+usage unless defined $jnewsrc;
+usage unless (defined $server xor defined $passfile);
+
 
 sub map2 (&@) {
   my $sub = shift;
@@ -76,13 +94,18 @@ sub sset_diff {
 
 open JNEWSRC, '<', $jnewsrc or die "can't open $jnewsrc: $!\n";
 
-open PASS, '<', $passfile or die "can't open $passfile";
-$_ = do {local $/; <PASS>};
-close PASS;
-my ($server, $username, $pass) =  /^ nnrpaccess \s* "([^"]+)" \s+ "([^"]+)" \s+ "([^"]+)" /xm;
-defined $pass or die "can't find server info\n";
+my ($username, $pass);
+if (defined $passfile) { 
+  open PASS, '<', $passfile or die "can't open $passfile";
+  $_ = do {local $/; <PASS>};
+  close PASS;
+  ($server, $username, $pass) =  /^ nnrpaccess \s* "([^"]+)" \s+ "([^"]+)" \s+ "([^"]+)" /xm;
+  defined $pass or die "can't find server info\n";
+} 
 my $nntp = Net::NNTP->new($server) or die "can't connect: $!\n";
-$nntp->authinfo($username, $pass) or die "auth failed\n";
+if (defined $passfile) { 
+  $nntp->authinfo($username, $pass) or die "auth failed\n";
+}
 
 my @unread;
 
@@ -99,8 +122,11 @@ while (<JNEWSRC>) {
   }
 }
 $nntp->quit();
-
-open OUT, '>', $outfile or die "can't open $outfile\n";
-print OUT 'news' if @unread;
-close OUT;
+if (defined $outfile) { 
+  open OUT, '>', $outfile or die "can't open $outfile\n";
+  print OUT $message if @unread;
+  close OUT;
+} else {
+  print (@unread ? "yup, there's news\n" : "no news\n"); 
+}
 exit 0;

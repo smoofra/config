@@ -1,7 +1,14 @@
 MAILDIR=$HOME/Maildir
+DEFAULT=$HOME/Maildir/
+
+PATH=$HOME/bin.local:$HOME/bin:$PATH
 
 #:0 c
 #backup
+
+#:0w
+#*^Subject: LOLWTF
+#| mddeliver -r $MAILDIR
 
 
 :0 c 
@@ -137,9 +144,9 @@ $MAILDIR/.math/
 $MAILDIR/.math/
 
 
-:0
-*^List-Subscribe: .*madman
-$MAILDIR/.madman/
+#:0
+#*^List-Subscribe: .*madman
+#$MAILDIR/.madman/
 
 
 :0

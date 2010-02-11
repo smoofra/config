@@ -1,0 +1,30 @@
+#!/usr/bin/perl -w
+
+sub usage {
+  die "usage mddeliver [-r] <dir>\n";
+}
+
+my $read = 0;
+
+usage unless @ARGV;
+if ( $ARGV[0] eq  '-r' ) {
+  $read = 1;
+  shift;
+}
+usage unless @ARGV == 1;
+my $dir = shift;
+
+my @args;
+
+push @args, "$dir/tmp";
+if ($read) { 
+  push @args, "$dir/cur";
+  push @args, ":2,S";
+} else {
+  push @args, "$dir/new";
+}
+
+exec 'mysafecat', @args;
+
+die "wtf $!";
+

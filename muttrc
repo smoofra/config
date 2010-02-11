@@ -11,7 +11,7 @@ source ~/config/mutt-aliases
 save-hook "~A" "=inbox_save"
 set folder=~/Maildir/folderlinks/ 
 set spoolfile='~/Maildir'
-set record='~/Maildir/.sent-mail'
+set record='~/Maildir'
 set postponed="=postponed"
 
 macro index cg C=git\n

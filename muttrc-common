@@ -4,6 +4,13 @@
 bind attach ' ' select-entry
 bind attach \Cg exit
 
+bind index  X save-message
+bind pager  X save-message
+
+
+bind index  s copy-message
+bind pager  s copy-message
+
 bind index  P recall-message 
 bind index  R group-reply     
 bind index  L list-reply
@@ -56,8 +63,9 @@ macro generic Sw ':set from="Larry D'\''Anna <ldanna@wam.umd.edu>"'\n
 macro generic Sm ':set from="Larry D'\''Anna <ldanna@math.umd.edu>"'\n
 macro pager V ':set pager_index_lines='
 macro index V ':set pager_index_lines='
-macro index x "s=spam_new\n"
-macro pager x "s=spam_new\n"
+
+macro index x "X=spam_new\n"
+macro pager x "X=spam_new\n"
 
 color attachment  green  default  # ..
 color bold        green  default  # ..

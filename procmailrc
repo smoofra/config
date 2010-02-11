@@ -11,11 +11,6 @@ PATH=$HOME/bin.local:$HOME/bin:$PATH
 #| mddeliver -r $MAILDIR
 
 
-:0 c 
-*^From: .*vonage.com
-*^Subject: .*new voicemail
-| /home/larry/bin/vmnotify
-
 
 
 :0
@@ -25,16 +20,6 @@ $MAILDIR/
 :0
 *^From: [^ ]*@blockbuster.com
 $MAILDIR/
-
-
-
-
-
-
-:0
-*^List-Id:.*darcs-devel.darcs.net
-$MAILDIR/.darcs/
-
 
 :0
 *^Sender: .*FYI@LISTSERV.UMD.EDU
@@ -144,44 +129,35 @@ $MAILDIR/.math/
 $MAILDIR/.math/
 
 
-#:0
-#*^List-Subscribe: .*madman
-#$MAILDIR/.madman/
 
-
-:0
+:0w
 *^List-Id: .*slime-devel
-$MAILDIR/.lisp/
+| mddeliver -r $MAILDIR/.lisp/
 
 :0
 *^List-ID: <git.vger.kernel.org>
 $MAILDIR/.git/ 
 
 
-:0
+:0w
 *^List-Id: .*sbcl-devel
-$MAILDIR/.lisp/
+| mddeliver -r $MAILDIR/.lisp/
 
-# :0 
-# *^List-Id: <hah.mozdev.org>
-# $MAILDIR/.hah/ 
-
-:0
+:0w
 *^List-Id: .*bese-devel
-$MAILDIR/.lisp/
+| mddeliver -r $MAILDIR/.lisp/
 
-:0
+:0w
 *^List-Id: .*cffi-devel
-$MAILDIR/.lisp/
+| mddeliver -r $MAILDIR/.lisp/
 
-:0
+:0w
 *^List-Id: .*iterate-devel
-$MAILDIR/.lisp/
+| mddeliver -r $MAILDIR/.lisp/
 
-
-:0 
+:0w
 *^Mailing-List:.*grassfed
-$MAILDIR/.grassfed/
+| mddeliver -r $MAILDIR/.grassfed/
 
 
 :0 

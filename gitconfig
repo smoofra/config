@@ -38,6 +38,7 @@
 	mpush = "!\nf() { \n    if [ $# -lt 2 ] ; then \n        echo \"usage: git mpush <remote> <reftree> [ <push options> ]\"\n        exit 1; \n    fi\n    set -e \n    remote=\"$1\"\n    reftree=\"$2\"\n    shift\n    shift\n    temp=`tempfile`\n    git ls-remote . \"$reftree\" | cut -f2  >$temp\n    dels=$( git ls-remote \"$remote\" \"$reftree\" | cut -f2 | grep -v -F --file=$temp | sed 's/^/:/')\n    rm $temp    \n    git push -f \"$remote\" \"$reftree\" $dels \"$@\"\n}\nf "
 	tg-stale = "!\nf() {\n    git for-each-ref refs/top-bases | cut -f 2 | \\\n        xargs -d\\\\n -n1 perl -e '$_=shift; $o=$_; s:^refs/top-bases:refs/heads:; print \"$o\\n\" if \"\" eq `git for-each-ref $_`'\n}\nf"
 	delrefs = "!\nf() {\n    if [ $# -lt 1 ] ; then \n        echo \"usage: git delrefs <reftree>\"\n        exit 1; \n    fi\n    set -e\n    while [ $# -gt 0 ]; do\n          git ls-remote . $1 | cut -f2 | xargs -d\\\\n -n1 git update-ref -d \n          shift;\n    done\n}\nf"
+	make-pushable = !\nset -e \n. \"$(git --exec-path)\"/git-sh-setup\nf() {\n    ln -s $HOME/bin/git-pushable-hooks/* $GIT_DIR/hooks/\n    git config receive.denyCurrentBranch ignore\n}\nf
 
 
 

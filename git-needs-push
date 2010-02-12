@@ -82,15 +82,11 @@ sub needs_push {
 
 my $message;
 my $out; 
-run [qw/git push --dry-run --porcelain/], '>', \$out, '2>', \$message;
-my $ec = $?;
+run [qw/git push --dry-run --porcelain/], '>', \$out, '2>', \$message
+  or die "git push --dry-run --porcelain failed: $message\n";
 my @out = split /\n/, $out;
-if (($ec != 0 && $ec != 256) ||
-    ($ec == 256 && @out ==0)) {
-  print STDERR "git push failed, output follows:\n\n";
-  print STDERR $message;
-  exit 1;
-}
+die "multiple pushurls\n" if scalar(grep {/^To/} @out) > 1;
+@out = map { /^To/ ? () : $_ } @out;
 
 my ($needspush, $remote); 
 

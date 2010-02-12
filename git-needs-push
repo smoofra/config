@@ -31,37 +31,7 @@ sub runordieE {
   return $output; 
 }
 
-sub parseCommit {
-  my $str = shift;
-  my $commit = {};
-  pos($str) = 0; 
-  while ($str =~ /\G ([^\s]+) \s+ (.*) \n/gxc) {
-    if ($1 eq 'parent')  {
-      push @{$commit->{parents}}, $2;
-    } else { 
-      $commit->{$1} = $2;
-    }
-  }
-  scalar(keys %$commit) or die "malformed commit message (no headers)\n"; 
-  $str =~ /\G\n/g or die "malformed commit message (missing newline after headers)\n";
-  my $indent = qr/    /;
-  my $message = '';
-  while ($str =~ /\G $indent (.*\n)/gxc) {
-    $message .= $1;
-  }
-  $commit->{message} = $message;
-  $str =~ /\G$/ or die "malformed commit message (trash at the end)\n";
-  return $commit;
-}
 
-sub readRecord {
-  my $fh = shift;
-  local $/ = "\0";
-  my $_ = <$fh>;
-  return undef unless defined $_;
-  s/\x00$//;
-  return $_;
-}
 
 sub revparse {
   my $name = shift;
@@ -96,42 +66,18 @@ sub lookup_remote_ref {
   return $1; 
 }
 
+# return true iff !($from is an ancestor of $to)
+
 sub needs_push {
   my ($from, $to) = @_;
-  my $message; 
-  my $h = start [qw:git log --pretty=raw -z:, $to], '>pipe', \*LOG, '2>', \$message
-    or die $!;
 
-  my %commits;
-
-  my $lookup = sub {
-    my $hash = shift;
-    die "couldn't find commit $hash\n" unless defined $commits{$hash};
-    return  $commits{$hash};
-  };
-
-  while (defined ($_ = readRecord \*LOG)) {
-    my $commit = parseCommit($_);
-    $commits{$commit->{commit}} = $commit;
-  }
-  finish $h or die "git log failed\n"; 
-
-  my %visited; 
-  my @tosearch = $to;
-
-  while (@tosearch) {
-    my $hash = shift @tosearch;
-    if ($hash eq $from) {
-      return 0; 
-    }
-    $visited{$hash} = 1;
-    my $c = $lookup->($hash);
-    for $p (@{$c->{parents}}) {
-      next if $visited{$p};
-      push @tosearch, $p;
-    }
-  }
-  return 1;
+  my $harness = harness  ['git', 'rev-list', $to], '|', ['grep', '-q', $from] ;
+  $harness->start;
+  $harness->finish;
+  my ($r1, $r2) = $harness->results;
+  die "git rev-list failed\n" if $r1;
+  my $match = ($r2 == 0);
+  return !$match;
 }
 
 my $message;

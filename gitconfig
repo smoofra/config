@@ -26,7 +26,8 @@
 	ec = !\nf() {\n tmp=`tempfile`\n ( git config \"$@\" >$tmp || touch $tmp ) && \n\t$EDITOR $tmp && \n\tgit config \"$@\" \"$(cat $tmp)\" && \n\trm -f $tmp\n}\nf
 	egc = ! git ec --file ~/.gitconfig
         lsf = ls-files --exclude-standard --directory
-        one = log --oneline --left-right
+	one = log --oneline --left-right
+        aone = log --pretty=format:'%m%h %an %s'
 
 	dh = "!f() {  \n    if [ $# -ge 1 ] && [ $1 = \"-m\" ]; then\n       logopts=\n       shift\n    else\n        logopts=\"--no-merges\"\n    fi\n        \n    if [ $# -ne 2 ]; then\n        echo \"usage: git dh <ref1> <ref2>\"; \n        exit 1;\n    fi\n    set -e \n    a=$(git-rev-parse --revs-only $1)\n    b=$(git-rev-parse --revs-only $2)\n\n    if [ \"\" = \"$a\" ]; then\n       echo \"huh?\"\n       exit 1;\n    fi     \n\n\n    if [ \"\" = \"$b\" ]; then\n       echo \"huh?\"\n       exit 1;\n    fi     \n\n    if [ \"$a\" = \"$b\" ]; then\n       echo \"same commit\"\n    else       \n        git one $logopts \"$1...$2\"; \n        echo \n        if ! git diff --quiet $1 $2; then\n            echo \"trees differ\"\n        else\n            echo \"trees are the same\"\n        fi\n    fi\n} \nf"
 

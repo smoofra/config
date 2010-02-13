@@ -1,5 +1,7 @@
 # minute hour dayofmonth month dayofweek
 
+HOME=/home/larry
+
 PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/home/larry/usr/libexec/git-core:/usr/lib/git-core:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11:/usr/games
 
 0  * * * *  /home/larry/bin/scanspam-maildir

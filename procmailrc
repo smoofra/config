@@ -4,7 +4,7 @@ DEFAULT=$HOME/Maildir/
 PATH=$HOME/bin.local:$HOME/bin:$PATH
 
 #:0 c
-#backup
+#/home/larry/backup/
 
 #:0w
 #*^Subject: LOLWTF

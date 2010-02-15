@@ -97,6 +97,7 @@ color underline   yellow default  #
 
 color index yellow  default '~t ldanna@wam.umd.edu'
 color index yellow  default '~c ldanna@wam.umd.edu'
+
 color index cyan default '~t larry@melkor.elder-gods.org'
 color index cyan default '~c larry@melkor.elder-gods.org'
 color index cyan default '~t smoof-ra@melkor.elder-gods.org'
@@ -109,6 +110,17 @@ color index cyan default '~t ldanna@math.umd.edu'
 color index cyan default '~c ldanna@math.umd.edu'
 color index cyan default '~t smoofra@gmail.com'
 color index cyan default '~c smoofra@gmail.com'
+
+color index magenta default '~f larry@melkor.elder-gods.org'
+color index magenta default '~f smoof-ra@melkor.elder-gods.org'
+color index magenta default '~f larry@elder-gods.org'
+color index magenta default '~f smoof-ra@elder-gods.org'
+color index magenta default '~f ldanna@math.umd.edu'
+color index magenta default '~f smoofra@gmail.com'
+
+
+
+
 color index green default "~s '\\[(Linux-bcom4301-priv|iterate-devel|darcs-devel|Bese-devel|Sbcl-devel|slime-devel|madman-discuss|cffi-devel)\\]'"
 #color index red  default '~h "X-SpamProbe: SPAM"'
 #color index red default '~h "X-Spam-Flag: YES"' 

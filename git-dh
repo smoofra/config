@@ -1,0 +1,86 @@
+#!/usr/bin/perl -w
+
+use IPC::Run qw/run harness/;
+use Getopt::Long;
+
+my $author;
+my $merges; 
+my $graph;
+my $plain;
+my $boundary;
+
+Getopt::Long::Configure ("bundling");
+GetOptions ("p" => \$plain,
+            "boundary|b" => \$boundary,
+            "graph|g" => \$graph,
+            "a" => \$author,
+            "m" => \$merges) or die "couln't get options $!";
+
+die "-g is incompatible with -a" if $graph && $author;
+
+sub revparse {
+  my $name = shift;
+  my $hash;
+  my $message; 
+  run [qw/git rev-parse --short --revs-only/, $name], '2>', \$message, '>', \$hash
+    or die "git rev-parse $name failed:\n$message\n";
+  $hash ne '' or die "bad revision: $name\n";
+  $hash =~ s/\s*$//;
+  $hash =~ /^ [0-9a-fA-F]+  $/x or die "git rev-parse returned nonsense <$hash>\n"; 
+  return $hash;
+}
+
+
+if (@ARGV == 1) {
+  $as = shift;
+  $bs = 'HEAD';
+} elsif (@ARGV == 2) {
+  $as = shift;
+  $bs = shift;
+} else {
+  die "usage: git dh <ref1> <ref2>\n";
+}
+
+my ($a, $b) = map { revparse $_ } ($as, $bs);
+
+unless ($plain) {
+  my $len = length $as > length $bs ? length $as : length $bs;
+  printf "%-${len}s %s\n", $as, $a;
+  printf "%-${len}s %s\n", $bs, $b;
+  print "\n"; 
+}
+  
+
+if ($a eq $b) {
+  print "same commit\n";
+} else {
+  my @args;
+  if ($graph) {
+    push @args, qw/--oneline --left-right  --graph/;
+  } elsif ($author) { 
+    push @args, '--pretty=format:%m%h %an %s';
+  } else {
+    push @args, qw/--left-right --oneline/;
+  }
+  push @args, '--no-merges' unless $merges || $graph;
+  push @args, '--boundary' if $boundary; 
+  push @args, "$a...$b";
+  run [qw/git log/, @args] or die "git log failed\n";
+
+  print "\n";
+  print "\n" if $author;
+  
+  $h = harness [qw/git diff --quiet/, $a, $b];
+  $h->run;
+  die "git diff failed\n" if $h->result > 1;
+  if ($h->result == 1) {
+    print "trees differ\n";
+  } else {
+    print "trees are the same\n";
+  }
+}
+          
+  
+  
+
+

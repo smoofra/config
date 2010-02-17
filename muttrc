@@ -25,7 +25,7 @@ macro pager ci C=inbox\n
 macro pager cr C=sent-mail\n
 macro pager cs C=inbox_save\n
 
-macro pager,index A "|spamassassin -t |less\n"
+#macro pager,index A "|spamassassin -t |less\n"
 
 set from="Larry D'Anna <larry@elder-gods.org>" 
 alternates  "ldanna@\(wam\|glue\|cs\|math\).umd.edu\|\(admin\|larry\|larry-web\|root\|smoof-ra\|SmoofRa\)@\(elder-gods.org\|melkor.elder-gods.org\|minerva.elder-gods.org\)"

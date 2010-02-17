@@ -28,6 +28,8 @@ bind index "\Cr" read-subthread
 bind index "\Ct" read-thread
 macro index i "Wn"
 
+macro pager,index A "|git am\n"
+
 
 bind pager  P    recall-message # 'R'ecall-message move to 'P' [0.46]
 bind pager  R group-reply     

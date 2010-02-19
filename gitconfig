@@ -33,8 +33,8 @@
 
 	adrl = "!f() {  \n    #echo \"usage: git drl <ref> [<n>]\"; \n    set -e\n    if [ $# -lt 1 ]; then\n        x=`git rev-parse --symbolic-full-name HEAD`\n    else \n        x=$1; \n        shift; \n    fi\n    n=1\n    if [ $# -gt 0 ]; then\n       n=$1\n       shift\n    fi\n    git reflog show $x | head -$(expr $n + 1)\n    echo\n    git dh -ap $x@{$n} $x\n} \nf"
 
-
-
+        noexpire = "! git config gc.reflogExpire 365000; git config gc.reflogExpireUnreachable 365000"
+        
         detach = ! git checkout `git-rev-parse HEAD`
 	dfetch = "!\nf() { \n\tif head=`git rev-parse --symbolic-full-name HEAD` ; then\n\t\tif echo \"$head\" | grep -q '^refs/heads/'; then\n\t\t\thead=`perl -e '$_ = shift; s:^refs/heads/::; print' \"$head\" ` \t\t\n\t\t\techo === detaching\n\t\t\tgit checkout `git-rev-parse HEAD` \n\t\telse\n\t\t\thead=\"\"\n\t\tfi; \n\t\techo === fetching\t\n\t\tgit fetch \"$@\"\n\t\tif [ ! -z \"$head\" ]; then\n\t\t\techo === checking out\n\t\t\tgit checkout \"$head\";\n\t\tfi\n\tfi;\n}\nf"
 	mpush = "!\nf() { \n    if [ $# -lt 2 ] ; then \n        echo \"usage: git mpush <remote> <reftree> [ <push options> ]\"\n        exit 1; \n    fi\n    set -e \n    remote=\"$1\"\n    reftree=\"$2\"\n    shift\n    shift\n    temp=`tempfile`\n    git ls-remote . \"$reftree\" | cut -f2  >$temp\n    dels=$( git ls-remote \"$remote\" \"$reftree\" | cut -f2 | grep -v -F --file=$temp | sed 's/^/:/')\n    rm $temp    \n    git push -f \"$remote\" \"$reftree\" $dels \"$@\"\n}\nf "

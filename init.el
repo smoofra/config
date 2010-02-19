@@ -1469,12 +1469,12 @@
 
 (defun wjoe ()
   (interactive)
-  (erc-select :server "localhost" :port 7778 :nick "ldanna" :password (concat "larry:" my-dumb-passwd ":wjoe"))
+  (erc-tls :server "localhost" :port 7778 :nick "ldanna" :password (concat "larry:" my-dumb-passwd ":wjoe"))
   (erc-join-channel "#yourmom"))
 
 (defun bitlbee ()
   (interactive)
-  (erc-select :server "localhost" :port 7778 :nick "smoofra") :password (concat "larry:" my-dumb-passwd ":bitlbee"))
+  (erc-tls :server "localhost" :port 7778 :nick "smoofra" :password (concat "larry:" my-dumb-passwd ":bitlbee")))
 
 ;;(autoload 'erc-select "erc")
 

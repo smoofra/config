@@ -629,8 +629,6 @@
 
 (setq compile-command "make | cat")
 
-(setq cperl-font-lock t)
-
 (defun filter (pred list)
   (mapcan #'(lambda (x)
 	      (if (funcall pred x)
@@ -649,8 +647,6 @@
 (add-to-list 'auto-mode-alist '("\\.mak$" . makefile-mode))
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
 (add-to-list 'auto-mode-alist '("\\.m$". octave-mode))
-(add-to-list 'auto-mode-alist '("\\.pl$" . perl-mode))
-(add-to-list 'auto-mode-alist '("\\.ph$" . cperl-mode))
 (add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.asd$" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.jl$" . lisp-mode))
@@ -660,7 +656,7 @@
 ;;(add-to-list 'auto-mode-alist '("\\.js" . javascript-mode))
 ;;(add-to-list 'magic-mode-alist (cons "#!.*perl" 'cperl-mode))
 
-(add-to-list 'interpreter-mode-alist '("perl" . cperl-mode))
+;; (add-to-list 'interpreter-mode-alist '("perl" . perl-mode))
 
 ;; (when (>= emacs-major-version 22)
 ;;   (add-to-list 'auto-mode-alist 

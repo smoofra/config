@@ -42,7 +42,7 @@
 	delrefs = "!\nf() {\n    if [ $# -lt 1 ] ; then \n        echo \"usage: git delrefs <reftree>\"\n        exit 1; \n    fi\n    set -e\n    while [ $# -gt 0 ]; do\n          git ls-remote . $1 | cut -f2 | xargs -d\\\\n -n1 git update-ref -d \n          shift;\n    done\n}\nf"
 	make-pushable = !\nset -e \n. \"$(git --exec-path)\"/git-sh-setup\nf() {\n    ln -s $HOME/bin/git-pushable-hooks/* $GIT_DIR/hooks/\n    git config receive.denyCurrentBranch ignore\n}\nf
 
-
+	me = ! \nf() { \n    git aone \"$@\" | grep -i d.anna\n}\nf
 
 [push]
         default = matching

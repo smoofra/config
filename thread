@@ -48,6 +48,7 @@ sub parse {
   my $hdr = shift;
   my @x = $header->get($hdr);
   die 'wtf' unless @x <= 1;
+  return () unless @x;
   local $_ = shift @x;
   s/^\s+//;
   s/\s+$//;

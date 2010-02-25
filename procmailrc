@@ -134,10 +134,9 @@ $MAILDIR/.spam/
 *^List-Id: .*slime-devel
 | mddeliver -r $MAILDIR/.lisp/
 
-:0
+:0w
 *^List-ID: <git.vger.kernel.org>
-$MAILDIR/.git/ 
-
+| thread -d $MAILDIR/.git/ 
 
 :0w
 *^List-Id: .*sbcl-devel

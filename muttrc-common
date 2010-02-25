@@ -26,6 +26,9 @@ bind index n   next-unread
 bind index F forward-message
 bind index "\Cr" read-subthread
 bind index "\Ct" read-thread
+unset wait_key
+macro index "\Ck" "| thread -k\n"
+macro index "\Cu" "| thread -u\n"
 macro index i "Wn"
 
 macro pager,index A "|git am\n"

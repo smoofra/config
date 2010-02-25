@@ -1,0 +1,116 @@
+#!/usr/bin/perl -w 
+
+use Mail::Header;
+use Mail::Address; 
+use Getopt::Long;
+use BerkeleyDB;
+use Getopt::Long;
+use IPC::Run qw/start finish/; 
+
+
+sub usage {
+  die "usage: $0 [--unkill | --kill | --deliver <maildir>) [file]\n";
+}
+
+
+my ($unkill, $kill, $deliver, $quiet); 
+Getopt::Long::Configure ("bundling");
+GetOptions ("unkill|u" => \$unkill, 
+            "kill|k" => \$kill,
+            "quiet|q" => \$quiet,
+            "deliver|d=s" => \$deliver)
+  or usage;
+
+(!!$unkill + !!$kill + !!defined($deliver)) <= 1 or usage;
+
+tie %db, 'BerkeleyDB::Hash',
+  -Filename => "$ENV{HOME}/.threads",
+  -Flags => DB_CREATE
+  or die "Failed to open $ENV{HOME}/.threads: $!\n";
+
+
+usage unless @ARGV <= 1;
+
+my $in; 
+if (@ARGV) {
+  my $file = shift;
+  open my $fh, "<", $file or die "couldn't open $file: $!\n";
+  $in = $fh;
+} else {
+  $in = \*STDIN; 
+}
+
+my @message = <$in>;
+
+my $header = Mail::Header->new (\@message);
+
+sub parse {
+  my $hdr = shift;
+  my @x = $header->get($hdr);
+  die 'wtf' unless @x <= 1;
+  local $_ = shift @x;
+  s/^\s+//;
+  s/\s+$//;
+  my @words = split /\s+/;
+  return grep { /^ \< [^@]+ \@ [^@]+ \> $/x } @words;
+}
+
+sub uniq {
+  my %x = map { ($_, 1) } @_;
+  return keys %x;
+}
+
+my @refs = parse 'References';
+my @irt = parse 'In-Reply-To'; 
+my @id = parse 'Message-ID';
+
+die 'wtf' unless @id == 1; 
+
+my $time = time; 
+
+@refs = uniq (@refs, @irt, @id);
+
+if ($kill) {
+  for (@refs) {
+    $db{$_} = $time;
+  }
+  exit 0;
+}
+
+if ($unkill) {
+  for (@refs) {
+    delete $db{$_};
+  }
+  exit 0; 
+}
+
+my $bad = 0; 
+for (@refs) {
+  $bad = 1 if $db{$_};
+}
+
+if (defined $deliver) {
+  my $p;
+  if ($bad) {
+    $p = ['mddeliver', '-r', $deliver];
+  } else {
+    $p = ['mddeliver', $deliver];
+  }
+  my $h = start $p, '<pipe', \*IN, or die "mddeliver failed";
+  for (@message) {
+    print IN $_;
+  }
+  close IN;
+  finish $h or die "mddeliver failed";
+  exit 0;  
+} else {
+  if (! $quiet) {
+    print (($bad ? "bad" : "good"), "\n");
+    exit $bad;
+  }
+}
+
+
+
+
+

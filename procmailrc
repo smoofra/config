@@ -1,7 +1,7 @@
 MAILDIR=$HOME/Maildir
 DEFAULT=$HOME/Maildir/
 
-PATH=$HOME/bin.local:$HOME/bin:$PATH
+PATH=$HOME/procmail_bin:$HOME/bin.local:$HOME/bin:$PATH
 
 #:0 c
 #/home/larry/backup/

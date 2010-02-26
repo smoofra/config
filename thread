@@ -44,16 +44,20 @@ my @message = <$in>;
 
 my $header = Mail::Header->new (\@message);
 
+my @tags = $header->tags;
+
 sub parse {
   my $hdr = shift;
-  my @x = $header->get($hdr);
-  die 'wtf' unless @x <= 1;
-  return () unless @x;
-  local $_ = shift @x;
-  s/^\s+//;
-  s/\s+$//;
-  my @words = split /\s+/;
-  return grep { /^ \< [^@]+ \@ [^@]+ \> $/x } @words;
+  my @ret; 
+  for my $tag (grep { /\Q$hdr\E/i } @tags) {
+    local $_;
+    for ($header->get($tag)) {
+      s/^\s+//;
+      s/\s+$//;
+      my @words = split /\s+/;
+      push @ret, grep { /^ \< [^@]+ \@ [^@]+ \> $/x } @words;
+    }
+  }
 }
 
 sub uniq {
@@ -64,12 +68,9 @@ sub uniq {
 my @refs = parse 'References';
 my @irt = parse 'In-Reply-To'; 
 my @id = parse 'Message-ID';
-
-die 'wtf' unless @id == 1; 
+@refs = uniq (@refs, @irt, @id);
 
 my $time = time; 
-
-@refs = uniq (@refs, @irt, @id);
 
 if ($kill) {
   for (@refs) {

@@ -8,9 +8,11 @@ my $merges;
 my $graph;
 my $plain;
 my $boundary;
+my $decorate; 
 
 Getopt::Long::Configure ("bundling");
 GetOptions ("p" => \$plain,
+            "decorate|d" => \$decorate,
             "boundary|b" => \$boundary,
             "graph|g" => \$graph,
             "a" => \$author,
@@ -62,6 +64,7 @@ if ($a eq $b) {
   } else {
     push @args, qw/--left-right --oneline/;
   }
+  push @args, '--decorate' if $decorate;
   push @args, '--no-merges' unless $merges || $graph;
   push @args, '--boundary' if $boundary; 
   push @args, "$a...$b";

@@ -9,19 +9,20 @@ use IPC::Run qw/start finish/;
 
 
 sub usage {
-  die "usage: $0 [--unkill | --kill | --deliver <maildir>) [file]\n";
+  die "usage: $0 [--ids | --unkill | --kill | --deliver <maildir>) [file]\n";
 }
 
 
-my ($unkill, $kill, $deliver, $quiet); 
+my ($unkill, $kill, $deliver, $quiet, $ids); 
 Getopt::Long::Configure ("bundling");
-GetOptions ("unkill|u" => \$unkill, 
+GetOptions ("unkill|u" => \$unkill,
+            "ids|i" => \$ids,
             "kill|k" => \$kill,
             "quiet|q" => \$quiet,
             "deliver|d=s" => \$deliver)
   or usage;
 
-(!!$unkill + !!$kill + !!defined($deliver)) <= 1 or usage;
+(!!$unkill + !!$kill + !!defined($deliver) + !!$ids) <= 1 or usage;
 
 tie %db, 'BerkeleyDB::Hash',
   -Filename => "$ENV{HOME}/.threads",
@@ -58,6 +59,7 @@ sub parse {
       push @ret, grep { /^ \< [^@]+ \@ [^@]+ \> $/x } @words;
     }
   }
+  return @ret;
 }
 
 sub uniq {
@@ -83,6 +85,11 @@ if ($unkill) {
   for (@refs) {
     delete $db{$_};
   }
+  exit 0; 
+}
+
+if ($ids) {
+  print "$_\n" for @refs;
   exit 0; 
 }
 

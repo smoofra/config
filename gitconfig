@@ -57,3 +57,5 @@
 
 [format]
 	thread = shallow
+[color]
+	ui = auto

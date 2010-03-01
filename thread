@@ -101,6 +101,9 @@ for (@refs) {
 if (defined $deliver) {
   my $p;
   if ($bad) {
+    for (@refs) {
+      $db{$_} = $time;
+    }
     $p = ['mddeliver', '-r', $deliver];
   } else {
     $p = ['mddeliver', $deliver];

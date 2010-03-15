@@ -136,7 +136,7 @@ $MAILDIR/.spam/
 
 :0w
 *^List-ID: <git.vger.kernel.org>
-| thread -d $MAILDIR/.git/ 
+| mddeliver -r $MAILDIR/.git/ 
 
 :0w
 *^List-Id: .*sbcl-devel

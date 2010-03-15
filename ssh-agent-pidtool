@@ -1,0 +1,31 @@
+#!/usr/bin/perl
+
+my @pids = grep { /^ \d+ $/x } map { s:^/proc/::; $_} glob "/proc/*";
+
+
+my %apids; 
+
+for my $pid (@pids) {
+  open my $fh, "<", "/proc/$pid/environ" or die $!;
+  { 
+    local $/ = "\x00";
+    my @vars = <$fh>;
+    for my $var (@vars) {
+      $var =~ s/\x00$//; 
+      next unless $var =~ /^SSH_AGENT_PID=(\d+)$/;
+      push @{$apids{$1}}, $pid;
+    }
+  }
+  close $fh; 
+}
+
+if (@ARGV) {
+  my $pid = shift;
+  print $_, "\n" for @{$apids{$pid}};
+} else {
+  for my $pid (keys %apids) {
+    next unless -e "/proc/$pid"; 
+    print $pid, "\n"; 
+  }
+}
+

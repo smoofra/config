@@ -1202,7 +1202,10 @@
   ;; in an extremely broken way, and removes it in a special hook
   ;; for view mode in an even more broken way.  ugh disgusting.
   (setq minor-mode-overriding-map-alist nil) 
-  (jk-mode)
+  ;;(jk-mode)
+  (define-jk  diff-mode-map)
+  (define-key diff-mode-map "n"  'diff-hunk-next)
+  (define-key diff-mode-map "p"  'diff-hunk-prev)
   (define-key diff-mode-map "a" 'diff-apply-hunk)
   (define-key diff-mode-map "t" 'diff-test-hunk))
 

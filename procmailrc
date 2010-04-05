@@ -138,6 +138,12 @@ $MAILDIR/.spam/
 *^List-ID: <git.vger.kernel.org>
 | mddeliver -r $MAILDIR/.git/ 
 
+
+:0w
+*^List-ID: <bup-list.googlegroups.com>
+| mddeliver -r $MAILDIR/.bup/
+
+
 :0w
 *^List-Id: .*sbcl-devel
 | mddeliver -r $MAILDIR/.lisp/

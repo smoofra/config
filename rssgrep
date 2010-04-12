@@ -1,0 +1,85 @@
+#!/usr/bin/perl -w  -Co -CO
+
+use LWP::UserAgent;
+use XML::RSS;
+use Data::Dumper;
+
+sub usage { 
+  die "?\n"; 
+};
+
+use Getopt::Long;
+Getopt::Long::Configure ("bundling");
+my ($invert, @title, @link, @description, @category, $insensitive);
+GetOptions ('v' => \$invert,
+            'o|outfile=s' => sub { close STDOUT; open STDOUT, '>', $_[1] or die $! }, 
+            't|title=s' => sub{ push @title, $_[1]},
+            'c|category=s' => sub{ push @category, $_[1]}, 
+            'd|description=s' => sub{ push @description, $_[1]},
+            'l|link=s' => sub { push @link, $_[1] },
+            'i' => \$insensitive, 
+           ) or usage;
+
+
+
+usage if @ARGV > 1;
+
+my $rss = new XML::RSS;
+if (@ARGV) {
+  my $file = shift;
+  if ($file =~ /^http:/ ) {
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout(60);
+    $ua->agent('Mozilla/5.0');
+    my $response = $ua->get($file);
+    $response->is_success or die "request failed: " . $response->status_line;
+    $rss->parse($response->content);
+  } else { 
+    $rss->parsefile($file);
+  }
+} else {
+  local $/; 
+  $rss->parse(<STDIN>);
+}
+my @items = @{$rss->{items}};
+
+sub check {
+  my ($ok, $item, $field, @re) = @_;
+  my @stuff;
+  return unless defined $item->{$field}; 
+  if (ref $item->{$field}) { 
+    @stuff = @{$item->{$field}};
+  } else {
+    @stuff = $item->{$field};
+  }
+  for my $re (@re) {
+    for my $stuff (@stuff) {
+      if ($insensitive) { 
+        $$ok ||= ($stuff =~ /$re/i);
+      } else {
+        $$ok ||= ($stuff =~ /$re/);
+      }
+    }
+  }
+};
+
+@items = grep { my $ok = 0;
+                check (\$ok, $_, 'title', @title);
+                check (\$ok, $_, 'link', @link);
+                check (\$ok, $_, 'description', @description);
+                check (\$ok, $_, 'category', @category);
+                $ok = ($invert xor $ok); 
+                $ok;
+              } @items;
+# 
+$rss->{items} = [@items]; 
+                
+
+print $rss->as_string;
+
+
+
+
+
+
+

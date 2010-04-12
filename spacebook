@@ -1,0 +1,20 @@
+
+
+rssgrep 'http://www.facebook.com/feeds/friends_status.php?id=645588298&key=462df2e56a&format=rss20' \
+        -t '^Melody Cartwright' \
+        -t '^Shawna Loeblein' \
+        -t '^Miguel Rueda' \
+        -t '^Erin Morgan' \
+        -t '^Doug Brown' \
+        -t '^Raymond Abril' \
+        -t '^Jennifer Moorman' \
+        -t '^Ross Sandberg' \
+        -t '^John Rego' \
+        -t '^Joshua Thorpe' \
+        -t '^Elena Belias' \
+        -v -o ~/public_html/spacebook.rss
+
+        
+
+
+

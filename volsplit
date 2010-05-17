@@ -11,16 +11,29 @@ my $max = '600m';
 my $outdir;
 my $pathspec;
 my @exclude;
+my $prefix; 
+my $volid;
+my $script;
+my $device; 
 
 GetOptions ("exclude-regexp|X=s" => sub { my ($cb, $arg) = @_;
                                         push @exclude, qr/$arg/; },
             "exclude|x=s" => sub { my ($cb, $arg) = @_;
                                    push @exclude, quotemeta($arg) },
+            "prefix|P=s" => \$prefix,
+            "volid|V=s" => \$volid,
+            "device|Z=s" => \$device, 
+            "script|S" => \$script, 
             "pathspec|p" => \$pathspec,
             "outdir|o=s" => \$outdir,
             "volume-size|s=s" => \$max);
 
 
+if (defined $prefix) { 
+  $prefix =~ s:/*$:/:;
+} else {
+  $prefix = '/';
+}
 
 my @outdir;
 push @outdir, $outdir if defined $outdir; 
@@ -52,11 +65,26 @@ our $cursize;
 our $curvolfh;
 our $curvolindex = 0;
 
+sub closevol {
+  if (defined $curvolfh) { 
+    if ($script) { 
+      print $curvolfh "END\n";
+    }
+    close $curvolfh;
+    undef $curvolfh;
+  }
+}
+
 sub newvol {
   $curvolindex++;
-  close $curvolfh if defined $curvolfh;
+  closevol; 
   my $of = catfile(@outdir, "vol_$curvolindex");
   open $curvolfh, ">",  $of or die "couldn't open $of : $!\n";
+  if ($script) {
+    my $volidarg = defined($volid) ? "-V $volid" : '';
+    my $devarg = defined($device) ? "-Z $device" : '-Z $1';
+    print $curvolfh "growisofs $devarg -f $volidarg -J -R  -v -graft-points -path-list - <<END\n"
+  }    
   $cursize = 0; 
 }
 
@@ -67,7 +95,7 @@ sub take {
     die "paths can't have newlines" if $path =~ /\n/; 
     die "paths can't have equal signs\n" if $target =~ /=/;
     die "paths can't have equal signs\n" if $path =~ /=/;
-    print $curvolfh "$target=$path\n"; 
+    print $curvolfh "${prefix}$target=$path\n";
   } else { 
     print $curvolfh $target, "\n";
   }
@@ -107,5 +135,5 @@ sub traverse {
 
 newvol;
 traverse; 
-
+closevol; 
 

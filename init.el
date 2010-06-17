@@ -1475,6 +1475,13 @@
   (erc-tls :server "localhost" :port 7778 :nick "ldanna" :password (concat "larry:" my-dumb-passwd ":wjoe"))
   (erc-join-channel "#yourmom"))
 
+(defun baconet ()
+  (interactive)
+  ;;(erc-select :server "irc.baconautics.com" :port "ircd" :nick "smoofra")
+  (erc-tls :server "localhost" :port 7778 :nick "ldanna" :password (concat "larry:" my-dumb-passwd ":bacon"))
+  (erc-join-channel "#baconautics"))
+
+
 (defun bitlbee ()
   (interactive)
   (erc-tls :server "localhost" :port 7778 :nick "smoofra" :password (concat "larry:" my-dumb-passwd ":bitlbee")))

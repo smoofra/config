@@ -30,11 +30,11 @@ IEUA='Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0; SLCC2; .NE
 
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   wget -q -U "$IEUA" -O /home/larry/public_html/fbnotes.rss 'http://www.facebook.com/feeds/friends_notes.php?id=645588298&key=462df2e56a&format=rss20'
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/watcher/watcher update
-0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/boc2rss /home/larry/public_html/boc.rss
-0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/ronpaul2rss /home/larry/public_html/ronpaul.rss
-0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/warnerd /home/larry/public_html/warnerd.rss
-0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/zeropunctuation /home/larry/public_html/zp.rss
-0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/bin/lesswrong /home/larry/public_html/lesswrong.rss
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   retry /home/larry/bin/boc2rss /home/larry/public_html/boc.rss
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   retry /home/larry/bin/ronpaul2rss /home/larry/public_html/ronpaul.rss
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   retry /home/larry/bin/warnerd /home/larry/public_html/warnerd.rss
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   retry /home/larry/bin/zeropunctuation /home/larry/public_html/zp.rss
+0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   retry /home/larry/bin/lesswrong /home/larry/public_html/lesswrong.rss
 
 
 #0,30 * * * *   /home/larry/bin/checknews -o $HOME/.http-notification/news  -r $HOME/.jnewsrc-september -p $HOME/.slrnrc.pass

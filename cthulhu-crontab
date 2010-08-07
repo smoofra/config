@@ -13,7 +13,7 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/home/larry/usr/l
 # 0 1 * * *   /home/larry/bin/tvcron
 
 
-0 * * * * /home/larry/config/spacebook
+0 * * * * retry /home/larry/config/spacebook
 
 
 0 1 * * *   (wget --quiet -O -  http://moto4lin.sourceforge.net/wiki/Category:Models | grep -qi vu204) && ~/bin/remind 'moto4lin works with your phone'

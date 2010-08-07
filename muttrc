@@ -33,4 +33,8 @@ alternates  "ldanna@\(wam\|glue\|cs\|math\).umd.edu\|\(admin\|larry\|larry-web\|
 set certificate_file=/home/larry/.certs
 
 
+unset sidebar_visible
+unset catchup_newsgroup
+bind index N change-newsgroup
+
 

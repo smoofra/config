@@ -6,23 +6,36 @@ use Getopt::Long;
 use BerkeleyDB;
 use Getopt::Long;
 use IPC::Run qw/start finish/; 
+use News::Newsrc;
+use Set::IntSpan qw/map_set/;
+use Data::Dumper; 
+use Net::NNTP;
+use File::stat;
+
 
 
 sub usage {
-  die "usage: $0 [--ids | --unkill | --kill | --deliver <maildir>) [file]\n";
+  die "usage: $0 [--news | --ids | --unkill | --kill | --deliver <maildir>) [file]\n";
 }
 
 
-my ($unkill, $kill, $deliver, $quiet, $ids); 
+my ($unkill, $kill, $deliver, $quiet, $ids, $news); 
+my ($rcfile, $rcfile2, $server) = ("$ENV{HOME}/.newsrc", 
+                                   "$ENV{HOME}/.newsrc-thread", 
+                                   "localhost"); 
 Getopt::Long::Configure ("bundling");
 GetOptions ("unkill|u" => \$unkill,
             "ids|i" => \$ids,
             "kill|k" => \$kill,
             "quiet|q" => \$quiet,
-            "deliver|d=s" => \$deliver)
+            "deliver|d=s" => \$deliver, 
+            "newsrc|r=s" => \$rcfile, 
+            "newsrc2|R=s" => \$rcfile2, 
+            "server|s=s" => \$server, 
+            "news|n" => \$news)
   or usage;
 
-(!!$unkill + !!$kill + !!defined($deliver) + !!$ids) <= 1 or usage;
+(!!$unkill + !!$kill + !!defined($deliver) + !!$ids + !!$news) <= 1 or usage;
 
 tie %db, 'BerkeleyDB::Hash',
   -Filename => "$ENV{HOME}/.threads",
@@ -31,6 +44,125 @@ tie %db, 'BerkeleyDB::Hash',
 
 
 usage unless @ARGV <= 1;
+
+
+sub uniq {
+  my %x = map { ($_, 1) } @_;
+  return keys %x;
+}
+
+sub findrefs {
+  my $message = shift; 
+
+  my $header = Mail::Header->new ($message);
+
+  my @tags = $header->tags;
+
+  my $parse = sub {
+    my $hdr = shift;
+    my @ret; 
+    for my $tag (grep { /\Q$hdr\E/i } @tags) {
+      local $_;
+      for ($header->get($tag)) {
+        s/^\s+//;
+        s/\s+$//;
+        my @words = split /\s+/;
+        push @ret, grep { /^ \< [^@]+ \@ [^@]+ \> $/x } @words;
+      }
+    }
+    return @ret;
+  };
+
+  my @refs = $parse->( 'References' );
+  my @irt = $parse->( 'In-Reply-To' ); 
+  my @id = $parse->( 'Message-ID' );
+  @refs = uniq (@refs, @irt, @id);
+  return @refs;
+}
+
+sub killrefs {
+  my $time = time; 
+  my @refs = @_; 
+  for (@refs) {
+    $db{$_} = $time;
+  }
+}
+
+sub unkillrefs { 
+  my @refs = @_;
+  for (@refs) {
+    delete $db{$_};
+  }
+}
+
+sub isbad { 
+  my @refs = @_; 
+  my $bad = 0; 
+  for (@refs) {
+    $bad = 1 if $db{$_};
+  }
+  return $bad; 
+}
+
+
+if ($news) { 
+  my $nntp = Net::NNTP->new($server) or die "can't connect: $!\n";
+  my $stat = stat $rcfile; 
+  while (1) { 
+
+    my $newsrc = new News::Newsrc;
+    $newsrc->load($rcfile) if -e $rcfile;
+    my $newsrc2 = new News::Newsrc;
+    $newsrc2->load($rcfile2) if -e $rcfile2;
+
+    my @groups = $newsrc->sub_groups(); 
+    my $changed = 0; 
+
+    for my $group (@groups) { 
+      $nntp->group($group) or die "server doesn't like $group\n";
+      my ($num, $first, $last) = $nntp->group($group);
+
+      my $articles = Set::IntSpan->new($newsrc->get_articles($group));
+      my $articles2 = Set::IntSpan->new($newsrc2->get_articles($group));
+      $articles2 = $articles2 + $articles; 
+      $newsrc2->set_articles($group, $articles2); 
+
+      my $tocheck = Set::IntSpan->new("$first-$last");
+      $tocheck = $tocheck - $articles2; 
+
+      my $newarticles = $articles; 
+
+      print "group $group, ($first - $last) checking $tocheck\n" unless $quiet; 
+      for $article ($tocheck->elements) { 
+        my $content = $nntp->article($article); 
+        if (defined $content) { 
+          my @refs = findrefs $content; 
+          my $bad = isbad @refs; 
+          print "  article $article is ", ($bad ? "bad" : "ok"), "\n" unless $quiet; 
+          if ($bad) { 
+            $newsrc->mark($group, $article); 
+            $changed = 1; 
+          }
+        }
+        $newsrc2->mark($group, $article); 
+      }
+    }
+    my $stat2 = stat $rcfile; 
+    if ((!defined $stat && defined $stat2) || 
+        (defined $stat && defined $stat2 && $stat2->mtime > $stat->mtime)) { 
+      print  "newsrc modified, trying again\n" unless $quiet; 
+      next; 
+    }
+    $newsrc->save_as($rcfile); 
+    $newsrc2->save_as($rcfile2); 
+    last; 
+  }
+  $nntp->quit;
+  exit 0; 
+}
+
+
+
 
 my $in; 
 if (@ARGV) {
@@ -43,48 +175,16 @@ if (@ARGV) {
 
 my @message = <$in>;
 
-my $header = Mail::Header->new (\@message);
+my @refs = findrefs \@message;
 
-my @tags = $header->tags;
-
-sub parse {
-  my $hdr = shift;
-  my @ret; 
-  for my $tag (grep { /\Q$hdr\E/i } @tags) {
-    local $_;
-    for ($header->get($tag)) {
-      s/^\s+//;
-      s/\s+$//;
-      my @words = split /\s+/;
-      push @ret, grep { /^ \< [^@]+ \@ [^@]+ \> $/x } @words;
-    }
-  }
-  return @ret;
-}
-
-sub uniq {
-  my %x = map { ($_, 1) } @_;
-  return keys %x;
-}
-
-my @refs = parse 'References';
-my @irt = parse 'In-Reply-To'; 
-my @id = parse 'Message-ID';
-@refs = uniq (@refs, @irt, @id);
-
-my $time = time; 
 
 if ($kill) {
-  for (@refs) {
-    $db{$_} = $time;
-  }
+  killrefs @refs; 
   exit 0;
 }
 
 if ($unkill) {
-  for (@refs) {
-    delete $db{$_};
-  }
+  unkillrefs @refs;
   exit 0; 
 }
 
@@ -93,17 +193,13 @@ if ($ids) {
   exit 0; 
 }
 
-my $bad = 0; 
-for (@refs) {
-  $bad = 1 if $db{$_};
-}
+
+my $bad = isbad @refs; 
 
 if (defined $deliver) {
   my $p;
   if ($bad) {
-    for (@refs) {
-      $db{$_} = $time;
-    }
+    killrefs @refs; 
     $p = ['mddeliver', '-r', $deliver];
   } else {
     $p = ['mddeliver', $deliver];

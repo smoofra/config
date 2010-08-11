@@ -1,0 +1,58 @@
+#!/usr/bin/perl -w
+
+use File::Temp  qw/ :POSIX /;
+use IPC::Run qw/run/ ;
+
+@ARGV == 3 or die sprintf 'wtf %s', join(' ', @ARGV);
+
+my ($o, $a, $b) = @ARGV; 
+
+print "MERGEING SQLITE FILES $o $a $b\n"; 
+
+
+eval { 
+  $ad = tmpnam();
+  $bd = tmpnam();
+  $od = tmpnam(); 
+
+  run ['sqlite3', $o, '.dump'], '>', $od or die 'sqlite3 failed';
+  run ['sqlite3', $a, '.dump'], '>', $ad or die 'sqlite3 failed';
+  run ['sqlite3', $b, '.dump'], '>', $bd or die 'sqlite3 failed';
+
+  run ['merge', $ad, $od, $bd] or do {
+    my $newname = "$a.dump";
+    my $n = 0;
+    while (-e $newname) {
+      ++$n;
+      $newname = "$a.dump.$n";
+    }
+    print "merge failed, saving dump in $newname\n";
+    rename $ad, $newname;
+    undef $ad; 
+    die 'merge failed';
+  };
+
+  unlink $a or die $!;
+  my $err; 
+  run ['sqlite3', $a], '>', \*STDOUT, '2>', \$err, '<', $ad;
+  if ('' ne $err) {
+    print STDERR $err;
+    die 'sqlite3 failed';
+  }  
+
+  unlink $ad if defined $ad;
+  unlink $bd; 
+  unlink $od;
+  1;
+} or do {
+  unlink $ad if defined $ad;
+  unlink $bd if defined $bd;
+  unlink $od if defined $od;
+
+  die $@; 
+}
+  
+
+
+
+

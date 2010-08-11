@@ -1,0 +1,31 @@
+#!/usr/bin/perl -w
+
+use File::Temp  qw/ :POSIX /;
+use IPC::Run qw/run/ ;
+
+@ARGV == 7 or die sprintf 'wtf %s', join(' ', @ARGV);
+
+my ($name, $x, $y) = ($ARGV[0], $ARGV[1], $ARGV[4]);
+
+my ($a, $b);
+
+eval { 
+  $a = tmpnam();
+  $b = tmpnam();
+
+  run ['sqlite3', $x, '.dump'], '>', $a or die 'sqlite3 failed';
+  run ['sqlite3', $y, '.dump'], '>', $b or die 'sqlite3 failed';
+
+  print "diff-sqlite3 a/$name b/$name\n";
+  run ['diff', '-u', $a, $b, '--label', "a/$name", '--label', "b/$name"], '>', \*STDOUT;   
+  
+  unlink $a;
+  unlink $b; 
+  1;
+} or do {
+  unlink $a if defined $a;
+  unlink $b if defined $b;
+  die $@; 
+}
+  
+

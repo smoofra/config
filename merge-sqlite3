@@ -9,15 +9,26 @@ my ($o, $a, $b) = @ARGV;
 
 print "MERGEING SQLITE FILES $o $a $b\n"; 
 
+sub dumpsqlite3 {
+  my ($infile, $outfile) = @_;
+  -e $infile or die "$infile doesn't exist\n"; 
+  my $v;
+  run ['sqlite3', $infile, 'PRAGMA user_version;'], '>', \$v or die 'sqlite3 failed';
+  chomp $vx;
+  open my $fh,  '>',  $outfile or die $!;
+  print $fh "PRAGMA user_version = $v;\n";
+  close $fh;
+  run ['sqlite3', $infile, '.dump'], '>>', $outfile or die 'sqlite3 failed';
+}
 
 eval { 
   $ad = tmpnam();
   $bd = tmpnam();
   $od = tmpnam(); 
 
-  run ['sqlite3', $o, '.dump'], '>', $od or die 'sqlite3 failed';
-  run ['sqlite3', $a, '.dump'], '>', $ad or die 'sqlite3 failed';
-  run ['sqlite3', $b, '.dump'], '>', $bd or die 'sqlite3 failed';
+  dumpsqlite3 $o, $od;
+  dumpsqlite3 $a, $ad;
+  dumpsqlite3 $b, $bd; 
 
   run ['merge', $ad, $od, $bd] or do {
     my $newname = "$a.dump";

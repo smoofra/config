@@ -140,6 +140,7 @@ if ($news) {
           my $bad = isbad @refs; 
           print "  article $article is ", ($bad ? "bad" : "ok"), "\n" unless $quiet; 
           if ($bad) { 
+            killrefs @refs ;
             $newsrc->mark($group, $article); 
             $changed = 1; 
           }

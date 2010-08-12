@@ -7,14 +7,31 @@ use IPC::Run qw/run/ ;
 
 my ($name, $x, $y) = ($ARGV[0], $ARGV[1], $ARGV[4]);
 
+-e $x or die "$x does not exist\n";
+-e $y or die "$y does not exist\n"; 
+
 my ($a, $b);
+
+sub cat {
+  my ($fn, $s) = @_;
+  open my $fh, '>>', $fn or die $!;
+  print $fh $s;
+  close $fh;
+}    
 
 eval { 
   $a = tmpnam();
   $b = tmpnam();
 
-  run ['sqlite3', $x, '.dump'], '>', $a or die 'sqlite3 failed';
-  run ['sqlite3', $y, '.dump'], '>', $b or die 'sqlite3 failed';
+  my ($vx, $vy);
+  run ['sqlite3', $x, 'PRAGMA user_version;'], '>', \$vx or die 'sqlite3 failed'; chomp $vx; 
+  run ['sqlite3', $y, 'PRAGMA user_version;'], '>', \$vy or die 'sqlite3 failed'; chomp $vy; 
+
+  cat $a, "PRAGMA user_version = $vx;\n";
+  cat $b, "PRAGMA user_version = $vy;\n";
+  
+  run ['sqlite3', $x, '.dump'], '>>', $a or die 'sqlite3 failed';
+  run ['sqlite3', $y, '.dump'], '>>', $b or die 'sqlite3 failed';
 
   print "diff-sqlite3 a/$name b/$name\n";
   run ['diff', '-u', $a, $b, '--label', "a/$name", '--label', "b/$name"], '>', \*STDOUT;   

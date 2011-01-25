@@ -75,6 +75,10 @@ $MAILDIR/.spam/
 ##
 
 
+:0w
+* Delivered-To: ldanna@math.umd.edu
+| mddeliver -r $MAILDIR/.math/ 
+
 
 :0w
 * To:.*mathusers@math.umd.edu

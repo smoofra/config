@@ -8,9 +8,12 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/home/larry/usr/l
 30 5 * * *  /home/larry/bin/cleanspam-maildir
 30 6 * * *  /home/larry/bin/quiet-git-commit --git-dir /home/larry/Maildir.git /home/larry/Maildir
 0 0 * * *   /home/larry/repos/slime-tracker/.git/import
-0 0 * * *   /home/larry/delicious/update.pl
+#0 0 * * *   /home/larry/delicious/update.pl
 0 0 * * *   /home/larry/scuttlebackup/update
 # 0 1 * * *   /home/larry/bin/tvcron
+
+
+#0  * * * *  thread -qn 
 
 
 0 * * * * retry /home/larry/config/spacebook
@@ -31,7 +34,7 @@ IEUA='Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0; SLCC2; .NE
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   wget -q -U "$IEUA" -O /home/larry/public_html/fbnotes.rss 'http://www.facebook.com/feeds/friends_notes.php?id=645588298&key=462df2e56a&format=rss20'
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   /home/larry/watcher/watcher update
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   retry /home/larry/bin/boc2rss /home/larry/public_html/boc.rss
-0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   retry /home/larry/bin/ronpaul2rss /home/larry/public_html/ronpaul.rss
+# 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   retry /home/larry/bin/ronpaul2rss /home/larry/public_html/ronpaul.rss
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   retry /home/larry/bin/warnerd /home/larry/public_html/warnerd.rss
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   retry /home/larry/bin/zeropunctuation /home/larry/public_html/zp.rss
 0 0,2,4,6,8,10,12,14,16,18,20,22 * * *   retry /home/larry/bin/lesswrong /home/larry/public_html/lesswrong.rss
@@ -39,6 +42,8 @@ IEUA='Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0; SLCC2; .NE
 
 #0,30 * * * *   /home/larry/bin/checknews -o $HOME/.http-notification/news  -r $HOME/.jnewsrc-september -p $HOME/.slrnrc.pass
 #0,30 * * * *   /home/larry/bin/checknews -o $HOME/.http-notification/gmane -r $HOME/.jnewsrc-gmane -s news.gmane.org -m gmane
+
+# 0,30 * * * *   /home/larry/bin/checknews -o $HOME/.http-notification/news  -r $HOME/.newsrc -s localhost 
 
 #0,10,20,30,40,50 * * * * daemonize -p /home/larry/.sage.pid sage -notebook port=8082
 0,10,20,30,40,50 * * * * /home/larry/lisp/blog/check

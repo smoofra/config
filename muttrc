@@ -36,5 +36,14 @@ set certificate_file=/home/larry/.certs
 unset sidebar_visible
 unset catchup_newsgroup
 bind index N change-newsgroup
+set nntp_context=10000
+
+
+bind index "\Cuc" catchup
+bind index "\Cup" post-message
+bind index "\Cuf" followup-message
+
+account-hook news:/ 'source ~/config/muttrc-newshook'
+
 
 

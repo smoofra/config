@@ -1,0 +1,4 @@
+set pager=`thread -qn ` 
+set pager=builtin
+
+

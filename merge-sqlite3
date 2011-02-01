@@ -14,7 +14,7 @@ sub dumpsqlite3 {
   -e $infile or die "$infile doesn't exist\n"; 
   my $v;
   run ['sqlite3', $infile, 'PRAGMA user_version;'], '>', \$v or die 'sqlite3 failed';
-  chomp $vx;
+  chomp $v;
   open my $fh,  '>',  $outfile or die $!;
   print $fh "PRAGMA user_version = $v;\n";
   close $fh;

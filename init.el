@@ -2243,3 +2243,7 @@
 ;; to switch to a buffer that's visible in another window, use C-x 4 b iswitchb-buffer-other-window
 
 ;;; (debiafy) in .site init for debian crap
+
+
+(defalias 'perl-mode 'cperl-mode)
+

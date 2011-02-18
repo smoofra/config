@@ -1,6 +1,8 @@
 
 
 rssgrep 'http://www.facebook.com/feeds/friends_status.php?id=645588298&key=462df2e56a&format=rss20' \
+        -t '^Karen Reilly' \
+        -t '^Brandon Corbett' \
         -t '^Melody Cartwright' \
         -t '^Shawna Loeblein' \
         -t '^Miguel Rueda' \

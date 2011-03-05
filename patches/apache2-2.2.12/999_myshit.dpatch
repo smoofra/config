@@ -1,0 +1,94 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 999_myshit.dpatch by  <larry@cthulhu>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad apache2-2.2.12.mine~/support/suexec-custom.c apache2-2.2.12.mine/support/suexec-custom.c
+--- apache2-2.2.12.mine~/support/suexec-custom.c	2010-01-28 20:50:43.000000000 -0500
++++ apache2-2.2.12.mine/support/suexec-custom.c	2010-01-28 20:50:44.000000000 -0500
+@@ -396,7 +396,7 @@
+     configfile = fopen(filename, "r");
+     if (!configfile) {
+     	log_err("User %s not allowed: Could not open config file %s\n", pw->pw_name, filename);
+-	exit(123);
++		exit(123);
+     }
+ 
+     if (!read_line(suexec_docroot, configfile)) {
+@@ -565,23 +565,52 @@
+     }
+ 
+     if (userdir) {
+-        if (((chdir(target_homedir)) != 0) ||
+-            ((chdir(suexec_userdir_suffix)) != 0) ||
+-            ((getcwd(dwd, AP_MAXPATH)) == NULL) ||
+-            ((fchdir(cwdh)) != 0)) {
+-            log_err("cannot get docroot information (%s)\n", target_homedir);
++        if ((chdir(target_homedir)) != 0) { 
++            log_err("cannot get (userdir) docroot information (1) (%s)\n", target_homedir);
+             exit(112);
+         }
+-    }
+-    else {
+-        if (((chdir(suexec_docroot)) != 0) ||
+-            ((getcwd(dwd, AP_MAXPATH)) == NULL) ||
+-            ((fchdir(cwdh)) != 0)) {
+-            log_err("cannot get docroot information (%s)\n", suexec_docroot);
+-            exit(113);
++		if (chdir(suexec_userdir_suffix) != 0) { 
++            log_err("cannot get (userdir) docroot information (2) (%s) (name=%s)\n", suexec_userdir_suffix, pw->pw_name);
++            exit(112);
++        }
++		if ((getcwd(dwd, AP_MAXPATH)) == NULL) { 
++            log_err("cannot get (userdir) docroot information (3)\n");
++            exit(112);
++        }
++		if (fchdir(cwdh) != 0) { 
++            log_err("cannot get (userdir) docroot information (4)\n");
++            exit(112);
+         }
+     }
+-
++    else {
++		if (0 == strcmp(pw->pw_name, "meghan")) { 
++			strncpy(dwd, "/home/meghan/public_html", AP_MAXPATH);
++			fchdir(cwdh); 
++		} 
++		else if (0 == strcmp(pw->pw_name, "voodoo")) { 
++			strncpy(dwd, "/home/voodoo/www", AP_MAXPATH);
++			fchdir(cwdh); 
++		} 
++		else if (0 == strcmp(pw->pw_name, "adam")) { 
++			strncpy(dwd, "/home/adam/public_html", AP_MAXPATH);
++			fchdir(cwdh); 
++		} 
++		else if (0 == strcmp(pw->pw_name, "mfarah")) { 
++			strncpy(dwd, "/home/mfarah/public_html", AP_MAXPATH);
++			fchdir(cwdh); 
++		} 
++		else if (0 == strcmp(pw->pw_name, "jdanna")) {
++			strncpy(dwd, "/home/jdanna/wjoetv", AP_MAXPATH);
++			fchdir(cwdh); 
++		} else { 
++			if (((chdir(suexec_docroot)) != 0) ||
++				((getcwd(dwd, AP_MAXPATH)) == NULL) ||
++				((fchdir(cwdh)) != 0)) {
++				log_err("cannot get docroot information (%s)\n", suexec_docroot);
++				exit(113);
++			}
++		}
++	}
+     close(cwdh);
+ 
+     if (strlen(cwd) > strlen(dwd)) {
+@@ -589,7 +618,7 @@
+         dwd[AP_MAXPATH-1] = '\0';
+     }
+     if ((strncmp(cwd, dwd, strlen(dwd))) != 0) {
+-        log_err("command not in docroot (%s/%s)\n", cwd, cmd);
++        log_err("command (%s/%s) not in docroot (dwd) \n", cwd, cmd, dwd);
+         exit(114);
+     }
+ 

@@ -1,0 +1,18 @@
+--- sudo-1.7.0/debian/rules	2010-01-28 19:34:40.000000000 -0500
++++ sudo-1.7.0.mine/debian/rules	2010-01-28 19:38:51.000000000 -0500
+@@ -35,7 +35,6 @@
+ 		--with-sendmail=/usr/sbin/sendmail \
+ 		--mandir=/usr/share/man \
+ 		--libexecdir=/usr/lib/sudo \
+-		--with-secure-path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11R6/bin"
+ 
+ 	# LDAP version
+ 	mkdir -p build-ldap
+@@ -60,7 +59,6 @@
+ 		--with-ldap-conf-file=/etc/sudo-ldap.conf \
+ 		--mandir=/usr/share/man \
+ 		--libexecdir=/usr/lib/sudo \
+-		--with-secure-path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11R6/bin"
+ 
+ 	touch config-stamp
+ 

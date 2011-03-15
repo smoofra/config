@@ -1,4 +1,5 @@
-#!/usr/bin/perl -w  -Co -CO
+#!/usr/bin/perl -w  -CoO
+
 
 
 use LWP::UserAgent;

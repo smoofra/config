@@ -1,74 +1,13 @@
-#!/usr/bin/perl -w  -Co -CO
-
-use XML::Grove::AsCanonXML; 
-use XML::Grove::AsString; 
-use XML::Simple;
-use LWP::UserAgent;
-use XML::Grove::Builder;
-use XML::Parser::PerlSAX;
-
-my $ua = LWP::UserAgent->new;
-$ua->timeout(10);
-my $response = $ua->get('http://exiledonline.com/feed/');
-
-$response->is_success or die "request failed: " . $response->status_line;
-
-$grove_builder = XML::Grove::Builder->new or die;
-$parser = XML::Parser::PerlSAX->new ( Handler => $grove_builder ) or die;
-
-$_ = $response->content;
-s/^ \s*//x;
-$document = $parser->parse ($_) or die;
+#!/bin/sh
 
 
-sub incat {
-  my ($e, $cat) = @_;
-  for my $x (@{$e->{Contents}}) {
-    if ($x->isa('XML::Grove::Element') &&
-        $x->{Name} eq 'category' &&
-        join ('', map {$_->as_string} @{$x->{Contents}}) =~ $cat) {
-      return 1;
-    }
-  }
-  return 0; 
-};
-
-sub filterfeed {
-  my $f = shift;
-  my @nc; 
-  for my $e (@{$f->{Contents}}) {
-    if ($e->isa('XML::Grove::Element')) {
-      if ($e->{Name} eq 'item') {
-        push @nc, $e if (incat($e, qr/war nerd/i))
-      } else {
-        &filterfeed ($e);
-        push @nc, $e; 
-      }
-    } else {
-      push @nc, $e;
-    }
-  }
-  $f->{Contents} = [ @nc ]; 
-};
+if test -z "$1"; then
+    out="-"
+else
+    out="$1"
+fi
 
 
-filterfeed $document; 
-
-my $fh = \*STDOUT;
-if (@ARGV) {
-  open $fh, ">", shift or die $!;
-}
-binmode $fh, ":utf8";
-print $fh $document->as_canon_xml;
-close $fh;
-
-# use Data::Dumper;
-# for $e (@{$document->{Contents}->[0]->{Contents}}) {
-#   if ($e->isa('XML::Grove::Element')) {
-#     print $e->{Name};
-#     print "\n"; 
-#   }
-# }
-
+rssgrep http://exiledonline.com/feed -c 'war nerd' -t 'war nerd' -i -o "$out"
 
 

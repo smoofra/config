@@ -12,7 +12,7 @@ use Getopt::Long;
 Getopt::Long::Configure ("bundling");
 my ($invert, @title, @link, @description, @category, $insensitive);
 GetOptions ('v' => \$invert,
-            'o|outfile=s' => sub { close STDOUT; open STDOUT, '>', $_[1] or die $! }, 
+            'o|outfile=s' => sub { $_[1] eq '-' or do { close STDOUT; open STDOUT, '>', $_[1]} or die $! }, 
             't|title=s' => sub{ push @title, $_[1]},
             'c|category=s' => sub{ push @category, $_[1]}, 
             'd|description=s' => sub{ push @description, $_[1]},

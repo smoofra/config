@@ -34,3 +34,31 @@ function slrn() {
 }
 
 
+function sx() {
+    if [ "$1" != "" ]; then
+        if [ "$2" != "" ]; then
+            echo "usage sx [file]";
+            return 1;
+        fi
+        file=$1;
+    else
+        file=~/.sx
+    fi
+
+    cat /dev/null >$file;
+    echo export DISPLAY="$DISPLAY" >>$file
+    echo export XDG_SESSION_COOKIE="$XDG_SESSION_COOKIE"  >>$file
+}
+
+function rx() {
+    if [ "$1" != "" ]; then
+        if [ "$2" != "" ]; then
+            echo "usage rx [file]";
+            return 1;
+        fi
+        file=$1;
+    else
+        file=~/.sx
+    fi
+    . $file
+}

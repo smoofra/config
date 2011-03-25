@@ -13,6 +13,9 @@ PATH=/home/larry/bin.local:/home/larry/bin:/home/larry/usr/bin:/home/larry/usr/l
 # 0 1 * * *   /home/larry/bin/tvcron
 
 
+0 5 * * * rsync -ruq --delete /btrfs/media/ larry@orm:backup/media/
+
+
 #0  * * * *  thread -qn 
 
 

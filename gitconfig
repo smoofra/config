@@ -21,8 +21,6 @@
         s = status
         b = branch -v
         f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary=200
-	wsfix = "!\n. \"$(git --exec-path)\"/git-sh-setup\nf() { \n    if git-diff --quiet --exit-code; then\n        if git diff --cached --check >/dev/null; then\n            exit 0;\n        fi\n        echo fixing\n        git diff --cached > $GIT_DIR/wsfix.diff\n        git apply -R $GIT_DIR/wsfix.diff\n        git apply --whitespace=fix $GIT_DIR/wsfix.diff\n        rm -f $GIT_DIR/wsfix.diff\n    else\n        echo wokring tree is dirty\\!\n    fi\n}\nf"
-	wsfix-from = "!\n. \"$(git --exec-path)\"/git-sh-setup\nf() { \n    if git-diff --quiet --exit-code; then\n        if git diff --cached $1 --check >/dev/null; then\n            exit 0;\n        fi\n        echo fixing\n        git diff --cached $1 > $GIT_DIR/wsfix.diff\n        git apply -R $GIT_DIR/wsfix.diff\n        git apply --whitespace=fix $GIT_DIR/wsfix.diff\n        rm -f $GIT_DIR/wsfix.diff\n    else\n        echo wokring tree is dirty\\!\n    fi\n}\nf"
 	ec = !\nf() {\n tmp=`tempfile`\n ( git config \"$@\" >$tmp || touch $tmp ) && \n\t$EDITOR $tmp && \n\tgit config \"$@\" \"$(cat $tmp)\" && \n\trm -f $tmp\n}\nf
 	egc = ! git ec --file ~/.gitconfig
 	lsf = ls-files --exclude-standard --directory --no-empty-directory
@@ -43,6 +41,7 @@
 	make-pushable = !\nset -e \n. \"$(git --exec-path)\"/git-sh-setup\nf() {\n    ln -s $HOME/bin/git-pushable-hooks/* $GIT_DIR/hooks/\n    git config receive.denyCurrentBranch ignore\n}\nf
 
 	me = ! \nf() { \n    git aone \"$@\" | grep -i d.anna\n}\nf
+	dcc = diff --cached --color
 
 [push]
         default = matching

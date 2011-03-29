@@ -1,0 +1,179 @@
+#!/usr/bin/perl -w
+
+use strict qw/vars/;
+
+use MP3::Info;
+use MP4::Info;
+use File::Find;
+use Data::Dumper; 
+use Getopt::Long;
+use utf8;
+use File::Basename; 
+use File::Path qw/make_path/;
+
+Getopt::Long::Configure ("bundling");
+my ($dry, $recursive, $dest, $recursiveskip, $compilation, $prune );
+$recursiveskip = 1;
+$dest = defined $ENV{AUDIOFILE_DEST} ? $ENV{AUDIOFILE_DEST} : ''; 
+our $skip;
+GetOptions ("c|compilation" => \$compilation,
+            "p|prune"   => \$prune, 
+            "n|dry-run" => \$dry,
+            "r|recursive" => \$recursive,
+            "o|dest=s" => \$dest,
+            "skip=s" => sub {
+              my $x = $_[1];
+              if ($x eq 'default') {
+                $skip = 0;
+                $recursiveskip = 1;
+              } elsif ($x eq 'never') {
+                $skip = 0;
+                $recursiveskip = 0;
+              } elsif ($x eq 'always') {
+                $skip = 1;
+                $recursiveskip = 1;
+              } else {
+                die "--skip accepts 'default', 'never', or 'always'\n";
+              }
+            },
+           ) or die "couln't get options $!";
+
+die "destdir is required" if !$dest && !$dry;
+
+$dest = "$dest/" unless $dest eq  ''; 
+$dest =~ s:/+$:/: if defined $dest; 
+
+sub probe_mp3 {
+  my ($file) = @_;
+  my $tags = get_mp3tag $file;
+  $tags or $skip or die "no tags for $file\n"; 
+  $tags or return undef; 
+  return (1, $tags->{ARTIST}, $tags->{ALBUM}, $tags->{TITLE}, $tags->{TRACKNUM}, 'mp3');
+}
+
+sub probe_mp4 {
+  my ($file) = @_;
+  my $tags = get_mp4tag $file; 
+  $tags or $skip or die "no tags for $file\n"; 
+  $tags or return undef;
+  return (1, $tags->{ARTIST}, $tags->{ALBUM}, $tags->{TITLE}, $tags->{TRACKNUM}, 'm4a');
+}
+
+my @probers = ([qr/\.mp3$/i => \&probe_mp3],
+               [qr/\.m4a$/i => \&probe_mp4]);
+
+sub probe {
+  my ($file) = @_;
+  die "file $file does not exist\n" unless -e $file;
+  for my $prober (@probers) {
+    my ($re, $sub) = @$prober;
+    if ($file =~ $re) { 
+      return $sub->($file);
+    }
+  }
+  $skip or die "what kind of file is $file?\n";
+  return undef;
+}
+
+sub checkname (\$) {
+  my ($name) = shift;
+  # die "'$$name' has slashes in it\n" if $$name =~ m:\/:;
+  # die "'$$name' has newlines in it\n" if $$name =~ m:\n:;
+  # die "'$$name' has trailing whitespace\n" if $$name =~ m:\s+$:;
+  $$name =~ s:\/:\\:g;
+  $$name =~ s:\s*$::;
+  $$name =~ s:\n: :g; 
+}    
+
+sub nz {
+  my ($x) = @_;
+  return defined $x && $x ne ''; 
+}
+
+sub visit {
+  my ($file) = @_;
+  $file = $_ unless @_;
+  return if -d $file;
+  my ($ok, $artist, $album, $title, $tracknum, $ext) = probe $file;
+  return unless $ok;
+
+  $album = 'Unknown Album' unless nz $album; 
+  
+  my $missing; 
+  if (!$compilation) {
+    $missing = !(nz $artist && nz $album && nz $title)
+  } else {
+    $missing = !(nz $album && nz $title)
+  }
+  if ($missing) { 
+    return if $skip;
+    die "missing info for '$file'\n"; 
+  };
+
+  eval { 
+    checkname $artist unless $compilation;
+    checkname $album;
+    checkname $title;
+    if (nz $tracknum) { 
+      $tracknum =~ m:^ (\d+) (/ \d+)? $:x or die "bad tracknum ($tracknum) for '$file'\n";
+      $tracknum = $1;
+    }
+    1; 
+  } or do {
+    return if $skip;
+    die $@;
+  };
+
+  if (nz $tracknum) { 
+    $title = sprintf '%02d %s', $tracknum, $title;
+  }
+  
+  my $newname;
+  if ($compilation) { 
+    $newname = "${dest}Compilations/$album/$title.$ext";
+  } else {
+    $newname = "$dest$artist/$album/$title.$ext";
+  }
+
+  utf8::upgrade($newname); 
+  
+  print "moving: $file\n";
+  print "    to: $newname\n";
+  print "\n";
+
+  return if $dry;
+
+  die "file exists!\n" if -e $newname;
+  my $dir = dirname $newname;
+  -e $dir or make_path $dir or die $!;
+  -d $dir or die "'$dir' is not a directory\n"; 
+  rename $file, $newname or die $!; 
+}
+
+for my $file (@ARGV) {
+  local $skip = $skip;
+  if (-d $file) {
+    unless ($recursive) {
+      print "skiping directory: $file\n";
+      next;
+    }
+    $skip = 1 if $recursiveskip;
+    find {wanted => \&visit, no_chdir => 1}, $file;
+    if ($prune) {
+      finddepth {wanted => sub {rmdir $_ if -d}, no_chdir => 1}, $file;
+    }
+  } else {
+    visit $file;
+  }
+}
+
+# my $file = shift;
+# use Data::Dumper;
+
+# print Dumper [probe $file]; 
+
+
+
+
+
+  

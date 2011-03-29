@@ -1,22 +1,28 @@
 #!/usr/bin/perl -w
 
 use strict qw/vars/;
-
+use Encode qw/encode/;
 use MP3::Info;
 use MP4::Info;
 use File::Find;
 use Data::Dumper; 
 use Getopt::Long;
 use utf8;
-use File::Basename; 
+use File::Basename;
+use File::Spec;
+use File::Spec::Unix;
 use File::Path qw/make_path/;
 
 Getopt::Long::Configure ("bundling");
 my ($dry, $recursive, $dest, $recursiveskip, $compilation, $prune );
+my %exclude;
 $recursiveskip = 1;
 $dest = defined $ENV{AUDIOFILE_DEST} ? $ENV{AUDIOFILE_DEST} : ''; 
 our $skip;
 GetOptions ("c|compilation" => \$compilation,
+            "x|exclude=s" => sub {
+              $exclude{$_[1]} = 1;
+            },
             "p|prune"   => \$prune, 
             "n|dry-run" => \$dry,
             "r|recursive" => \$recursive,
@@ -82,7 +88,8 @@ sub checkname (\$) {
   # die "'$$name' has trailing whitespace\n" if $$name =~ m:\s+$:;
   $$name =~ s:\/:\\:g;
   $$name =~ s:\s*$::;
-  $$name =~ s:\n: :g; 
+  $$name =~ s:\n: :g;
+  $$name =~ s/:/;/g;
 }    
 
 sub nz {
@@ -93,6 +100,10 @@ sub nz {
 sub visit {
   my ($file) = @_;
   $file = $_ unless @_;
+  if ($exclude{$file}) {
+    $File::Find::prune = 1;
+    return;
+  }
   return if -d $file;
   my ($ok, $artist, $album, $title, $tracknum, $ext) = probe $file;
   return unless $ok;
@@ -135,15 +146,24 @@ sub visit {
     $newname = "$dest$artist/$album/$title.$ext";
   }
 
-  utf8::upgrade($newname); 
+  $newname = encode("utf8", $newname);
+  return if (File::Spec::Unix->rel2abs($file) eq File::Spec::Unix->rel2abs($newname));
   
   print "moving: $file\n";
   print "    to: $newname\n";
-  print "\n";
 
   return if $dry;
 
-  die "file exists!\n" if -e $newname;
+  if (-e $newname) {
+    if ($skip) {
+      print "file exists!\n\n";
+      return;
+    }
+    die "file exists!\n";
+  }
+
+  print "\n";
+
   my $dir = dirname $newname;
   -e $dir or make_path $dir or die $!;
   -d $dir or die "'$dir' is not a directory\n"; 

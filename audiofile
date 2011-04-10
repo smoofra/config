@@ -151,9 +151,6 @@ sub visit {
   
   print "moving: $file\n";
   print "    to: $newname\n";
-
-  return if $dry;
-
   if (-e $newname) {
     if ($skip) {
       print "file exists!\n\n";
@@ -161,8 +158,9 @@ sub visit {
     }
     die "file exists!\n";
   }
-
   print "\n";
+
+  return if $dry;
 
   my $dir = dirname $newname;
   -e $dir or make_path $dir or die $!;

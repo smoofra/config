@@ -1713,8 +1713,8 @@
 
 (add-hook 'c-mode-common-hook '(lambda ()
                                  (setq indent-tabs-mode t)
-                                 (setq tab-width 4) 
-                                 (setq c-basic-offset 4)))
+                                 (setq tab-width 8) 
+                                 (setq c-basic-offset 8)))
 
 ;; to keep long lines from wrapping around use toggle-truncate-lines
 

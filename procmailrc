@@ -26,14 +26,14 @@ PATH=/usr/local/bin:/usr/bin/:/bin:$PATH
 * !^X-Spam-Status:.*USER_IN_WHITELIST
 {
 
-# run it through spamprobe and store the result in SCORE
-# if you set the output to a variable, it doesn't consider the mail delivered
-:0
-SCORE=| /usr/bin/spamprobe train
-
-# run the mail through a filter to add a spamprobe header
-:0 wf
-| formail -I "X-SpamProbe: $SCORE"
+## run it through spamprobe and store the result in SCORE
+## if you set the output to a variable, it doesn't consider the mail delivered
+#:0
+#SCORE=| /usr/bin/spamprobe train
+#
+## run the mail through a filter to add a spamprobe header
+#:0 wf
+#| formail -I "X-SpamProbe: $SCORE"
 
 # put it in =spam if spamprobe or spamassin thought it was spam
 :0 a

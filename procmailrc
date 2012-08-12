@@ -1,36 +1,12 @@
 MAILDIR=$HOME/Maildir
 DEFAULT=$HOME/Maildir/
 
-PATH=$HOME/procmail_bin:$HOME/bin.local:$HOME/bin:$PATH
+# make sure we use the installed versions of programs
+PATH=/usr/local/bin:/usr/bin/:/bin:$PATH
+
 
 #:0 c
 #/home/larry/backup/
-
-#:0w
-#*^Subject: LOLWTF
-#| mddeliver -r $MAILDIR
-
-
-
-
-:0
-*^From: blockbuster@custhelp.com
-$MAILDIR/
-
-:0
-*^From: [^ ]*@blockbuster.com
-$MAILDIR/
-
-:0
-*^Sender: .*FYI@LISTSERV.UMD.EDU
-$MAILDIR/.spam/
-
-:0
-*^From:.*Borders Rewards
-*^Subject:.*the Shortlist
-$MAILDIR/.spam/
-
-
 
 ##
 ## BEGIN SPAM RECIPIES
@@ -75,62 +51,62 @@ $MAILDIR/.spam/
 ##
 
 
-:0w
-* Delivered-To: ldanna@math.umd.edu
-| mddeliver -r $MAILDIR/.math/ 
-
-
-:0w
-* To:.*mathusers@math.umd.edu
-* !^To:.*elder-gods.org
-* !^To:.*smoofra@gmail.com
-* !^Cc:.*elder-gods.org
-* !^Cc:.*smoofra@gmail.com
-| mddeliver -r $MAILDIR/.math/
-
-
-:0w
-* Cc:.*mathusers@math.umd.edu
-* !^To:.*elder-gods.org
-* !^To:.*smoofra@gmail.com
-* !^Cc:.*elder-gods.org
-* !^Cc:.*smoofra@gmail.com
-| mddeliver -r $MAILDIR/.math/
-
-:0w
-* To:.*students@math.umd.edu
-* !^To:.*elder-gods.org
-* !^To:.*smoofra@gmail.com
-* !^Cc:.*elder-gods.org
-* !^Cc:.*smoofra@gmail.com
-| mddeliver -r $MAILDIR/.math/
-
-
-:0w
-* Cc:.*students@math.umd.edu
-* !^To:.*elder-gods.org
-* !^To:.*smoofra@gmail.com
-* !^Cc:.*elder-gods.org
-* !^Cc:.*smoofra@gmail.com
-| mddeliver -r $MAILDIR/.math/
-
-
-:0w
-* To:.*colloq@math.umd.edu
-* !^To:.*elder-gods.org
-* !^To:.*smoofra@gmail.com
-* !^Cc:.*elder-gods.org
-* !^Cc:.*smoofra@gmail.com
-| mddeliver -r $MAILDIR/.math/
-
-
-:0w
-* Cc:.*colloq@math.umd.edu
-* !^To:.*elder-gods.org
-* !^To:.*smoofra@gmail.com
-* !^Cc:.*elder-gods.org
-* !^Cc:.*smoofra@gmail.com
-| mddeliver -r $MAILDIR/.math/
+#:0w
+#* Delivered-To: ldanna@math.umd.edu
+#| mddeliver -r $MAILDIR/.math/
+#
+#
+#:0w
+#* To:.*mathusers@math.umd.edu
+#* !^To:.*elder-gods.org
+#* !^To:.*smoofra@gmail.com
+#* !^Cc:.*elder-gods.org
+#* !^Cc:.*smoofra@gmail.com
+#| mddeliver -r $MAILDIR/.math/
+#
+#
+#:0w
+#* Cc:.*mathusers@math.umd.edu
+#* !^To:.*elder-gods.org
+#* !^To:.*smoofra@gmail.com
+#* !^Cc:.*elder-gods.org
+#* !^Cc:.*smoofra@gmail.com
+#| mddeliver -r $MAILDIR/.math/
+#
+#:0w
+#* To:.*students@math.umd.edu
+#* !^To:.*elder-gods.org
+#* !^To:.*smoofra@gmail.com
+#* !^Cc:.*elder-gods.org
+#* !^Cc:.*smoofra@gmail.com
+#| mddeliver -r $MAILDIR/.math/
+#
+#
+#:0w
+#* Cc:.*students@math.umd.edu
+#* !^To:.*elder-gods.org
+#* !^To:.*smoofra@gmail.com
+#* !^Cc:.*elder-gods.org
+#* !^Cc:.*smoofra@gmail.com
+#| mddeliver -r $MAILDIR/.math/
+#
+#
+#:0w
+#* To:.*colloq@math.umd.edu
+#* !^To:.*elder-gods.org
+#* !^To:.*smoofra@gmail.com
+#* !^Cc:.*elder-gods.org
+#* !^Cc:.*smoofra@gmail.com
+#| mddeliver -r $MAILDIR/.math/
+#
+#
+#:0w
+#* Cc:.*colloq@math.umd.edu
+#* !^To:.*elder-gods.org
+#* !^To:.*smoofra@gmail.com
+#* !^Cc:.*elder-gods.org
+#* !^Cc:.*smoofra@gmail.com
+#| mddeliver -r $MAILDIR/.math/
 
 
 

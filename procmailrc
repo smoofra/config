@@ -4,7 +4,6 @@ DEFAULT=$HOME/Maildir/
 # make sure we use the installed versions of programs
 PATH=/usr/local/bin:/usr/bin/:/bin:$PATH
 
-
 #:0 c
 #/home/larry/backup/
 
@@ -26,20 +25,6 @@ PATH=/usr/local/bin:/usr/bin/:/bin:$PATH
 * !^X-Spam-Status:.*USER_IN_WHITELIST
 {
 
-## run it through spamprobe and store the result in SCORE
-## if you set the output to a variable, it doesn't consider the mail delivered
-#:0
-#SCORE=| /usr/bin/spamprobe train
-#
-## run the mail through a filter to add a spamprobe header
-#:0 wf
-#| formail -I "X-SpamProbe: $SCORE"
-
-# put it in =spam if spamprobe or spamassin thought it was spam
-:0 a
-*^X-SpamProbe: SPAM
-$MAILDIR/.spam/
-
 :0 
 *^X-Spam-Status: YES
 $MAILDIR/.spam/
@@ -49,64 +34,6 @@ $MAILDIR/.spam/
 ##
 ## END SPAM RECIPIES
 ##
-
-
-#:0w
-#* Delivered-To: ldanna@math.umd.edu
-#| mddeliver -r $MAILDIR/.math/
-#
-#
-#:0w
-#* To:.*mathusers@math.umd.edu
-#* !^To:.*elder-gods.org
-#* !^To:.*smoofra@gmail.com
-#* !^Cc:.*elder-gods.org
-#* !^Cc:.*smoofra@gmail.com
-#| mddeliver -r $MAILDIR/.math/
-#
-#
-#:0w
-#* Cc:.*mathusers@math.umd.edu
-#* !^To:.*elder-gods.org
-#* !^To:.*smoofra@gmail.com
-#* !^Cc:.*elder-gods.org
-#* !^Cc:.*smoofra@gmail.com
-#| mddeliver -r $MAILDIR/.math/
-#
-#:0w
-#* To:.*students@math.umd.edu
-#* !^To:.*elder-gods.org
-#* !^To:.*smoofra@gmail.com
-#* !^Cc:.*elder-gods.org
-#* !^Cc:.*smoofra@gmail.com
-#| mddeliver -r $MAILDIR/.math/
-#
-#
-#:0w
-#* Cc:.*students@math.umd.edu
-#* !^To:.*elder-gods.org
-#* !^To:.*smoofra@gmail.com
-#* !^Cc:.*elder-gods.org
-#* !^Cc:.*smoofra@gmail.com
-#| mddeliver -r $MAILDIR/.math/
-#
-#
-#:0w
-#* To:.*colloq@math.umd.edu
-#* !^To:.*elder-gods.org
-#* !^To:.*smoofra@gmail.com
-#* !^Cc:.*elder-gods.org
-#* !^Cc:.*smoofra@gmail.com
-#| mddeliver -r $MAILDIR/.math/
-#
-#
-#:0w
-#* Cc:.*colloq@math.umd.edu
-#* !^To:.*elder-gods.org
-#* !^To:.*smoofra@gmail.com
-#* !^Cc:.*elder-gods.org
-#* !^Cc:.*smoofra@gmail.com
-#| mddeliver -r $MAILDIR/.math/
 
 
 

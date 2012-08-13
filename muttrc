@@ -12,7 +12,7 @@ save-hook "~A" "=inbox_save"
 set folder=~/Maildir/folderlinks/ 
 set spoolfile='~/Maildir'
 set record='~/Maildir'
-set postponed="=postponed"
+set postponed="=Drafts"
 
 macro index cg C=git\n
 macro index ci C=inbox\n
@@ -28,20 +28,19 @@ macro pager cs C=inbox_save\n
 #macro pager,index A "|spamassassin -t |less\n"
 
 set from="Larry D'Anna <larry@elder-gods.org>" 
-alternates  "ldanna@\(wam\|glue\|cs\|math\).umd.edu\|\(admin\|larry\|larry-web\|root\|smoof-ra\|SmoofRa\)@\(elder-gods.org\|melkor.elder-gods.org\|minerva.elder-gods.org\)"
+alternates  "ldanna@\(wam\|glue\|cs\|math\).umd.edu\|\(cthulhu\|demogorgon\|admin\|larry\|larry-web\|root\|smoof-ra\|SmoofRa\)@\(elder-gods.org\|melkor.elder-gods.org\|minerva.elder-gods.org\)"
 
 set certificate_file=/home/larry/.certs
 
 
 unset sidebar_visible
-unset catchup_newsgroup
-bind index N change-newsgroup
-set nntp_context=10000
 
-
-bind index "\Cuc" catchup
-bind index "\Cup" post-message
-bind index "\Cuf" followup-message
+# unset catchup_newsgroup
+# bind index N change-newsgroup
+# set nntp_context=10000
+# bind index "\Cuc" catchup
+# bind index "\Cup" post-message
+# bind index "\Cuf" followup-message
 
 account-hook news:/ 'source ~/config/muttrc-newshook'
 

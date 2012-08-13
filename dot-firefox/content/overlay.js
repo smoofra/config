@@ -102,7 +102,7 @@ function normalk () {
 
 
 window.addEventListener("keypress", foolistener, true); 
-window.document.getElementById("addBookmarkAsKb").removeAttribute('command');
-window.document.getElementById("addBookmarkAsKb").setAttribute('oncommand', 'scuttle_add()'); 
+// window.document.getElementById("addBookmarkAsKb").removeAttribute('command');
+// window.document.getElementById("addBookmarkAsKb").setAttribute('oncommand', 'scuttle_add()');
 
 

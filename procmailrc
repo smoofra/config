@@ -11,6 +11,11 @@ PATH=/usr/local/bin:/usr/bin/:/bin:$PATH
 ## BEGIN SPAM RECIPIES
 ##
 
+
+:0
+*^Received:.*bigfootinteractive.com
+$MAILDIR/.spam/
+
 # run it through spamassassin if it hasn't been already
 :0 
 * !^X-Spam-Status: YES
@@ -30,6 +35,8 @@ PATH=/usr/local/bin:/usr/bin/:/bin:$PATH
 $MAILDIR/.spam/
 
 }
+
+
 
 ##
 ## END SPAM RECIPIES

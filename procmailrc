@@ -43,6 +43,9 @@ $MAILDIR/.spam/
 ##
 
 
+:0w
+*^List-Id: .*LLVM
+| mddeliver -r $MAILDIR/.llvm/
 
 :0w
 *^List-Id: .*slime-devel

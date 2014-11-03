@@ -26,7 +26,7 @@
 	egc = ! git ec --file ~/.gitconfig
 	lsf = ls-files --exclude-standard --directory --no-empty-directory
 	one = log --decorate --oneline --left-right
-        graph = log --graph --decorate --oneline --left-right	
+        graph = log -n20 --graph --decorate --oneline --left-right
         aone = log --pretty=format:'%m%h %an %s'
 
 	drl = "!f() {  \n    #echo \"usage: git drl <ref> [<n>]\"; \n    set -e\n    if [ $# -lt 1 ]; then\n        x=`git rev-parse --symbolic-full-name HEAD`\n    else \n        x=$1; \n        shift; \n    fi\n    n=1\n    if [ $# -gt 0 ]; then\n       n=$1\n       shift\n    fi\n    git reflog show $x | head -$(expr $n + 1)\n    echo\n    git dh -p $x@{$n} $x\n} \nf"

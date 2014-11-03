@@ -1,0 +1,12 @@
+
+
+if [[ -e /Volumes/DATA/fink ]]; then
+	. /Volumes/DATA/fink/bin/init.sh
+	alias ls='ls --color=auto'
+fi
+
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin" "$PATH")
+
+export PS1='\u@\h:\w$ '
+
+alias rerc='. ~/.bashrc'

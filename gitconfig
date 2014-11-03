@@ -16,6 +16,7 @@
 [alias]
 	sb = show-branch
         dc = diff --color
+	sc = show --color
         dw = diff --color-words
         dlog = log --date=relative --pretty=fuller
         tpush = push --dry-run --summary

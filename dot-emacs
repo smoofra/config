@@ -13,7 +13,9 @@
   (setq load-path (cons "/usr/share/emacs-snapshot/site-lisp" load-path))
   (setq load-path (cons "/home/larry/emacslisp/share/emacs/site-lisp/w3m" load-path)))
 
-(load "~/.site-init.el")
+(if (file-exists-p "~/.site-init.el")
+    (load "~/.site-init.el"))
+
 (load "~/config/init.el")
 
 (put 'upcase-region 'disabled nil)

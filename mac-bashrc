@@ -1,4 +1,6 @@
 
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin" "$PATH" /usr/local/bin /usr/local/sbin )
+
 if which gls >/dev/null ; then
 	alias ls='gls --color=auto'
 fi
@@ -7,7 +9,9 @@ if which grm >/dev/null ; then
 	alias rm=grm
 fi
 
-[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin" "$PATH" /usr/local/sbin )
+if [[ ! -z "$INSIDE_EMACS" ]] ; then
+    export TERM=vt100
+fi
 
 export PS1='\u@\h:\w$ '
 

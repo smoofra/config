@@ -1,11 +1,13 @@
 
-
-if [[ -e /Volumes/DATA/fink ]]; then
-	. /Volumes/DATA/fink/bin/init.sh
-	alias ls='ls --color=auto'
+if which gls >/dev/null ; then
+	alias ls='gls --color=auto'
 fi
 
-[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin" "$PATH")
+if which grm >/dev/null ; then
+	alias rm=grm
+fi
+
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin" "$PATH" /usr/local/sbin )
 
 export PS1='\u@\h:\w$ '
 

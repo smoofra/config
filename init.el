@@ -1,18 +1,5 @@
 (require 'cl)
 
-;;feh
-
-(setq inferior-lisp-program  "sbcl")
-;;(setq inferior-lisp-program  "sbcl.cvs")
-;;(setq inferior-lisp-program  "/home/larry/allegro/acl62_trial/alisp")
-;;(setq inferior-lisp-program  "/home/larry/lisp/acl81_express/alisp")
-;;(setq inferior-lisp-program  "/home/larry/lisp/abcl-0.0.10/abcl")
-;;(setq inferior-lisp-program  "lisp")
-;;(setq inferior-lisp-program  "clisp")
-;;(setq inferior-lisp-program  "env SBCL_HOME=/home/larry/usrsbcl/lib/sbcl /home/larry/usrsbcl/bin/sbcl")
-;;(setq inferior-lisp-program  "/sw/bin/openmcl --load /Users/larry/.openmcl-init")
-;;(setq inferior-lisp-program  "/Users/larry/usr-sbcl-cvs/bin/sbcl --core /Users/larry/usr-sbcl-cvs/lib/sbcl/sbcl.core")
-
 (setq load-path (cons "~/usr/share/emacs/site-lisp" load-path))
 (autoload 'maxima "maxima")
 
@@ -28,8 +15,6 @@
 (setq load-path (cons "/usr/share/emacs/site-lisp/maxima/" load-path))
 
 (setq load-path (cons "~/config" load-path))
-(setq load-path (cons "~/slime" load-path))
-(setq load-path (cons "~/slime/contrib" load-path))
 (setq load-path (cons "~/config/emacslisp" load-path))
 
 (autoload 'lisppaste-paste-region "lisppaste" "lisppaste" t)
@@ -155,114 +140,7 @@
   (interactive)
   (switch-to-buffer "mgwyer"))
 
-(add-hook 'slime-load-hook '(lambda () 
-                              (require 'slime-asdf)
-                              (require 'slime-fancy)
-                              (slime-asdf-init)))
 
-(defun reload-slime ()
-  (interactive)
-  (load "slime")
-  (load "slime-asdf")
-  (load "slime-fancy")
-  (fix-slime-selector))
-
-(setq i-have-slime (load "slime" t))
-
-
-
-(defun fix-slime-selector ()
-  ;; (setq slime-net-coding-system 'iso-latin-1-unix)
-  (setq slime-net-coding-system 'utf-8-unix)
-  (slime-setup)
-  
-  
-  (def-slime-selector-method ?j
-    "next erc channel"
-    (erc-next-channel))
-  
-  (def-slime-selector-method ?o
-	"*Shell Command Output*"
-	(get-buffer "*Shell Command Output*"))
-
-  (def-slime-selector-method ?.
-	"exit"
-	(current-buffer))
-  
-  ;; this is control-g.  don't ask me why, but 
-  ;; you can call (read-char) or (read-event) to find out the code 
-  ;; for sometihng
-  ;;(def-slime-selector-method 33554439  
-  ;;"exit"
-  ;;(current-buffer))  
-  
-  (def-slime-selector-method ?V
-	"*svn-status*"
-	(get-buffer "*svn-status*"))
-  
-  (def-slime-selector-method ?g
-	"*grep*"
-	(get-buffer "*grep*"))
-  
-  (def-slime-selector-method ?K
-    "chat"
-    (chat))
-  
-  (def-slime-selector-method ?k
-    "#yourmom"
-    (get-buffer "#yourmom"))
-  
-  (def-slime-selector-method ?m
-    "mgwyer"
-    (get-buffer "mgwyer"))
-  
-  (def-slime-selector-method ?b 
-    "bobbyisosceles"
-    (get-buffer "bobbyisosceles"))
-  
-  (def-slime-selector-method ?L
-    "#lisp"
-    (get-buffer "#lisp"))
-  
-  (def-slime-selector-method ?C
-	"*compilation* buffer"
-	(get-buffer "*compilation*"))
-  
-  (def-slime-selector-method ?h
-    "*Help* buffer."
-    (get-buffer "*Help*"))
-
-  (def-slime-selector-method ?S
-    "*scratch* buffer."
-    (get-buffer "*scratch*"))
-  
-  (def-slime-selector-method ?s
-    "*slime-scratch* buffer."
-    (get-buffer "*slime-scratch*"))
-
-  (def-slime-selector-method ?I
-    "*Slime Inspector* buffer."
-    (slime-inspector-buffer))
-
-  (def-slime-selector-method ?t
-    "*terminal* buffer."
-    (get-buffer "*terminal*"))
-  
-  (def-slime-selector-method ?y
-    "*shell* buffer."
-    (get-buffer "*shell*"))
-
-  (def-slime-selector-method ?T
-    "SLIME threads buffer."
-    (slime-list-threads)
-    "*slime-threads*")
-
-  (def-slime-selector-method ?B
-    "*Backtrace* buffer"
-    (get-buffer "*Backtrace*")))
-
-(when i-have-slime 
-  (fix-slime-selector))
 
 (defun link-url-at-point ()
   (interactive)
@@ -304,10 +182,7 @@
 (global-set-key "\C-x4h" 'makehoriz)
 (global-set-key "\C-x4v" 'makevert)
 
-(defun my-unhighlight ()
-  (interactive)
-  (slime-remove-old-overlays)
-  (sldb-delete-overlays))
+
 
 (defun is-sexp-start ()
   (condition-case err
@@ -409,10 +284,7 @@
 (define-key emacs-lisp-mode-map "\M-/" 'lisp-complete-symbol)
 
 
-(defun my-slime-edit-definition (name &optional where)
-  (interactive (list (slime-read-symbol-name "Symbol: ")))
-  (set-mark (point))
-  (slime-edit-definition name where))
+
 
 
 
@@ -894,20 +766,10 @@
     (call-interactively 'beginning-of-line))
   (lisp-indent-line))
 
-(defun slime-insert-eval-last-expression ()
-  (interactive)
-  (insert (slime-eval `(swank:pprint-eval ,(slime-last-expression)))))
 
 
-(defun slime-insert-expand-last-expression ()
-  (interactive)
-  (insert (slime-eval 
-	   `(swank::with-buffer-syntax 
-	     ()
-	     (swank::swank-pprint
-	      (cl::list 
-	       (cl::macroexpand-1 
-		(cl::read-from-string ,(slime-last-expression)))))))))
+
+
 
 (global-set-key "\M-'" 'forward-delete-space-through-parens)
 (global-set-key "\M-i" 'consume-sexp)
@@ -961,8 +823,7 @@
 			last-command)))
     (yank-pop arg)))
 
-(defun my-lisp-define-key (k b)
-  (setq my-lisp-keys (cons (cons k b) my-lisp-keys)))
+
 
 (defun define-my-lisp-keys-on-map (map)
   (dolist (cns my-lisp-keys)
@@ -1016,6 +877,8 @@
           (toggle-read-only (if jk-buffer-read-only 1 -1))))))
 
  
+(defun my-lisp-define-key (k b)
+  (setq my-lisp-keys (cons (cons k b) my-lisp-keys)))
 
 ;;lisp keybinds
 (progn
@@ -1026,7 +889,6 @@
   (my-lisp-define-key "\\"    'indent-defun)
   (my-lisp-define-key "("       'my-insert-parentheses) 
   (my-lisp-define-key ")"       'up-list)
-  (my-lisp-define-key "\C-cl"   'slime-load-system)
   (my-lisp-define-key "\C-c;"   'comment-region)
   (my-lisp-define-key "\C-c-"   'kill-backward-up-list)
   (my-lisp-define-key "\C-y"    'lisp-yank)
@@ -1043,26 +905,7 @@
   (my-lisp-define-key "\""      'skeleton-pair-insert-maybe)
   (my-lisp-define-key "\C-j"    'backwards-kill-line)
   (my-lisp-define-key "\C-cd"   'mark-defun)
-  (when i-have-slime
-    (define-key slime-mode-map "\C-\M-a" 'slime-beginning-of-defun)
-    (define-jk slime-inspector-mode-map)
-    (define-key slime-inspector-mode-map "l" 'slime-inspector-pop)
-    (define-key slime-inspector-mode-map "D" 'slime-inspector-describe)
-    (define-key slime-mode-map "\M-." 'my-slime-edit-definition)
-    (define-key slime-mode-map "\M-c" 'my-unhighlight)
-    (define-key slime-mode-map "\t" 'slime-indent-and-complete-symbol)  
-    (define-key slime-mode-map [(control tab)]   'tab-to-tab-stop)
-    (define-key slime-mode-map "\C-cp" 'slime-insert-eval-last-expression)
-    (define-key slime-mode-map "\C-ce" 'slime-insert-expand-last-expression)
-    (define-key slime-mode-map "\M-/" 'slime-fuzzy-complete-symbol)
-    (define-key slime-repl-mode-map "\M-/" 'slime-fuzzy-complete-symbol)
-    (define-my-lisp-keys-on-map slime-mode-map)
-    (define-my-lisp-keys-on-map slime-repl-mode-map)
-    (define-my-lisp-keys-on-map slime-scratch-mode-map)
-    (define-key slime-repl-mode-map "\C-j" 'slime-repl-backwards-kill-line)
-    (define-key slime-repl-mode-map "\r"   'slime-repl-return)
-    (define-key slime-repl-mode-map [home] 'SDO)
-    (define-key slime-repl-mode-map "\C-a" 'slime-repl-bol))
+
   (define-my-lisp-keys-on-map emacs-lisp-mode-map)
   (define-my-lisp-keys-on-map lisp-interaction-mode-map)
   (define-my-lisp-keys-on-map lisp-mode-map))
@@ -1079,12 +922,6 @@
        'paredit-close-parenthesis)
      (define-key paredit-mode-map (kbd "M-)")
        'paredit-close-parenthesis-and-newline))))
-
-(defun slime-repl-backwards-kill-line ()
-  (interactive)
-  (let ((p (point)))
-    (slime-repl-bol)
-    (kill-region (point) p)))
 
 
 
@@ -1415,8 +1252,8 @@
   (interactive)
   (global-set-key "\C-x\C-c" 'save-buffers-kill-emacs))
 
-(global-set-key "\C-cb" 'slime-selector)
-(global-set-key [backtab] 'slime-fuzzy-complete-symbol)
+
+
 
 
 
@@ -1427,34 +1264,10 @@
 (autoload 'ruby-mode "ruby-mode" "editor mode for ruby" t)
 
 
-;; (defun slime-handle-indentation-update (alist)
-;;   "Update Lisp indent information.
-
-;; ALIST is a list of (SYMBOL-NAME . INDENT-SPEC) of proposed indentation
-;; settings for `common-lisp-indent-function'. The appropriate property
-;; is setup, unless the user already set one explicitly."
-;;   (dolist (info alist)
-;;     (let ((symbol-name (car info)))
-;;       (unless (and slime-conservative-indentation
-;;                    (string-match "^\\(def\\|\\with-\\)" symbol-name))
-;;         (let ((symbol (intern symbol-name))
-;;               (indent (cdr info)))
-;;           ;; Does the symbol have an indentation value that we set?
-;;           (when (equal (get symbol 'lisp-indent-function)
-;;                        (get symbol 'slime-indent))
-;;             (put symbol 'slime-indent indent)
-;;             (put symbol 'lisp-indent-function indent)))))))
-
-
-
-
 (put 'downcase-region 'disabled nil)
-
-
 
 (defun open-inspector-helper ()
   (slime-eval-async '(swank:init-inspector "utils::*future-inspectee*") 'slime-open-inspector))
-
 
 
 (defun back-window ()
@@ -2247,3 +2060,6 @@
 
 (defalias 'perl-mode 'cperl-mode)
 
+
+
+(load "~/config/init-slime.el")

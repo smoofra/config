@@ -1940,14 +1940,14 @@
 
 
 
-(redefine kmacro-call-macro (arg &optional no-repeat end-macro)
-    (interactive "p")
-    (with-single-undo
-     (orig-kmacro-call-macro arg no-repeat end-macro)))
+;; (redefine kmacro-call-macro (arg &optional no-repeat end-macro)
+;;     (interactive "p")
+;;     (with-single-undo
+;;      (orig-kmacro-call-macro arg no-repeat end-macro)))
 
-(redefine kmacro-exec-ring-item (item arg)
-  (with-single-undo
-   (orig-kmacro-exec-ring-item item arg)))
+;; (redefine kmacro-exec-ring-item (item arg)
+;;   (with-single-undo
+;;    (orig-kmacro-exec-ring-item item arg)))
 
 
 (defun restore-named-kmacro (name)

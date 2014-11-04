@@ -1,3 +1,14 @@
+
+;; coding-system stuff is at C-x C-;
+;; to figure out where a command is, or to find the key it's bound to, use where-is
+
+;;; when slime highlights the stuff that isn't compiled, it's slime-highlight-edits-mode
+
+;; to switch to a buffer that's visible in another window, use C-x 4 b iswitchb-buffer-other-window
+
+;;; (debiafy) in .site init for debian crap
+
+
 (require 'cl)
 
 (setq load-path (cons "~/usr/share/emacs/site-lisp" load-path))
@@ -2078,19 +2089,11 @@
 
 (site-init-late)
 
-
-;; coding-system stuff is at C-x C-; 
-;; to figure out where a command is, or to find the key it's bound to, use where-is
-
-;;; when slime highlights the stuff that isn't compiled, it's slime-highlight-edits-mode
-
-;; to switch to a buffer that's visible in another window, use C-x 4 b iswitchb-buffer-other-window
-
-;;; (debiafy) in .site init for debian crap
-
-
 (defalias 'perl-mode 'cperl-mode)
 
-
-
 (load "~/config/init-slime.el")
+
+(if
+    (string-equal system-type "darwin")
+    (setq ispell-program-name  "/usr/local/bin/ispell"))
+

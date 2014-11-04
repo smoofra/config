@@ -1,7 +1,5 @@
 # -*- mode: conf-unix -*-
 
-
-
 [core]
         pager = cat
 
@@ -9,14 +7,23 @@
 	name = "Larry D'Anna"
 	email = larry@elder-gods.org
 
+
 [sendemail]
         chainreplyto = false
 
 
 [alias]
-	sb = show-branch
-        dc = diff --color
+
+        se = ! git show | eless -d
+        de = ! git diff | eless -d
+        dec = ! git diff --cached | eless -d
+
 	sc = show --color
+        dc = diff --color
+	dcc = diff --cached --color
+
+	sb = show-branch
+
         dw = diff --color-words
         dlog = log --date=relative --pretty=fuller
         tpush = push --dry-run --summary
@@ -44,17 +51,9 @@
 	make-pushable = !\nset -e \n. \"$(git --exec-path)\"/git-sh-setup\nf() {\n    ln -s $HOME/bin/git-pushable-hooks/* $GIT_DIR/hooks/\n    git config receive.denyCurrentBranch ignore\n}\nf
 
 	me = ! \nf() { \n    git aone \"$@\" | grep -i d.anna\n}\nf
-	dcc = diff --cached --color
 
 [push]
         default = matching
-
-
-
-
-
-
-
 
 
 [format]

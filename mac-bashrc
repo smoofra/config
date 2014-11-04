@@ -1,5 +1,5 @@
 
-[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin" "$PATH" /usr/local/bin /usr/local/sbin )
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$PATH" /usr/local/bin /usr/local/sbin )
 
 if which gls >/dev/null ; then
 	alias ls='gls --color=auto'

@@ -1642,15 +1642,20 @@
 ;;(load "~/.custom.el" t)
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(Info-additional-directory-list (quote ("/usr/share/info/emacs-snapshot")))
  '(Man-notify-method (quote pushy))
  '(blink-cursor-alist (quote ((box . box) (t . box))))
  '(c-basic-offset 4)
- '(c-default-style (quote ((c-mode . "k&r") (java-mode . "java") (awk-mode . "awk") (other . "gnu"))))
+ '(c-default-style
+   (quote
+    ((c-mode . "k&r")
+     (java-mode . "java")
+     (awk-mode . "awk")
+     (other . "gnu"))))
  '(cperl-invalid-face (quote default))
  '(delete-selection-mode nil)
  '(diff-switches "-u")
@@ -1665,10 +1670,36 @@
  '(iswitchb-default-method (quote samewindow))
  '(matlab-comment-region-s "%")
  '(matlab-fill-code nil)
- '(matlab-indent-level 4) 
+ '(matlab-indent-level 4)
  '(matlab-verify-on-save-flag nil)
+ '(ns-command-modifier (quote meta))
  '(octave-block-offset 4)
- '(safe-local-variable-values (quote ((Package SERIES :use "COMMON-LISP" :colon-mode :external) (Package . HUNCHENTOOT) (Syntax . COMMON-LISP) (Package . FLEXI-STREAMS) (Package . Memoization) (Package . COMMON-LISP-CONTROLLER) (Package . XREF) (Syntax . Common-lisp) (Package . UFFI) (Package . CL-USER) (syntax . COMMON-LISP) (Package ITERATE :use "COMMON-LISP" :colon-mode :external) (Package . lift) (Base . 10) (Syntax . ANSI-Common-Lisp) (syntax . common-lisp) (package . common-lisp) (Package . CLIM-DEMO) (Package . MCCLIM-FREETYPE) (Syntax . Common-Lisp) (Package . CLIMI) (Package . CLIM-INTERNALS) (unibyte . t) (Package . COMMON-LISP-USER))))
+ '(safe-local-variable-values
+   (quote
+    ((Package SERIES :use "COMMON-LISP" :colon-mode :external)
+     (Package . HUNCHENTOOT)
+     (Syntax . COMMON-LISP)
+     (Package . FLEXI-STREAMS)
+     (Package . Memoization)
+     (Package . COMMON-LISP-CONTROLLER)
+     (Package . XREF)
+     (Syntax . Common-lisp)
+     (Package . UFFI)
+     (Package . CL-USER)
+     (syntax . COMMON-LISP)
+     (Package ITERATE :use "COMMON-LISP" :colon-mode :external)
+     (Package . lift)
+     (Base . 10)
+     (Syntax . ANSI-Common-Lisp)
+     (syntax . common-lisp)
+     (package . common-lisp)
+     (Package . CLIM-DEMO)
+     (Package . MCCLIM-FREETYPE)
+     (Syntax . Common-Lisp)
+     (Package . CLIMI)
+     (Package . CLIM-INTERNALS)
+     (unibyte . t)
+     (Package . COMMON-LISP-USER))))
  '(slime-backend "swank-loader.lisp")
  '(slime-enable-evaluate-in-emacs t)
  '(slime-multiprocessing t)
@@ -1677,10 +1708,10 @@
  '(woman-use-own-frame nil))
 
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(anything-header ((t (:background "grey" :foreground "black" :weight bold))) t)
  '(cursor ((t (:background "#ffffff"))))
  '(diff-changed ((nil (:foreground "yellow"))))

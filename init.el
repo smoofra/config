@@ -1716,6 +1716,7 @@
  '(slime-multiprocessing t)
  '(svn-status-default-log-arguments (quote ("--verbose   --limit=20")))
  '(tab-width 8)
+ '(warning-suppress-types '((undo discard-info)))
  '(woman-use-own-frame nil))
 
 (custom-set-faces

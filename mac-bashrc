@@ -13,6 +13,6 @@ if [[ ! -z "$INSIDE_EMACS" ]] ; then
     export TERM=vt100
 fi
 
-export PS1='\u@\h:\w$ '
+export PS1='\u@\h:\w\$ '
 
 alias rerc='. ~/.bashrc'

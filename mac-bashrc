@@ -9,8 +9,11 @@ if which grm >/dev/null ; then
 	alias rm=grm
 fi
 
+export EDITOR=vim
+
 if [[ ! -z "$INSIDE_EMACS" ]] ; then
     export TERM=vt100
+    export EDITOR=emacsclient
 fi
 
 export PS1='\u@\h:\w\$ '

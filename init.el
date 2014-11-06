@@ -1716,7 +1716,7 @@
  '(slime-multiprocessing t)
  '(svn-status-default-log-arguments (quote ("--verbose   --limit=20")))
  '(tab-width 8)
- '(warning-suppress-types '((undo discard-info)))
+ '(warning-suppress-types (quote ((undo discard-info))))
  '(woman-use-own-frame nil))
 
 (custom-set-faces
@@ -1726,7 +1726,8 @@
  ;; If there is more than one, they won't work right.
  '(anything-header ((t (:background "grey" :foreground "black" :weight bold))) t)
  '(cursor ((t (:background "#ffffff"))))
- '(diff-changed ((nil (:foreground "yellow"))))
+ '(diff-added ((t (:inherit diff-changed))))
+ '(diff-changed ((t (:foreground "yellow"))))
  '(diff-file-header ((((class color) (min-colors 88) (background dark)) (:foreground "cyan" :weight bold))))
  '(diff-header ((((class color) (min-colors 88) (background dark)) (:foreground "green" :weight bold))))
  '(diff-removed ((t (:inherit diff-changed :foreground "red"))))

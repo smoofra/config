@@ -2095,5 +2095,7 @@
 
 (if
     (string-equal system-type "darwin")
-    (setq ispell-program-name  "/usr/local/bin/ispell"))
+    (progn
+      (setq ispell-program-name  "/usr/local/bin/ispell")
+      (global-set-key "\M-v" 'clipboard-yank)))
 

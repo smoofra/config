@@ -16,7 +16,7 @@
 
         se = ! \nf() { \n git show \"$@\"  | eless -d \n } \nf
         de = ! \nf() { \n git diff \"$@\" | eless -d \n } \nf
-        dec = ! \nf() { \n git diff --cached  | eless -d \n } \nf
+        dec = ! \nf() { \n git diff --cached \"$@\" | eless -d \n } \nf
 
 	sc = show --color
         dc = diff --color

@@ -4,8 +4,9 @@
         pager = cat
 
 [user]
-	name = "Larry D'Anna"
-	email = larry@elder-gods.org
+	name = "Lawrence D'Anna"
+	#email = larry@elder-gods.org
+        email = lawrence_danna@apple.com
 
 
 [sendemail]

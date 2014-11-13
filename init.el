@@ -1898,24 +1898,31 @@
   "revert this buffer"))
 
 
-(alist-set
- save-some-buffers-action-alist
- ?d 
- (list 
-  (lambda (buf) ;; from files.el
-    (if (null buffer-file-name)
-        (message "Not applicable: no file")
-      (save-window-excursion (diff-buffer-with-file buf))
-      (if (not enable-recursive-minibuffers)
-          (progn (display-buffer (get-buffer-create "*Diff*"))
-                 (setq other-window-scroll-buffer "*Diff*"))
-        (view-buffer (get-buffer-create "*Diff*")
-                     (lambda (_) (exit-recursive-edit)))
-        (recursive-edit)))
-    ;; Return nil to ask about BUF again.
-    nil)
-  "view changes in this buffer"))
+;;;;;; I don't really remember what this variant of ?d was supposed to do.  I
+;;;;;; think it had to do with letting you scroll around in the diff buffer.  In
+;;;;;; any case it's gone stale in the more recent emacs, so I'm just going to
+;;;;;; comment it out.  Setting enable-recursive-minibuffers to t seems to
+;;;;;; accomplish the same end.
 
+;; (alist-set
+;;  save-some-buffers-action-alist
+;;  ?d
+;;  (list
+;;   (lambda (buf) ;; from files.el
+;;     (if (null buffer-file-name)
+;;         (message "Not applicable: no file")
+;;       (save-window-excursion (diff-buffer-with-file buf))
+;;       (if (not enable-recursive-minibuffers)
+;;           (progn (display-buffer (get-buffer-create "*Diff*"))
+;;                  (setq other-window-scroll-buffer "*Diff*"))
+;;         (view-buffer (get-buffer-create "*Diff*")
+;;                      (lambda (_) (exit-recursive-edit)))
+;;         (recursive-edit)))
+;;     ;; Return nil to ask about BUF again.
+;;     nil)
+;;   "view changes in this buffer"))
+
+(setq enable-recursive-minibuffers t)
 
 (defun arithmatic-on-number-at-point (form)
   (interactive "x")

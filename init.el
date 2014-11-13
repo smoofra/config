@@ -348,25 +348,25 @@
 
 (eval-after-load "diff"
   ;; from emacs source (diff.el), modified
-  (defun diff-sentinel (code &optional old-temp-file new-temp-file)
-    (if old-temp-file (delete-file old-temp-file))
-    (if new-temp-file (delete-file new-temp-file))
-    (diff-setup-whitespace)
-    (goto-char (point-min))
-    (save-excursion
-      (goto-char (point-max))
-      (let ((inhibit-read-only t))
-        (insert (format "\nDiff finished%s.  %s\n"
-                        (cond ((equal 0 code) " (no differences)")
-                              ((equal 2 code) " (diff error)")
-                              (t ""))
-                        (current-time-string)))))
-    (when (and (not (null buffer-to-revert-if-no-diff))
-               (equal 0 code))
-      (set-buffer buffer-to-revert-if-no-diff)
-      (my-revert-buffer t t))
-    (setq diff-return-code code)))
- 
+  '(defun diff-sentinel (code &optional old-temp-file new-temp-file)
+     (if old-temp-file (delete-file old-temp-file))
+     (if new-temp-file (delete-file new-temp-file))
+     (diff-setup-whitespace)
+     (goto-char (point-min))
+     (save-excursion
+       (goto-char (point-max))
+       (let ((inhibit-read-only t))
+         (insert (format "\nDiff finished%s.  %s\n"
+                         (cond ((equal 0 code) " (no differences)")
+                               ((equal 2 code) " (diff error)")
+                               (t ""))
+                         (current-time-string)))))
+     (when (and (not (null buffer-to-revert-if-no-diff))
+                (equal 0 code))
+       (set-buffer buffer-to-revert-if-no-diff)
+       (my-revert-buffer t t))
+     (setq diff-return-code code)))
+
 
 (defvar diff-return-code nil)
 (defvar buffer-to-revert-if-no-diff nil)

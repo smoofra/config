@@ -2130,6 +2130,10 @@
 (if
     (string-equal system-type "darwin")
     (progn
+      (setq nice-font "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
+      (set-frame-font nice-font)
+      (set-nice-font-setter)
+
       (setq ispell-program-name  "/usr/local/bin/ispell")
 
       (global-set-key "\M-v" 'clipboard-yank)

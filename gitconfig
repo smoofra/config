@@ -12,6 +12,10 @@
 [sendemail]
         chainreplyto = false
 
+        smtpencryption = tls
+        smtpserver = smtp.gmail.com
+        smtpuser = smoofra@gmail.com
+        smtpserverport = 587
 
 [alias]
 

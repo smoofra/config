@@ -1561,7 +1561,7 @@
       (advance-column))))
 
 (add-hook 'c-mode-common-hook '(lambda ()
-                                 (setq indent-tabs-mode t)
+                                 (setq indent-tabs-mode nil)
                                  (setq tab-width 8) 
                                  (setq c-basic-offset 8)))
 

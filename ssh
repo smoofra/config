@@ -1,0 +1,33 @@
+Host demogorgon
+HostName demogorgon.apple.com
+
+Host ahriman
+HostName ahriman.baconautics.com
+User ldanna
+
+Host ahriman.baconautics.com
+User ldanna
+
+Host blade
+HostName blade.wjoe.tv
+User ldanna
+
+Host odin
+#HostName 10.0.0.19
+#HostName 73.15.67.146
+#HostName c-24-6-185-222.hsd1.ca.comcast.net
+HostName odin.elder-gods.org
+User ldanna
+LocalForward 4200 localhost:4243
+Localforward 8000 localhost:443
+LocalForward 8001 zuul.lan:80
+ServerAliveInterval 10
+HostKeyAlias odin
+Port 22
+
+Host zuul
+HostName odin.elder-gods.org
+Port 21
+User root
+HostKeyAlias zuul
+

@@ -1,0 +1,10 @@
+#!/usr/bin/perl -w
+
+
+use POSIX;
+
+
+POSIX::close(2);
+POSIX::dup2(1, 2);
+
+exec @ARGV;

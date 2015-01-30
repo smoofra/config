@@ -1,0 +1,401 @@
+#!/usr/bin/perl -w
+
+use IPC::Run qw/run start finish harness/;
+use Data::Dumper;
+use Cwd;
+
+#assumptions for --local: "refs/..." is absolute, "foo" is a head.
+
+use Getopt::Long;
+Getopt::Long::Configure ("bundling");
+my ($quiet, $loc);
+GetOptions ("local|l" => \$loc,
+            "quiet|q" => \$quiet, 
+            "chdir|C=s" => sub { chdir $_[1] or die "can't chdir to $_[1]: $!\n"; })
+  or die "couldn't get options $!\n";
+
+sub runordie {
+  my $message = '';
+  my $output = '';
+  run [@_], '>', \$output, '2>', \$message
+    or die join(' ', @_) . " failed:\n$message\n"; 
+  return $output; 
+}
+
+
+sub runordieE {
+  my $message = '';
+  my $output = '';
+  run [@_], '>', \$output, '2>', \$message;
+  die join(' ', @_) . " failed:\n$message\n" if $message ne ''; 
+  return $output; 
+}
+
+sub gitconfig_m {
+  my $var = shift;
+  my $o = runordieE qw/git config -z --get-all/, $var;
+  my @o = split "\x00", $o;
+  return @o;
+}
+
+sub gitconfig_1 {
+  my $var = shift;
+  my @r = gitconfig_m($var);
+  die "expected only one config value for $var\n" if @r > 1;
+  return @r; 
+}  
+
+sub gitconfig {
+  my $var = shift;
+  my $o = runordieE qw/git config -z --get/, $var;
+  return undef if $o eq ''; 
+  $o =~ s/\x00$//;
+  return $o; 
+}
+
+sub revparse {
+  my $name = shift;
+  my $hash;
+  my $message; 
+  run [qw/git rev-parse/, $name], '2>', \$message, '>', \$hash
+    or die "git rev-parse $name failed:\n$message\n";
+  $hash =~ s/\s*$//;
+  $hash =~ /^ ([0-9a-fA-F]+)  $/x or die "git rev-parse returned nonsense\n"; 
+  return $hash;
+}
+
+sub get_refs ($\$) {
+  my ($localrefs, $p_localref_is_sym) = @_; 
+  my $localref_is_sym = $$p_localref_is_sym; 
+  my $message = '';
+  local *OUT;
+  my $h = start ['git', 'for-each-ref', '--format', '%(objectname) %(refname) %(symbolic)'],
+    '2>', \$message, '>pipe', \*OUT
+      or die "wtf";
+  my $line;
+  $line = <OUT>;
+  if (! defined $line) {
+    finish $h;
+    return ({}, {}) if ($h->result == 0);
+    if ($message =~ /unknown field name: symbolic/) {
+      close OUT;
+      $message = '';
+      $h = start ['git', 'for-each-ref', '--format', '%(objectname) %(refname)'],
+        '2>', \$message, '>pipe', \*OUT
+          or die "wtf";
+      $line = <OUT>;
+      $$p_localref_is_sym = undef;
+    } else {
+      die "git-for-each-ref failed: $message\n";
+    }
+  }
+  while (1) {
+    chomp $line;
+    $line =~ /^ ([a-f0-9]{40}) \s+ (.*?) (\s+ (true | false))? $/ix or die "wtf: $line";
+    $localrefs->{$2} = $1; 
+    $localref_is_sym->{$2} = 1 if defined $4 && $4 eq 'true'; 
+    $line = <OUT>;
+    last unless defined $line;
+  }
+  finish $h or die "git for-each-ref failed: $message\n";
+}
+
+sub find_push_remote {
+  my $branch = runordie qw/git rev-parse --symbolic-full-name HEAD/;
+  chomp $branch; 
+  undef $branch if $branch eq 'HEAD';
+  die "wtf, $branch is not a branch\n" unless $branch =~ s:^refs/heads/:: ;
+  my $remote = 'origin';
+  if (defined $branch) {
+    my $x = gitconfig "branch.$branch.remote";
+    $remote = $x if defined $x; 
+  }
+  return $remote;
+}
+
+sub ls_remote {
+  my ($remote, $refmap) = @_; 
+  local *OUT; 
+  $h = start [qw/git ls-remote/, $remote],
+  '2>', \$message, '>pipe', \*OUT
+      or die "wtf";
+  my $line; 
+  my $ret;
+  while (defined($line = <OUT>)) {
+    chomp $line; 
+    $line =~ /^ ([0-9a-f]{40}) \t (.*) $/xi or die "bad output from git ls-remote\n";
+    $refmap->{$2} = $1; 
+  }
+  $h->finish; 
+  $h->result == 0 or die "git ls-remote failed: $message\n"; 
+}
+
+# return true iff !($from is an ancestor of $to)
+sub needs_push {
+  my ($from, $to) = @_;
+  my $harness = harness  ['git', 'rev-list', $to], '|', ['grep', '-q', $from] ;
+  $harness->start;
+  $harness->finish;
+  my ($r1, $r2) = $harness->results;
+  die "git rev-list failed\n" if $r1;
+  my $match = ($r2 == 0);
+  return !$match;
+}
+
+sub dry_run { 
+  my $message;
+  my $out; 
+  run [qw/git push --dry-run --porcelain/], '>', \$out, '2>', \$message
+      or die "git push --dry-run --porcelain failed: $message\n";
+  my @out = split /\n/, $out;
+  die "multiple pushurls\n" if scalar(grep {/^To/} @out) > 1;
+  @out = map { chomp; /^To/ ? () : $_ } @out;
+  return @out;
+}
+
+sub valid_ref {
+  my $x = shift;
+  my @x = split qr:/+:, $x;
+  for my $p (@x) { 
+    return 0 if $p =~ /^\./; 
+    return 0 if $p =~ /[ *~^:\\?[]/;
+    return 0 if $p =~ /\.\./; 
+    return 0 if $p =~ /\@\{/; 
+    return 0 if $p =~ /.lock$/; 
+  }
+  return 1; 
+}
+
+sub refglob_is_pattern {
+  my $x = shift;
+  return $x =~ /\*$/;
+}
+
+sub match_fetch_refspec {
+  my ($rs, $map, $localrefs) = @_;
+  my $ors = $rs;
+  $rs =~ s/^\+//; 
+  my ($src, $dst); 
+  if ($rs =~ /^ ([^:]*?) : (.*) $/x) { 
+    ($src, $dst) = ($1, $2); 
+  } else {
+    $src = $dst = $rs; 
+  }
+  die "only one side of refpec \"$rs\" is a pattern"
+    if (refglob_is_pattern $src xor refglob_is_pattern $dst);
+  if (refglob_is_pattern $src) {
+    die "pattern \"$src\" not absolute" unless $src =~ m:^refs/:;
+    die "pattern \"$dst\" not absolute" unless $dst =~ m:^refs/:;
+    chop $src;
+    chop $dst;
+    die "invalid ref path \"$src\"" unless valid_ref $src;
+    die "invalid ref path \"$dst\"" unless valid_ref $dst;
+    for my $ref (keys %$localrefs) {
+      if ($ref =~ /^ \Q$dst\E (.*) $/x) {
+        # ignore these supid refs/remtoes/foo/HEAD symrefs
+        next if $ref =~ m:^ refs/remotes/[^/]+/HEAD $:x &&
+            (!defined($localref_is_sym) || $localref_is_sym{$ref});        
+
+        my $remoteref = $src . $1;
+        $map->{$remoteref} = $ref; 
+      }
+    }
+  } else { 
+    die "source ref empty\n" if $src eq ''; 
+    die "destination ref empty\n" if $dst eq ''; 
+    if ($src !~ m:/:) {
+      $src = 'refs/heads/' . $src;
+    }
+    if ($dst !~ m:/:) {
+      $dst = 'refs/heads/' . $dst;
+    }
+    die "pattern \"$src\" not absolute" unless $src =~ m:^refs/:;
+    die "pattern \"$dst\" not absolute" unless $dst =~ m:^refs/:;
+    die "invalid ref path \"$src\"" unless valid_ref $src;
+    die "invalid ref path \"$dst\"" unless valid_ref $dst;
+    if (defined $localrefs->{$dst}) {
+      $map->{$src} = $dst; 
+    }
+  }
+}
+
+sub match_fetch_refspecs {
+  my ($refspecs, $map, $localrefs) = @_;
+  for my $rs (@$refspecs) {
+    match_fetch_refspec $rs, $map, $localrefs;
+  }
+}
+
+
+
+sub match_push_refspec {
+  my ($rs, $map, $localrefs) = @_;
+  my @ret;
+  my $ors = $rs;
+  my $force = ($rs =~ s/^\+//);
+  my ($src, $dst); 
+  
+  if ($rs eq ':') { 
+    for my $ref (keys %$localrefs) { 
+      next unless $ref =~ m:^ refs/heads/ ([^/]+) $/:x; 
+      next unless defined $map->{$ref}; 
+      push @ret, [$force, $ref, $ref]; 
+    }
+    return @ret; 
+  }
+
+  if ($rs =~ /^ ([^:]*?) : (.*) $/x) { 
+    ($src, $dst) = ($1, $2); 
+  } else {
+    $src = $dst = $rs; 
+  }
+  die "only one side of refpec \"$rs\" is a pattern"
+    if (refglob_is_pattern $src xor refglob_is_pattern $dst);
+  if (refglob_is_pattern $src) {
+    die "pattern \"$src\" not absolute" unless $src =~ m:^refs/:;
+    die "pattern \"$dst\" not absolute" unless $dst =~ m:^refs/:;
+    chop $src;
+    chop $dst;
+    die "invalid ref path \"$src\"" unless valid_ref $src;
+    die "invalid ref path \"$dst\"" unless valid_ref $dst;
+    for my $ref (keys %$localrefs) {
+      if ($ref =~ /^ \Q$src\E (.*) $/x) {
+        my $remoteref = $dst . $1;
+        push @ret, [$force, $ref, $remoteref]; 
+      }
+    }
+    return @ret; 
+  } else { 
+    die "no deletions allowed\n" if $src eq ''; 
+    die "destination ref empty\n" if $dst eq ''; 
+    if ($src !~ m:/:) {
+      $src = 'refs/heads/' . $src;
+    }
+    if ($dst !~ m:/:) {
+      $dst = 'refs/heads/' . $dst;
+    }
+    die "pattern \"$src\" not absolute" unless $src =~ m:^refs/:;
+    die "pattern \"$dst\" not absolute" unless $dst =~ m:^refs/:;
+    die "invalid ref path \"$src\"" unless valid_ref $src;
+    die "invalid ref path \"$dst\"" unless valid_ref $dst;
+    die "ref \"$src\" doesn't exist\n" unless defined $localrefs->{$src};
+    return [$force, $src, $dst]; 
+  }
+}
+
+sub match_push_refspecs {
+  my ($refspecs, $map, $localrefs) = @_;
+  my @ret; 
+  for my $rs (@$refspecs) {
+    @ret = (@ret, match_push_refspec $rs, $map, $localrefs);
+  }
+  return @ret;
+}
+
+sub carefull_needspush {
+  my $needspush;
+  my $remote = find_push_remote;
+  my @out = dry_run; 
+  my $remoterefs = {}; 
+  ls_remote $remote, $remoterefs; 
+
+  for my $line (@out) {
+    $line =~ /^ ([^\t]) \t ([^\t]+) \t ([^\t]*) $/x 
+        or die "bad output from git push --porcelain\n";
+
+    my ($flag, $refspec, $message) = ($1, $2, $3); 
+    
+    if ($flag eq '-') { 
+      my $ref = $refspec; 
+      $ref =~ s/^:// or die 'wtf'; 
+      if (defined $remoterefs->{$ref}) {
+        $needspush = 1;
+        print "yes $refspec\n" unless $quiet; 
+      } else {
+        print "no  $refspec\n" unless $quiet; 
+      }
+      next; 
+    }
+
+    if ($flag eq '=') { 
+      print "no  $refspec\n" unless $quiet; 
+      next;
+    }
+     
+    if ($flag eq ' ' || $flag eq '*' || $flag eq '+') { 
+      $needspush = 1;
+      print "yes $refspec\n" unless $quiet; 
+      next;
+    }
+
+    if ($flag eq '!') { 
+      if ($message eq '[rejected] (non-fast-forward)') { 
+        $refspec =~ /^ [^:]+ : [^:]+ $/x or die "bad refspec: $refspec\n"; 
+        my ($from, $to) = split /:/, $refspec;
+        my $fromsha = revparse $from; 
+        my $tosha = $remoterefs->{$to}; 
+        die 'wtf' unless defined($fromsha) && defined($tosha); 
+        my $error; 
+        run [qw/git log -n1 --pretty=format:/, $tosha], '>', \$error, '2>&1';
+        if ($error =~ /bad object/i) {
+          runordie qw/git fetch/, $remote, $to;
+        }
+        my $np =  needs_push $fromsha, $tosha;
+        print (($np ? "yes " : "no  "), $refspec, "\n") unless $quiet; 
+        $needspush ||= $np; 
+        next; 
+      } else { 
+        $needspush = 1;
+        print "yes $refspec\n" unless $quiet; 
+        next;
+      }
+    }
+    #unknown flag
+    die 'wtf'; 
+  }
+  return $needspush; 
+}
+
+sub local_needspush { 
+  $remote = find_push_remote;
+  my @fetch = gitconfig_m "remote.$remote.fetch";
+  my @push = gitconfig_m "remote.$remote.push";
+  @push = ":" unless @push;
+  my $refsmap = {}; 
+  my $localrefs = {}; 
+  my $localref_is_sym = {}; 
+  get_refs $localrefs, $localref_is_sym;
+  match_fetch_refspecs \@fetch, $refsmap, $localrefs; 
+  my @topush = match_push_refspecs \@push, $refsmap, $localrefs;
+  my $needspush = 0; 
+  for my $topush (@topush) { 
+    my ($force, $src, $dst) = @$topush; 
+    my $fromsha = $localrefs->{$src} or die 'wtf'; 
+    my $tosha = $localrefs->{$refsmap->{$dst}} or die 'wtf'; 
+    my $np; 
+    if ($force) { 
+      $np = $fromsha eq $tosha; 
+    } else { 
+      $np =  needs_push $fromsha, $tosha;
+    }
+    my $refspec = ($force ? '+' : '') . "$src:$dst"; 
+    print (($np ? "yes " : "no  "), $refspec, "\n") unless $quiet; 
+    $needspush ||= $np; 
+    next; 
+  }
+}
+
+eval { 
+  my $needspush = $loc ? local_needspush : carefull_needspush; 
+  if ($quiet) {
+    exit ($needspush ? 0 : 1);
+  } else {
+    #print $needspush ? "yes\n" : "no\n";
+    exit 0; 
+  }
+  1; 
+} || die (sprintf("[[ git-needs-push on %s ]]\n", getcwd) . $@);
+
+
+
+

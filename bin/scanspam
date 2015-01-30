@@ -1,0 +1,49 @@
+#!/usr/bin/perl -w
+
+
+use Email::LocalDelivery;
+use Email::Folder;
+use Email::Simple;
+use Data::Dumper;
+use Fcntl ':flock'; 
+use Fcntl;
+
+
+#my $in = "$ENV{HOME}/mail/spam.new";
+#my $out = "$ENV{HOME}/mail/spam";
+
+
+#$in = "$ENV{HOME}/mail/x";
+#$out = "$ENV{HOME}/mail/y";
+
+
+sub scanspam {
+  my ($in,$out, $action) = @_;
+  my ($ifh, $ofh);
+
+  open $ifh, "+<$in"; 
+  open $ofh, ">>$out"; 
+
+  flock $ofh, LOCK_EX or die "can't acquire lock: $!"; 
+  flock $ifh, LOCK_EX or die "can't acquire lock: $!"; 
+
+  system "/usr/bin/spamprobe $action $in";
+  $? == 0 or die "spamprobe error!";
+
+#seek $ofh, 0, SEEK_END or die "can't seek $!";
+
+  while (defined ($_ = <$ifh>)) {
+    print $ofh $_;
+  }
+  truncate $ifh, 0 or die "can't truncate $!";
+
+  flock $ifh, LOCK_UN; 
+  flock $ofh, LOCK_UN; 
+
+  close $ifh;
+  close $ofh;
+}
+
+scanspam "$ENV{HOME}/mail/spam.new", "$ENV{HOME}/mail/spam", "spam";
+scanspam "$ENV{HOME}/mail/notspam", "$ENV{HOME}/mail/inbox", "good";
+

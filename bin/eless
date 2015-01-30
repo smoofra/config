@@ -1,0 +1,58 @@
+#!/usr/bin/perl -w
+
+
+use Cwd qw/cwd/;
+
+
+$ENV{PATH} = $ENV{NOT_FUCKED_PATH} if defined $ENV{NOT_FUCKED_PATH};
+  
+my $file;
+my $tmp  = 0;
+
+use Getopt::Long;
+Getopt::Long::Configure ("bundling");
+my ($diff,$grep, $setdir, $nosetdir);
+GetOptions ("nosetdir|S" => \$nosetdir,
+            "setdir|s"   => \$setdir,
+            "grep|g"     => \$grep,
+            "diff|d"     => \$diff) or die "couln't get options $!";
+
+$setdir  = 1 if $grep;
+$setdir  = 0 if $nosetdir;
+
+die "--grep and --diff are incompatible\n" if ($grep and $diff);
+
+
+if (@ARGV) {
+  $file = shift;
+  if ($file !~ m:^/:) {
+    $file = cwd . "/" . $file; 
+  }
+} else {
+  $setdir = 1 unless $nosetdir; 
+  $file = "/tmp/${$}eless";
+  $tmp = 1;
+  open FH, ">$file" or die $!;
+  while (<>) {
+    print FH $_;
+  }
+  close FH;
+}
+my $wd = `pwd`;
+chomp $wd;
+$wd = $setdir ? "\"$wd\"" : ""; 
+my $lisp  = "(view-file \"$file\")";
+$lisp = "(find-diff-file \"$file\" $wd )" if $diff;
+$lisp = "(find-grep-file \"$file\" $wd )" if $grep; 
+
+
+@command = (qw: emacsclient -a eless-alternate-editor --eval :, $lisp);
+
+#print join(' ', map {"'$_'"} @command), "\n";
+
+!(system @command)
+  or $ENV{TERM} ne 'emacs' && !(system qw/ less -c /, $file)
+  or die;
+
+unlink $file if $tmp;
+

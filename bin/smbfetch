@@ -1,0 +1,73 @@
+#!/usr/bin/perl
+
+
+use File::Temp qw/tempfile/;
+use IPC::Run qw/run/;
+use Getopt::Long;
+use Data::Dumper;
+use File::Spec::Win32; 
+use POSIX; 
+
+sub smbpath2args {
+  my ($smbpath, $outfn) = @_;
+  $smbpath =~ m/^ (\\\\ [^\\]+ \\ [^\\]+ ) (\\ .*? ([^\\]+)) $/x or die "bad smb path $!\n";
+  my ($service, $path, $base) = ($1, $2, $3);
+  die "Quotes in a path? No.\n" if $path =~ /"/;
+  die "Quotes in a path? No.\n" if $outfn =~ /"/;
+  $outfn = $base unless defined $outfn;
+  return ($service, '-c', qq'get "$path" "$outfn"');   
+}
+    
+my $output;
+my $quiet;
+Getopt::Long::Configure (qw/bundling require_order/);
+GetOptions ("quiet|q" => \$quiet,
+            "output|O=s" => \$output,
+           ) or die "couln't get options $!";
+@ARGV or die "get what?";
+my $path = shift @ARGV;
+
+my @auth; 
+Getopt::Long::Configure (qw/pass_through/);
+GetOptions ("authentication-file|A=s" => sub { push @auth, "-A", $_[1]; }
+           ) or die "GetOptions failed when it shouldn't have!\n";
+my $defaultauth = "$ENV{HOME}/.smbauth";
+@auth = ("-A", $defaultauth) if (-f $defaultauth && !@auth);
+
+
+my @args = (@ARGV, @auth);
+
+my $tmpfh;
+if ($output eq '-') {
+  ($tmpfh, $output) = tempfile();
+}
+
+my @q;
+@q = ('>', '/dev/null', '2>', '/dev/null') if $quiet; 
+
+run ['smbclient', smbpath2args($path, $output), @args], @q or die "smbclient failed\n";
+
+if ($tmpfh) {
+  my $pid = fork;
+  if (not $pid) {
+    POSIX::close(0);
+    POSIX::dup2(fileno $tmpfh, 0);
+    exec 'cat';
+    die "exec cat failed!\n";
+  }
+  close $tmpfh;  
+  waitpid $pid, 0;
+  unlink $output or die "couldn't delete tempfile $outpt: $!"; 
+}
+
+  
+
+  
+
+
+
+
+
+
+
+

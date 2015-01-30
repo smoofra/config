@@ -1,0 +1,19 @@
+#!/usr/bin/perl -w
+
+
+open my $in, "<", shift or die $!; 
+open my $out, ">", shift or die $!; 
+
+use Time::HiRes qw/ usleep /; 
+
+while (1) { 
+  my $buffer = ''; 
+  my $read = sysread $in, $buffer, 0x1000;
+  die "error reading: $!\n" unless defined $read;
+  if ($read) { 
+    print $out $buffer or die "error writing: $!\n"; 
+  } else { 
+    exit 0; 
+  }
+  usleep 10000; 
+}

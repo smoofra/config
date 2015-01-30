@@ -1,0 +1,28 @@
+#!/usr/bin/perl  -w
+
+
+my @args = @ARGV;
+
+if ($ARGV[0] eq  '--from-stdin') {
+  @ARGV = ();
+  @args = split /\000/, join('', <>)
+}
+
+
+$group = shift @args;
+$umask = shift @args;
+@stuff = @args;
+
+
+$gid  = getgrnam($group);
+$mygid = `id -g` ;
+if ($gid == $mygid) { 
+  system @stuff;
+} else {
+  umask $umask;
+  open OUT, "|sg $group -c '$0 --from-stdin'";
+  print OUT join "\000", $group, $umask, @stuff;
+  close OUT;
+}
+
+

@@ -1,0 +1,43 @@
+#!/usr/bin/perl -w
+
+
+
+for (@ARGV) {
+    s/\\/\\\\/g;
+    s/"/\\"/g;
+};
+
+$cwd = `pwd`;
+chomp $cwd;
+
+sub absfn { 
+  my $fn = shift;
+  if ($fn =~ /^[^\/]/) { 
+    $fn = "$cwd/$fn";
+  }
+  $fn;
+}
+
+my ($a, $b, $ancestor, $out) = map { absfn $_ } @ARGV;
+
+
+my  $lisp  = qq{ (emacsmerge $$ "$a" "$b" "$ancestor" "$out") };
+
+$SIG{HUP} = sub { 
+  exit 0;
+};
+
+$SIG{TERM} = sub { 
+  exit 1;
+};
+
+print "lisp: $lisp\n";
+print  "waiting for emacs...\n";
+system 'emacsclient', '-e', $lisp;
+
+if ($?) { 
+  print "emacsclient failed\n";
+  exit 1;
+}
+
+while (1) {sleep 1};

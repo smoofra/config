@@ -1,0 +1,51 @@
+#!/usr/bin/perl -w 
+
+use Mail::Header;
+use Mail::Address; 
+use Getopt::Long;
+
+Getopt::Long::Configure ("pass_through");
+
+my $mbox; 
+
+GetOptions ("mbox=s" => \$mbox) or die "couln't get options $!";
+
+my $in; 
+if (defined $mbox) {
+  open my $fh, "<", $mbox or die $!;
+  $in = $fh;
+} else {
+  $in = \*STDIN; 
+}
+
+my $header = Mail::Header->new ($in);
+
+sub parse {
+  my $hdr = shift;
+  my @x = $header->get($hdr);
+  die 'wtf' unless @x <= 1; 
+  return map { $_->format } Mail::Address->parse( $x[0] );
+}
+
+my @from = parse 'From'; 
+my @to = parse 'To';
+my @cc = parse 'Cc';
+
+die 'wtf' unless @from == 1; 
+
+unshift @ARGV, "--cc=$_" for (@to, @cc);
+unshift @ARGV, "--to=$_" for @from;
+
+my @id = $header->get('Message-ID');
+die 'wtf' unless @id == 1;
+
+my $id = shift @id;
+chomp $id;
+unshift @ARGV, "--in-reply-to=$id"; 
+
+exec qw/git send-email/, @ARGV;
+die $!; 
+
+
+
+

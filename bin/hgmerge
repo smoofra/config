@@ -1,0 +1,18 @@
+#!/bin/sh
+
+
+
+LOCAL="$1"
+BASE="$2"
+OTHER="$3"
+
+# echo ~/bin/emacsmerge "$OTHER" "$LOCAL" "$BASE" "$LOCAL"
+
+exec ~/bin/emacsmerge "$OTHER" "$LOCAL" "$BASE" "$LOCAL"
+
+
+
+
+
+
+

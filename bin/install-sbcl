@@ -1,0 +1,1 @@
+env INSTALL_ROOT=/home/larry/usr/ sh install.sh  ; mv ~/usr/bin/sbcl ~/usr/bin/sbcl.cvs.bin 

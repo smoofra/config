@@ -1,0 +1,10 @@
+#!/usr/bin/perl -w
+
+for (@ARGV) {
+  s/'/'\\''/g;
+  $_ = "'$_'"; 
+}
+
+print join ' ', @ARGV;
+print "\n"; 
+

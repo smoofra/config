@@ -1,0 +1,10 @@
+#!/usr/bin/perl -w
+
+while (1) {
+  sleep 1000;
+  if (getppid() == 1) { 
+    exit 0;
+  }
+}
+
+

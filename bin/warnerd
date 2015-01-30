@@ -1,0 +1,13 @@
+#!/bin/sh
+
+
+if test -z "$1"; then
+    out="-"
+else
+    out="$1"
+fi
+
+
+rssgrep http://exiledonline.com/feed -c 'war nerd' -t 'war nerd' -i -o "$out"
+
+

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+test -f ~/.gpg-agent-info && export GPG_AGENT_INFO=`cat ~/.gpg-agent-info`
+
+/usr/bin/gpg --use-agent "$@"

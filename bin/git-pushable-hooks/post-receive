@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd .. 
+export GIT_DIR=.git 
+
+git reset --hard HEAD
+git-clean -f
+
+

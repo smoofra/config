@@ -1,0 +1,27 @@
+#!/bin/bash
+
+cd `dirname $0`
+cd ..
+
+
+if ! test -e .git; then
+    echo -n  "==== ERROR importing in "
+    pwd
+    echo "not a git working directory!"
+    exit 1;
+fi
+
+if [[ $1 == '-v' ]]; then
+    echo -n  '===== importing in '
+    pwd
+    echo git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime
+    git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime
+else 
+    output=$(git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime 2>&1)
+    if [[ $? != 0 ]]; then
+        echo -n  '===== ERROR importing in '
+        pwd
+        echo git cvsimport -d :pserver:anonymous@common-lisp.net:/project/slime/cvsroot -o master slime
+        echo $output
+    fi;
+fi;

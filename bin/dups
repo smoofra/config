@@ -1,0 +1,71 @@
+#!/usr/bin/perl -w
+
+use File::Find;
+use Data::Dumper;
+
+sub md5 { 
+  my $file = shift;
+  my $fh; 
+  open $fh, "-|", "md5sum", $file; 
+  $_ = <$fh>; 
+  my $qm = quotemeta $file;
+  /([a-f0-9]+)  $qm/ or die "error gettting md5 for $file\n";
+  return $1;
+}
+
+
+sub pwd { 
+  local $_ = `pwd`;
+  chop;
+  return $_;
+}
+
+my ($dira, @dirs) = @ARGV; 
+
+my $pwd = pwd();
+my %h;
+my %dups;
+
+find( sub { 
+	return if /^\.\.?$/; 
+	my $file = $pwd . "/" . $File::Find::name;
+	#print $file, "\n";
+	return unless -f $file;
+	$h{md5 $file} = $file;
+	}
+      , $dira );
+
+for $dir (@dirs) {
+  find( sub { 
+	  return if /^\.\.?$/; 
+	  my $file = $pwd . "/" . $File::Find::name;
+	  return unless -f $file;
+	  my $md5 = md5 $file;
+	  return unless defined $h{$md5};
+	  push @{ $dups{$md5} }, $file; 
+	}
+	, $dir );
+}
+
+
+# print Dumper \%h;
+# print Dumper \%dups;
+# exit;
+
+for $md5 (keys %h) { 
+  if (defined $dups{$md5}) {
+    print "$h{$md5} : dups follow\n";
+    print "  $_\n" for @{ $dups{$md5} };
+  } else { 
+    print "$h{$md5} : no dups\n";
+  }
+}
+	    
+	  
+
+
+
+
+
+
+

@@ -1,0 +1,41 @@
+#!/usr/bin/perl -w
+
+
+
+###BEGIN { push @INC, "/home/larry/bin/perl"; };
+###use Utils;
+
+
+sub ssystem {
+  system @_;
+  $? == 0 or die "$_[0] failed\n";
+}
+
+
+my $pid = open FH, "-|", qw/git ls-files --unmerged/, @ARGV or die "$!";
+my @lines = <FH>;
+waitpid ($pid, 0); $? == 0 or die "git ls-files failed\n";
+(scalar @lines) % 3 == 0 or die "git ls-fiels gave me a strange number of lines\n";
+
+use Data::Dumper;
+
+while (@lines) {
+  my @l = map { [split ' ', $_] } (shift @lines,shift @lines,shift @lines);
+  my $fn = $l[0][3];
+  print "===== emerging $fn\n\n";
+  $l[1][3] eq $fn && $l[2][3] eq $fn or die "panic";
+  for $i (1..3) { 
+    ssystem "git-cat-file blob $l[$i-1][1] >$fn.$i";
+  }
+  ssystem qw/emacsmerge/, "$fn.2", "$fn.3", "$fn.1", $fn;
+  unlink "$fn.2", "$fn.3", "$fn.1";
+  ssystem qw/git-update-index/, $fn;
+  print "===== done $fn\n\n";
+}
+  
+  
+  
+  
+
+
+

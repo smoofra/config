@@ -1,0 +1,54 @@
+#!/usr/bin/perl -w  -CoO
+
+
+
+use LWP::UserAgent;
+use XML::RSS;
+use Data::Dumper;
+
+my $ua = LWP::UserAgent->new;
+$ua->timeout(10);
+my $response = $ua->get('http://www.escapistmagazine.com/rss/news');
+$response->is_success or die "request failed: " . $response->status_line;
+
+my $rss = new XML::RSS;
+$rss->parse($response->content);
+
+sub rgrep {
+  my ($re, $x) = @_;
+  if (ref $x eq 'HASH') {
+    for $k (keys %$x) {
+      return 1 if $k =~ $re;
+      return 1 if rgrep ($re, $x->{$k}); 
+    }
+    return 0; 
+  }
+  if (ref $x eq 'ARRAY') {
+    for $y (@$x) {
+      return 1 if rgrep ($re, $y); 
+    }
+    return 0; 
+  }
+  if (ref $x eq '') {
+      return $x =~ $re; 
+  }
+  die 'eeeek'; 
+}
+
+my $out = new XML::RSS (version => '1.0');
+$rss->channel(title => "zero punctuation",
+              link => 'http://www.escapistmagazine.com/videos/view/zero-punctuation'); 
+
+for $item (@{$rss->{'items'}}) {
+  $out->add_item(%$item) if rgrep (qr/zero \s* punctuation/xi, $item); 
+}
+
+my $fh = \*STDOUT;
+if (@ARGV) {
+  open $fh, ">", shift or die $!; 
+}
+
+print $fh $out->as_string; 
+
+
+

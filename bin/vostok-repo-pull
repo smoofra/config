@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [[ $(hostname) != vostok ]]; then
+    echo 'THIS ISNT VOSTOK'
+    exit 1;
+fi;
+
+GIT=$HOME/usr/bin/git
+
+for d in $HOME/repos/*; do
+	cd $d
+	if ! $GIT fetch >~/.git-output 2>&1; then
+		echo '**** git fetch FAILED in ' $d 
+		cat ~/.git-output
+	else
+		true
+		#echo '**** git fetch in ' $d
+		#cat ~/.git-output 
+	fi
+	
+done;

@@ -1,0 +1,69 @@
+#!/usr/bin/perl -w
+
+use File::Temp  qw/ :POSIX /;
+use IPC::Run qw/run/ ;
+
+@ARGV == 3 or die sprintf 'wtf %s', join(' ', @ARGV);
+
+my ($o, $a, $b) = @ARGV; 
+
+print "MERGEING SQLITE FILES $o $a $b\n"; 
+
+sub dumpsqlite3 {
+  my ($infile, $outfile) = @_;
+  -e $infile or die "$infile doesn't exist\n"; 
+  my $v;
+  run ['sqlite3', $infile, 'PRAGMA user_version;'], '>', \$v or die 'sqlite3 failed';
+  chomp $v;
+  open my $fh,  '>',  $outfile or die $!;
+  print $fh "PRAGMA user_version = $v;\n";
+  close $fh;
+  run ['sqlite3', $infile, '.dump'], '>>', $outfile or die 'sqlite3 failed';
+}
+
+eval { 
+  $ad = tmpnam();
+  $bd = tmpnam();
+  $od = tmpnam(); 
+
+  dumpsqlite3 $o, $od;
+  dumpsqlite3 $a, $ad;
+  dumpsqlite3 $b, $bd; 
+
+  run ['merge', $ad, $od, $bd] or do {
+    my $newname = "$a.dump";
+    my $n = 0;
+    while (-e $newname) {
+      ++$n;
+      $newname = "$a.dump.$n";
+    }
+    print "merge failed, saving dump in $newname\n";
+    rename $ad, $newname;
+    undef $ad; 
+    die 'merge failed';
+  };
+
+  unlink $a or die $!;
+  my $err; 
+  run ['sqlite3', $a], '>', \*STDOUT, '2>', \$err, '<', $ad;
+  if ('' ne $err) {
+    print STDERR $err;
+    die 'sqlite3 failed';
+  }  
+
+  unlink $ad if defined $ad;
+  unlink $bd; 
+  unlink $od;
+  1;
+} or do {
+  unlink $ad if defined $ad;
+  unlink $bd if defined $bd;
+  unlink $od if defined $od;
+
+  die $@; 
+}
+  
+
+
+
+

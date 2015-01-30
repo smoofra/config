@@ -1,0 +1,13 @@
+#!/bin/sh
+
+for ext in 'x86f' 'fasl'; do
+	for dir in '/home/larry/lisp/' '/var/cache/common-lisp-controller/'   '/home/larry/.slime'; do
+		echo "find $dir -name "*.$ext" -print0 | xargs -0 rm -f"
+		find $dir -name "*.$ext" -print0 | xargs -0 rm -f
+	done
+done
+
+
+
+
+

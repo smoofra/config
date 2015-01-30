@@ -1,0 +1,70 @@
+#!/usr/bin/perl -w 
+
+$loc = shift; 
+
+
+open IN, "<$ENV{HOME}/public_html/links.txt";
+$_ = join '', <IN>;
+s/\s+$//; 
+s/^\s+//; 
+@links = split '[\r\n]+';
+pop @links while @links > 25;
+unshift @links, $loc;
+
+
+
+open OUT, ">$ENV{HOME}/public_html/links.txt";
+print OUT $_, "\n" for @links;
+close OUT;
+
+
+open OUT, ">$ENV{HOME}/public_html/links.rss";
+print OUT <<"END";
+<?xml version="1.0"?>
+<rss version="2.0">
+<channel>
+<title>Some Links</title>
+END
+print OUT <<"END" for map {s/\&/&amp;/g; $_;} @links;
+<item>
+<title>$_</title>
+<description>$_</description>
+<link>$_</link>
+</item>
+END
+print OUT <<"END";
+</channel>
+</rss>
+END
+close OUT;
+
+
+
+open OUT, ">$ENV{HOME}/public_html/links.html";
+print OUT <<"END";
+<h1>Some Links</h1>
+END
+print OUT <<"END" for map {s/\&/&amp;/g; $_;} @links;
+<p>
+<a href="$_">$_</a>
+</p>
+END
+close OUT;
+
+
+
+
+open OUT, ">$ENV{HOME}/public_html/link.html";
+print OUT "<a href=\"$loc\">link</a>\n";
+print OUT "<script> window.location.replace(\"$loc\") </script>";
+close OUT;
+
+if (0 && !shift) { 
+  system "links", $loc;
+}
+
+
+
+
+
+

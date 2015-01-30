@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# my little git diff
+
+
+git-diff --exit-code --quiet "$@" >/dev/null || git diff "$@" | perl -pe 's/\r//g' | eless -d 

@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+use File::Basename; 
+BEGIN {push @INC, dirname($0)."/perl";};
+use Utils;
+
+use Getopt::Long;
+Getopt::Long::Configure ("bundling");
+my $pids; 
+GetOptions ("pids|p" => \$pids) or die "couln't get options $!";
+
+
+my $regex = shift;
+
+my @pids = grep {/^\d+$/} slurpdir '/proc/'; 
+
+my @good;
+
+for $pid (@pids) {
+  my $cmd = slurp "/proc/$pid/cmdline";
+  if ($pid != $$ && $cmd =~ $regex) {
+    push @good, $pid;
+  }
+}
+
+if ($pids) {
+  print $_, "\n" for @good;
+} else { 
+  if (@good) {
+    exec 'ps', 'up', @good;
+  } else {
+    print "none found\n";
+  }
+}
+
+
+
+
+

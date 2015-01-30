@@ -1,0 +1,48 @@
+#!/bin/bash
+
+export PATH=$(dirname $0):/usr/lib/git-core:$PATH
+
+if [[ $1 == '--git-dir' ]]; then 
+    shift;
+    export GIT_DIR="$1"
+    shift;
+fi;
+
+
+if [[ $1 == '' ]]; then
+    echo 'useage: quiet-git-commit <dir>'
+    exit
+fi;
+
+cd $1
+
+git-addall
+if [[ $? != 0 ]]; then
+    echo ERROR $?
+    exit
+fi;
+
+
+git diff-index --cached --quiet HEAD 
+r=$?
+
+if [[ $r == 0 ]]; then
+    true
+    #echo no changes
+else
+    #echo changes
+    x=$(git commit -m 'automatic update' 2>&1)
+    r=$?
+
+    if [[ $r != 0 ]]; then
+        echo $x
+        echo ERROR $r
+        exit
+    fi;
+
+fi
+
+
+
+
+

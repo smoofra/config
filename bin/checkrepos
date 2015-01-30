@@ -1,0 +1,57 @@
+#!/usr/bin/perl -w
+
+use File::Basename; 
+use IPC::Run qw/run/;
+
+my $euid = $>;
+
+my @repos = grep { $_ !~ /^\.{1,2}$/ } glob "$ENV{HOME}/repos.tocheck/*";
+
+sub follow {
+  my $name = shift;
+  while (-l $name) {
+    my $wd = dirname $name;
+    my $new = readlink $name or die $!;
+    if ($new =~ m;^/;) {
+      $name = $new;
+    } else {
+      $name = "$wd/new";
+    }
+  }
+  return $name;
+}
+
+if (`hostname` =~ /^ \s* cthulhu (\.elder-gods\.org)? \s* $/x) {
+  if ($euid == 0) {
+    push @repos, qw: /etc/ /home/meghan/public_html :;
+  } 
+}
+
+for $repo (@repos) {
+  $repo = follow $repo;
+  chdir $repo or die "can't chdir to $repo: $!\n";
+  my $out = `git status`; 
+  if ($out !~ /nothing to commit \(working directory clean\)/) {
+    print "******  $repo\n";
+    print "============================================================\n";
+    print "$out";
+    print "============================================================\n\n";
+  }
+}
+
+my @pushrepos = grep { $_ !~ /^\.{1,2}$/ } glob "$ENV{HOME}/repos.topush/*";
+
+for $repo (@pushrepos) {
+  $repo = follow $repo;
+  chdir $repo or die $!;
+  my $rc = system (qw/git-needs-push -q/);
+  if ($rc == 0) { 
+    print "******  $repo, needs push\n";
+    next;
+  }
+  if ($rc == 256) {
+    next;
+  }
+  print "git-needs-push failed!\n";
+  exit 1; 
+}

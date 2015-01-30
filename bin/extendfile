@@ -1,0 +1,58 @@
+#!/usr/bin/perl -w
+
+my $onemeg = "\0" x (1024 * 1024); 
+
+@ARGV == 2 or die "usage: extendfile <filename> <ammount>\n"; 
+
+my $filename = shift; 
+my $ammount = shift;
+
+my ($megs, $bytes);
+
+$bytes = 0; 
+
+
+if ($ammount =~ /^ (\d+)(\.\d+)? m $/xi) {
+  $megs = $1;
+  $bytes = int($2 * 1024 * 1024) if defined $2; 
+}
+elsif ($ammount =~ /^ (\d+)(\.\d+)? g $/xi) {
+  $megs = 1024 * $1;
+  $bytes = int($2 * 1024 * 1024 * 1024) if defined $2; 
+}
+elsif ($ammount =~ /^ (\d+)(\.\d+)? k $/xi) {
+  $bytes = $1 * 1024;
+  $bytes += int($2 * 1024) if defined $2; 
+}
+elsif ($ammount =~ /^ (\d+) $/xi) {
+  $bytes = $1; 
+} else {
+  die "i don't understand the size $ammount\n";
+}
+
+if($bytes >= 1024 * 1024) {
+  my $n = int($bytes / (1024 * 1024));
+  $megs += $n;
+  $bytes -= $n * 1024 * 1024; 
+}
+
+open $o, ">>", $filename or die $!;
+
+
+while ($megs) {
+  print $o $onemeg;
+  $megs--;
+}
+
+if ($bytes) {
+  print $o ("\0" x $bytes);
+}
+
+
+
+
+
+
+
+
+

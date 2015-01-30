@@ -1,0 +1,120 @@
+#!/usr/bin/perl -w 
+
+use IPC::Run qw/run/;
+use File::stat; 
+
+my ($outfile, $quiet);
+
+my $maxtrys = 5;
+my $output = 1; 
+my $shell;
+my $name; 
+
+use Getopt::Long;
+Getopt::Long::Configure ("bundling");
+GetOptions ("name|n=s" => \$name, 
+            "shell|s" => \$shell,
+            "code-only|c" => sub { $output = 0; }) or die "couln't get options $!";
+
+my $root = $ENV{HOME} . '/.retry';
+
+die "$root needs to be a directory" if (-e $root && !-d $root);
+-e $root or mkdir $root or die $!;
+
+my @cmd = @ARGV;
+if ($shell) {
+  @cmd = ('sh', '-c', join (' ', @cmd));
+}
+
+unless (defined $name) { 
+  $name = join ' ', @cmd;
+  $name =~ s/\%/%%/g;
+  $name =~ s/\//%2f/g;
+};
+
+my $dir = "$root/$name";
+-e $dir or mkdir $dir or die $!;
+
+sub slurp {
+  my $fn = shift;
+  my $fh; 
+  open $fh, '<', $fn or die $!;
+  local $/;
+  my $r =  <$fh>;
+  close $fh;
+  return $r; 
+}
+
+sub unslurp {
+  my ($fn, $value) = @_;
+  open $fh, '>', $fn or die $!;
+  print $fh $value;
+  close $fh;
+}
+
+my $trys = 0;
+$trys = slurp "$dir/trys" if -e "$dir/trys";
+
+my $err; 
+
+my $temp = "$dir/temp$$"; 
+
+eval { 
+  run \@cmd, '>', $temp, '2>&1' or die sprintf 'Command \'%s\' failed\n', join(' ', @cmd);
+  1;
+} or do {
+  $err = $@;
+};
+
+my $ok = !defined($err); 
+$ok = 0 if $output && stat($temp)->size > 0;
+
+if ($ok) {
+  unlink $temp; 
+  unlink "$dir/trys"; 
+  unlink  "$dir/log";
+} else {
+  $trys++;
+  my $log;
+  open $log, '>>', "$dir/log" or die $!;
+  print $log "ATTEMPT $trys\n";
+  print $log "RUNNING ", join(' ', @cmd), "\n";
+  print $log "\n";
+  my $temph;
+  open $temph, '<', $temp or die $!;
+  while (defined($_ = <$temph>)) {
+    chomp; 
+    print $log "> $_\n";
+  }
+  print $log "\n\n"; 
+  unlink $temp; 
+  close $temph;
+  close $log;
+  
+
+  if ($trys >= $maxtrys) { 
+    open $log, '<', "$dir/log" or die $!;
+    while (defined($_ = <$log>)) {
+      print;
+    }
+    unlink "$dir/trys"; 
+    unlink  "$dir/log";
+  } else {
+    unslurp "$dir/trys", $trys;
+  }
+}
+
+
+
+  
+  
+  
+    
+    
+
+
+
+
+
+  
+    

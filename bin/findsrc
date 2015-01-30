@@ -1,0 +1,25 @@
+#!/bin/bash
+
+case $1 in
+    -*)
+        dir=""
+        ;;
+    *) 
+        dir=$1
+        shift
+        ;;
+esac 
+    
+
+
+if [[ -z "$1" ]]; then
+    foo=" -or -true "
+else
+    foo=" -or "
+fi
+
+exec find $dir \
+         -name .git -prune   \
+     -or -name .svn -prune   \
+   $foo "$@"
+

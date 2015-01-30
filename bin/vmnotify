@@ -1,0 +1,5 @@
+#!/bin/sh 
+
+echo 'check your voicemail' | mutt 3016333515@teleflip.com
+echo 'check vonage voicemail' | mutt 3016612862@teleflip.com
+

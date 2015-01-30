@@ -1,0 +1,150 @@
+#!/usr/bin/perl -w
+
+use File::Temp qw/tempfile/;
+use File::Basename; 
+use Mail::Box::Manager;
+use Time::HiRes qw/ usleep /;
+use Linux::Inotify2;
+use POSIX qw(setsid);
+
+my $man = Mail::Box::Manager->new or die $!;
+
+sub checkfolder {
+  my $path = shift; 
+  my $box =  $man->open(remove_when_empty => 0,
+                        access => 'r',
+                        folder => $path) or die $!;
+  for ($box->messages) {
+    if (!$_->label('seen')) {
+      $box->close;
+      return 1; 
+    }
+  }
+  $box->close;
+  return 0; 
+}
+
+sub doselect {
+  my $fd = shift;
+  my $timeout = shift; 
+  my ($rin, $win, $ein);
+  $rin = $win = $ein = '';
+  vec($rin,$fd,1) = 1;
+  vec($win,$fd,1) = 1;
+  $ein = $rin | $win;
+  select($rin, $win, $ein, $timeout) >=  0 or die $!;
+}
+
+sub waitbox {
+  my $path = shift;
+  my $timeout = shift; 
+  my $inotify = new Linux::Inotify2 or die "$!";
+  $inotify->watch ("$path/new",
+                   IN_MOVED_FROM | IN_MOVED_TO
+                   | IN_MODIFY | IN_DELETE
+                   | IN_CREATE | IN_MOVE_SELF) or die $!;
+  $inotify->watch ("$path/cur",
+                   IN_MOVED_FROM | IN_MOVED_TO
+                   | IN_MODIFY | IN_DELETE
+                   | IN_CREATE | IN_MOVE_SELF) or die $!;
+  doselect($inotify->{fd}, $timeout);
+}
+
+
+use Getopt::Long;
+Getopt::Long::Configure ("bundling");
+my ($daemon);
+my $timeout = 2 * 60;
+my $pidfile;
+GetOptions ("pidfile|p=s" => \$pidfile, 
+            "daemon|d" => \$daemon,
+            "timeout|t=i" => \$timeout) or die "couln't get options $!";
+
+@ARGV == 3 or die "usage: monitor_mailbox [--pidfile|-p pidfile] [--daemon|-d] [--timeout|-t=<n>] <name> <mailbox path> <notify path>\n"; 
+
+my $name = shift; 
+my $path = shift;
+my $npath = shift;
+my $ndir = dirname $npath; 
+
+
+my $box =  $man->open(remove_when_empty => 0,
+                      access => 'r',
+                      folder => $path) or die $!;
+ref $box eq 'Mail::Box::Maildir' or die "don't know how to handle this type of mailbox";
+$box->close (write => 'NEVER');
+
+
+
+if (defined $pidfile and -e $pidfile) {
+  my $fh;
+  open $fh, "<", $pidfile or die "Can't read pidfile: $!\n";
+  my $pid = <$fh>;
+  close $fh;
+  chomp $pid;
+  $pid =~ /^[\d]+$/ or die "Invalid pid: $pid\n";
+  if (-e "/proc/$pid") {
+    open $fh, "<", "/proc/$pid/cmdline" or die "Can't open /proc/$pid/cmdline: $!\n"; 
+    my $cmdline = join '', <$fh>;
+    close $fh;
+    my (@cmdline) = split "\x00", $cmdline;
+    ($cmdline[0] eq '/usr/bin/perl' and $cmdline[1] eq '-w' and $cmdline[2] =~ /monitor_mailbox$/)
+      or die "pidfile seems to be invalid\n";
+    exit 0; 
+  } else {
+    print STDERR "old daemon seems to be dead, starting up\n"; 
+  }
+}
+
+if ($daemon) {
+  open STDIN, '/dev/null'   or die "Can't read /dev/null: $!";
+  open STDOUT, '>/dev/null' or die "Can't write to /dev/null: $!";
+  open STDERR, '>/dev/null' or die "Can't write to /dev/null: $!";
+  defined(my $pid = fork)   or die "Can't fork: $!";
+  exit if $pid;
+  setsid                    or die "Can't start a new session: $!";
+}
+
+if (defined $pidfile) {
+  open $fh, ">", $pidfile or die "Can't write pidfile: $!\n";
+  print $fh $$, "\n";
+  close $fh; 
+}
+
+my $last = 0;
+
+sub notify {
+  my $s = shift; 
+  my ($fh, $fn) = tempfile ".notify.XXXXX", DIR => $ndir;
+  $fh or die "can't generate tempfile: $!\n";
+  print $fh $s;
+  close $fh;
+  rename $fn, $npath or die "rename $fn $npath failed: $!";
+} 
+
+eval {
+  while (1) {
+    if (time - $last <  30) {
+      my $ss = 30 - time + $last; 
+      print "sleeping $ss\n";
+      sleep $ss;
+    }
+    $last = time; 
+    my $s = checkfolder($path) ? $name : "";
+    my $fh;
+    print "notifying $s\n";
+    notify $s;
+    waitbox $path, $timeout;
+    print "woke\n"; 
+  }
+};
+
+notify "$name (!dead!)"; 
+
+print STDERR $@; 
+
+
+
+
+
+

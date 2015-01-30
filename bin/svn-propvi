@@ -1,0 +1,11 @@
+#!/usr/bin/perl -w
+
+my $prop = shift;
+my $target = (shift || ".");
+my $tmp = "/tmp/svn-propvi$$";
+
+0==system "svn propget $prop $target >$tmp" or die;
+0==system $ENV{EDITOR}, $tmp or die;
+0==system qw/ svn propset /, $prop, qw/ -F /, $tmp, $target or die;
+unlink $tmp or die;
+

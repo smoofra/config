@@ -1,0 +1,20 @@
+#!/usr/bin/perl
+
+use IPC::Run qw/run/;
+use File::Basename;
+
+my $here = dirname($0);
+my $backup = "$ENV{HOME}/.mirrorboard_layout_backup";
+my $display = $ENV{DISPLAY}; 
+my $mirrorboard = "$here/mirrorboard.xkb"; 
+
+if (-f $backup) {
+  run ['xkbcomp', $backup, $display], '2>', '/dev/null' or die "wtf\n";
+  unlink $backup or die $!; 
+} else {
+  run ['xkbcomp', $display, $backup], '2>', '/dev/null' or die "wtf\n";
+  run ['xkbcomp', $mirrorboard, $display], '2>', '/dev/null' or die "wtf\n";
+}
+
+
+

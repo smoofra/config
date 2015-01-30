@@ -1,0 +1,12 @@
+#!/bin/bash
+
+
+mutt -s "$*" $(whoami) <<EOF
+
+$*
+EOF
+
+
+
+
+

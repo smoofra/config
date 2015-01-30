@@ -1,0 +1,21 @@
+#!/usr/bin/perl -w 
+
+use File::Basename; 
+BEGIN {push @INC, dirname($0)."/perl";};
+use Utils;
+
+@ARGV = qw/./ unless scalar @ARGV;
+
+for $dir (@ARGV) { 
+  for (glob "$dir/*~") { 
+    print $_, "\n";
+  }
+}
+
+
+
+
+
+
+
+

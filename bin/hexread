@@ -1,0 +1,16 @@
+#!/usr/bin/perl -w
+
+my $fh;
+
+
+open $fh, "<", $ARGV[0] or die "$!";
+
+my $buf = " ";
+
+while (1) {
+  my $len = sysread $fh, $buf, 1;
+  if ($len) {
+    printf "%02x\n", ord $buf;
+  }
+}
+

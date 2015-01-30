@@ -19,3 +19,6 @@ fi
 export PS1='\u@\h:\w\$ '
 
 alias rerc='. ~/.bashrc'
+
+PERL_MB_OPT="--install_base \"/Users/lawrence_danna/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/Users/lawrence_danna/perl5"; export PERL_MM_OPT;

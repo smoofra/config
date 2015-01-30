@@ -13,9 +13,14 @@
         chainreplyto = false
 
         smtpencryption = tls
-        smtpserver = smtp.gmail.com
-        smtpuser = smoofra@gmail.com
         smtpserverport = 587
+
+
+        #smtpserver = smtp.gmail.com
+        #smtpuser = smoofra@gmail.com
+
+        smtpserver = mail.apple.com
+        smtpuser = lawrence_danna
 
 [alias]
 

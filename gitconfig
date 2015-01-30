@@ -3,6 +3,9 @@
 [core]
         pager = cat
 
+[url "ssh://git@stash.sd.apple.com/coreos/"]
+    insteadOf = stash://
+
 [user]
 	name = "Lawrence D'Anna"
 	#email = larry@elder-gods.org

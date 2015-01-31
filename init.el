@@ -1563,10 +1563,13 @@
 	  (setf (current-column) c)
       (advance-column))))
 
-(add-hook 'c-mode-common-hook '(lambda ()
-                                 (setq indent-tabs-mode nil)
-                                 (setq tab-width 8) 
-                                 (setq c-basic-offset 8)))
+
+(defun my-c-mode-hook ()
+  (setq indent-tabs-mode nil)
+  (setq tab-width 8)
+  (setq c-basic-offset 8))
+
+(add-hook 'c-mode-common-hook 'my-c-mode-hook)
 
 ;; to keep long lines from wrapping around use toggle-truncate-lines
 

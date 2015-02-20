@@ -2,24 +2,24 @@
 
 use English;
 use POSIX qw/setuid/;
-use Unix::PasswdFile; 
+# use Unix::PasswdFile;
 
-if ($EUID == 0) {
-  my $trueuid = $EUID;
-  if ($trueuid == 0) {
-    my $pw = new Unix::PasswdFile '/etc/passwd' or die "couldn't read /etc/passwd\n"; 
-    for my $user ($pw->users()) {
-      if ($ENV{HOME} eq $pw->home($user)) {
-        $trueuid = $pw->uid($user);
-        last;
-      }
-    }
-  }
-  if ($trueuid != 0) {
-    0==setuid($trueuid) or die "couldn't setuid: $!\n";
-  }
+# if ($EUID == 0) {
+#   my $trueuid = $EUID;
+#   if ($trueuid == 0) {
+#     my $pw = new Unix::PasswdFile '/etc/passwd' or die "couldn't read /etc/passwd\n";
+#     for my $user ($pw->users()) {
+#       if ($ENV{HOME} eq $pw->home($user)) {
+#         $trueuid = $pw->uid($user);
+#         last;
+#       }
+#     }
+#   }
+#   if ($trueuid != 0) {
+#     0==setuid($trueuid) or die "couldn't setuid: $!\n";
+#   }
   
-}
+# }
 
 exec '/usr/bin/emacsclient', @ARGV; 
 

@@ -18,7 +18,9 @@ if ! [[ -e ~/.ssh ]]; then
     chmod 0700 ~/.ssh
 fi
 
+~/config/replacements.py
+
 cat ~/config/ssh ~/apple_config/ssh  >~/.ssh/config
 
-
 . ~/apple_config/setup.sh
+

@@ -2,53 +2,52 @@
 # coding=utf8
 
 import unicodedata
-from collections import OrderedDict
-import subprocess
-import json
+from Foundation import NSUserDefaults, NSCFDictionary, NSGlobalDomain
+import sqlite3
+import time
 import os
-import sys
 
-# FIXME "defaults read -g NSUserDictionaryReplacementItems" might be a better
-# way to read and write this stuff.
-#
-# http://apple.stackexchange.com/questions/112363/mass-load-of-keyboard-text-mappings-in-mavericks
-
-# import codecs
-# sys.stdout = codecs.getwriter('utf8')(sys.stdout)
-
-filename = os.path.join(os.getenv("HOME"), 'Library', 'Preferences', '.GlobalPreferences.plist')
-
-proc = subprocess.Popen(["plutil", "-convert", "json", filename, '-o', '-'],
-                        stdout = subprocess.PIPE);
-prefs = json.load(proc.stdout);
-if proc.wait() != 0:
-    raise Exception, "plutil failed"
+def my_replacements():
+    for code in range(ord(u'α'), ord(u'ω') + 1):
+        char = unichr(code)
+        name =unicodedata.name(char)
+        assert name.startswith("GREEK SMALL LETTER ")
+        name = name[len("GREEK SMALL LETTER "):].lower().replace(' ', '')
+        replace = '\\' + name
+        yield (replace, char)
 
 
-replacements = OrderedDict()
-for x in prefs.get('NSUserDictionaryReplacementItems'):
-    replacements[x['replace']] = x
-
-for code in range(ord(u'α'), ord(u'ω') + 1):
-    char = unichr(code)
-    name =unicodedata.name(char)
-    assert name.startswith("GREEK SMALL LETTER ")
-    name = name[len("GREEK SMALL LETTER "):].lower().replace(' ', '')
-
-    x = {'replace': '\\' + name,
-         'with'   : char,
-         'on'     : 1}
-    replacements[x['replace']] = x
+def add_replacements_to_defaults():
+    defaults = NSUserDefaults.standardUserDefaults()
+    replacements = defaults.objectForKey_('NSUserDictionaryReplacementItems').mutableCopy()
+    existing = set( x['replace'] for x in replacements )
+    for key,value in my_replacements():
+        if not key in existing:
+            replacements.append({'replace': key,
+                                 'with'   : value,
+                                 'on'     : 1})
+            defaults.setObject_forKey_inDomain_(replacements, 'NSUserDictionaryReplacementItems', NSGlobalDomain)
+    defaults.synchronize()
 
 
-prefs['NSUserDictionaryReplacementItems'] = list(replacements.values())
+def add_replacements_to_sqlite(filename):
+    sql = sqlite3.connect(filename)
+    for key,value in my_replacements():
+        cur = sql.cursor()
+        cur.execute("SELECT Z_PK FROM ZUSERDICTIONARYENTRY WHERE ZSHORTCUT == ?", (key,))
+        if not len(cur.fetchall()):
+            cur.execute(
+                "INSERT INTO ZUSERDICTIONARYENTRY(Z_ENT, Z_OPT, ZTIMESTAMP, ZPHRASE, ZSHORTCUT) VALUES(1, 1, ?, ?, ?);",
+                (int(time.time()), value, key))
+            cur.fetchall()
+    sql.commit()
 
-proc = subprocess.Popen(["plutil", "-convert", "binary1", "-", '-o', filename + ".new"],
-                        stdin = subprocess.PIPE)
 
-json.dump(prefs, proc.stdin)
-proc.stdin.close()
-if proc.wait() != 0:
-    raise Exception, "plutil failed"
+add_replacements_to_defaults()
 
-os.rename(filename + '.new', filename)
+for root, dirs, files in os.walk(os.path.join(os.getenv("HOME"), "Library/Dictionaries/CoreDataUbiquitySupport")):
+    for name in files:
+        if name.endswith(".db"):
+            add_replacements_to_sqlite(os.path.join(root, name))
+
+

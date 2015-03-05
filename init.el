@@ -2153,6 +2153,12 @@
       (setq scroll-step 1) ;; keyboard scroll one line at a time
       ))
 
+
+
+(setq split-height-threshold 60)
+(setq split-width-threshold  200)
+
+
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("melpa" . "http://melpa.milkbox.net/packages/")))
 

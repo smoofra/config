@@ -26,6 +26,7 @@
         smtpuser = lawrence_danna
 
 [alias]
+        personal = config user.email larry@elder-gods.org
 
         se = ! \nf() { \n git show \"$@\"  | el -d \n } \nf
         de = ! \nf() { \n git diff \"$@\" | el -d \n } \nf

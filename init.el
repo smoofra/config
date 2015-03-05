@@ -1681,104 +1681,10 @@
 (setq x-select-enable-clipboard nil)
 
 
-(setq custom-file "~/config/init.el")
-;;(load "~/.custom.el" t)
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(Info-additional-directory-list (quote ("/usr/share/info/emacs-snapshot")))
- '(Man-notify-method (quote pushy))
- '(blink-cursor-alist (quote ((box . box) (t . box))))
- '(c-basic-offset 4)
- '(c-default-style
-   (quote
-    ((c-mode . "k&r")
-     (java-mode . "java")
-     (awk-mode . "awk")
-     (other . "gnu"))))
- '(cperl-invalid-face (quote default))
- '(delete-selection-mode nil)
- '(diff-switches "-u")
- '(dns-mode-soa-auto-increment-serial nil)
- '(dtrt-indent-max-merge-deviation 20.0)
- '(dtrt-indent-mode t nil (dtrt-indent))
- '(erc-fill-column 69)
- '(erc-track-exclude (quote ("&bitlbee")))
- '(erc-track-exclude-server-buffer t)
- '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
- '(erc-track-when-inactive nil)
- '(fill-column 80)
- '(indent-tabs-mode nil)
- '(iswitchb-default-method (quote samewindow))
- '(matlab-comment-region-s "%")
- '(matlab-fill-code nil)
- '(matlab-indent-level 4)
- '(matlab-verify-on-save-flag nil)
- '(ns-command-modifier (quote meta))
- '(octave-block-offset 4)
- '(rtags-path "/usr/local")
- '(safe-local-variable-values
-   (quote
-    ((Package SERIES :use "COMMON-LISP" :colon-mode :external)
-     (Package . HUNCHENTOOT)
-     (Syntax . COMMON-LISP)
-     (Package . FLEXI-STREAMS)
-     (Package . Memoization)
-     (Package . COMMON-LISP-CONTROLLER)
-     (Package . XREF)
-     (Syntax . Common-lisp)
-     (Package . UFFI)
-     (Package . CL-USER)
-     (syntax . COMMON-LISP)
-     (Package ITERATE :use "COMMON-LISP" :colon-mode :external)
-     (Package . lift)
-     (Base . 10)
-     (Syntax . ANSI-Common-Lisp)
-     (syntax . common-lisp)
-     (package . common-lisp)
-     (Package . CLIM-DEMO)
-     (Package . MCCLIM-FREETYPE)
-     (Syntax . Common-Lisp)
-     (Package . CLIMI)
-     (Package . CLIM-INTERNALS)
-     (unibyte . t)
-     (Package . COMMON-LISP-USER))))
- '(slime-backend "swank-loader.lisp")
- '(slime-enable-evaluate-in-emacs t)
- '(slime-multiprocessing t)
- '(svn-status-default-log-arguments (quote ("--verbose   --limit=20")))
- '(tab-width 8)
- '(warning-suppress-types (quote ((undo discard-info))))
- '(woman-use-own-frame nil))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(anything-header ((t (:background "grey" :foreground "black" :weight bold))) t)
- '(cursor ((t (:background "#ffffff"))))
- '(diff-added ((t (:inherit diff-changed))))
- '(diff-changed ((t (:foreground "yellow"))))
- '(diff-file-header ((((class color) (min-colors 88) (background dark)) (:foreground "cyan" :weight bold))))
- '(diff-header ((((class color) (min-colors 88) (background dark)) (:foreground "green" :weight bold))))
- '(diff-removed ((t (:inherit diff-changed :foreground "red"))))
- '(mmm-default-submode-face ((t (:background "gray85" :foreground "black")))))
 
 
 
-;;; this seems to be a problem so we'll just set it outside of custom for everything
-;;;'(default ((t (:stipple nil :background "#000000" :foreground "#ffffff" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 133 :width normal :family "bitstream-bitstream vera sans mono"))))
 
-(cond 
- ((display-graphic-p)
-  (set-face-background 'default "#110022")
-  (set-face-foreground 'default "#ffffff"))
- (t
-  (set-face-background 'default "#000000")))
 
 (defun find-diff-file (file &optional dir )
   (interactive)
@@ -2163,5 +2069,100 @@
                          ("melpa" . "http://melpa.milkbox.net/packages/")))
 
 
+(require 'package)
+(package-initialize)
 (package-install 'dtrt-indent)
 (package-install 'rtags)
+
+(require 'dtrt-indent)
+
+(setq custom-file "~/config/init.el")
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(Info-additional-directory-list (quote ("/usr/share/info/emacs-snapshot")))
+ '(Man-notify-method (quote pushy))
+ '(blink-cursor-alist (quote ((box . box) (t . box))))
+ '(c-basic-offset 4)
+ '(c-default-style
+   (quote
+    ((c-mode . "k&r")
+     (java-mode . "java")
+     (awk-mode . "awk")
+     (other . "gnu"))))
+ '(cperl-invalid-face (quote default))
+ '(delete-selection-mode nil)
+ '(diff-switches "-u")
+ '(dns-mode-soa-auto-increment-serial nil)
+ '(erc-fill-column 69)
+ '(erc-track-exclude (quote ("&bitlbee")))
+ '(erc-track-exclude-server-buffer t)
+ '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
+ '(erc-track-when-inactive nil)
+ '(fill-column 80)
+ '(dtrt-indent-mode t nil (dtrt-indent))
+ '(indent-tabs-mode nil)
+ '(iswitchb-default-method (quote samewindow))
+ '(matlab-comment-region-s "%")
+ '(matlab-fill-code nil)
+ '(matlab-indent-level 4)
+ '(matlab-verify-on-save-flag nil)
+ '(ns-command-modifier (quote meta))
+ '(octave-block-offset 4)
+ '(rtags-path "/usr/local")
+ '(safe-local-variable-values
+   (quote
+    ((Package SERIES :use "COMMON-LISP" :colon-mode :external)
+     (Package . HUNCHENTOOT)
+     (Syntax . COMMON-LISP)
+     (Package . FLEXI-STREAMS)
+     (Package . Memoization)
+     (Package . COMMON-LISP-CONTROLLER)
+     (Package . XREF)
+     (Syntax . Common-lisp)
+     (Package . UFFI)
+     (Package . CL-USER)
+     (syntax . COMMON-LISP)
+     (Package ITERATE :use "COMMON-LISP" :colon-mode :external)
+     (Package . lift)
+     (Base . 10)
+     (Syntax . ANSI-Common-Lisp)
+     (syntax . common-lisp)
+     (package . common-lisp)
+     (Package . CLIM-DEMO)
+     (Package . MCCLIM-FREETYPE)
+     (Syntax . Common-Lisp)
+     (Package . CLIMI)
+     (Package . CLIM-INTERNALS)
+     (unibyte . t)
+     (Package . COMMON-LISP-USER))))
+ '(slime-backend "swank-loader.lisp")
+ '(slime-enable-evaluate-in-emacs t)
+ '(slime-multiprocessing t)
+ '(svn-status-default-log-arguments (quote ("--verbose   --limit=20")))
+ '(tab-width 8)
+ '(warning-suppress-types (quote ((undo discard-info))))
+ '(woman-use-own-frame nil))
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(anything-header ((t (:background "grey" :foreground "black" :weight bold))) t)
+ '(cursor ((t (:background "#ffffff"))))
+ '(diff-added ((t (:inherit diff-changed))))
+ '(diff-changed ((t (:foreground "yellow"))))
+ '(diff-file-header ((((class color) (min-colors 88) (background dark)) (:foreground "cyan" :weight bold))))
+ '(diff-header ((((class color) (min-colors 88) (background dark)) (:foreground "green" :weight bold))))
+ '(diff-removed ((t (:inherit diff-changed :foreground "red"))))
+ '(mmm-default-submode-face ((t (:background "gray85" :foreground "black")))))
+
+(cond
+ ((display-graphic-p)
+  (set-face-background 'default "#110022")
+  (set-face-foreground 'default "#ffffff"))
+ (t
+  (set-face-background 'default "#000000")))

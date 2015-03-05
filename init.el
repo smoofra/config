@@ -1565,9 +1565,10 @@
 
 
 (defun my-c-mode-hook ()
-  (setq indent-tabs-mode nil)
-  (setq tab-width 8)
-  (setq c-basic-offset 8))
+  ;; (setq indent-tabs-mode t)
+  ;; (setq tab-width 4)
+  ;; (setq c-basic-offset 4)
+  )
 
 (add-hook 'c-mode-common-hook 'my-c-mode-hook)
 
@@ -1702,6 +1703,8 @@
  '(delete-selection-mode nil)
  '(diff-switches "-u")
  '(dns-mode-soa-auto-increment-serial nil)
+ '(dtrt-indent-max-merge-deviation 20.0)
+ '(dtrt-indent-mode t nil (dtrt-indent))
  '(erc-fill-column 69)
  '(erc-track-exclude (quote ("&bitlbee")))
  '(erc-track-exclude-server-buffer t)
@@ -1716,6 +1719,7 @@
  '(matlab-verify-on-save-flag nil)
  '(ns-command-modifier (quote meta))
  '(octave-block-offset 4)
+ '(rtags-path "/usr/local")
  '(safe-local-variable-values
    (quote
     ((Package SERIES :use "COMMON-LISP" :colon-mode :external)
@@ -2148,3 +2152,10 @@
       (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
       (setq scroll-step 1) ;; keyboard scroll one line at a time
       ))
+
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+
+
+(package-install 'dtrt-indent)
+(package-install 'rtags)

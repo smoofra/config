@@ -45,4 +45,5 @@ unset sidebar_visible
 account-hook news:/ 'source ~/config/muttrc-newshook'
 
 
+set mbox_type=Maildir
 

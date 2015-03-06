@@ -10,7 +10,11 @@ import os.path
 parser = argparse.ArgumentParser()
 parser.add_argument("--verbose", "-v", action='store_true')
 parser.add_argument("user")
+parser.add_argument("--chdir", "-C")
 args = parser.parse_args()
+
+if args.chdir:
+    os.chdir(args.chdir)
 
 quiet_flags = [] if args.verbose else ["--quiet"]
 

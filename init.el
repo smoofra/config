@@ -621,7 +621,7 @@
       (backward-sexp)
       (delete-region start-region-to-kill (1- (point)))))
   (lisp-indent-line)
-  (lisp-indent-region (point) (mark)))
+  (indent-region (point) (mark)))
 
 (defun delete-empty-lines ()
   (interactive)

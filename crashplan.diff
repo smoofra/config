@@ -1,0 +1,33 @@
+Only in OrigCrashPlan.app/Contents: .Uninstall.app
+Binary files OrigCrashPlan.app/Contents/PlugIns/jdk1.7.0_45.jdk/Contents/_CodeSignature/CodeSignature and OdinCrashPlan.app/Contents/PlugIns/jdk1.7.0_45.jdk/Contents/_CodeSignature/CodeSignature differ
+diff -ru OrigCrashPlan.app/Contents/Resources/Java/conf/default.service.xml OdinCrashPlan.app/Contents/Resources/Java/conf/default.service.xml
+--- OrigCrashPlan.app/Contents/Resources/Java/conf/default.service.xml	2015-03-07 00:43:23.000000000 -0800
++++ OdinCrashPlan.app/Contents/Resources/Java/conf/default.service.xml	2015-03-07 00:30:49.000000000 -0800
+@@ -1,5 +1,5 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+-<config id="service" version="5">
++<config id="service" version="3">
+ 	<orgType>CONSUMER</orgType>
+ 	<helpNovice>STILL_RUNNING</helpNovice>
+ 	<servicePeerConfig>
+diff -ru OrigCrashPlan.app/Contents/Resources/Java/conf/ui.properties OdinCrashPlan.app/Contents/Resources/Java/conf/ui.properties
+--- OrigCrashPlan.app/Contents/Resources/Java/conf/ui.properties	2015-03-07 00:43:23.000000000 -0800
++++ OdinCrashPlan.app/Contents/Resources/Java/conf/ui.properties	2015-03-07 00:30:49.000000000 -0800
+@@ -1,6 +1,7 @@
+ #Fri Dec 09 09:50:22 CST 2005
+-#serviceHost=127.0.0.1
+-#servicePort=4243
++serviceHost=127.0.0.1
++servicePort=4200
++
+ #pollerPeriod=1000  # 1 second
+ #connectRetryDelay=10000  # 10 seconds
+ #connectRetryAttempts=3
+@@ -11,4 +12,4 @@
+ #font.title=
+ #font.message.header=
+ #font.message.body=
+-#font.tab=
+\ No newline at end of file
++#font.tab=
+Only in OdinCrashPlan.app/Contents: Uninstall.app

@@ -2085,6 +2085,7 @@
  '(Info-additional-directory-list (quote ("/usr/share/info/emacs-snapshot")))
  '(Man-notify-method (quote pushy))
  '(blink-cursor-alist (quote ((box . box) (t . box))))
+ '(bookmark-bmenu-file-column 50)
  '(c-basic-offset 4)
  '(c-default-style
    (quote
@@ -2096,13 +2097,13 @@
  '(delete-selection-mode nil)
  '(diff-switches "-u")
  '(dns-mode-soa-auto-increment-serial nil)
+ '(dtrt-indent-mode t nil (dtrt-indent))
  '(erc-fill-column 69)
  '(erc-track-exclude (quote ("&bitlbee")))
  '(erc-track-exclude-server-buffer t)
  '(erc-track-exclude-types (quote ("JOIN" "NICK" "PART" "QUIT")))
  '(erc-track-when-inactive nil)
  '(fill-column 80)
- '(dtrt-indent-mode t nil (dtrt-indent))
  '(indent-tabs-mode nil)
  '(iswitchb-default-method (quote samewindow))
  '(matlab-comment-region-s "%")

@@ -21,6 +21,7 @@ User ldanna
 LocalForward 4200 localhost:4243
 Localforward 8000 localhost:443
 LocalForward 8001 zuul.lan:80
+DynamicForward 9999
 ServerAliveInterval 10
 HostKeyAlias odin
 Port 22

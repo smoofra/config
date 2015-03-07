@@ -1,3 +1,0 @@
-# .darcs/defaults
-ALL external-merge /home/larry/bin/emacsmerge  %1 %2 %a %o
-ALL author larry@elder-gods.org

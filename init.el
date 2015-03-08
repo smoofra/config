@@ -2170,3 +2170,7 @@
   (set-face-foreground 'default "#ffffff"))
  (t
   (set-face-background 'default "#000000")))
+
+
+(eval-after-load 'bookmark
+  (advice-add 'bookmark-set :after #'bookmark-save))

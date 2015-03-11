@@ -2089,6 +2089,7 @@
  '(Man-notify-method (quote pushy))
  '(blink-cursor-alist (quote ((box . box) (t . box))))
  '(bookmark-bmenu-file-column 50)
+ '(bookmark-save-flag 1)
  '(c-basic-offset 4)
  '(c-default-style
    (quote
@@ -2172,5 +2173,9 @@
   (set-face-background 'default "#000000")))
 
 
-(eval-after-load 'bookmark
-  (advice-add 'bookmark-set :after #'bookmark-save))
+(eval-after-load 'markdown-mode
+  (define-key markdown-mode-map "\M-p" 'fill-paragraph))
+
+(define-key c-mode-base-map [67108903] 'rtags-next-match) ;; C-'
+(define-key c-mode-base-map [67108898] 'rtags-previous-match) ;; C-"
+

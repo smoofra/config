@@ -2179,3 +2179,5 @@
 (define-key c-mode-base-map [67108903] 'rtags-next-match) ;; C-'
 (define-key c-mode-base-map [67108898] 'rtags-previous-match) ;; C-"
 
+(eval-after-load 'comint
+  '(load-library "comint-fix"))

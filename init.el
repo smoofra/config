@@ -8,6 +8,7 @@
 
 ;;; (debiafy) in .site init for debian crap
 
+(setq magic-mode-alist nil)
 
 (require 'cl)
 
@@ -2037,8 +2038,6 @@
     (set-face-attribute 'modeline nil :inverse-video nil))
   (setq pre (not pre)))
 
-(site-init-late)
-
 (defalias 'perl-mode 'cperl-mode)
 
 (load "~/config/init-slime.el")
@@ -2085,6 +2084,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages (quote (rtags markdown-mode lua-mode dtrt-indent ack)))
  '(Info-additional-directory-list (quote ("/usr/share/info/emacs-snapshot")))
  '(Man-notify-method (quote pushy))
  '(blink-cursor-alist (quote ((box . box) (t . box))))
@@ -2183,3 +2183,7 @@
 
 (eval-after-load 'comint
   '(load-library "comint-fix"))
+
+(put 'upcase-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
+(put 'scroll-left 'disabled nil)

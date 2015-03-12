@@ -18,12 +18,11 @@
         smtpencryption = tls
         smtpserverport = 587
 
+        smtpserver = smtp.gmail.com
+        smtpuser = larry@elder-gods.org
 
-        #smtpserver = smtp.gmail.com
-        #smtpuser = smoofra@gmail.com
-
-        smtpserver = mail.apple.com
-        smtpuser = lawrence_danna
+        #smtpserver = mail.apple.com
+        #smtpuser = lawrence_danna
 
 [alias]
         personal = config user.email larry@elder-gods.org

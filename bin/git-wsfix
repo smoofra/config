@@ -6,7 +6,10 @@ require_work_tree
 cd_to_toplevel
 
 TMP="$GIT_DIR/.git-wsfix.$$"
-trap 'rm -f "$TMP-*"' 0
+cleanup() {
+  rm -f "$TMP-*"
+}
+trap cleanup EXIT
 
 no_changes () {
 	git diff-index --quiet --cached HEAD --ignore-submodules -- &&
@@ -20,8 +23,14 @@ then
     exit 0
 fi
 
+safety="$GIT_DIR/git-wsfix-previous-state"
+
+[ ! -e "$safety" ] || die "safety file still exists: $safety"
+
 h_tree=$(git rev-parse HEAD:) || die "Cannot wsfix without a HEAD"
+echo "head was: $h_tree" >>"$safety"
 i_tree=$(git write-tree) || die "Cannot get index tree"
+echo "index was: $i_tree" >>"$safety"
 w_tree=$( (
 	rm -f "$TMP-index" &&
 	cp -p ${GIT_INDEX_FILE-"$GIT_DIR/index"} "$TMP-index" &&
@@ -31,29 +40,35 @@ w_tree=$( (
 	git write-tree &&
 	rm -f "$TMP-index"
     ) ) || die "Cannot save the current worktree state"
+echo "worktree was: $w_tree" >>"$safety"
 
-giveup () {
-    echo $1
+restore() {
     echo Restoring your index and files
     echo "index was  $i_tree"
     echo "files were $w_tree"
     ( git read-tree $w_tree && git checkout . && git read-tree $i_tree ) ||
-      die "I couldn't even do that right!  SORRY!"
-    die "done"
+        die "I couldn't even do that right!  SORRY!"
+    cleanup
 }
+
+trap restore EXIT SIGINT SIGTERM SIGHUP
+
 if [[ $h_tree != $i_tree ]]; then
-    git read-tree $h_tree ||
-      giveup "read-tree failed"
+    git read-tree $h_tree || die "read-tree failed"
     ( git diff-tree --binary  $h_tree $i_tree | git apply --whitespace=fix --cached ) ||
-      giveup "could not apply index patch"
+      die "could not apply index patch"
 fi
-git checkout . ||
-  giveup "checkout failed"
+git checkout . || die "checkout failed"
 j_tree=$(git write-tree) ||
-   giveup "write-tree failed"
+   die "write-tree failed"
 if [[ $j_tree != $w_tree ]]; then
     ( git diff-tree --binary $j_tree $w_tree  | git apply --whitespace=fix ) ||
-      giveup "could not apply files patch $j_tree $w_tree"
+      die "could not apply files patch $j_tree $w_tree"
 fi
+
+cleanup
+rm "$safety"
+
+trap '' EXIT SIGINT SIGTERM SIGHUP
 
 exit 0

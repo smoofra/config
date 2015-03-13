@@ -25,6 +25,9 @@
         #smtpuser = lawrence_danna
 
 [alias]
+
+        co = checkout
+
         personal = config user.email larry@elder-gods.org
 
         se = ! \nf() { \n git show \"$@\"  | el -d \n } \nf

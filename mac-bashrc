@@ -26,8 +26,7 @@ PERL_MM_OPT="INSTALL_BASE=/Users/lawrence_danna/perl5"; export PERL_MM_OPT;
 
 function xt() {
     (
-        PATH="$HOME"/x-tools/hostbin:"$PATH"
-        PATH=/usr/local/opt/gettext/bin:"$PATH"
+        PATH=$(~/bin/addpath ~/x-tools/*/bin "$PATH")
         export HOST_CFLAGS=""
         HOST_CFLAGS+=" -I/usr/local/opt/gettext/include "
         export HOST_LDFLAGS=""
@@ -41,7 +40,7 @@ function link-x-tools() {
         trap 'echo FAILED' EXIT
 
         set -e
-        mkdir -p ~/x-tools/hostbin
+        mkdir -p ~/x-tools/host/bin
 
         tools=$(cat <<EOF
 [ base64 basename cat chcon chgrp chmod chown chroot cksum comm cp csplit cut
@@ -56,14 +55,14 @@ EOF
              )
         for x in $tools ; do
             which "g$x" >/dev/null
-            ln -sf `which g$x` ~/x-tools/hostbin/$x
+            ln -sf `which g$x` ~/x-tools/host/bin/$x
         done
 
         [ -e /usr/local/opt/gnu-getopt/bin/getopt ] || exit
-        ln -sf /usr/local/opt/gnu-getopt/bin/getopt ~/x-tools/hostbin/getopt
+        ln -sf /usr/local/opt/gnu-getopt/bin/getopt ~/x-tools/host/bin/getopt
 
         [ -e /usr/local/opt/gnu-sed/bin/gsed ] || exit
-        ln -sf /usr/local/opt/gnu-sed/bin/gsed  ~/x-tools/hostbin/sed
+        ln -sf /usr/local/opt/gnu-sed/bin/gsed  ~/x-tools/host/bin/sed
 
         trap 0 EXIT
     )

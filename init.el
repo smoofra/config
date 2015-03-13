@@ -2187,3 +2187,7 @@
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
+
+(defun ansi-color-buffer ()
+  (interactive)
+  (ansi-color-apply-on-region (point-min) (point-max)))

@@ -1,3 +1,4 @@
+# -*- mode: shell-script -*-
 
 [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$PATH" /usr/local/bin /usr/local/sbin )
 
@@ -22,3 +23,56 @@ alias rerc='. ~/.bashrc'
 
 PERL_MB_OPT="--install_base \"/Users/lawrence_danna/perl5\""; export PERL_MB_OPT;
 PERL_MM_OPT="INSTALL_BASE=/Users/lawrence_danna/perl5"; export PERL_MM_OPT;
+
+function xt() {
+    (
+        PATH="$HOME"/x-tools/hostbin:"$PATH"
+        PATH=/usr/local/opt/gettext/bin:"$PATH"
+        export HOST_CFLAGS=""
+        HOST_CFLAGS+=" -I/usr/local/opt/gettext/include "
+        export HOST_LDFLAGS=""
+        HOST_LDFLAGS+=" -I/usr/local/opt/gettext/lib "
+        "$@"
+    )
+}
+
+function link-x-tools() {
+    (
+        trap 'echo FAILED' EXIT
+
+        set -e
+        mkdir -p ~/x-tools/hostbin
+
+        tools=$(cat <<EOF
+[ base64 basename cat chcon chgrp chmod chown chroot cksum comm cp csplit cut
+date dd df dir dircolors dirname du echo env expand expr factor false fmt fold
+grep groups head hostid id install join kill link ln logname ls md5sum mkdir
+mkfifo mknod mktemp mv nice nl nohup nproc numfmt od paste pathchk pinky pr
+printenv printf ptx pwd readlink realpath rm rmdir runcon seq sha1sum sha224sum
+sha256sum sha384sum sha512sum shred shuf sleep sort split stat stdbuf stty sum
+sync tac tail tee test timeout touch tr true truncate tsort tty uname unexpand
+uniq unlink uptime users vdir wc who whoami xargs yes
+EOF
+             )
+        for x in $tools ; do
+            which "g$x" >/dev/null
+            ln -sf `which g$x` ~/x-tools/hostbin/$x
+        done
+
+        [ -e /usr/local/opt/gnu-getopt/bin/getopt ] || exit
+        ln -sf /usr/local/opt/gnu-getopt/bin/getopt ~/x-tools/hostbin/getopt
+
+        [ -e /usr/local/opt/gnu-sed/bin/gsed ] || exit
+        ln -sf /usr/local/opt/gnu-sed/bin/gsed  ~/x-tools/hostbin/sed
+
+        trap 0 EXIT
+    )
+}
+
+function foo() {
+    (
+        set -e
+        false
+        echo foo
+    )
+}

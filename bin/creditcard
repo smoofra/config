@@ -1,0 +1,76 @@
+#!/usr/bin/python
+
+import csv
+import sys
+import re
+from collections import defaultdict
+
+
+cats = {'groceries': ['safeway'],
+        'food': ['cafe',
+                 'caffe',
+                 'pizza',
+                 'starbucks',
+                 'falafel',
+                 'panera',
+                 'go *chi',
+                 'grubhub',
+                 'restaurant',
+                 'in-n-out',
+                 'roadhouse',
+                 'philz',
+                 'five.*guys',
+                 'yosemite.*treats',
+                 'pho.*minh',
+                 'grain d\'or',
+                 'aqui willow glen',
+                 'high.*country',
+                 'baguette'],
+        'entertainment': ['itunes', 'audible', 'netflix'],
+        'gas': ['shell.*oil',
+                'pioneer.*gas',
+                'exon'],
+        'amazon': ['amazon']}
+
+sums = defaultdict(lambda : 0)
+rows = defaultdict(list)
+
+with open(sys.argv[1], 'rb') as csvfile:
+    reader = csv.reader(csvfile)
+    i = iter(reader)
+    i.next() # skip col names
+    for row in i:
+        (trans_type, trans_date, post_date, description, ammount) = row
+
+        if not trans_type == 'Sale':
+            continue
+
+        ammount = -float(ammount)
+
+        for (catname, res) in cats.items():
+            if any(re.search(x, description, re.IGNORECASE) for x in res):
+                break
+            else:
+                catname = 'other'
+
+        sums[catname] += ammount
+        rows[catname].append(row)
+
+for catname in sums.keys():
+    print
+    print "%s: " % catname
+    for row in rows[catname]:
+        print "\t", row
+
+print        
+        
+for catname in sums.keys():
+    print "SUM %s: %.2f" % (catname, sums[catname])
+
+print 
+    
+print "TOTAL %.2f" % sum(sums.values())
+
+
+    
+

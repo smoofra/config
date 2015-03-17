@@ -2081,10 +2081,10 @@
 
 (require 'package)
 (package-initialize)
-(package-install 'dtrt-indent)
-(package-install 'rtags)
+;; (package-install 'dtrt-indent)
+;; (package-install 'rtags)
 
-(require 'dtrt-indent)
+(require 'dtrt-indent nil 'noerror)
 
 (setq custom-file "~/config/init.el")
 (custom-set-variables
@@ -2189,8 +2189,9 @@
      (define-key c-mode-base-map [67108903] 'rtags-next-match)       ;; C-'
      (define-key c-mode-base-map [67108898] 'rtags-previous-match))) ;; C-"
 
-(eval-after-load 'comint
-  '(load-library "comint-fix"))
+(unless (version<= emacs-version "24.3.1")
+  (eval-after-load 'comint
+    '(load-library "comint-fix")))
 
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)

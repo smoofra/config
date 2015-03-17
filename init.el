@@ -516,8 +516,16 @@
 ;(global-set-key "\C-\M-q" 'scroll-down-half)
 (global-set-key "\C-s" 'isearch-forward-regexp)
 (global-set-key "\C-r" 'isearch-backward-regexp)
-(global-set-key "\C-v" 'jk-mode)
-(global-set-key "\M-j" 'jk-mode)
+
+
+(defun jk-command (&optional arg)
+  (interactive "P")
+  (if (and arg jk-mode)
+      (jk-mode -1))
+  (if (and (not arg) (not jk-mode))
+      (jk-mode 1)))
+(global-set-key "\M-j" 'jk-command)
+
 ;;; \C--
 (global-set-key (quote [67108909]) 'toggle-truncate-lines)
 

@@ -70,6 +70,8 @@ EOF
         [ -e /usr/local/opt/gnu-sed/bin/gsed ] || exit
         ln -sf /usr/local/opt/gnu-sed/bin/gsed  ~/x-tools/host/bin/sed
 
+        ln -s $(ls -d  /usr/local/Cellar/gettext/* | sort | tail -1 )/bin/xgettext ~/x-tools/host/bin/xgettext
+
         trap 0 EXIT
     )
 }

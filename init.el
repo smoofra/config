@@ -2115,6 +2115,9 @@
      (awk-mode . "awk")
      (other . "gnu"))))
  '(cperl-invalid-face (quote default))
+ '(custom-safe-themes
+   (quote
+    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
  '(delete-selection-mode nil)
  '(diff-switches "-u")
  '(dns-mode-soa-auto-increment-serial nil)

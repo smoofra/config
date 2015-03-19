@@ -15,6 +15,7 @@ my ($diff,$grep, $setdir, $nosetdir);
 GetOptions ("nosetdir|S" => \$nosetdir,
             "setdir|s"   => \$setdir,
             "grep|g"     => \$grep,
+            "color|r"    => \$color,
             "diff|d"     => \$diff) or die "couln't get options $!";
 
 $setdir  = 1 if $grep;
@@ -42,6 +43,7 @@ my $wd = `pwd`;
 chomp $wd;
 $wd = $setdir ? "\"$wd\"" : "";
 my $lisp  = "(view-file \"$file\")";
+$lisp = "(view-color-file \"$file\")" if $color;
 $lisp = "(find-diff-file \"$file\" $wd )" if $diff;
 $lisp = "(find-grep-file \"$file\" $wd )" if $grep;
 

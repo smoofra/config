@@ -1709,6 +1709,15 @@
     (setq default-directory dir))
   (grep-mode))
 
+(defun view-color-file (file &optional dir)
+  (interactive)
+  (find-file file)
+  (when dir
+    (setq default-directory dir))
+  (ansi-color-buffer)
+  (set-buffer-modified-p nil)
+  (view-mode))
+
 ;;;;;; how to find out how to bind a particular key interactively 
 ;;; M-x global-set-key
 ;;; M-x repeat-complex-command (or C-x ESC ESC)

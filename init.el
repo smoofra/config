@@ -2101,7 +2101,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (rtags markdown-mode lua-mode dtrt-indent ack)))
  '(Info-additional-directory-list (quote ("/usr/share/info/emacs-snapshot")))
  '(Man-notify-method (quote pushy))
  '(blink-cursor-alist (quote ((box . box) (t . box))))
@@ -2117,7 +2116,7 @@
  '(cperl-invalid-face (quote default))
  '(custom-safe-themes
    (quote
-    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
+    ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
  '(delete-selection-mode nil)
  '(diff-switches "-u")
  '(dns-mode-soa-auto-increment-serial nil)
@@ -2136,6 +2135,7 @@
  '(matlab-verify-on-save-flag nil)
  '(ns-command-modifier (quote meta))
  '(octave-block-offset 4)
+ '(package-selected-packages (quote (rtags markdown-mode lua-mode dtrt-indent ack)))
  '(rtags-path "/usr/local")
  '(safe-local-variable-values
    (quote
@@ -2170,6 +2170,16 @@
  '(tab-width 8)
  '(warning-suppress-types (quote ((undo discard-info))))
  '(woman-use-own-frame nil))
+
+(defun solarized-light ()
+  (interactive)
+  (load-theme (quote sanityinc-solarized-light) nil nil)
+  (custom-set-faces '(cursor ((t (:background "#000000"))))))
+
+(defun solarized-dark ()
+  (interactive)
+  (load-theme (quote sanityinc-solarized-dark) nil nil)
+  (custom-set-faces '(cursor ((t (:background "#ffffff"))))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

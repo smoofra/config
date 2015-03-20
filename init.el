@@ -520,10 +520,19 @@
 
 (defun jk-command (&optional arg)
   (interactive "P")
-  (if (and arg jk-mode)
-      (jk-mode -1))
-  (if (and (not arg) (not jk-mode))
-      (jk-mode 1)))
+  (when (and (not arg) (jk-mode))
+    (set-transient-map
+     (let ((map (make-sparse-keymap)))
+       (define-key map "\M-j" (lambda ()
+                                (interactive)
+                                (jk-mode -1)))
+       map)))
+  (when (and arg jk-mode)
+    (jk-mode -1))
+  (when (and (not arg) (not jk-mode))
+    (jk-mode 1)))
+
+
 (global-set-key "\M-j" 'jk-command)
 
 ;;; \C--
@@ -901,12 +910,13 @@
 
 (defun jk-warn ()
   (interactive)
-  (message "you're in jk mode dumbass"))
+  (message "jk"))
 
 (defvar jk-keymap nil)
 (defvar jk-implies-readonly t)
 (progn
   (make-variable-buffer-local 'jk-implies-readonly)
+  (make-variable-buffer-local 'jk-buffer-read-only)
   (setq jk-keymap (make-keymap))
   (loop for i from 32 to 126 
         do (define-key jk-keymap (char-to-string i) 'jk-warn))
@@ -917,12 +927,16 @@
     :init-value nil
     :lighter " jk"
     :keymap jk-keymap
-    (if jk-implies-readonly
-        (if jk-mode
-            (progn 
-              (setq jk-buffer-read-only buffer-read-only)
-              (toggle-read-only 1))
-          (toggle-read-only (if jk-buffer-read-only 1 -1))))))
+    (when jk-implies-readonly
+      (if jk-mode
+          (progn
+            (when (not (consp jk-buffer-read-only))
+              (setq jk-buffer-read-only (list buffer-read-only)))
+            (toggle-read-only 1))
+        (progn
+          (when (consp jk-buffer-read-only)
+            (toggle-read-only (if (car jk-buffer-read-only) 1 -1))
+            (setq jk-buffer-read-only nil)))))))
 
  
 (defun my-lisp-define-key (k b)

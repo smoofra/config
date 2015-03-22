@@ -32,3 +32,6 @@ Port 21
 User root
 HostKeyAlias zuul
 
+Host loki
+HostName loki.lan
+User root

@@ -19,10 +19,42 @@ if [[ ! -z "$INSIDE_EMACS" ]] ; then
     export EDITOR=emacsclient
 fi
 
+function trim_pwd() {
+    local pwd
+    local len
+    local expr
+    local limit
+    limit=40
+
+    epxr=expr
+    if [ ! x$($expr length "FOO" 2>/dev/null) = "x3" ]; then
+        expr=gexpr
+        if [ ! x$($expr length "FOO" 2>/dev/null) = "x3" ]; then
+            pwd
+            return
+        fi
+    fi
+
+    pwd="$(pwd)"
+    len=$($expr length "$pwd")
+
+
+    if [ "$($expr substr "$pwd" 1 $($expr length "$HOME"))" = "$HOME" ]; then
+        pwd="~$($expr substr "$pwd" $($expr 1 + $($expr length "$HOME")) $len)"
+        len=$($expr length "$pwd")
+    fi
+
+    if [ $len -gt $limit ]; then
+        pwd=..."$($expr substr "$pwd" $($expr $len - $limit) $len)"
+    fi
+    echo "$pwd"
+}
+
+#export PS1='\u@\h:\w\$ '
+export PS1='\u@\h:$(trim_pwd)\$ '
+
 if echo "$PATH" | tr : \\n | grep -q ~/x-tools ; then
-   export PS1='-XT- \u@\h:\w\$ '
-else
-    export PS1='\u@\h:\w\$ '
+    export PS1="-XT- $PS1"
 fi
 
 alias rerc='. ~/.bashrc'

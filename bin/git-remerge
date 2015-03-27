@@ -1,0 +1,154 @@
+#!/usr/bin/python
+
+import subprocess
+import sys
+import os
+import signal
+
+class Commit(object):
+
+    def __init__(self, git, rev):
+        self.parents = list()
+        buffer = git.cmd("git log -n1 --no-notes --pretty=raw".split() + [rev])
+        (headers, message) = buffer.split("\n\n", 1)
+        for header in headers.split("\n"):
+            (key, value) = header.strip().split(' ', 1)
+            if key == 'commit':
+                self.sha = value
+            if key == 'parent':
+                self.parents.append(value)
+            if key == 'tree':
+                self.tree = value
+            if key == 'author':
+                self.author = value
+            if key == 'committer':
+                self.committer = value
+        assert message.endswith('\n')
+        message = message[:-1].split('\n')
+        assert all(x.startswith('    ') for x in message)
+        message = [x[4:] for x in message]
+        message = '\n'.join(message) + '\n'
+        self.message = message
+
+FNULL = open(os.devnull, 'w')
+
+class Git(object):
+
+    def cmd(self, args, **kw):
+        proc = subprocess.Popen(args, cwd=self.directory,
+                                stdin=FNULL, stdout=subprocess.PIPE, **kw)
+        (out, err) = proc.communicate()
+        if proc.wait() != 0:
+            raise Exception, "git failed"
+        return out
+
+    def cmd_test(self, args, **kw):
+        proc = subprocess.Popen(args, cwd=self.directory,
+                                stdin=FNULL, **kw)
+        code = proc.wait()
+        if code not in [0,1]:
+            raise Exception, "git failed"
+        return not code
+
+    def __init__(self, directory=None):
+        if directory is None:
+            directory = '.'
+        self.directory = directory
+        self.directory = self.cmd("git rev-parse --show-toplevel".split()).strip()
+        if self.directory == '':
+            raise Exception, "can't find top-level.  (bare repo?)"
+
+    def is_clean(self):
+        return ('' == self.cmd("git diff-index --cached --name-only HEAD".split()) and
+                '' == self.cmd("git diff-files --name-only".split()))
+
+    # is a an ancestor of b
+    def is_ancestor(self, a, b):
+        return self.cmd_test(['git', 'merge-base', '--is-ancestor', a, b])
+
+    def rev_parse(self, commit):
+        return self.cmd(['git', 'rev-parse', commit]).strip()
+
+    def checkout(self, branch):
+        self.cmd(['git', 'checkout', branch], stderr=FNULL)
+
+    def detach(self):
+        self.cmd(['git', 'checkout', self.rev_parse('HEAD')], stderr=FNULL)
+
+    def merge(self, commit, message):
+        merged = self.cmd_test(['git', 'merge', '--no-edit', '-m', message, commit], stdout=FNULL)
+        if not merged:
+            self.cmd('git_merge', '--abort')
+        return merged
+
+    def current_branch(self):
+        branch = self.cmd(['git', 'symbolic-ref', 'HEAD']).strip()
+        if branch == 'refs/heads/' or not branch.startswith('refs/heads/'):
+            raise Exception, "not on a branch"
+        return branch[len('refs/heads/'):]
+
+    def trees_differ(self, a, b):
+        return not git.cmd_test(['git', 'diff', '--quiet', a, b])
+
+
+git = Git()
+
+if not git.is_clean():
+    raise Exception, "repo not clean"
+
+head = Commit(git, 'HEAD')
+
+merges = [head]
+prev = None
+while True:
+    commit = merges[-1]
+    if len(commit.parents) != 2:
+        break
+    if prev is not None:
+        if not git.is_ancestor(commit.parents[1], prev.parents[1]):
+            break;
+    prev = commit
+    merges.append(Commit(git, commit.parents[0]))
+merges = merges[:-1]
+
+current_branch = git.current_branch()
+
+def sigint_handler(signal, frame):
+    git.checkout(current_branch)
+    sys.exit(0)
+signal.signal(signal.SIGINT, sigint_handler)
+
+try:
+
+    git.detach()
+
+    while len(merges) >= 2:
+        last = merges[-1]
+
+        print "trying base:", git.cmd(['git', 'log', '-n1', '--oneline', last.parents[0]]).strip()
+        git.checkout(last.parents[0])
+        merged = git.merge(head.parents[1], head.message)
+
+        if not merged:
+            print "merge failed"
+        elif git.trees_differ('HEAD', head.sha):
+            print "merge differed:", \
+                git.cmd(['git', 'rev-parse', '--short', 'HEAD']).strip(),  \
+                git.cmd(['git', 'rev-parse', '--short', head.sha]).strip()
+
+        if merged and not git.trees_differ('HEAD', head.sha):
+            new = git.rev_parse('HEAD')
+            git.checkout(current_branch)
+            git.cmd(['git', 'reset', '--hard', new])
+            print "remerged!"
+            break
+
+        merges.pop()
+
+    else:
+        print "nothing changed"
+        git.checkout(current_branch)
+
+except:
+    git.checkout(current_branch)
+    raise

@@ -24,7 +24,7 @@ LocalForward 8001 zuul.lan:80
 DynamicForward 9999
 ServerAliveInterval 10
 HostKeyAlias odin
-Port 22
+Port 21
 
 Host zuul
 HostName odin.elder-gods.org
@@ -33,5 +33,5 @@ User root
 HostKeyAlias zuul
 
 Host loki
-HostName loki.lan
+HostName loki.elder-gods.org
 User root

@@ -1,0 +1,136 @@
+#!/usr/bin/python
+
+import subprocess
+import sys
+import os
+import signal
+import argparse
+import re
+
+FNULL = open(os.devnull, 'w')
+
+class GitFailed(Exception):
+    pass
+
+class Git(object):
+
+    def cmd(self, args, **kw):
+        proc = subprocess.Popen(args, cwd=self.directory,
+                                stdin=FNULL, stdout=subprocess.PIPE, **kw)
+        (out, err) = proc.communicate()
+        if proc.wait() != 0:
+            raise GitFailed, "git failed"
+        return out
+
+    def cmd_test(self, args, **kw):
+        proc = subprocess.Popen(args, cwd=self.directory,
+                                stdin=FNULL, **kw)
+        code = proc.wait()
+        if code not in [0,1]:
+            raise GitFailed, "git failed"
+        return not code
+
+    def __init__(self, directory=None):
+        if directory is None:
+            directory = '.'
+        self.directory = directory
+        self.directory = self.cmd("git rev-parse --show-toplevel".split()).strip()
+        if self.directory == '':
+            raise Exception, "can't find top-level.  (bare repo?)"
+
+
+    def rev_exists(self, commit):
+        try:
+            self.cmd(['git', 'rev-parse', commit, '--'], stderr=FNULL)
+            return True
+        except GitFailed:
+            return False
+
+    def rev_parse(self, commit):
+        return self.cmd(['git', 'rev-parse', commit, '--']).strip()
+
+    def is_clean(self):
+        return ('' == self.cmd("git diff --cached --name-only".split()) and
+                '' == self.cmd("git diff-files --name-only".split()))
+
+    def has_others(self):
+        return '' != self.cmd("git ls-files --others".split())
+
+
+    def checkout(self, branch):
+        self.cmd(['git', 'checkout', branch], stderr=FNULL)
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("directory")
+parser.add_argument("--prefix", '-p')
+args = parser.parse_args()
+
+
+git = Git()
+
+if git.cmd('git rev-parse --git-dir'.split()).strip() != '.git':
+    raise Exception, "run git-import-tags from the top level"
+
+if not git.is_clean():
+    raise Exception, "repo not clean"
+if git.has_others():
+    raise Exception, "There may not be any untracked files in the working directory"
+
+
+dirs = os.listdir(args.directory)
+dirs = [d for d in dirs if os.path.isdir(os.path.join(args.directory, d))]
+
+if args.prefix is not None:
+    dirs = [d for d in dirs if d.startswith(prefix)]
+
+def name2tuple(name):
+    m = re.match(r'^(.*?)((\d+)(\.\d+)*)$', name)
+    if m:
+        return (m.group(1),)  + tuple(map(int, m.group(2).split('.')))
+    else:
+        return (m,)
+
+# def tuple2name(tup):
+#     return tup[0] + '.'.join(map(str, tup[1:]))
+#dirs = map(tuple2name, sorted(map(name2tuple, dirs)))
+
+dirs = sorted(dirs, key=name2tuple)
+
+for (d,last) in zip(dirs, [None] + dirs):
+
+    if git.rev_exists('refs/tags/' + d):
+        continue
+
+    print "###"
+    print "### importing", d
+    print "###"
+
+    if last is not None:
+        if (not git.rev_exists("refs/heads/import") or
+            not git.rev_parse("refs/heads/import") == git.rev_parse('refs/tags/' + last)):
+            raise Exception, "expected refs/heads/import to point to refs/tags/"+last
+
+        git.checkout("import")
+    else:
+        if git.rev_exists('refs/heads/import'):
+            raise Exception, "import branch already exists?"
+        git.cmd("git checkout --orphan import".split())
+        if git.cmd("git ls-files .".split()).strip() != '':
+            git.cmd("git rm -rf .".split())
+
+    proc = subprocess.Popen(['rsync', '-ra', '--delete', '--exclude', '/.git',
+                             os.path.join(args.directory, d) + '/', './'],
+                            stdin=FNULL)
+    (out, err) = proc.communicate()
+    if proc.wait() != 0:
+        raise GitFailed, "rsync failed"
+
+    message = """imported {d}
+
+imported {d} from {path}""".format(d=d, path=os.path.normpath(os.path.join(args.directory, d)))
+
+    git.cmd("git add .".split())
+    git.cmd("git add -u".split())
+    git.cmd(["git", "commit", "--allow-empty", "-m", message])
+    git.cmd(["git", "tag", d])

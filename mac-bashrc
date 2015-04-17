@@ -98,6 +98,7 @@ EOF
 
         [ -e /usr/local/opt/gnu-getopt/bin/getopt ] || exit
         ln -sf /usr/local/opt/gnu-getopt/bin/getopt ~/x-tools/host/bin/getopt
+        ln -sf /usr/local/opt/gnu-getopt/bin/getopt ~/x-tools/host/bin/gnugetopt
 
         [ -e /usr/local/opt/gnu-sed/bin/gsed ] || exit
         ln -sf /usr/local/opt/gnu-sed/bin/gsed  ~/x-tools/host/bin/sed

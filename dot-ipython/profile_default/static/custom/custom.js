@@ -63,4 +63,5 @@ hit_toggles_timer = function() {
         setTimeout(hit_toggles_timer, hit_toggles_timeout);
     }
 }
-$(document).ready(hit_toggles_timer)
+//$(document).ready(hit_toggles_timer)
+setTimeout(hit_toggles_timer, 250);

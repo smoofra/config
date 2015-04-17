@@ -6,7 +6,7 @@ import re
 from collections import defaultdict
 
 
-cats = {'groceries': ['safeway'],
+cats = {'groceries': ['safeway', 'wholefds'],
         'food': ['cafe',
                  'caffe',
                  'pizza',
@@ -14,6 +14,7 @@ cats = {'groceries': ['safeway'],
                  'falafel',
                  'panera',
                  'go *chi',
+                 'chowder',
                  'grubhub',
                  'restaurant',
                  'in-n-out',
@@ -29,6 +30,7 @@ cats = {'groceries': ['safeway'],
         'entertainment': ['itunes', 'audible', 'netflix'],
         'gas': ['shell.*oil',
                 'pioneer.*gas',
+                'chevron',
                 'exon'],
         'amazon': ['amazon']}
 

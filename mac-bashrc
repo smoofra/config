@@ -119,3 +119,15 @@ function foo() {
         echo foo
     )
 }
+
+function slap() {
+    phone=titan
+    xcodebuild -sdk iphoneos.internal -target $1 install DSTROOT=root && \
+        tar -C root/ -zcf root.tgz . && \
+        sshcatkey $phone && scp root.tgz $phone: && \
+        ssh $phone darwinup install root.tgz
+}
+
+function darwinup-sdk() {
+    darwinup -p $(xcrun -show-sdk-path -sdk iphoneos.internal) $@
+}

@@ -36,7 +36,7 @@ w_tree=$( (
 	cp -p ${GIT_INDEX_FILE-"$GIT_DIR/index"} "$TMP-index" &&
 	GIT_INDEX_FILE="$TMP-index" &&
 	export GIT_INDEX_FILE &&
-	git diff --name-only -z HEAD | git update-index -z --add --remove --stdin &&
+	git diff --name-only -z HEAD -- | git update-index -z --add --remove --stdin &&
 	git write-tree &&
 	rm -f "$TMP-index"
     ) ) || die "Cannot save the current worktree state"

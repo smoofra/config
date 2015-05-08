@@ -2181,7 +2181,7 @@
  '(slime-enable-evaluate-in-emacs t)
  '(slime-multiprocessing t)
  '(svn-status-default-log-arguments (quote ("--verbose   --limit=20")))
- '(tab-width 8)
+ '(tab-width 4)
  '(warning-suppress-types (quote ((undo discard-info))))
  '(woman-use-own-frame nil))
 
@@ -2236,3 +2236,10 @@
 (defun ansi-color-buffer ()
   (interactive)
   (ansi-color-apply-on-region (point-min) (point-max)))
+
+;;;;;;
+
+;;;;;(solarized-light)
+;;;(setq load-path (cons "~/emacs-ipython-notebook/lisp" load-path))
+;;;(require 'ein)
+;;;(require 'ein-loaddefs)

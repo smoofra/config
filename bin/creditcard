@@ -7,6 +7,10 @@ from collections import defaultdict
 
 
 cats = {'groceries': ['safeway', 'wholefds'],
+        'bike' : ['EVOLUTION BIKE SHOP'],
+        'electronics' : ["fry's",
+                         "adafruit",
+                         'digi key'],
         'food': ['cafe',
                  'caffe',
                  'pizza',

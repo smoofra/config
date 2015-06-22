@@ -574,6 +574,7 @@
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
 ;(add-to-list 'auto-mode-alist '("\\.m$". octave-mode))
 (add-to-list 'auto-mode-alist '("\\.m$". objc-mode))
+(add-to-list 'auto-mode-alist '("\\.mm$". c++-mode))
 (add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.asd$" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.jl$" . lisp-mode))

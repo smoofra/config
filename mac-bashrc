@@ -65,10 +65,12 @@ PERL_MM_OPT="INSTALL_BASE=/Users/lawrence_danna/perl5"; export PERL_MM_OPT;
 function xt() {
     (
         PATH=$(~/bin/addpath ~/x-tools/*/bin "$PATH")
-        export HOST_CFLAGS=""
-        HOST_CFLAGS+=" -I/usr/local/opt/gettext/include "
+        export HOST_CPPFLAGS=""
         export HOST_LDFLAGS=""
-        HOST_LDFLAGS+=" -I/usr/local/opt/gettext/lib "
+        HOST_CPPFLAGS+=" -I/usr/local/opt/gettext/include "
+        HOST_LDFLAGS+=" -L/usr/local/opt/gettext/lib "
+        HOST_CPPFLAGS+=" -I/usr/local/opt/openssl/include "
+        HOST_LDFLAGS+=" -L/usr/local/opt/openssl/lib "
         "$@"
     )
 }
@@ -131,3 +133,6 @@ function slap() {
 function darwinup-sdk() {
     darwinup -p $(xcrun -show-sdk-path -sdk iphoneos.internal) $@
 }
+
+# mouse on / mouse off
+alias mouse='tmux setw -g mode-mouse'

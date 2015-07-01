@@ -56,11 +56,15 @@ class Log(object):
         else:
             raise Exception("ambiguous log type")
 
+
+    def read_threads_keep_going(self, lines):
+        return True
+
     def read_threads(self, lines):
 
         while peekmatch(lines, self.thread_peek_regex):
 
-            if lines.peek().strip() == 'Binary Images:':
+            if not self.read_threads_keep_going(lines):
                 return
 
             line = lines.next()
@@ -214,6 +218,9 @@ class SpindumpLog(Log):
     thread_peek_regex = re.compile(r'^( \s+ | $ )', re.VERBOSE)
 
     header_regex = r'^Date/Time:'
+
+    def read_threads_keep_going(self, lines):
+        return not lines.peek().strip() == 'Binary Images:'
 
     def find_procs(self, lines):
 

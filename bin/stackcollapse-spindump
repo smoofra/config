@@ -2,15 +2,45 @@
 
 import re
 import sys
+from collections import defaultdict
+from errno import EPIPE
 
 stack_regex = re.compile(
     r' ^  (?P<indent>\s*) \*? (?P<count>\d+) \s* \?\?\? \s* (?P<name>.*?) \s* (?P<address>\[0x[0-9a-f]+\])? \s* (?P<running>\(running\))? \s* $ ',
     re.IGNORECASE | re.VERBOSE)
 
 
-def read_lines(lines):
+def read_stacks(lines):
+
     name_stack = []
     indent_stack = []
+    count_stack = []
+    subcount_stack = []
+
+    stacks = defaultdict(lambda : 0)
+
+    def pop():
+        stack = tuple(name_stack)
+
+        count = count_stack.pop()
+        subcount = subcount_stack.pop()
+        name_stack.pop()
+        indent_stack.pop()
+
+        assert subcount <= count
+
+        if subcount < count:
+            stacks[stack] += count - subcount
+
+        if len(subcount_stack):
+            subcount_stack[-1] += count
+
+    def push(name, indent, count):
+        name_stack.append(name)
+        indent_stack.append(indent)
+        count_stack.append(count)
+        subcount_stack.append(0)
+
 
     for line in lines:
         if line.strip() == '':
@@ -29,21 +59,26 @@ def read_lines(lines):
             name = m.group('name')
 
         while len(indent_stack) > 0 and indent <= indent_stack[-1]:
-            name_stack.pop()
-            indent_stack.pop()
+            pop()
 
-        name_stack.append(name)
-        indent_stack.append(indent)
+        push(name, indent, count)
 
-        print ';'.join(name_stack), count
+    while len(name_stack):
+        pop()
 
-        # print len(m.group('indent'))
-        # print m.group('count')
-        # print m.group('name')
-        # print m.group('address')
-        # sys.exit(1)
+    return stacks
 
+
+def write_stacks(stacks):
+    for key, value in stacks.items():
+        print ';'.join(key), value
 
 
 with open(sys.argv[1], "r") as f:
-    read_lines(f)
+    stacks = read_stacks(f)
+
+try:
+    write_stacks(stacks)
+except IOError, e:
+    if e.errno != EPIPE:
+        raise

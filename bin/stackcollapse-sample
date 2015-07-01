@@ -5,20 +5,6 @@ import sys
 from collections import defaultdict
 from errno import EPIPE
 
-indent_char_regex = r'[ \+\!\:\|]'
-
-stack_regex = re.compile(
-    r' ^  (?P<indent>[ \+\!\:\|]+) (?P<count>\d+) \s+ ' +
-    r'(\?\?\?)? \s* (?P<name>.*?) \s*' +
-    r' (  \(in \s+ (?P<dylib>[^\s]+) \) \s+ (load \s+ address \s+ 0x[0-9a-f]+ \s+ )? \+ \s+ (?P<offset>\d+|0x[0-9a-f]+)  )? \s* ' +
-    r'(?P<address>\[0x[0-9a-f]+\])? \s* $',
-    re.IGNORECASE | re.VERBOSE)
-
-thread_regex = re.compile(
-    r' ^ (?P<indent>[ \+\!\:\|]+) (?P<count>\d+) \s+ ' +
-    r'Thread_(?P<threadid>\d+) \s* (?P<comment>.*?) \s*$',
-    re.IGNORECASE | re.VERBOSE)
-
 
 class peekiter(object):
 
@@ -51,94 +37,114 @@ def peekmatch(iterator, regex):
     return re.match(regex, peek)
 
 
-def find_threads(lines):
+class Log(object):
 
-    for line in lines:
-        if line.rstrip() == 'Call graph:':
-            break
-    else:
-        raise Exception("parse error")
+    def read_stacks(self, lines, indent):
 
-    return read_threads(lines)
+        indent_regex = '%s{%d}' % (self.indent_char_regex, indent + 1)
 
+        name_stack = []
+        indent_stack = []
+        count_stack = []
+        subcount_stack = []
 
-def read_threads(lines):
+        stacks = defaultdict(lambda : 0)
 
-    while peekmatch(lines, r'^\s+[^\s]'):
-        line = lines.next()
+        def pop():
+            stack = tuple(name_stack)
 
-        m = re.match(thread_regex, line)
-        if not m:
-            raise Exception("parse error")
+            count = count_stack.pop()
+            subcount = subcount_stack.pop()
+            name_stack.pop()
+            indent_stack.pop()
 
-        indent = len(m.group('indent'))
-        threadid = int(m.group('threadid'))
-        comment = m.group('comment')
+            assert subcount <= count
 
-        stacks = read_stacks(lines, indent)
+            if subcount < count:
+                stacks[stack] += count - subcount
 
-        yield (threadid, comment, stacks)
+            if len(subcount_stack):
+                subcount_stack[-1] += count
 
+        def push(name, indent, count):
+            name_stack.append(name)
+            indent_stack.append(indent)
+            count_stack.append(count)
+            subcount_stack.append(0)
 
-def read_stacks(lines, indent):
+        while peekmatch(lines, indent_regex):
 
-    indent_regex = '%s{%d}' % (indent_char_regex, indent + 1)
+            line = lines.next()
 
-    name_stack = []
-    indent_stack = []
-    count_stack = []
-    subcount_stack = []
+            m = re.match(self.stack_regex, line)
+            if not m:
+                raise Exception("parse error")
 
-    stacks = defaultdict(lambda : 0)
+            indent = len(m.group('indent'))
+            count =  int(m.group('count'))
 
-    def pop():
-        stack = tuple(name_stack)
+            name = m.group('name')
+            if name is None or name.strip() == '':
+                name = m.group('address')
 
-        count = count_stack.pop()
-        subcount = subcount_stack.pop()
-        name_stack.pop()
-        indent_stack.pop()
+            while len(indent_stack) > 0 and indent <= indent_stack[-1]:
+                pop()
 
-        assert subcount <= count
+            push(name, indent, count)
 
-        if subcount < count:
-            stacks[stack] += count - subcount
-
-        if len(subcount_stack):
-            subcount_stack[-1] += count
-
-    def push(name, indent, count):
-        name_stack.append(name)
-        indent_stack.append(indent)
-        count_stack.append(count)
-        subcount_stack.append(0)
-
-    while peekmatch(lines, indent_regex):
-
-        line = lines.next()
-
-        m = re.match(stack_regex, line)
-        if not m:
-            raise Exception("parse error")
-
-        indent = len(m.group('indent'))
-        count =  int(m.group('count'))
-        #dylib = m.group('dylib')
-        #offset =  int(m.group('offset'))
-
-        name = m.group('name')
-        if name is None or name.strip() == '':
-            name = m.group('address')
-
-        while len(indent_stack) > 0 and indent <= indent_stack[-1]:
+        while len(name_stack):
             pop()
 
-        push(name, indent, count)
+        return stacks
 
-    while len(name_stack):
-        pop()
 
-    return stacks
+
+class SampleLog(Log):
+
+
+    indent_char_regex = r'[ \+\!\:\|]'
+
+    stack_regex = re.compile(
+        r' ^  (?P<indent>[ \+\!\:\|]+) (?P<count>\d+) \s+ ' +
+        r'(\?\?\?)? \s* (?P<name>.*?) \s*' +
+        r' (  \(in \s+ (?P<dylib>[^\s]+) \) \s+ (load \s+ address \s+ 0x[0-9a-f]+ \s+ )? \+ \s+ (?P<offset>\d+|0x[0-9a-f]+)  )? \s* ' +
+        r'(?P<address>\[0x[0-9a-f]+\])? \s* $',
+        re.IGNORECASE | re.VERBOSE)
+
+    thread_regex = re.compile(
+        r' ^ (?P<indent>[ \+\!\:\|]+) (?P<count>\d+) \s+ ' +
+        r'Thread_(?P<threadid>\d+) \s* (?P<comment>.*?) \s*$',
+        re.IGNORECASE | re.VERBOSE)
+
+
+    def find_threads(self, lines):
+
+        for line in lines:
+            if line.rstrip() == 'Call graph:':
+                break
+        else:
+            raise Exception("parse error")
+
+        return self.read_threads(lines)
+
+
+    def read_threads(self, lines):
+
+        while peekmatch(lines, r'^\s+[^\s]'):
+            line = lines.next()
+
+            m = re.match(self.thread_regex, line)
+            if not m:
+                raise Exception("parse error")
+
+            indent = len(m.group('indent'))
+            threadid = int(m.group('threadid'))
+            comment = m.group('comment')
+
+            stacks = self.read_stacks(lines, indent)
+
+            yield (threadid, comment, stacks)
+
 
 
 def write_stacks(stacks):
@@ -146,7 +152,7 @@ def write_stacks(stacks):
         print ';'.join(key), value
 
 with open(sys.argv[1], "r") as f:
-    threads = find_threads(peekiter(f))
+    threads = SampleLog().find_threads(peekiter(f))
     (threadid, comment, stacks) = threads.next()
     try:
         write_stacks(stacks)

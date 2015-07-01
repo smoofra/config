@@ -210,9 +210,6 @@ class SpindumpLog(Log):
     thread_regexes = [
         re.compile(x, re.IGNORECASE | re.VERBOSE) for x in
         r' ^ (?P<indent> [\ \*]+) Thread \s+ (?P<threadid> 0x[a-f0-9]+) \s* (?P<comment>.*?) \s* $ ',
-
-        #r' ^ (?P<indent> [\ \*]+) Thread \s+ \<multiple\> \s+ (?P<threadid> DispatchQueue \s\d+)  ',
-
         r' ^ (?P<indent> [\ \*]+) Thread \s+ \<multiple\> \s+ (?P<threadid> DispatchQueue \s* \d+) \s* (?P<comment>.*?) \s* $ ']
 
     thread_peek_regex = re.compile(r'^( \s+ | $ )', re.VERBOSE)

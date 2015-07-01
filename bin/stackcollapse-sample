@@ -29,15 +29,49 @@ class peekiter(object):
         return self._peek
 
 
-def peekmatch(iterator, regex):
+def peekmatch(iterator, regex, flags=0):
     try:
         peek = iterator.peek()
     except StopIteration:
         return False
-    return re.match(regex, peek)
+    return re.match(regex, peek, flags)
+
+
+def first(gen):
+    for x in gen:
+        if x:
+            return x
+    return None
 
 
 class Log(object):
+
+    @classmethod
+    def guess_logtype(cls, header):
+        subs = [sub for sub in cls.__subclasses__() if re.match(sub.header_regex, header)]
+        if len(subs) == 1:
+            return subs[0]
+        if len(subs) == 0:
+            raise Exception("unrecognised log type")
+        else:
+            raise Exception("ambiguous log type")
+
+    def read_threads(self, lines):
+
+        while peekmatch(lines, self.thread_peek_regex):
+            line = lines.next()
+
+            m = first(re.match(regex, line) for regex in self.thread_regexes)
+            if not m:
+                raise Exception("parse error")
+
+            indent = len(m.group('indent'))
+            threadid = m.group('threadid')
+            comment = m.group('comment')
+
+            stacks = self.read_stacks(lines, indent)
+
+            yield (threadid, comment, stacks)
 
     def read_stacks(self, lines, indent):
 
@@ -101,7 +135,6 @@ class Log(object):
 
 class SampleLog(Log):
 
-
     indent_char_regex = r'[ \+\!\:\|]'
 
     stack_regex = re.compile(
@@ -111,11 +144,14 @@ class SampleLog(Log):
         r'(?P<address>\[0x[0-9a-f]+\])? \s* $',
         re.IGNORECASE | re.VERBOSE)
 
-    thread_regex = re.compile(
-        r' ^ (?P<indent>[ \+\!\:\|]+) (?P<count>\d+) \s+ ' +
-        r'Thread_(?P<threadid>\d+) \s* (?P<comment>.*?) \s*$',
-        re.IGNORECASE | re.VERBOSE)
+    thread_regexes =[
+        re.compile(x, re.IGNORECASE | re.VERBOSE) for x in
+        (r' ^ (?P<indent>[ \+\!\:\|]+) (?P<count>\d+) \s+ Thread_(?P<threadid>\d+) \s* (?P<comment>.*?) \s*$',
+         r' ^ (?P<indent>[ \+\!\:\|]+) (?P<count>\d+) \s+ Thread_\<multiple\> \s+ (?P<threadid> DispatchQueue_\d+) \s* (?P<comment>.*?) \s*$')]
 
+    thread_peek_regex = r'^\s+[^\s]'
+
+    header_regex = r'^Analysis of sampling (?P<name>.*?) \(pid (?P<pid>\d+)\) every'
 
     def find_threads(self, lines):
 
@@ -128,34 +164,37 @@ class SampleLog(Log):
         return self.read_threads(lines)
 
 
-    def read_threads(self, lines):
+    def find_procs(self, lines):
 
-        while peekmatch(lines, r'^\s+[^\s]'):
-            line = lines.next()
+        line = lines.next()
 
-            m = re.match(self.thread_regex, line)
-            if not m:
-                raise Exception("parse error")
+        m = re.match(self.header_regex, line)
+        if not m:
+            raise Exception("parse error")
 
-            indent = len(m.group('indent'))
-            threadid = int(m.group('threadid'))
-            comment = m.group('comment')
+        name = m.group('name')
+        pid = int(m.group('pid'))
 
-            stacks = self.read_stacks(lines, indent)
+        threads = self.find_threads(lines)
 
-            yield (threadid, comment, stacks)
+        yield (name, pid, threads)
 
 
 
-def write_stacks(stacks):
+def write_stacks(stacks, prefix=()):
     for key, value in stacks.items():
-        print ';'.join(key), value
+        print ';'.join(prefix + key), value
+
 
 with open(sys.argv[1], "r") as f:
-    threads = SampleLog().find_threads(peekiter(f))
-    (threadid, comment, stacks) = threads.next()
+    lines = peekiter(f)
+
+    procs =  Log.guess_logtype(lines.peek())().find_procs(lines)
+    (procname, pid, threads) = procs.next()
+
     try:
-        write_stacks(stacks)
+        for threadid, comment, stacks in threads:
+            write_stacks(stacks, prefix=(str(threadid),))
     except IOError, e:
         if e.errno != EPIPE:
             raise

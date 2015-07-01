@@ -59,11 +59,18 @@ class Log(object):
     def read_threads(self, lines):
 
         while peekmatch(lines, self.thread_peek_regex):
+
+            if lines.peek().strip() == 'Binary Images:':
+                return
+
             line = lines.next()
+
+            if line.strip() == '':
+                continue
 
             m = first(re.match(regex, line) for regex in self.thread_regexes)
             if not m:
-                raise Exception("parse error")
+                raise Exception("parse error: " + line.rstrip())
 
             indent = len(m.group('indent'))
             threadid = m.group('threadid')
@@ -75,7 +82,7 @@ class Log(object):
 
     def read_stacks(self, lines, indent):
 
-        indent_regex = '%s{%d}' % (self.indent_char_regex, indent + 1)
+        indent_regex = '%s{%d}' % (self.indent_char_regex, indent + self.stack_indent_offset)
 
         name_stack = []
         indent_stack = []
@@ -135,6 +142,9 @@ class Log(object):
 
 class SampleLog(Log):
 
+    #offset of indentation of first stack after the Thread line
+    stack_indent_offset = 1
+
     indent_char_regex = r'[ \+\!\:\|]'
 
     stack_regex = re.compile(
@@ -178,6 +188,56 @@ class SampleLog(Log):
         threads = self.find_threads(lines)
 
         yield (name, pid, threads)
+
+
+
+class SpindumpLog(Log):
+
+    #offset of indentation of first stack after the Thread line
+    stack_indent_offset = 0
+
+    indent_char_regex = r'[\ \*]'
+
+    stack_regex = re.compile(
+        r' ^  (?P<indent>[\ \*]+) (?P<count>\d+) \s* (\?\?\? \s*)? (?P<name>.*?) \s* (?P<address>\[0x[0-9a-f]+\])? \s* ' +
+        r'(?P<running> \(running\) | \(suspended\))? \s* $ ',
+        re.IGNORECASE | re.VERBOSE)
+
+    thread_regexes = [
+        re.compile(x, re.IGNORECASE | re.VERBOSE) for x in
+        r' ^ (?P<indent> [\ \*]+) Thread \s+ (?P<threadid> 0x[a-f0-9]+) \s* (?P<comment>.*?) \s* $ ',
+
+        #r' ^ (?P<indent> [\ \*]+) Thread \s+ \<multiple\> \s+ (?P<threadid> DispatchQueue \s\d+)  ',
+
+        r' ^ (?P<indent> [\ \*]+) Thread \s+ \<multiple\> \s+ (?P<threadid> DispatchQueue \s* \d+) \s* (?P<comment>.*?) \s* $ ']
+
+    thread_peek_regex = re.compile(r'^( \s+ | $ )', re.VERBOSE)
+
+    header_regex = r'^Date/Time:'
+
+    def find_procs(self, lines):
+
+        while True:
+
+            while not peekmatch(lines, '^Process:'):
+                lines.next()
+
+            metadata = dict()
+            while peekmatch(lines, '^\w[\w\s]*\:'):
+                key, value = lines.next().split(':', 2)
+                metadata[key] = value.strip()
+
+
+            m = re.match('^ (?P<name>.*?) \s+ \[ (?P<pid>\d+) \] \s* $',
+                         metadata['Process'],
+                         re.VERBOSE)
+            if not m:
+                raise Exception("parse error: " + metadata['Process'])
+
+            name = m.group('name')
+            pid = int(m.group('pid'))
+
+            yield (name, pid, list(self.read_threads(lines)))
 
 
 

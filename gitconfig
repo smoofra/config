@@ -26,6 +26,9 @@
 
 [alias]
 
+    head = rev-parse --abbrev-ref HEAD
+
+
         co = checkout
 
         personal = config user.email larry@elder-gods.org

@@ -2081,6 +2081,10 @@
       (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
 
       (setq nice-font "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
+
+      (when (string= system-name "demogorgon.apple.com")
+        (setq nice-font "-*-Menlo-normal-normal-normal-*-17-*-*-*-m-0-iso10646-1"))
+
       (set-frame-font nice-font)
       (set-nice-font-setter)
 

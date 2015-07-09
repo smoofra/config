@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from collections import defaultdict
 import subprocess
 import sys
 import os
@@ -41,13 +42,13 @@ class Git(object):
 
     def rev_exists(self, commit):
         try:
-            self.cmd(['git', 'rev-parse', commit, '--'], stderr=FNULL)
+            self.cmd(['git', 'rev-parse', commit], stderr=FNULL)
             return True
         except GitFailed:
             return False
 
     def rev_parse(self, commit):
-        return self.cmd(['git', 'rev-parse', commit, '--']).strip()
+        return self.cmd(['git', 'rev-parse', commit]).strip()
 
     def is_clean(self):
         return ('' == self.cmd("git diff --cached --name-only".split()) and
@@ -91,39 +92,47 @@ def name2tuple(name):
     else:
         return (m,)
 
-# def tuple2name(tup):
-#     return tup[0] + '.'.join(map(str, tup[1:]))
-#dirs = map(tuple2name, sorted(map(name2tuple, dirs)))
+def tuple2name(tup):
+    return tup[0] + '.'.join(map(str, tup[1:]))
 
-dirs = sorted(dirs, key=name2tuple)
+dirs = list(sorted(map(name2tuple, dirs)))
 
-dirs = [d for d in dirs if d not in ('CrashCatcher-10452.0.27',  'CrashCatcher-10452.0.28', 'CrashCatcher-10452.0.11.1',
-                                     'CrashCatcher-10479.1', 'CrashCatcher-10497.2')];
+def parentof(d):
+    # lol n^2
+    candidates = [p for p in dirs if p < d and len(p) <= len(d)]
+    if candidates:
+        candidates.sort()
+        return candidates[-1]
+    else:
+        return None
 
-for (d,last) in zip(dirs, [None] + dirs):
+for d in dirs:
 
-    if git.rev_exists('refs/tags/' + d):
+    if git.rev_exists('refs/tags/' + tuple2name(d)):
         continue
 
+    parent = parentof(d)
+
     print "###"
-    print "### importing", d
+    print "### importing", tuple2name(d)
+    if parent:
+        print "###   using parent", tuple2name(parent)
     print "###"
 
-    if last is not None:
-        if (not git.rev_exists("refs/heads/import") or
-            not git.rev_parse("refs/heads/import") == git.rev_parse('refs/tags/' + last)):
-            raise Exception, "expected refs/heads/import to point to refs/tags/"+last
+    if git.rev_exists('refs/heads/import'):
+        raise Exception, "import branch already exists?"
 
-        git.checkout("import")
+    if parent is not None:
+        parentref = "refs/tags/" + tuple2name(parent)
+        assert git.rev_exists(parentref)
+        git.cmd("git checkout -b import".split() + [parentref])
     else:
-        if git.rev_exists('refs/heads/import'):
-            raise Exception, "import branch already exists?"
         git.cmd("git checkout --orphan import".split())
         if git.cmd("git ls-files .".split()).strip() != '':
             git.cmd("git rm -rf .".split())
 
     proc = subprocess.Popen(['rsync', '-ra', '--delete', '--exclude', '/.git',
-                             os.path.join(args.directory, d) + '/', './'],
+                             os.path.join(args.directory, tuple2name(d)) + '/', './'],
                             stdin=FNULL)
     (out, err) = proc.communicate()
     if proc.wait() != 0:
@@ -131,9 +140,14 @@ for (d,last) in zip(dirs, [None] + dirs):
 
     message = """imported {d}
 
-imported {d} from {path}""".format(d=d, path=os.path.normpath(os.path.join(args.directory, d)))
+imported {d} from {path}""".format(d=tuple2name(d), path=os.path.normpath(os.path.join(args.directory, tuple2name(d))))
 
     git.cmd("git add .".split())
     git.cmd("git add -u".split())
     git.cmd(["git", "commit", "--allow-empty", "-m", message])
-    git.cmd(["git", "tag", d])
+    git.cmd(["git", "tag", tuple2name(d)])
+
+    print repr(git.rev_parse("HEAD"))
+
+    git.cmd(["git", "checkout", "-q", git.rev_parse("HEAD")])
+    git.cmd("git branch -d import".split())

@@ -13,18 +13,15 @@ HostName blade.wjoe.tv
 User ldanna
 
 Host odin
-#HostName 10.0.0.19
-#HostName 73.15.67.146
-#HostName c-24-6-185-222.hsd1.ca.comcast.net
 HostName odin.elder-gods.org
 User ldanna
-LocalForward 4200 localhost:4243
-LocalForward 8000 loki.lan:80
-LocalForward 8001 zuul.lan:80
-DynamicForward 9999
 ServerAliveInterval 10
 HostKeyAlias odin
 Port 21
+#LocalForward 4200 localhost:4243
+#LocalForward 8000 loki.lan:443
+#LocalForward 8001 zuul.lan:80
+#DynamicForward 9999
 
 Host zuul
 HostName odin.elder-gods.org

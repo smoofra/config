@@ -82,6 +82,8 @@
 
   (def-slime-selector-method ?y
     "*shell* buffer."
+    (when (null (get-buffer "*shell*"))
+      (call-interactively 'shell))
     (get-buffer "*shell*"))
 
   (def-slime-selector-method ?T

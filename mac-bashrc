@@ -140,3 +140,5 @@ alias mouse='tmux setw -g mode-mouse'
 alias ffi='~rc/bin/findFiles -release Monarch'
 
 alias ffx='~rc/bin/findFiles -release Gala'
+
+alias resetup='sh ~/config/setup-mac.sh'

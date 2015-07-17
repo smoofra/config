@@ -72,13 +72,16 @@ class Git(object):
     def checkout(self, branch):
         self.cmd(['git', 'checkout', branch], stderr=FNULL)
 
+    def force_checkout(self, branch):
+        self.cmd(['git', 'checkout', '-f', branch], stderr=FNULL)
+
     def detach(self):
         self.cmd(['git', 'checkout', self.rev_parse('HEAD')], stderr=FNULL)
 
     def merge(self, commit, message):
         merged = self.cmd_test(['git', 'merge', '--no-edit', '-m', message, commit], stdout=FNULL)
         if not merged:
-            self.cmd('git_merge', '--abort')
+            self.cmd(['git', 'merge', '--abort'])
         return merged
 
     def current_branch(self):
@@ -150,5 +153,5 @@ try:
         git.checkout(current_branch)
 
 except:
-    git.checkout(current_branch)
+    git.force_checkout(current_branch)
     raise

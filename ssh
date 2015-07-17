@@ -1,3 +1,6 @@
+
+# -*- mode: conf -*-
+
 Host demogorgon
 HostName demogorgon.apple.com
 
@@ -12,7 +15,7 @@ Host blade
 HostName blade.wjoe.tv
 User ldanna
 
-Host odin
+Host odin odin.elder-gods.org
 HostName odin.elder-gods.org
 User ldanna
 ServerAliveInterval 10

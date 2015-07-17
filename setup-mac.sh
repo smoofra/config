@@ -19,5 +19,8 @@ fi
 
 cat ~/config/ssh ~/apple_config/ssh  >~/.ssh/config
 
+ln -sf ~/config/com.andersbakken.rtags.agent.plist  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist
+launchctl load ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist
+
 . ~/apple_config/setup.sh
 

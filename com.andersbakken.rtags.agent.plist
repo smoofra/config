@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.andersbakken.rtags.agent</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>sh</string>
+      <string>-c</string>
+      <string>/usr/local/bin/rdm -v --launchd --inactivity-timeout 300 --log-file ~/Library/Logs/rtags.launchd.log</string>
+    </array>
+    <key>Sockets</key>
+    <dict>
+      <key>Listener</key>
+      <dict>
+        <key>SockPathName</key>
+        <string>/Users/lawrence_danna/.rdm</string>
+      </dict>
+    </dict>
+  </dict>
+</plist>

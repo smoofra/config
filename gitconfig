@@ -50,8 +50,15 @@
     s = status
     b = branch -v
     f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary=200
+
+    # example: git egc config.dlr
+
+    # if tempfile is missing on darwin: brew install debianutils
+
     ec = !\nf() {\n tmp=`tempfile`\n ( git config \"$@\" >$tmp || touch $tmp ) && \n\t$EDITOR $tmp && \n\tgit config \"$@\" \"$(cat $tmp)\" && \n\trm -f $tmp\n}\nf
     egc = ! git ec --file ~/.gitconfig
+
+
     lsf = ls-files --exclude-standard --directory --no-empty-directory
     one = log --decorate --oneline --left-right
     graph = log -n20 --graph --decorate --oneline --left-right

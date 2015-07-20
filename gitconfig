@@ -1,28 +1,28 @@
 # -*- mode: conf-unix -*-
 
 [core]
-        pager = cat
+    pager = cat
 
 [url "ssh://git@stash.sd.apple.com/coreos/"]
     insteadOf = stash://
 
 [user]
-	name = "Lawrence D'Anna"
-	#email = larry@elder-gods.org
-        email = lawrence_danna@apple.com
+    name = "Lawrence D'Anna"
+    #email = larry@elder-gods.org
+    email = lawrence_danna@apple.com
 
 
 [sendemail]
-        chainreplyto = false
+    chainreplyto = false
 
-        smtpencryption = tls
-        smtpserverport = 587
+    smtpencryption = tls
+    smtpserverport = 587
 
-        smtpserver = smtp.gmail.com
-        smtpuser = larry@elder-gods.org
+    smtpserver = smtp.gmail.com
+    smtpuser = larry@elder-gods.org
 
-        #smtpserver = mail.apple.com
-        #smtpuser = lawrence_danna
+    #smtpserver = mail.apple.com
+    #smtpuser = lawrence_danna
 
 [alias]
 
@@ -30,53 +30,53 @@
 
     rebase-author = rebase -x "env EDITOR=true git commit --amend --reset-author" -i
 
-        co = checkout
+    co = checkout
 
-        personal = config user.email larry@elder-gods.org
+    personal = config user.email larry@elder-gods.org
 
-        se = ! \nf() { \n git show \"$@\"  | el -d \n } \nf
-        de = ! \nf() { \n git diff \"$@\" | el -d \n } \nf
-        dec = ! \nf() { \n git diff --cached \"$@\" | el -d \n } \nf
+    se = ! \nf() { \n git show \"$@\"  | el -d \n } \nf
+    de = ! \nf() { \n git diff \"$@\" | el -d \n } \nf
+    dec = ! \nf() { \n git diff --cached \"$@\" | el -d \n } \nf
 
-	sc = show --color
-        dc = diff --color
-	dcc = diff --cached --color
+    sc = show --color
+    dc = diff --color
+    dcc = diff --cached --color
 
-	sb = show-branch
+    sb = show-branch
 
-        dw = diff --color-words
-        dlog = log --date=relative --pretty=fuller
-        tpush = push --dry-run --summary
-        s = status
-        b = branch -v
-        f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary=200
-	ec = !\nf() {\n tmp=`tempfile`\n ( git config \"$@\" >$tmp || touch $tmp ) && \n\t$EDITOR $tmp && \n\tgit config \"$@\" \"$(cat $tmp)\" && \n\trm -f $tmp\n}\nf
-	egc = ! git ec --file ~/.gitconfig
-	lsf = ls-files --exclude-standard --directory --no-empty-directory
-	one = log --decorate --oneline --left-right
-        graph = log -n20 --graph --decorate --oneline --left-right
-        aone = log --pretty=format:'%m%h %an %s'
+    dw = diff --color-words
+    dlog = log --date=relative --pretty=fuller
+    tpush = push --dry-run --summary
+    s = status
+    b = branch -v
+    f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary=200
+    ec = !\nf() {\n tmp=`tempfile`\n ( git config \"$@\" >$tmp || touch $tmp ) && \n\t$EDITOR $tmp && \n\tgit config \"$@\" \"$(cat $tmp)\" && \n\trm -f $tmp\n}\nf
+    egc = ! git ec --file ~/.gitconfig
+    lsf = ls-files --exclude-standard --directory --no-empty-directory
+    one = log --decorate --oneline --left-right
+    graph = log -n20 --graph --decorate --oneline --left-right
+    aone = log --pretty=format:'%m%h %an %s'
 
-	drl = "!f() {  \n    #echo \"usage: git drl <ref> [<n>]\"; \n    set -e\n    if [ $# -lt 1 ]; then\n        x=`git rev-parse --symbolic-full-name HEAD`\n    else \n        x=$1; \n        shift; \n    fi\n    n=1\n    if [ $# -gt 0 ]; then\n       n=$1\n       shift\n    fi\n    git reflog show $x | head -$(expr $n + 1)\n    echo\n    git dh -p $x@{$n} $x\n} \nf"
+    drl = "!f() {  \n    #echo \"usage: git drl <ref> [<n>]\"; \n    set -e\n    if [ $# -lt 1 ]; then\n        x=`git rev-parse --symbolic-full-name HEAD`\n    else \n        x=$1; \n        shift; \n    fi\n    n=1\n    if [ $# -gt 0 ]; then\n       n=$1\n       shift\n    fi\n    git reflog show $x | head -$(expr $n + 1)\n    echo\n    git dh -p $x@{$n} $x\n} \nf"
 
-	adrl = "!f() {  \n    #echo \"usage: git drl <ref> [<n>]\"; \n    set -e\n    if [ $# -lt 1 ]; then\n        x=`git rev-parse --symbolic-full-name HEAD`\n    else \n        x=$1; \n        shift; \n    fi\n    n=1\n    if [ $# -gt 0 ]; then\n       n=$1\n       shift\n    fi\n    git reflog show $x | head -$(expr $n + 1)\n    echo\n    git dh -ap $x@{$n} $x\n} \nf"
+    adrl = "!f() {  \n    #echo \"usage: git drl <ref> [<n>]\"; \n    set -e\n    if [ $# -lt 1 ]; then\n        x=`git rev-parse --symbolic-full-name HEAD`\n    else \n        x=$1; \n        shift; \n    fi\n    n=1\n    if [ $# -gt 0 ]; then\n       n=$1\n       shift\n    fi\n    git reflog show $x | head -$(expr $n + 1)\n    echo\n    git dh -ap $x@{$n} $x\n} \nf"
 
-        noexpire = "! git config gc.reflogExpire 365000; git config gc.reflogExpireUnreachable 365000"
-        
-        detach = ! git checkout `git-rev-parse HEAD`
-	dfetch = "!\nf() { \n\tif head=`git rev-parse --symbolic-full-name HEAD` ; then\n\t\tif echo \"$head\" | grep -q '^refs/heads/'; then\n\t\t\thead=`perl -e '$_ = shift; s:^refs/heads/::; print' \"$head\" ` \t\t\n\t\t\techo === detaching\n\t\t\tgit checkout `git-rev-parse HEAD` \n\t\telse\n\t\t\thead=\"\"\n\t\tfi; \n\t\techo === fetching\t\n\t\tgit fetch \"$@\"\n\t\tif [ ! -z \"$head\" ]; then\n\t\t\techo === checking out\n\t\t\tgit checkout \"$head\";\n\t\tfi\n\tfi;\n}\nf"
-	mpush = "!\nf() { \n    if [ $# -lt 2 ] ; then \n        echo \"usage: git mpush <remote> <reftree> [ <push options> ]\"\n        exit 1; \n    fi\n    set -e \n    remote=\"$1\"\n    reftree=\"$2\"\n    shift\n    shift\n    temp=`tempfile`\n    git ls-remote . \"$reftree\" | cut -f2  >$temp\n    dels=$( git ls-remote \"$remote\" \"$reftree\" | cut -f2 | grep -v -F --file=$temp | sed 's/^/:/')\n    rm $temp    \n    git push -f \"$remote\" \"$reftree\" $dels \"$@\"\n}\nf "
-	tg-stale = "!\nf() {\n    if [ $# -gt 0 ] && [ $1 = '-d' ]; then\n        foo='xargs -n1 -d\\n git-update-ref -d'        \n    else\n        foo='cat'\n    fi\n    git for-each-ref refs/top-bases | cut -f 2 | \\\n        xargs -d\\\\n -n1 perl -e '$_=shift; $o=$_; s:^refs/top-bases:refs/heads:; print \"$o\\n\" if \"\" eq `git for-each-ref $_`' | \\\n        $foo\n}\nf"
-	delrefs = "!\nf() {\n    if [ $# -lt 1 ] ; then \n        echo \"usage: git delrefs <reftree>\"\n        exit 1; \n    fi\n    set -e\n    while [ $# -gt 0 ]; do\n          git ls-remote . $1 | cut -f2 | xargs -d\\\\n -n1 git update-ref -d \n          shift;\n    done\n}\nf"
-	make-pushable = !\nset -e \n. \"$(git --exec-path)\"/git-sh-setup\nf() {\n    ln -s $HOME/bin/git-pushable-hooks/* $GIT_DIR/hooks/\n    git config receive.denyCurrentBranch ignore\n}\nf
+    noexpire = "! git config gc.reflogExpire 365000; git config gc.reflogExpireUnreachable 365000"
 
-	me = ! \nf() { \n    git aone \"$@\" | grep -i d.anna\n}\nf
+    detach = ! git checkout `git-rev-parse HEAD`
+    dfetch = "!\nf() { \n\tif head=`git rev-parse --symbolic-full-name HEAD` ; then\n\t\tif echo \"$head\" | grep -q '^refs/heads/'; then\n\t\t\thead=`perl -e '$_ = shift; s:^refs/heads/::; print' \"$head\" ` \t\t\n\t\t\techo === detaching\n\t\t\tgit checkout `git-rev-parse HEAD` \n\t\telse\n\t\t\thead=\"\"\n\t\tfi; \n\t\techo === fetching\t\n\t\tgit fetch \"$@\"\n\t\tif [ ! -z \"$head\" ]; then\n\t\t\techo === checking out\n\t\t\tgit checkout \"$head\";\n\t\tfi\n\tfi;\n}\nf"
+    mpush = "!\nf() { \n    if [ $# -lt 2 ] ; then \n        echo \"usage: git mpush <remote> <reftree> [ <push options> ]\"\n        exit 1; \n    fi\n    set -e \n    remote=\"$1\"\n    reftree=\"$2\"\n    shift\n    shift\n    temp=`tempfile`\n    git ls-remote . \"$reftree\" | cut -f2  >$temp\n    dels=$( git ls-remote \"$remote\" \"$reftree\" | cut -f2 | grep -v -F --file=$temp | sed 's/^/:/')\n    rm $temp    \n    git push -f \"$remote\" \"$reftree\" $dels \"$@\"\n}\nf "
+    tg-stale = "!\nf() {\n    if [ $# -gt 0 ] && [ $1 = '-d' ]; then\n        foo='xargs -n1 -d\\n git-update-ref -d'        \n    else\n        foo='cat'\n    fi\n    git for-each-ref refs/top-bases | cut -f 2 | \\\n        xargs -d\\\\n -n1 perl -e '$_=shift; $o=$_; s:^refs/top-bases:refs/heads:; print \"$o\\n\" if \"\" eq `git for-each-ref $_`' | \\\n        $foo\n}\nf"
+    delrefs = "!\nf() {\n    if [ $# -lt 1 ] ; then \n        echo \"usage: git delrefs <reftree>\"\n        exit 1; \n    fi\n    set -e\n    while [ $# -gt 0 ]; do\n          git ls-remote . $1 | cut -f2 | xargs -d\\\\n -n1 git update-ref -d \n          shift;\n    done\n}\nf"
+    make-pushable = !\nset -e \n. \"$(git --exec-path)\"/git-sh-setup\nf() {\n    ln -s $HOME/bin/git-pushable-hooks/* $GIT_DIR/hooks/\n    git config receive.denyCurrentBranch ignore\n}\nf
+
+    me = ! \nf() { \n    git aone \"$@\" | grep -i d.anna\n}\nf
 
 [push]
-        default = matching
+    default = matching
 
 
 [format]
-	thread = shallow
+    thread = shallow
 [color]
-	ui = auto
+    ui = auto

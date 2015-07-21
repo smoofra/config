@@ -134,6 +134,8 @@ function darwinup-sdk() {
     darwinup -p $(xcrun -show-sdk-path -sdk iphoneos.internal) $@
 }
 
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+
 # mouse on / mouse off
 alias mouse='tmux setw -g mode-mouse'
 

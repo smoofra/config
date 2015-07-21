@@ -12,6 +12,14 @@ if which grm >/dev/null ; then
 	alias rm=grm
 fi
 
+if which gfind >/dev/null ; then
+    alias find=gfind
+fi
+
+if which gxargs >/dev/null ; then
+    alias xargs=gxargs
+fi
+
 export EDITOR=vim
 
 if [[ ! -z "$INSIDE_EMACS" ]] ; then

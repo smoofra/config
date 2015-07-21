@@ -28,7 +28,7 @@
 
     head = rev-parse --abbrev-ref HEAD
 
-    rebase-author = rebase -x "env EDITOR=true git commit --amend --reset-author" -i
+	rebase-author = rebase -x \"env EDITOR=true git commit --amend --reset-author\" -i
 
     co = checkout
 

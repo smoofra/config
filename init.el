@@ -2241,9 +2241,10 @@
 (defun ansi-color-buffer ()
   (interactive)
   (ansi-color-apply-on-region (point-min) (point-max))
-  (goto-char 1)
-  (while (search-forward-regexp "." nil t)
-    (replace-match "" t nil))))
+  (save-excursion
+    (goto-char 1)
+    (while (search-forward-regexp "." nil t)
+      (replace-match "" t nil)))))
 
 
 (defun my-comint-init ()

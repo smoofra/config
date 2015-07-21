@@ -34,7 +34,7 @@ function trim_pwd() {
     local limit
     limit=40
 
-    epxr=expr
+    expr=expr
     if [ ! x$($expr length "FOO" 2>/dev/null) = "x3" ]; then
         expr=gexpr
         if [ ! x$($expr length "FOO" 2>/dev/null) = "x3" ]; then

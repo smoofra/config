@@ -26,6 +26,8 @@
 
 [alias]
 
+	dates = !\nf() {\n    git log --pretty=fuller \"$@\" | grep Date\n}\nf
+
     head = rev-parse --abbrev-ref HEAD
 
 	rebase-author = rebase -x \"env EDITOR=true git commit --amend --reset-author\" -i

@@ -20,8 +20,27 @@ class Git(object):
                                 stdin=FNULL, stdout=subprocess.PIPE, **kw)
         (out, err) = proc.communicate()
         if proc.wait() != 0:
-            raise GitFailed, "git failed"
+            raise GitFailed, "git failed: " + repr(args)
         return out
+
+    def config_get(self, key):
+        args = ['git', 'config', '-z', '--get', key]
+        proc = subprocess.Popen(args, cwd=self.directory,
+                                stdin=FNULL, stdout=subprocess.PIPE)
+        (out, err) = proc.communicate()
+        status = proc.wait()
+        if status == 1:
+            return None
+        elif status != 0:
+            raise GitFailed, "git failed: " + repr(args)
+        else:
+            if out.endswith('\x00'):
+                return out[:-1]
+            else:
+                return out
+
+    def config_set(self, key, value):
+        self.cmd(['git', 'config', key, value])
 
     def cmd_test(self, args, **kw):
         proc = subprocess.Popen(args, cwd=self.directory,
@@ -63,12 +82,20 @@ class Git(object):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("directory")
+parser.add_argument("directory", nargs='?')
 parser.add_argument("--prefix", '-p')
 args = parser.parse_args()
 
-
 git = Git()
+
+if args.directory is None:
+    args.directory = git.config_get('import-tags.directory')
+
+if args.directory is None:
+    parser.print_usage()
+    print >>sys.stderr, ""
+    print >>sys.stderr, "Please specify a directory!"
+    sys.exit(1)
 
 if git.cmd('git rev-parse --git-dir'.split()).strip() != '.git':
     raise Exception, "run git-import-tags from the top level"
@@ -78,6 +105,7 @@ if not git.is_clean():
 if git.has_others():
     raise Exception, "There may not be any untracked files in the working directory"
 
+git.config_set('import-tags.directory', args.directory)
 
 dirs = os.listdir(args.directory)
 dirs = [d for d in dirs if os.path.isdir(os.path.join(args.directory, d))]

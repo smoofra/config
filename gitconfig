@@ -26,6 +26,8 @@
 
 [alias]
 
+	mergepop = ! f() {\n    set -e\n    local self\n    self=`git rev-parse --abbrev-ref HEAD`\n    git checkout $1\n    git merge $self\n    git branch -d $self\n}\nf
+
 	dates = !\nf() {\n    git log --pretty=fuller \"$@\" | grep Date\n}\nf
 
     head = rev-parse --abbrev-ref HEAD

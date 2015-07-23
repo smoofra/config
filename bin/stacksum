@@ -1,0 +1,7 @@
+#!/usr/bin/perl
+
+while (<>) {
+  $sum += $1 if /(\d+)\s*$/;
+}
+
+print $sum, "\n";

@@ -1,0 +1,7 @@
+#!/usr/bin/env python3
+
+import os
+import shlex
+
+for key, value in os.environ.items():
+    print(key + '=' + shlex.quote(value))

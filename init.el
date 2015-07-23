@@ -2244,7 +2244,7 @@
   (save-excursion
     (goto-char 1)
     (while (search-forward-regexp "." nil t)
-      (replace-match "" t nil)))))
+      (replace-match "" t nil))))
 
 
 (defun my-comint-init ()

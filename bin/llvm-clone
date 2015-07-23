@@ -1,0 +1,23 @@
+#!/usr/bin/python
+
+import sys
+import subprocess
+
+paths = {
+    "libcxx":            "projects/libcxx",
+    "clang":             "tools/clang",
+    "clang-tools-extra": "tools/clang/tools/extra",
+    "lld":               "tools/lld",
+    "lldb":              "tools/lldb",
+    "compiler-rt":       "projects/compiler-rt",
+    }
+
+base_url = "http://llvm.org/git/"
+
+for proj in sys.argv[1:]:
+    cmd = ['git', 'clone', base_url + proj, paths[proj]]
+    print ">>>", ' '.join(cmd)
+    proc = subprocess.Popen(cmd)
+    ret = proc.wait()
+    if ret != 0:
+        sys.exit(ret)

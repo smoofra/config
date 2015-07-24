@@ -154,3 +154,5 @@ alias ffx='~rc/bin/findFiles -release Gala'
 alias resetup='sh ~/config/setup-mac.sh'
 
 alias bear='bear -a'
+
+alias rerdm='launchctl unload  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist ; launchctl load  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist'

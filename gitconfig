@@ -56,7 +56,7 @@
     dlog = log --date=relative --pretty=fuller
     tpush = push --dry-run --summary
     s = status
-    b = branch -v
+	b = branch -vv
     f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary=200
 
     # example: git egc config.dlr

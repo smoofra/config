@@ -2247,9 +2247,10 @@
       (replace-match "" t nil))))
 
 
-(defun my-comint-init ()
+(defun fix-comint ()
+  (interactive)
   (setq comint-process-echoes t))
-(add-hook 'comint-mode-hook 'my-comint-init)
+(add-hook 'comint-mode-hook 'fix-comint)
 
 
 ;;;;;;

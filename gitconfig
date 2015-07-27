@@ -35,22 +35,35 @@
     #  * delete the branch we were on
 	mergepop = ! f() {\n    set -e\n    local self\n    self=`git rev-parse --abbrev-ref HEAD`\n    git checkout $1\n    git merge $self\n    git branch -d $self\n}\nf
 
+    # just show dates of a git-log command line
 	dates = !\nf() {\n    git log --pretty=fuller \"$@\" | grep Date\n}\nf
 
+    # print the name of the current branch
     head = rev-parse --abbrev-ref HEAD
 
+    # rebase and reset the author
 	rebase-author = rebase -x \"env EDITOR=true git commit --amend --reset-author\" -i
 
     co = checkout
 
     personal = config user.email larry@elder-gods.org
 
+    # show commit in emacs
     se = ! \nf() { \n git show \"$@\"  | el -d \n } \nf
+
+    # diff in emacs
     de = ! \nf() { \n git diff \"$@\" | el -d \n } \nf
+
+    # diff --cached in emacs
     dec = ! \nf() { \n git diff --cached \"$@\" | el -d \n } \nf
 
+    # show commit color
     sc = show --color
+
+    # diff color
     dc = diff --color
+
+    # diff cached color
     dcc = diff --cached --color
 
     sb = show-branch

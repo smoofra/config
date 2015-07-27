@@ -26,6 +26,9 @@
 
 [alias]
 
+    # make sure a copy of this repo gets pushed to odin
+    odin = ! git config --get-all remote.origin.pushurl | grep -qF odin.elder-gods.org || git remote set-url --add --push origin odin.elder-gods.org:$(basename `git rev-parse --show-toplevel`)
+
     # mergepop foo
     #  * switch to foo
     #  * merge the branch we were on

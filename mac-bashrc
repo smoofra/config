@@ -4,7 +4,7 @@
 
 if which gls >/dev/null ; then
 	alias ls='gls --color=auto'
-elif ls --version | grep -iq gnu ; then
+elif ls --version 2>/dev/null | grep -iq gnu ; then
 	alias ls='ls --color=auto'
 fi
 

@@ -2255,6 +2255,10 @@
   (setq comint-process-echoes t))
 (add-hook 'comint-mode-hook 'fix-comint)
 
+(defun bufname ()
+  (interactive)
+  (kill-new (buffer-file-name)))
+
 
 ;;;;;;; example: multi replace regexp on region
 

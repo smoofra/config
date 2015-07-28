@@ -392,8 +392,11 @@
 (defun my-revert-buffer (&optional noconfirm preserve-modes) 
   (interactive)
   (check-coding-system buffer-file-coding-system)
-  (let ((coding-system-for-read buffer-file-coding-system))
+  (let ((coding-system-for-read buffer-file-coding-system)
+        (truncate truncate-lines))
     (revert-buffer t noconfirm preserve-modes)
+    (if (and truncate (not truncate-lines))
+        (call-interactively 'toggle-truncate-lines))
     (ignore-errors 
       (delete-file buffer-auto-save-file-name))))
 

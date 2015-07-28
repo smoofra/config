@@ -8,8 +8,6 @@
 
 [user]
     name = "Lawrence D'Anna"
-    #email = larry@elder-gods.org
-    email = lawrence_danna@apple.com
 
 
 [sendemail]
@@ -47,6 +45,7 @@
     co = checkout
 
     personal = config user.email larry@elder-gods.org
+    work = config user.email lawrence_danna@apple.com
 
     # show commit in emacs
     se = ! \nf() { \n git show \"$@\"  | el -d \n } \nf

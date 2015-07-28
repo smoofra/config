@@ -2253,6 +2253,19 @@
 (add-hook 'comint-mode-hook 'fix-comint)
 
 
+;;;;;;; example: multi replace regexp on region
+
+;; (defun f (begin end)
+;;   (interactive "r")
+;;   (save-restriction
+;;     (narrow-to-region begin end)
+;;     (goto-char (point-min))
+;;     (while (search-forward-regexp "lawrence_danna.*?\\\$" nil t) (replace-match "$" nil t))
+;;     (goto-char (point-min))
+;;     (while (search-forward-regexp "^" nil t) (replace-match "    " nil t))))
+
+
+
 ;;;;;;
 
 ;;;;;(solarized-light)

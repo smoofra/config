@@ -8,7 +8,7 @@
     <array>
       <string>sh</string>
       <string>-c</string>
-      <string>/usr/local/bin/rdm -v --launchd --inactivity-timeout 300 --log-file ~/Library/Logs/rtags.launchd.log</string>
+      <string>/usr/local/bin/rdm --launchd --inactivity-timeout 300 --log-file ~/Library/Logs/rtags.launchd.log</string>
     </array>
     <key>Sockets</key>
     <dict>

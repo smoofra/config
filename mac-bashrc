@@ -25,6 +25,7 @@ export EDITOR=vim
 if [[ ! -z "$INSIDE_EMACS" ]] ; then
     export TERM=vt100
     export EDITOR=emacsclient
+    alias  python='env PAGER="el -r" python'
 fi
 
 function trim_pwd() {
@@ -156,3 +157,5 @@ alias resetup='sh ~/config/setup-mac.sh'
 alias bear='bear -a'
 
 alias rerdm='launchctl unload  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist ; launchctl load  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist'
+
+alias lsd='gls -l -r --sort=time'

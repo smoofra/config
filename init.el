@@ -2259,6 +2259,10 @@
   (interactive)
   (kill-new (buffer-file-name)))
 
+(defun xed ()
+  (interactive)
+  (call-process "xed" nil nil nil "-l" (prin1-to-string (line-number-at-pos)) (buffer-file-name) ))
+
 
 ;;;;;;; example: multi replace regexp on region
 

@@ -2,6 +2,7 @@
 
 [core]
     pager = cat
+    excludesFile = ~/config/exclude
 
 [url "ssh://git@stash.sd.apple.com/coreos/"]
     insteadOf = stash://

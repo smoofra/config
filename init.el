@@ -24,7 +24,6 @@
 (add-hook 'emacs-lisp-mode-hook (lambda () (paredit-mode +1)))
 
 
-(setq load-path (cons "/usr/share/emacs/site-lisp/maxima/" load-path))
 
 (setq load-path (cons "~/config" load-path))
 (setq load-path (cons "~/config/emacslisp" load-path))
@@ -2098,6 +2097,8 @@
       (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
       (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
       (setq scroll-step 1) ;; keyboard scroll one line at a time
+
+      (add-to-list 'load-path "/usr/local/share/emacs/site-lisp")
       ))
 
 
@@ -2263,6 +2264,8 @@
   (interactive)
   (call-process "xed" nil nil nil "-l" (prin1-to-string (line-number-at-pos)) (buffer-file-name) ))
 
+
+(autoload 'rtags-enable-standard-keybindings "rtags/rtags" ""  t)
 
 ;;;;;;; example: multi replace regexp on region
 

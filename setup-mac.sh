@@ -1,6 +1,8 @@
 
 . ~/config/setup-shared.sh
 
+defaults write com.apple.finder AppleShowAllFiles TRUE
+
 echo ". ~/.bashrc" >~/.bash_profile
 
 ( cd ~/config ; git config user.email larry@elder-gods.org )

@@ -2286,3 +2286,10 @@
 ;;;(setq load-path (cons "~/emacs-ipython-notebook/lisp" load-path))
 ;;;(require 'ein)
 ;;;(require 'ein-loaddefs)
+
+
+;;;; how to enable rtags auto-complete:
+;; (require 'rtags-ac)
+;; (add-hook 'c-mode-common-hook '(lambda ()
+;;                       (setq ac-sources '(ac-source-rtags))
+;;                       (auto-complete-mode)))

@@ -143,6 +143,15 @@ function darwinup-sdk() {
     darwinup -p $(xcrun -show-sdk-path -sdk iphoneos.internal) $@
 }
 
+function rmcd {
+    while [ -e confdir-14B---/confdir-14B--- ]; do
+        mv confdir-14B---/confdir-14B--- confdir-14B---.fuck
+        rmdir confdir-14B---
+        mv confdir-14B---.fuck confdir-14B---
+    done
+    rmdir confdir-14B---    
+}
+
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
 # mouse on / mouse off

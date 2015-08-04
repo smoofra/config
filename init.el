@@ -2157,6 +2157,7 @@
  '(matlab-indent-level 4)
  '(matlab-verify-on-save-flag nil)
  '(ns-command-modifier (quote meta))
+ '(nxml-sexp-element-flag t)
  '(octave-block-offset 4)
  '(package-selected-packages (quote (rtags markdown-mode lua-mode dtrt-indent ack)))
  '(rtags-path "/usr/local")

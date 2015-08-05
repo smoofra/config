@@ -143,7 +143,7 @@ function darwinup-sdk() {
     darwinup -p $(xcrun -show-sdk-path -sdk iphoneos.internal) $@
 }
 
-function rmcd {
+function rm-confdir {
     while [ -e confdir-14B---/confdir-14B--- ]; do
         mv confdir-14B---/confdir-14B--- confdir-14B---.fuck
         rmdir confdir-14B---

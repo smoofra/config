@@ -4,11 +4,12 @@
 Host demogorgon
 HostName demogorgon.apple.com
 
-Host ahriman
+Host ahriman ahriman.baconautics.com
 HostName ahriman.baconautics.com
 User ldanna
 
-Host ahriman.baconautics.com
+Host mithra mithra.baconautics.com
+HostName mithra.baconautics.com
 User ldanna
 
 Host blade

@@ -3,6 +3,7 @@
 
 Host demogorgon
 HostName demogorgon.apple.com
+ForwardAgent yes
 
 Host ahriman ahriman.baconautics.com
 HostName ahriman.baconautics.com

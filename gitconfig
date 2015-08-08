@@ -113,7 +113,7 @@
 	whatsnew = !\nf() {\n    set -e\n    up=$(git rev-parse --abbrev-ref --symbolic-full-name @{u})\n    me=$(git config user.name)\n    git log --oneline --decorate --author=\"$me\" --committer=\"$me\" $up..HEAD\n}\nf
 
 [push]
-    default = current
+    default = upstream
 
 
 [format]

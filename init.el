@@ -2241,6 +2241,12 @@
   (eval-after-load 'comint
     '(load-library "comint-fix")))
 
+(eval-after-load 'tramp
+  ;; fix "filename too long" bullshit
+  ;; http://lists.gnu.org/archive/html/bug-gnu-emacs/2015-01/msg00890.html
+  (setq tramp-ssh-controlmaster-options
+        "-o ControlPath=%%C -o ControlMaster=auto -o ControlPersist=no"))
+
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)

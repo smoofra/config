@@ -168,3 +168,7 @@ alias bear='bear -a'
 alias rerdm='launchctl unload  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist ; launchctl load  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist'
 
 alias lsd='gls -l -r --sort=time --color=auto'
+
+if  [ -e ~/apple_config/bashrc ]; then
+    . ~/apple_config/bashrc
+fi

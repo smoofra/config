@@ -393,11 +393,13 @@
   (check-coding-system buffer-file-coding-system)
   (let ((coding-system-for-read buffer-file-coding-system)
         (truncate truncate-lines)
-        (tw tab-width))
+        (tw tab-width)
+        (cbo c-basic-offset))
     (revert-buffer t noconfirm preserve-modes)
     (if (and truncate (not truncate-lines))
         (call-interactively 'toggle-truncate-lines))
     (setq tab-width tw)
+    (setq c-basic-offset cbo)
     (ignore-errors 
       (delete-file buffer-auto-save-file-name))))
 

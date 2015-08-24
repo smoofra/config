@@ -45,8 +45,8 @@
 
     co = checkout
 
-    personal = ! git config user.email larry@elder-gods.org ; git config user.name "Lawrence D'Anna"
-    work = ! git config user.email lawrence_danna@apple.com ; git config user.name "Lawrence D'Anna"
+	personal = "! git config user.email larry@elder-gods.org ; git config user.name \"Lawrence D'Anna\""
+	work = "! git config user.email lawrence_danna@apple.com; git config user.name \"Lawrence D'Anna\""
 
 
     # show commit in emacs

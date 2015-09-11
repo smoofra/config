@@ -1,0 +1,18 @@
+#!/usr/bin/python
+
+import sys
+
+
+a = set()
+b = set()
+
+with open (sys.argv[1], 'r') as f:
+    for x in f:
+        a.add(x.strip())
+
+with open (sys.argv[2], 'r') as f:
+    for x in f:
+        b.add(x.strip())
+
+for x in a - b:
+    print x

@@ -1,0 +1,42 @@
+#!/usr/bin/python
+
+import sys
+import re
+
+alphabet = {'a' : 'alfa',
+            'b' : 'bravo',
+            'c' : 'charlie',
+            'd' : 'delta',
+            'e' : 'echo',
+            'f' : 'foxtrot',
+            'g' : 'golf',
+            'h' : 'hotel',
+            'i' : 'india',
+            'j' : 'juliett',
+            'k' : 'kilo',
+            'l' : 'lima',
+            'm' : 'mike',
+            'n' : 'november',
+            'o' : 'oscar',
+            'p' : 'papa',
+            'q' : 'quebec',
+            'r' : 'romeo',
+            's' : 'sierra',
+            't' : 'tango',
+            'u' : 'uniform',
+            'v' : 'victor',
+            'w' : 'whiskey',
+            'x' : 'x-ray',
+            'y' : 'yankee',
+            'z' : 'zulu'}
+
+
+while True:
+    line = sys.stdin.readline()
+    if not line:
+        break
+
+    print
+    for word in line.lower().strip().split():
+        print " ".join(alphabet[char] for char in word if re.match('[a-z]', char))
+    print

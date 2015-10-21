@@ -30,7 +30,6 @@ alphabet = {'a' : 'alfa',
             'y' : 'yankee',
             'z' : 'zulu'}
 
-
 while True:
     line = sys.stdin.readline()
     if not line:
@@ -38,5 +37,5 @@ while True:
 
     print
     for word in line.lower().strip().split():
-        print " ".join(alphabet[char] for char in word if re.match('[a-z]', char))
+        print " ".join(alphabet.get(char,char) for char in word)
     print

@@ -399,7 +399,7 @@
     (if (and truncate (not truncate-lines))
         (call-interactively 'toggle-truncate-lines))
     (setq tab-width tw)
-    (unless (nilp cbo)
+    (unless (not cbo)
       (setq c-basic-offset cbo))
     (ignore-errors 
       (delete-file buffer-auto-save-file-name))))
@@ -2165,7 +2165,7 @@
  '(nxml-sexp-element-flag t)
  '(octave-block-offset 4)
  '(package-selected-packages (quote (rtags markdown-mode lua-mode dtrt-indent ack)))
- '(rtags-path "/usr/local")
+ '(rtags-path "/usr/local/bin")
  '(safe-local-variable-values
    (quote
     ((Package SERIES :use "COMMON-LISP" :colon-mode :external)
@@ -2278,6 +2278,10 @@
 
 
 (autoload 'rtags-enable-standard-keybindings "rtags/rtags" ""  t)
+
+(defun rtags-enable ()
+  (interactive)
+  (rtags-enable-standard-keybindings nil "\C-xr"))
 
 ;;;;;;; example: multi replace regexp on region
 

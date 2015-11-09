@@ -2104,6 +2104,7 @@
       (setq scroll-step 1) ;; keyboard scroll one line at a time
 
       (add-to-list 'load-path "/usr/local/share/emacs/site-lisp")
+      ;;(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/rtags")
       ))
 
 

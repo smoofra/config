@@ -4,11 +4,15 @@
   <dict>
     <key>Label</key>
     <string>com.andersbakken.rtags.agent</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/lawrence_danna/Library/Logs/rtags.err</string>
+
     <key>ProgramArguments</key>
     <array>
       <string>sh</string>
       <string>-c</string>
-      <string>/usr/local/bin/rdm --launchd --inactivity-timeout 300 --log-file ~/Library/Logs/rtags.launchd.log</string>
+      <string>/usr/local/bin/rdm -v -v --launchd --inactivity-timeout 300 --log-file ~/Library/Logs/rtags.log</string>
     </array>
     <key>Sockets</key>
     <dict>

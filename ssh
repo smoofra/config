@@ -5,6 +5,12 @@ Host demogorgon
 HostName demogorgon.apple.com
 ForwardAgent yes
 
+Host demogorgon-test
+HostName demogorgon.apple.com
+HostKeyAlias demogorgon-test
+StrictHostKeyChecking no
+User local
+
 Host ahriman ahriman.baconautics.com
 HostName ahriman.baconautics.com
 User ldanna

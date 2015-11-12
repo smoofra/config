@@ -1,3 +1,4 @@
+#!/bin/bash
 
 . ~/config/setup-shared.sh
 
@@ -28,7 +29,7 @@ fi
 
 ~/config/replacements.py
 
-cat ~/config/ssh ~/apple_config/ssh  >~/.ssh/config
+cat ~/config/ssh <(~/apple_config/ssh.py)  >~/.ssh/config
 
 ln -sf ~/config/com.andersbakken.rtags.agent.plist  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist
 launchctl load ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist >/dev/null 2>&1

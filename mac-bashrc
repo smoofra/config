@@ -153,7 +153,7 @@ alias ffi='~rc/bin/findFiles -release Monarch'
 
 alias ffx='~rc/bin/findFiles -release Gala'
 
-alias resetup='sh ~/config/setup-mac.sh'
+alias resetup='bash ~/config/setup-mac.sh'
 
 alias bear='bear -a'
 

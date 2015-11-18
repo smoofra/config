@@ -1,0 +1,100 @@
+#!/usr/bin/python
+
+import subprocess
+import sys
+import os
+import tempfile
+import contextlib
+import shutil
+
+@contextlib.contextmanager
+def TemporaryDirectory():
+    d = None
+    try:
+        d = tempfile.mkdtemp()
+        yield d
+    finally:
+        if d is not None:
+            shutil.rmtree(d)
+
+
+FNULL = open(os.devnull, 'w')
+
+class Git(object):
+
+    def cmd(self, args, **kw):
+        proc = subprocess.Popen(args, cwd=self.cwd, env=self.env,
+                                stdin=FNULL, stdout=subprocess.PIPE, **kw)
+        (out, err) = proc.communicate()
+        if proc.wait() != 0:
+            raise Exception, "git failed"
+        return out
+
+    def cmd_test(self, args, **kw):
+        proc = subprocess.Popen(args, cwd=self.cwd, env=self.env,
+                                stdin=FNULL, **kw)
+        code = proc.wait()
+        if code not in [0,1]:
+            raise Exception, "git failed"
+        return not code
+
+    def __init__(self, directory=None, env=None):
+        if directory is None:
+            directory = '.'
+        self.cwd = directory
+
+        self.env = dict(os.environ)
+        if env is not None:
+            self.env.update(env)
+        for key, value in self.env.items():
+            if value is None:
+                del self.env[key]
+
+        self.worktree = self.cmd("git rev-parse --show-toplevel".split()).strip()
+        if self.worktree == '':
+            self.worktree = None
+        if self.worktree is not None and not os.path.isabs(self.worktree):
+            raise Exception
+
+        self.git_dir = os.path.abspath(self.cmd("git rev-parse --git-dir".split()).strip())
+
+
+refs = sys.argv[1:]
+    
+original_git = Git()
+
+
+with TemporaryDirectory() as tmpdir:
+
+    os.mkdir( os.path.join(tmpdir, ".git") )
+    
+    if len(refs) == 2:
+        git = Git(env={"GIT_INDEX_FILE":os.path.join(tmpdir, ".git", "quick_index")})
+        base = original_git.cmd(["git", "merge-base", refs[0], refs[1]]).strip()
+        try:
+            git.cmd(['git', 'read-tree', '-m', base, refs[0], refs[1]], stderr=FNULL)
+            print git.cmd(['git', 'write-tree'], stderr=FNULL).strip()
+            sys.exit(0)
+        except:
+            pass
+    
+    for d in ('objects', 'refs', 'info', 'hooks', 'branches', 'config'):
+        os.symlink( os.path.join(original_git.git_dir, d), os.path.join(tmpdir, ".git", d) )
+
+    with open(os.path.join(tmpdir, ".git", "HEAD"), "w") as f:
+        print >>f, original_git.cmd(["git", "rev-parse", refs[0]])
+
+    git = Git(tmpdir)
+
+    git.cmd(["git", "read-tree", "HEAD"])
+    git.cmd(["git", "checkout", "."])
+    for ref in refs[1:]:
+        try:
+            git.cmd(["git", "merge", "--quiet", "-m", "testmerge", ref])
+        except:
+            print >>sys.stderr, "merge failed!"
+            sys.exit(1)
+
+    result = git.cmd(["git", "rev-parse", "HEAD"]).strip()
+    print result
+

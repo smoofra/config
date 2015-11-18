@@ -1,9 +1,13 @@
 #!/bin/bash
 
+cdup=$(git-rev-parse --show-cdup)
+if test ! -z "$cdup"; then
+	cd "$cdup"
+fi
+
 . "$(git --exec-path)"/git-sh-setup
 
 require_work_tree
-cd_to_toplevel
 
 TMP="$GIT_DIR/.git-wsfix.$$"
 cleanup() {

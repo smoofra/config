@@ -39,6 +39,7 @@
 
     # print the name of the upstream
     upstream = rev-parse --abbrev-ref HEAD@{upstream}
+    up = rev-parse --abbrev-ref HEAD@{upstream}
 
     # rebase and reset the author
 	rebase-author = rebase -x \"env EDITOR=true git commit --amend --reset-author\" -i

@@ -15,6 +15,11 @@ fi
 if ! [[ -e ~/tools ]]; then
     git clone ssh://git@stash.sd.apple.com/~lawrence_danna/tools.git ~/tools
 fi
+
+if ! [[ -e ~/bin.local ]]; then
+    mkdir ~/bin.local
+fi
+
 ln -sf ~/tools/* ~/bin.local
 
 if ! [[ -e ~/flamegraph ]]; then
@@ -31,6 +36,8 @@ fi
 
 cat ~/config/ssh <(~/apple_config/ssh.py)  >~/.ssh/config
 
+
+test -e ~/Library/LaunchAgents || mkdir -p ~/Library/LaunchAgents
 ln -sf ~/config/com.andersbakken.rtags.agent.plist  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist
 launchctl load ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist >/dev/null 2>&1
 

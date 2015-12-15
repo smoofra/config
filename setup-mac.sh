@@ -22,6 +22,11 @@ fi
 
 ln -sf ~/tools/* ~/bin.local
 
+if ! [[ -e ~/corekernelutils ]]; then
+    git clone ssh://git@stash.sd.apple.com/coreosint/corekernelutils.git ~/corekernelutils
+fi
+ln -sf ~/corekernelutils/make_xnu.py ~/bin.local/make_xnu
+
 if ! [[ -e ~/flamegraph ]]; then
     git clone git@github.com:brendangregg/FlameGraph.git ~/flamegraph
 fi

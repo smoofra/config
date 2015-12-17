@@ -1501,6 +1501,8 @@
 ; c-backspace-function
 ; backward-delete-char-untabify-method
 ; c-set-style
+;
+; dtrt-indent is the thing that automatically figures this shit out
 
 (defun setup-tramp ()
   (interactive)
@@ -2283,6 +2285,24 @@
 (defun rtags-enable ()
   (interactive)
   (rtags-enable-standard-keybindings nil "\C-xr"))
+
+
+(defun tabs-4 ()
+  (interactive)
+  (setq tab-width 4)
+  (dtrt-indent-try-set-offset)
+  (redraw-display))
+
+(global-set-key "\C-c4" 'tabs-4)
+
+(defun tabs-8 ()
+  (interactive)
+  (setq tab-width 8)
+  (dtrt-indent-try-set-offset)
+  (redraw-display))
+
+(global-set-key "\C-c8" 'tabs-8)
+
 
 ;;;;;;; example: multi replace regexp on region
 

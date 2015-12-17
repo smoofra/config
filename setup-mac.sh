@@ -12,15 +12,14 @@ if ! [[ -e ~/apple_config ]]; then
     git clone ssh://git@stash.sd.apple.com/~lawrence_danna/apple_config.git ~/apple_config
 fi
 
-if ! [[ -e ~/tools ]]; then
-    git clone ssh://git@stash.sd.apple.com/~lawrence_danna/tools.git ~/tools
-fi
-
 if ! [[ -e ~/bin.local ]]; then
     mkdir ~/bin.local
 fi
 
-ln -sf ~/tools/* ~/bin.local
+if ! [[ -e ~/systemperformanceanalysis ]]; then
+    git clone ssh://git@stash.sd.apple.com/coreosint/systemperformanceanalysis.git ~/systemperformanceanalysis
+fi
+ln -sf ~/systemperformanceanalysis/tools/* ~/bin.local
 
 if ! [[ -e ~/corekernelutils ]]; then
     git clone ssh://git@stash.sd.apple.com/coreosint/corekernelutils.git ~/corekernelutils

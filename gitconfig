@@ -49,15 +49,23 @@
 	personal = "! git config user.email larry@elder-gods.org ; git config user.name \"Lawrence D'Anna\""
 	work = "! git config user.email lawrence_danna@apple.com; git config user.name \"Lawrence D'Anna\""
 
+    # run clang-format on changes
+    clang-format = ! \nf() { \n ( cd \"$GIT_PREFIX\" && git diff HEAD -- \"$@\" ) | clang-format-diff.py -p1 -i \n } \nf
 
     # show commit in emacs
     se = ! \nf() { \n git show \"$@\"  | el -d \n } \nf
 
+    # diff stat
+    ds = diff --color --stat
+
+    # show stat
+    ss = show --color --stat
+
     # diff in emacs
-    de = ! \nf() { \n git diff \"$@\" | el -d \n } \nf
+    de = ! \nf() { \n cd \"$GIT_PREFIX\" && git diff \"$@\" | el -d \n } \nf
 
     # diff --cached in emacs
-    dec = ! \nf() { \n git diff --cached \"$@\" | el -d \n } \nf
+    dec = ! \nf() { \n cd \"$GIT_PREFIX\" && git diff --cached \"$@\" | el -d \n } \nf
 
     # show commit color
     sc = show --color

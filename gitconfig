@@ -125,6 +125,7 @@
 
 	is-ancestor = "!f() {\n    if git merge-base --is-ancestor $1 $2 ; then\n        echo yes: $1 is merged into $2\n        exit 0;\n    fi\n    if git merge-base --is-ancestor $2 $1 ; then\n        echo yes: $2 is merged into $1\n        exit 0;\n    fi\n    echo no\n    exit 1\n}\nf"
 
+    latest-xnu = ! git tag -l 'xnu-*' --sort=version:refname | grep -v pretag | tail -1
 
 [push]
     default = upstream

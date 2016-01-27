@@ -3,6 +3,7 @@
 [core]
     pager = cat
     excludesFile = ~/config/exclude
+    attributesFile = ~/config/gitattributes
 
 [url "ssh://git@stash.sd.apple.com/coreos/"]
     insteadOf = stash://

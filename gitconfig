@@ -8,6 +8,9 @@
 [url "ssh://git@stash.sd.apple.com/coreos/"]
     insteadOf = stash://
 
+[rebase]
+    autoSquash = true
+
 [sendemail]
     chainreplyto = false
 

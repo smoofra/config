@@ -48,20 +48,9 @@
  * @static
  */
 
-var hit_toggles_timer = null;
-var hit_toggles_timeout = 1;
-hit_toggles_timer = function() {
+$([IPython.events]).on('app_initialized.NotebookApp', function() {
     var toggle_toolbar = $('li#toggle_toolbar').children('a');
     var toggle_header = $('li#toggle_header').children('a');
-    if (toggle_toolbar.size() && toggle_header.size()) {
-        toggle_toolbar.trigger('click');
-        toggle_header.trigger('click');
-    }
-    else
-    {
-        hit_toggles_timeout *= 1.3;
-        setTimeout(hit_toggles_timer, hit_toggles_timeout);
-    }
-}
-//$(document).ready(hit_toggles_timer)
-setTimeout(hit_toggles_timer, 250);
+    toggle_toolbar.trigger('click');
+    toggle_header.trigger('click');
+});

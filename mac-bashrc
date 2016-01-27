@@ -131,10 +131,6 @@ function foo() {
     )
 }
 
-function darwinup-sdk() {
-    darwinup -p $(xcrun -show-sdk-path -sdk iphoneos.internal) $@
-}
-
 function rm-confdir {
     while [ -e confdir-14B---/confdir-14B--- ]; do
         mv confdir-14B---/confdir-14B--- confdir-14B---.fuck
@@ -164,3 +160,12 @@ alias lsd='gls -l -r --sort=time --color=auto'
 if  [ -e ~/apple_config/bashrc ]; then
     . ~/apple_config/bashrc
 fi
+
+function ipy {
+    if ! tmux list-sessions 2>/dev/null | grep -q '^ipython:' ; then
+        tmux new-session -d  -s ipython 'ipython notebook --no-browser'
+        sleep 5
+    fi
+    open -a iPython
+}
+

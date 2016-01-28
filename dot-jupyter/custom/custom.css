@@ -1,0 +1,13 @@
+
+/* make code sections in text cells scrollable instead of wrapped */
+
+.text_cell_render > pre > code {
+    white-space: pre;
+}
+
+.text_cell_render > pre {
+    overflow: auto;
+    white-space: pre;
+    word-wrap: normal;
+}
+

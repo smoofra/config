@@ -4,3 +4,4 @@ project.pbxproj.orig
 .DS_Store
 trace*.artrace
 __pycache__
+*.pyc

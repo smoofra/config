@@ -1504,11 +1504,6 @@
 ;
 ; dtrt-indent is the thing that automatically figures this shit out
 
-(defun setup-tramp ()
-  (interactive)
-  (require 'tramp)
-  (setq tramp-default-method "scp"))
-
 
 (defun c-kill-line ()
   (interactive)
@@ -2247,11 +2242,20 @@
   (eval-after-load 'comint
     '(load-library "comint-fix")))
 
-(eval-after-load 'tramp
+
+(defun setup-tramp ()
+  (interactive)
+  (require 'tramp)
+  (setq tramp-default-method "scp")
   ;; fix "filename too long" bullshit
   ;; http://lists.gnu.org/archive/html/bug-gnu-emacs/2015-01/msg00890.html
   (setq tramp-ssh-controlmaster-options
         "-o ControlPath=%%C -o ControlMaster=auto -o ControlPersist=no"))
+
+(if (member 'tramp features)
+    (setup-tramp))
+
+(eval-after-load 'tramp (setup-tramp))
 
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)

@@ -145,10 +145,6 @@ export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 # mouse on / mouse off
 alias mouse='tmux setw -g mode-mouse'
 
-alias ffi='~rc/bin/findFiles -release Monarch'
-
-alias ffx='~rc/bin/findFiles -release Gala'
-
 alias resetup='bash ~/config/setup-mac.sh'
 
 alias bear='bear -a'

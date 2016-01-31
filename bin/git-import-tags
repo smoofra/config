@@ -159,23 +159,35 @@ for d in dirs:
         if git.cmd("git ls-files .".split()).strip() != '':
             git.cmd("git rm -rf .".split())
 
-    proc = subprocess.Popen(['rsync', '-ra', '--delete', '--exclude', '/.git',
-                             os.path.join(args.directory, tuple2name(d)) + '/', './'],
-                            stdin=FNULL)
-    (out, err) = proc.communicate()
-    if proc.wait() != 0:
-        raise GitFailed, "rsync failed"
+    try:
 
-    message = """imported {d}
+        tries = 3
 
-imported {d} from {path}""".format(d=tuple2name(d), path=os.path.normpath(os.path.join(args.directory, tuple2name(d))))
+        while tries > 0:
 
-    git.cmd("git add .".split())
-    git.cmd("git add -u".split())
-    git.cmd(["git", "commit", "--allow-empty", "-m", message])
-    git.cmd(["git", "tag", tuple2name(d)])
+            proc = subprocess.Popen(['rsync', '-ra', '--delete', '--exclude', '/.git',
+                                     os.path.join(args.directory, tuple2name(d)) + '/', './'],
+                                    stdin=FNULL)
+            (out, err) = proc.communicate()
+            if proc.wait() == 0:
+                break
+            else:
+                tries -= 1
+        else:
+            raise GitFailed, "rsync failed"
 
-    print repr(git.rev_parse("HEAD"))
+        message = """imported {d}
 
-    git.cmd(["git", "checkout", "-q", git.rev_parse("HEAD")])
-    git.cmd("git branch -d import".split())
+    imported {d} from {path}""".format(d=tuple2name(d), path=os.path.normpath(os.path.join(args.directory, tuple2name(d))))
+
+        git.cmd("git add .".split())
+        git.cmd("git add -u".split())
+        git.cmd(["git", "commit", "--allow-empty", "-m", message])
+        git.cmd(["git", "tag", tuple2name(d)])
+
+        print repr(git.rev_parse("HEAD"))
+
+    finally:
+
+        git.cmd(["git", "checkout", "-q", git.rev_parse("HEAD")])
+        git.cmd("git branch -d import".split())

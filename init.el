@@ -2166,7 +2166,24 @@
  '(rtags-path "/usr/local/bin")
  '(safe-local-variable-values
    (quote
-    ((Package SERIES :use "COMMON-LISP" :colon-mode :external)
+    ((eval unless
+           (featurep
+            (quote swift-project-settings))
+           (add-to-list
+            (quote load-path)
+            (concat
+             (let
+                 ((dlff
+                   (dir-locals-find-file default-directory)))
+               (if
+                   (listp dlff)
+                   (car dlff)
+                 (file-name-directory dlff)))
+             "utils")
+            :append)
+           (require
+            (quote swift-project-settings)))
+     (Package SERIES :use "COMMON-LISP" :colon-mode :external)
      (Package . HUNCHENTOOT)
      (Syntax . COMMON-LISP)
      (Package . FLEXI-STREAMS)

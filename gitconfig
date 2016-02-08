@@ -131,6 +131,10 @@
 
     latest-xnu = ! git tag -l 'xnu-*' --sort=version:refname | grep -v pretag | tail -1
 
+    ff = pull --ff-only
+
+    eg = ! \nf() { git grep -nH \"$@\" | el -g \n } \n f
+
 [push]
     default = upstream
 

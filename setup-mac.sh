@@ -47,5 +47,7 @@ launchctl load ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist >/dev/n
 
 ln -sf  ~/config/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings
 
+ln -sf ~/config/dot-lldbinit ~/.lldbinit
+
 . ~/apple_config/setup.sh
 

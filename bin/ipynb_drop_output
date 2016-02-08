@@ -59,19 +59,28 @@ in the notebook's metadata, and works for IPython v3.0.
 
 import sys
 import json
+import argparse
 
-nb = sys.stdin.read()
+parser = argparse.ArgumentParser()
+parser.add_argument("--always", "-a", action='store_true')
+parser.add_argument("filename", nargs='?')
+args = parser.parse_args()
+
+if args.filename:
+    with open(args.filename, 'r') as f:
+        nb = f.read()
+else:
+    nb = sys.stdin.read()
 
 json_in = json.loads(nb)
 nb_metadata = json_in["metadata"]
-suppress_output = False
+suppress_output = args.always
 if "git" in nb_metadata:
     if "suppress_outputs" in nb_metadata["git"] and nb_metadata["git"]["suppress_outputs"]:
         suppress_output = True
 if not suppress_output:
     sys.stdout.write(nb)
     exit() 
-
 
 ipy_version = int(json_in["nbformat"])-1 # nbformat is 1 more than actual version.
 

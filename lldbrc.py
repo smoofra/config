@@ -5,6 +5,7 @@ import random
 import re
 import time
 import pipes
+import functools
 
 commands = dict()
 class lldb_command(object):
@@ -13,11 +14,61 @@ class lldb_command(object):
         self.name = name
     
     def __call__(self, f):
-        commands[self.name if self.name else f.__name__] = f
-        return f
+        name = self.name if self.name else f.__name__
+        @functools.wraps(f)
+        def wrapped(*args, **kwargs):
+            try:
+                f(*args, **kwargs)
+            except KeyboardInterrupt:
+                pass
+        commands[name] = wrapped
+        return wrapped
+
+
+@lldb_command()
+def calayer(debugger, command, context, result, internal_dict):
+    """
+    dfs a CALayer layer tree
+    """
+    #print lldb.target.FindFirstType('CALayer')
+
+    target = debugger.GetSelectedTarget()
+
+    root = target.EvaluateExpression(command)
+    print command
+    print "  =>", root
+
+    if not root.IsValid():
+        raise Exception
+
+    def expr(e):
+        r = target.EvaluateExpression(e)
+        if not r.IsValid():
+            raise Exception
+        return r
+
+    def dfs(layer, indent=0):
+        count = expr("[[((CALayer*){addr}) sublayers] count]".format(addr = layer.addr)).GetValueAsUnsigned()
+        #print " "*indent, "count", count
+
+        for i in xrange(count):
+            sublayer = expr("[((CALayer*){addr}) sublayers][{i}]".format(addr = layer.addr, i=i))
+
+            contents = expr("[((CALayer*){addr}) contents]".format(addr = sublayer.addr))
+
+            print " "*indent, "sublayer", i, sublayer, "contents="+str(contents)
+            dfs(sublayer, indent+2)
+
+    dfs(root)
+
+    # print target.EvaluateExpression(
+    #     "[((CALayer*){addr}) sublayers]".format(addr = root.addr))
+
+    # print "a", type(root.addr), root.addr
+
 
 @lldb_command(name='ssh-remote')
-def ssh_remote(debugger, command, result, internal_dict):
+def ssh_remote(debugger, command, result, contents, internal_dict):
     """ 
     ssh to something and connect to debugserver.
     syntax: ssh-remote HOST -- ARGS_FOR_DEBUGSERVER

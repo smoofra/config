@@ -165,3 +165,21 @@ function ipy {
     open -a iPython
 }
 
+export PROMPT_COMMAND=""
+
+if type update_terminal_cwd 2>/dev/null | grep -q 'shell function'; then
+    PROMPT_COMMAND+="update_terminal_cwd; "
+fi
+
+# Avoid duplicates
+export HISTCONTROL=ignoredups:erasedups
+
+# When the shell exits, append to the history file instead of overwriting it
+shopt -s histappend
+
+# After each command, append to the history file and reread it
+PROMPT_COMMAND+="history -a; history -c; history -r; "
+
+# eternal history
+export HISTFILESIZE=
+export HISTSIZE=

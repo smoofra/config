@@ -5,3 +5,4 @@ project.pbxproj.orig
 trace*.artrace
 __pycache__
 *.pyc
+DerivedData

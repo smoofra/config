@@ -106,7 +106,8 @@ def ssh_remote(debugger, command, result, contents, internal_dict):
     try:
         tries = 3
         while tries:
-            time.sleep(1)
+            print "sleeping.."
+            time.sleep(5)
             tries -= 1
             print "connecting.."
             error = lldb.SBError()

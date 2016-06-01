@@ -19,6 +19,10 @@ Host mithra mithra.baconautics.com
 HostName mithra.baconautics.com
 User ldanna
 
+Host reliant
+HostName home.wjoe.tv
+User ldanna
+
 Host blade
 HostName blade.wjoe.tv
 User ldanna

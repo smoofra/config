@@ -45,6 +45,9 @@
     upstream = rev-parse --abbrev-ref HEAD@{upstream}
     up = rev-parse --abbrev-ref HEAD@{upstream}
 
+    # print the name of our description tag
+    des = describe --tags --abbrev=0
+
     # rebase and reset the author
 	rebase-author = rebase -x \"env EDITOR=true git commit --amend --reset-author\" -i
 

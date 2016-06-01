@@ -49,5 +49,10 @@ ln -sf  ~/config/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybind
 
 ln -sf ~/config/dot-lldbinit ~/.lldbinit
 
+if ! [[ -e ~/Library/KeyBindings ]]; then
+    mkdir -p ~/Library/KeyBindings
+fi
+cp ~/config/KeyBindings/* ~/Library/KeyBindings
+
 . ~/apple_config/setup.sh
 

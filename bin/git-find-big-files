@@ -1,5 +1,18 @@
 #!/bin/bash
-#set -x 
+#set -x
+
+# to delete out of history:
+# git filter-branch --index-filter 'git rm -rf --cached --ignore-unmatch FILES'
+#
+#
+# to nuke reflog and backup, and clean the pack files:
+#
+# git update-ref -d  refs/original/refs/heads/master
+#
+# git -c gc.reflogExpire=0 -c gc.reflogExpireUnreachable=0 \
+#  -c gc.rerereresolved=0 -c gc.rerereunresolved=0 \
+#  -c gc.pruneExpire=now gc "$@"
+
  
 # Shows you the largest objects in your repo's pack file.
 # Written for osx.

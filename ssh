@@ -23,9 +23,10 @@ Host reliant
 HostName home.wjoe.tv
 User ldanna
 
-Host blade
-HostName blade.wjoe.tv
+Host aule
+HostKeyAlias aule
 User ldanna
+ProxyCommand ssh reliant nc 192.168.1.5 22
 
 Host odin odin.elder-gods.org
 HostName odin.elder-gods.org
@@ -33,6 +34,7 @@ User ldanna
 ServerAliveInterval 10
 HostKeyAlias odin
 Port 21
+LocalForward 5900 [::1]:5901
 #LocalForward 4200 localhost:4243
 #LocalForward 8000 loki.lan:443
 #LocalForward 8001 zuul.lan:80

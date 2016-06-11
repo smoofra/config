@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import argparse
+import boto
+
+from boto.glacier.utils import compute_hashes_from_fileobj
+
+parser = argparse.ArgumentParser(description='compute amazon tree hashes of files')
+parser.add_argument("--quiet", "-q", action='store_true')
+parser.add_argument("filename", nargs='+')
+args = parser.parse_args()
+
+for filename in args.filename:
+    with open(filename, 'r') as f:
+        sha, tree = compute_hashes_from_fileobj(f)
+        if args.quiet:
+           print tree
+        else:
+            print filename + ":", tree

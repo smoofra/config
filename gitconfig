@@ -138,6 +138,9 @@
 
     eg = ! \nf() { git grep -nH \"$@\" | el -g \n } \n f
 
+    # fetch and check out a tag based on an XBS update name
+    aco = ! \nf() {\n git fetch\n git checkout $(getvers \"$@\" `pwd | xargs basename` )\n}\nf
+
 [push]
     default = upstream
 

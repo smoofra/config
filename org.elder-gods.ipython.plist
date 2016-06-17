@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>WorkingDirectory</key>
+    <string>/Users/lawrence_danna</string>
+
+    <key>Label</key>
+    <string>org.elder-gods.ipython</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/lawrence_danna/Library/Logs/ipython.err</string>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>/data/homebrew/bin/ipython</string>
+      <string>notebook</string>
+      <string>--no-browser</string>
+      <string>--notebook-dir=/src/systemperformanceanalysis/</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+  </dict>
+</plist>

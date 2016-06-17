@@ -45,6 +45,9 @@ test -e ~/Library/LaunchAgents || mkdir -p ~/Library/LaunchAgents
 ln -sf ~/config/com.andersbakken.rtags.agent.plist  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist
 launchctl load ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist >/dev/null 2>&1
 
+ln -sf ~/config/org.elder-gods.ipython.plist ~/Library/LaunchAgents/org.elder-gods.ipython.plist
+launchctl load ~/Library/LaunchAgents/org.elder-gods.ipython.plist >/dev/null 2>&1
+
 ln -sf  ~/config/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings
 
 ln -sf ~/config/dot-lldbinit ~/.lldbinit

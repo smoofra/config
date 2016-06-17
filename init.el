@@ -2092,7 +2092,7 @@
       (set-frame-font nice-font)
       (set-nice-font-setter)
 
-      (setq ispell-program-name  "/usr/local/bin/ispell")
+      (setq ispell-program-name "/data/homebrew/bin/ispell")
 
       (global-set-key "\M-v" 'clipboard-yank)
 

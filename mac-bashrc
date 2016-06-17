@@ -1,6 +1,6 @@
 # -*- mode: shell-script -*-
 
-[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin" /usr/local/bin /usr/local/sbin "$PATH" )
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin" /data/homebrew/bin /usr/local/bin /usr/local/sbin "$PATH" )
 
 if which gls >/dev/null ; then
 	alias ls='gls --color=auto'

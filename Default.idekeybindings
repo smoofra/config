@@ -8,26 +8,6 @@
 		<array>
 			<dict>
 				<key>Action</key>
-				<string>toggleFullScreen:</string>
-				<key>Alternate</key>
-				<string>NO</string>
-				<key>CommandID</key>
-				<string>Xcode.IDEKit.CmdDefinition.ToggleFullScreen</string>
-				<key>Group</key>
-				<string>View Menu</string>
-				<key>GroupID</key>
-				<string>Xcode.IDEKit.MenuDefinition.Main</string>
-				<key>GroupedAlternate</key>
-				<string>NO</string>
-				<key>Keyboard Shortcut</key>
-				<string>~$@</string>
-				<key>Navigation</key>
-				<string>NO</string>
-				<key>Title</key>
-				<string>Enter Full Screen</string>
-			</dict>
-			<dict>
-				<key>Action</key>
 				<string>complete:</string>
 				<key>Alternate</key>
 				<string>NO</string>
@@ -41,34 +21,12 @@
 				<string>Xcode.IDESourceCodeComparisonEditor.MenuDefinition.Editor</string>
 				<key>GroupedAlternate</key>
 				<string>NO</string>
+				<key>Keyboard Shortcut</key>
+				<string>^$\ </string>
 				<key>Navigation</key>
 				<string>NO</string>
 				<key>Title</key>
 				<string>Show Completions</string>
-			</dict>
-			<dict>
-				<key>Action</key>
-				<string>indentSelection:</string>
-				<key>Alternate</key>
-				<string>NO</string>
-				<key>CommandGroupID</key>
-				<string>Xcode.IDESourceEditor.CmdDefinition.ReIndent</string>
-				<key>CommandID</key>
-				<string>Xcode.IDESourceEditor.CmdDefinition.ReIndent</string>
-				<key>Group</key>
-				<string>Editor Menu for Asset Catalog</string>
-				<key>GroupID</key>
-				<string>Xcode.IDESourceCodeComparisonEditor.MenuDefinition.Editor</string>
-				<key>GroupedAlternate</key>
-				<string>NO</string>
-				<key>Keyboard Shortcut</key>
-				<string>^\\</string>
-				<key>Navigation</key>
-				<string>NO</string>
-				<key>Parent Title</key>
-				<string>Structure</string>
-				<key>Title</key>
-				<string>Re-Indent</string>
 			</dict>
 			<dict>
 				<key>Action</key>
@@ -85,34 +43,12 @@
 				<string>Xcode.IDEPlaygroundEditor.MenuDefinition.Editor</string>
 				<key>GroupedAlternate</key>
 				<string>NO</string>
+				<key>Keyboard Shortcut</key>
+				<string>^$\ </string>
 				<key>Navigation</key>
 				<string>NO</string>
 				<key>Title</key>
 				<string>Show Completions</string>
-			</dict>
-			<dict>
-				<key>Action</key>
-				<string>indentSelection:</string>
-				<key>Alternate</key>
-				<string>NO</string>
-				<key>CommandGroupID</key>
-				<string>Xcode.IDESourceEditor.CmdDefinition.ReIndent</string>
-				<key>CommandID</key>
-				<string>Xcode.IDESourceEditor.CmdDefinition.ReIndent</string>
-				<key>Group</key>
-				<string>Editor Menu for Playground</string>
-				<key>GroupID</key>
-				<string>Xcode.IDEPlaygroundEditor.MenuDefinition.Editor</string>
-				<key>GroupedAlternate</key>
-				<string>NO</string>
-				<key>Keyboard Shortcut</key>
-				<string>^\\</string>
-				<key>Navigation</key>
-				<string>NO</string>
-				<key>Parent Title</key>
-				<string>Structure</string>
-				<key>Title</key>
-				<string>Re-Indent</string>
 			</dict>
 			<dict>
 				<key>Action</key>
@@ -149,34 +85,12 @@
 				<string>Xcode.IDESourceEditor.MenuDefinition.Editor</string>
 				<key>GroupedAlternate</key>
 				<string>NO</string>
+				<key>Keyboard Shortcut</key>
+				<string>^$\ </string>
 				<key>Navigation</key>
 				<string>NO</string>
 				<key>Title</key>
 				<string>Show Completions</string>
-			</dict>
-			<dict>
-				<key>Action</key>
-				<string>indentSelection:</string>
-				<key>Alternate</key>
-				<string>NO</string>
-				<key>CommandGroupID</key>
-				<string>Xcode.IDESourceEditor.CmdDefinition.ReIndent</string>
-				<key>CommandID</key>
-				<string>Xcode.IDESourceEditor.CmdDefinition.ReIndent</string>
-				<key>Group</key>
-				<string>Editor Menu for Source Code</string>
-				<key>GroupID</key>
-				<string>Xcode.IDESourceEditor.MenuDefinition.Editor</string>
-				<key>GroupedAlternate</key>
-				<string>NO</string>
-				<key>Keyboard Shortcut</key>
-				<string>^\\</string>
-				<key>Navigation</key>
-				<string>NO</string>
-				<key>Parent Title</key>
-				<string>Structure</string>
-				<key>Title</key>
-				<string>Re-Indent</string>
 			</dict>
 			<dict>
 				<key>Action</key>
@@ -193,34 +107,12 @@
 				<string>Xcode.IDESourceCodeComparisonEditor.MenuDefinition.Editor</string>
 				<key>GroupedAlternate</key>
 				<string>NO</string>
+				<key>Keyboard Shortcut</key>
+				<string>^$\ </string>
 				<key>Navigation</key>
 				<string>NO</string>
 				<key>Title</key>
 				<string>Show Completions</string>
-			</dict>
-			<dict>
-				<key>Action</key>
-				<string>indentSelection:</string>
-				<key>Alternate</key>
-				<string>NO</string>
-				<key>CommandGroupID</key>
-				<string>Xcode.IDESourceEditor.CmdDefinition.ReIndent</string>
-				<key>CommandID</key>
-				<string>Xcode.IDESourceEditor.CmdDefinition.ReIndent</string>
-				<key>Group</key>
-				<string>Editor Menu for Source Code Comparison</string>
-				<key>GroupID</key>
-				<string>Xcode.IDESourceCodeComparisonEditor.MenuDefinition.Editor</string>
-				<key>GroupedAlternate</key>
-				<string>NO</string>
-				<key>Keyboard Shortcut</key>
-				<string>^\\</string>
-				<key>Navigation</key>
-				<string>NO</string>
-				<key>Parent Title</key>
-				<string>Structure</string>
-				<key>Title</key>
-				<string>Re-Indent</string>
 			</dict>
 			<dict>
 				<key>Action</key>
@@ -232,11 +124,13 @@
 				<key>CommandID</key>
 				<string>Xcode.SpriteKit.CmdDefinition.TogglePauseSimulate</string>
 				<key>Group</key>
-				<string>Editor Menu for SpriteKit Editor</string>
+				<string>Editor Menu for SpriteKit Scene Editor</string>
 				<key>GroupID</key>
-				<string>Xcode.SpriteKit.MenuDefinition.Editor</string>
+				<string>Xcode.SpriteKit.Scene.Editor.MenuDefinition</string>
 				<key>GroupedAlternate</key>
 				<string>NO</string>
+				<key>Keyboard Shortcut</key>
+				<string>^$\ </string>
 				<key>Navigation</key>
 				<string>NO</string>
 				<key>Title</key>
@@ -250,18 +144,12 @@
 	<dict>
 		<key>Key Bindings</key>
 		<dict>
-			<key>^@b</key>
-			<string>moveExpressionBackward:</string>
-			<key>^@f</key>
-			<string>moveExpressionForward:</string>
 			<key>^\ </key>
 			<string>setMark:</string>
-			<key>~b</key>
-			<string>moveWordLeft:</string>
-			<key>~d</key>
-			<string>deleteWordForward:</string>
+			<key>^~@a</key>
+			<string>selectAll:</string>
 			<key>~f</key>
-			<string>moveWordRight:</string>
+			<string>moveWordForward:</string>
 		</dict>
 		<key>Version</key>
 		<integer>3</integer>

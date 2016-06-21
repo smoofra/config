@@ -48,7 +48,18 @@ launchctl load ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist >/dev/n
 ln -sf ~/config/org.elder-gods.ipython.plist ~/Library/LaunchAgents/org.elder-gods.ipython.plist
 launchctl load ~/Library/LaunchAgents/org.elder-gods.ipython.plist >/dev/null 2>&1
 
-ln -sf  ~/config/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings
+
+#UGH
+if ! [[ -e ~/Library/Developer/Xcode/UserData/KeyBindings ]]; then
+    mkdir -p  ~/Library/Developer/Xcode/UserData/KeyBindings
+fi
+if !    [[ -e ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ]] || \
+        [[ ~/config/Default.idekeybindings -nt  ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ]]; then
+    cp ~/config/Default.idekeybindings ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings
+else
+    cp ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ~/config/Default.idekeybindings
+fi
+
 
 ln -sf ~/config/dot-lldbinit ~/.lldbinit
 

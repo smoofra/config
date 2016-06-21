@@ -63,6 +63,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--always", "-a", action='store_true')
+parser.add_argument("--inplace", '-i', action='store_true')
 parser.add_argument("filename", nargs='?')
 args = parser.parse_args()
 
@@ -79,7 +80,8 @@ if "git" in nb_metadata:
     if "suppress_outputs" in nb_metadata["git"] and nb_metadata["git"]["suppress_outputs"]:
         suppress_output = True
 if not suppress_output:
-    sys.stdout.write(nb)
+    if not args.inplace:
+        sys.stdout.write(nb)
     exit() 
 
 ipy_version = int(json_in["nbformat"])-1 # nbformat is 1 more than actual version.
@@ -100,4 +102,12 @@ else:
     for cell in json_in["cells"]:
         strip_output_from_cell(cell)
 
-json.dump(json_in, sys.stdout, sort_keys=True, indent=1, separators=(",",": "))
+
+def write(out):
+    json.dump(json_in, out, sort_keys=True, indent=1, separators=(",",": "))
+
+if args.inplace:
+    with open(args.filename, 'w') as f:
+        write(f)
+else:
+    write(sys.stdout)

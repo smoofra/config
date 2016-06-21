@@ -28,12 +28,23 @@ HostKeyAlias aule
 User ldanna
 ProxyCommand ssh reliant nc 192.168.1.5 22
 
+Host juiblex
+HostKeyAlias juiblex
+User ldanna
+ProxyCommand ssh loki nc juiblex.lan 22
+
+Host juiblex.local
+HostKeyAlias juiblex
+AddressFamily inet
+User ldanna
+
 Host odin odin.elder-gods.org
-HostName odin.elder-gods.org
+#HostName odin.elder-gods.org
+#Port 21
+ProxyCommand ssh loki nc odin.lan 22
 User ldanna
 ServerAliveInterval 10
 HostKeyAlias odin
-Port 21
 LocalForward 5900 [::1]:5901
 #LocalForward 4200 localhost:4243
 #LocalForward 8000 loki.lan:443

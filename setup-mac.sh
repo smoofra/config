@@ -16,11 +16,6 @@ if ! [[ -e ~/bin.local ]]; then
     mkdir ~/bin.local
 fi
 
-if ! [[ -e ~/systemperformanceanalysis ]]; then
-    git clone ssh://git@stash.sd.apple.com/coreosint/systemperformanceanalysis.git ~/systemperformanceanalysis
-fi
-ln -sf ~/systemperformanceanalysis/tools/* ~/bin.local
-
 if ! [[ -e ~/corekernelutils ]]; then
     git clone ssh://git@stash.sd.apple.com/coreosint/corekernelutils.git ~/corekernelutils
 fi
@@ -42,6 +37,7 @@ cat ~/config/ssh <(~/apple_config/ssh.py)  >~/.ssh/config
 
 
 test -e ~/Library/LaunchAgents || mkdir -p ~/Library/LaunchAgents
+
 ln -sf ~/config/com.andersbakken.rtags.agent.plist  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist
 launchctl load ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist >/dev/null 2>&1
 
@@ -62,6 +58,11 @@ fi
 
 
 ln -sf ~/config/dot-lldbinit ~/.lldbinit
+
+if [[ -e ~/.jupyter ]]; then
+    rm ~/.jupyter
+fi
+ln -sf ~/config/dot-jupyter ~/.jupyter
 
 if ! [[ -e ~/Library/KeyBindings ]]; then
     mkdir -p ~/Library/KeyBindings

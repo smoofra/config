@@ -28,12 +28,13 @@ if [[ ! -z "$INSIDE_EMACS" ]] ; then
     alias  python='env PAGER="el -r" python'
 fi
 
+# NOTE: install coreutils to get pwd to display the tilde
 function trim_pwd() {
     local pwd
     local len
     local expr
     local limit
-    limit=40
+    limit=45
 
     expr=expr
     if [ ! x$($expr length "FOO" 2>/dev/null) = "x3" ]; then
@@ -59,8 +60,16 @@ function trim_pwd() {
     echo "$pwd"
 }
 
+function userathost() {
+	if [[ `whoami` = lawrence_danna ]]; then
+		hostname
+	else
+		echo `whoami`@`hostname`
+	fi
+}
+
 #export PS1='\u@\h:\w\$ '
-export PS1='\u@\h:$(trim_pwd)\$ '
+export PS1='$(userathost):$(trim_pwd)\$ '
 
 if echo "$PATH" | tr : \\n | grep -q ~/x-tools ; then
     export PS1="-XT- $PS1"
@@ -141,6 +150,12 @@ function rm-confdir {
 }
 
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+if [[ -e /data/tmp ]]; then
+    export HOMEBREW_TEMP=/data/tmp
+fi
+
+# wifi on, wifi off
+alias wifi='networksetup -setairportpower airport'
 
 # mouse on / mouse off
 alias mouse='tmux setw -g mode-mouse'
@@ -164,6 +179,7 @@ function ipy {
     fi
     open -a iPython
 }
+
 
 export PROMPT_COMMAND=""
 

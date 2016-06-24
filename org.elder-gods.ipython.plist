@@ -11,6 +11,12 @@
     <key>StandardErrorPath</key>
     <string>/Users/lawrence_danna/Library/Logs/ipython.err</string>
 
+    <key>EnvironmentVariables</key>
+    <dict>
+      <key>PATH</key>
+      <string>/data/lawrence_danna/bin.local:/data/lawrence_danna/bin:/data/lawrence_danna/apple_config/bin:/data/homebrew/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+
     <key>ProgramArguments</key>
     <array>
       <string>/data/homebrew/bin/ipython</string>

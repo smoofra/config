@@ -2082,7 +2082,7 @@
     (string-equal system-type "darwin")
     (progn
 
-      (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
+      (setenv "PATH" (concat (getenv "PATH") ":/data/homebrew/bin:/usr/local/bin"))
 
       (setq nice-font "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
 
@@ -2163,7 +2163,7 @@
  '(nxml-sexp-element-flag t)
  '(octave-block-offset 4)
  '(package-selected-packages (quote (rtags markdown-mode lua-mode dtrt-indent ack)))
- '(rtags-path "/usr/local/bin")
+ '(rtags-path "/data/homebrew/bin")
  '(safe-local-variable-values
    (quote
     ((eval unless

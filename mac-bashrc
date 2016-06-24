@@ -180,6 +180,20 @@ function ipy {
     open -a iPython
 }
 
+function wrap {
+    case $1 in
+        on)
+            tput smam
+            ;;
+        off)
+            tput rmam
+            ;;
+        *)
+            echo "huh?"
+            ;;
+    esac
+}
+
 
 export PROMPT_COMMAND=""
 
@@ -199,3 +213,7 @@ PROMPT_COMMAND+="history -a; history -c; history -r; "
 # eternal history
 export HISTFILESIZE=
 export HISTSIZE=
+
+if [ -e ~/.bashrc-private ]; then
+    . ~/.bashrc-private
+fi

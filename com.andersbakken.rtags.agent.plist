@@ -12,7 +12,7 @@
     <array>
       <string>sh</string>
       <string>-c</string>
-      <string>/usr/local/bin/rdm -v -v --launchd --inactivity-timeout 300 --log-file ~/Library/Logs/rtags.log</string>
+      <string>/data/homebrew/bin/rdm -vv --launchd --inactivity-timeout 300 --log-file ~/Library/Logs/rtags.log</string>
     </array>
     <key>Sockets</key>
     <dict>

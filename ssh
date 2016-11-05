@@ -38,6 +38,11 @@ HostKeyAlias juiblex
 AddressFamily inet
 User ldanna
 
+Host freyja
+User ldanna
+HostKeyAlias freyja
+ProxyCommand ssh loki nc freyja 22
+
 Host odin odin.elder-gods.org
 #HostName odin.elder-gods.org
 #Port 21

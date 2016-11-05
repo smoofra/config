@@ -17,7 +17,7 @@ paths = {
 
 base_url = "http://llvm.org/git/"
 
-apple_base_url = "ssh://git.apple.com/git/puzzlebox/"
+apple_base_url = "ssh://git@stash.sd.apple.com/devtools/"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("projects", nargs='*')

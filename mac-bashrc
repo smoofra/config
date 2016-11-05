@@ -158,7 +158,7 @@ fi
 alias wifi='networksetup -setairportpower airport'
 
 # mouse on / mouse off
-alias mouse='tmux setw -g mode-mouse'
+alias mouse='tmux setw -g mode'
 
 alias resetup='bash ~/config/setup-mac.sh'
 
@@ -167,6 +167,8 @@ alias bear='bear -a'
 alias rerdm='launchctl unload  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist ; launchctl load  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist'
 
 alias lsd='gls -l -r --sort=time --color=auto'
+
+alias apm='/Applications/Atom.app//Contents/Resources/app/apm/bin/apm'
 
 if  [ -e ~/apple_config/bashrc ]; then
     . ~/apple_config/bashrc

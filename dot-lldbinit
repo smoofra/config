@@ -3,4 +3,5 @@ settings set plugin.dynamic-loader.darwin-kernel.load-kexts false
 command script import ~/config/lldbrc.py
 command alias rerc command script import ~/config/lldbrc.py
 command alias astris gdb-remote localhost:8000
+command alias shell platform shell
 

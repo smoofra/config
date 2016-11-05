@@ -2078,6 +2078,8 @@
 
 (load "~/config/init-slime.el")
 
+;; package "pbcopy" provides copy and paste from OSX clibboard.   M-x turn-on-pbcopy
+
 (if
     (string-equal system-type "darwin")
     (progn
@@ -2101,6 +2103,8 @@
       (setq scroll-step 1) ;; keyboard scroll one line at a time
 
       (add-to-list 'load-path "/usr/local/share/emacs/site-lisp")
+      (add-to-list 'load-path "/data/homebrew/share/emacs/site-lisp")
+      
       ;;(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/rtags")
       ))
 
@@ -2162,7 +2166,9 @@
  '(ns-command-modifier (quote meta))
  '(nxml-sexp-element-flag t)
  '(octave-block-offset 4)
- '(package-selected-packages (quote (rtags markdown-mode lua-mode dtrt-indent ack)))
+ '(package-selected-packages
+   (quote
+    (cython-mode pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
  '(rtags-path "/data/homebrew/bin")
  '(safe-local-variable-values
    (quote

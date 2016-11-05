@@ -1,5 +1,7 @@
 #!/bin/bash
 
+args=()
+
 if ssh -o 'BatchMode yes' "$@"  2>&1 | grep -q 'REMOTE HOST IDENTIFICATION HAS CHANGED'; then
     echo ============================
     echo " oops, host key changed! delete old key?"
@@ -8,11 +10,12 @@ if ssh -o 'BatchMode yes' "$@"  2>&1 | grep -q 'REMOTE HOST IDENTIFICATION HAS C
     read line
 
     if [[ $line = yes ]]; then
-       ssh-keygen -R "$@"
+        args=(-o "StrictHostKeyChecking no")
+        ssh-keygen -R "$@"
     else
         exit 1
     fi
 fi
 
-ssh "$@" 'mkdir -p .ssh; tee -a .ssh/authorized_keys | cat >>.ssh/authorized_keys2' <~/.ssh/id_rsa.pub
+ssh "${args[@]}" "$@" 'mkdir -p .ssh; tee -a .ssh/authorized_keys | cat >>.ssh/authorized_keys2' <~/.ssh/id_rsa.pub
 

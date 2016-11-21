@@ -1,3 +1,6 @@
+#!/bin/bash
+
+
 ln -sf ~/config/bin ~
 ln -sf ~/config/mac-bashrc ~/.bashrc
 ln -sf ~/config/init.el ~/.emacs

@@ -23,5 +23,5 @@ else
     authorized_keys=.ssh/authorized_keys
 fi
 
-ssh "${args[@]}" "$@" "mkdir -p .ssh; cat >$authorized_keys" <~/.ssh/id_rsa.pub
+ssh "${args[@]}" "$@" "mkdir -p .ssh; cat >>$authorized_keys" <~/.ssh/id_rsa.pub
 

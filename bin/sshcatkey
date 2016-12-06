@@ -17,5 +17,11 @@ if ssh -o 'BatchMode yes' "$@"  2>&1 | grep -q 'REMOTE HOST IDENTIFICATION HAS C
     fi
 fi
 
-ssh "${args[@]}" "$@" 'mkdir -p .ssh; tee -a .ssh/authorized_keys | cat >>.ssh/authorized_keys2' <~/.ssh/id_rsa.pub
+if [ $1 = loki ]; then
+    authorized_keys=/etc/dropbear/authorized_keys
+else
+    authorized_keys=.ssh/authorized_keys
+fi
+
+ssh "${args[@]}" "$@" "mkdir -p .ssh; cat >$authorized_keys" <~/.ssh/id_rsa.pub
 

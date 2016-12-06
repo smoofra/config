@@ -2,6 +2,9 @@
 
 [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin" /data/homebrew/bin /usr/local/bin /usr/local/sbin "$PATH" )
 
+export PERL5LIB
+[[ -e ~/bin/addpath ]] && PERL5LIB=$(~/bin/addpath ~/perl5/lib/perl5 "$PERL5LIB" )
+
 if which gls >/dev/null ; then
 	alias ls='gls --color=auto'
 elif ls --version 2>/dev/null | grep -iq gnu ; then

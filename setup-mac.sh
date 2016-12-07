@@ -3,6 +3,7 @@
 . ~/config/setup-shared.sh
 
 defaults write com.apple.finder AppleShowAllFiles TRUE
+defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool YES
 
 echo ". ~/.bashrc" >~/.bash_profile
 

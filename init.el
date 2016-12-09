@@ -2106,6 +2106,8 @@
       (add-to-list 'load-path "/data/homebrew/share/emacs/site-lisp")
       
       ;;(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/rtags")
+
+      (add-to-list 'load-path "/data/homebrew/Cellar/rtags/2.3/share/emacs/site-lisp/")
       ))
 
 
@@ -2168,7 +2170,7 @@
  '(octave-block-offset 4)
  '(package-selected-packages
    (quote
-    (cython-mode pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
+    (pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
  '(rtags-path "/data/homebrew/bin")
  '(safe-local-variable-values
    (quote

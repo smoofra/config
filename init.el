@@ -2333,6 +2333,22 @@
 (global-set-key "\C-c8" 'tabs-8)
 
 
+(defun open-radar-at-point ()
+  (interactive)
+  (if (looking-at "\\([0-9]+\\)")
+      (save-excursion
+        (backward-char)
+        (while (looking-at "\\([0-9]+\\)")
+          (backward-char))
+        (forward-char)
+        (looking-at "\\([0-9]+\\)")
+        (shell-command (format "open rdar://%s" (match-string 1))))
+    (error "not an integer")))
+
+(defun rdar ()
+  (interactive)
+  (open-radar-at-point))
+
 ;;;;;;; example: multi replace regexp on region
 
 ;; (defun f (begin end)

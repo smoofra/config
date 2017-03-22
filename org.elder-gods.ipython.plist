@@ -22,7 +22,7 @@
       <string>/data/homebrew/bin/ipython</string>
       <string>notebook</string>
       <string>--no-browser</string>
-      <string>--notebook-dir=/src/systemperformanceanalysis/</string>
+      <string>--notebook-dir=/Users/lawrence_danna/Documents</string>
     </array>
     <key>RunAtLoad</key>
     <true/>

@@ -9,6 +9,10 @@ echo ". ~/.bashrc" >~/.bash_profile
 
 ( cd ~/config ; git config user.email larry@elder-gods.org )
 
+if ! [[ -e /data/homebrew ]]; then
+	cd /data && mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+fi
+
 if ! [[ -e ~/apple_config ]]; then
     git clone ssh://git@stash.sd.apple.com/~lawrence_danna/apple_config.git ~/apple_config
 fi

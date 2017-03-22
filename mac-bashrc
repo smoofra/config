@@ -218,6 +218,7 @@ PROMPT_COMMAND+="history -a; history -c; history -r; "
 # eternal history
 export HISTFILESIZE=
 export HISTSIZE=
+export HISTFILE=~/.bash_history
 
 if [ -e ~/.bashrc-private ]; then
     . ~/.bashrc-private

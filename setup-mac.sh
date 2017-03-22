@@ -53,8 +53,10 @@ fi
 if !    [[ -e ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ]] || \
         [[ ~/config/Default.idekeybindings -nt  ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ]]; then
     cp ~/config/Default.idekeybindings ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings
+    echo "KEYBINDS ->"
 else
     cp ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ~/config/Default.idekeybindings
+    echo "KEYBINDS <<--"
 fi
 
 

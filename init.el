@@ -2078,8 +2078,6 @@
 
 (load "~/config/init-slime.el")
 
-;; package "pbcopy" provides copy and paste from OSX clibboard.   M-x turn-on-pbcopy
-
 (if
     (string-equal system-type "darwin")
     (progn
@@ -2108,6 +2106,7 @@
       ;;(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/rtags")
 
       (add-to-list 'load-path "/data/homebrew/Cellar/rtags/2.3/share/emacs/site-lisp/")
+
       ))
 
 
@@ -2124,6 +2123,8 @@
 (package-initialize)
 ;; (package-install 'dtrt-indent)
 ;; (package-install 'rtags)
+
+
 
 (require 'dtrt-indent nil 'noerror)
 
@@ -2375,3 +2376,13 @@
 ;; (add-hook 'c-mode-common-hook '(lambda ()
 ;;                       (setq ac-sources '(ac-source-rtags))
 ;;                       (auto-complete-mode)))
+
+
+
+(if
+    (string-equal system-type "darwin")
+    (progn
+      ;; (package-install 'pbcopy)
+      (turn-on-pbcopy)
+      (server-start)
+      ))

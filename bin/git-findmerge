@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# git findmerge branch..master 
+comm -12  <(git log --oneline --first-parent "$@")  <(git log --oneline --ancestry-path "$@") | tail -1
+

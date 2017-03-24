@@ -75,7 +75,7 @@ with TemporaryDirectory() as tmpdir:
             git.cmd(['git', 'read-tree', '-m', base, refs[0], refs[1]], stderr=FNULL)
             print git.cmd(['git', 'write-tree'], stderr=FNULL).strip()
             sys.exit(0)
-        except:
+        except Exception:
             pass
     
     for d in ('objects', 'refs', 'info', 'hooks', 'branches', 'config'):

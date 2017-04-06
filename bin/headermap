@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+
+#stolen from https://gist.github.com/fchiba/4869fcf461cc71c520bbbb43bccb1fb5
+
+file = File.binread(ARGV[0])
+
+(magic, version, reserved, offset, num_entries, num_buckets, maxlen) = header = file.unpack("Vv2V4")
+#p header
+buckets_bytes = file[24,num_buckets*3*4].unpack("V*")
+strings = file[24+num_buckets*3*4..-1]
+#p buckets_bytes
+#p strings
+
+def hashkey(str)
+  str.each_char.map.inject(0){|res,c| res += c.downcase.ord * 13}
+end
+
+puts num_buckets.times.select{ |i|
+  buckets_bytes[i*3] != 0
+}.map{ |i|
+  key_idx, prefix_idx, suffix_idx = buckets_bytes[i*3, 3]
+  #p key_idx, prefix_idx, suffix_idx
+  #p i if key_idx != suffix_idx
+
+  key, = strings[key_idx..-1].split(/\0/, 2)
+  prefix, = strings[prefix_idx..-1].split(/\0/, 2)
+  suffix, = strings[suffix_idx..-1].split(/\0/, 2)
+
+  #puts "#{i},#{hashkey(key) & (num_buckets-1)},#{key},#{prefix},#{suffix}"
+  #puts "#{prefix}#{suffix}"
+  "#{key} -> #{prefix}#{suffix}"
+}.sort.join("\n")

@@ -25,6 +25,8 @@
 
 [alias]
 
+    # current relative path
+    pwd = rev-parse --show-prefix
 
     # make sure a copy of this repo gets pushed to odin
 	odin = "! f()\n{\n    if ! git config --get-all remote.origin.pushurl | grep -qF odin.elder-gods.org ; then\n        git remote set-url --add --push origin $(git config remote.origin.url)\n        git remote set-url --add --push origin odin.elder-gods.org:$(basename `git rev-parse --show-toplevel`)\n    fi\n}\nf"

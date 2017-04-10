@@ -223,3 +223,22 @@ export HISTFILE=~/.bash_history
 if [ -e ~/.bashrc-private ]; then
     . ~/.bashrc-private
 fi
+
+function ptr() {
+    pbpaste | tr ' ' \\n | el
+}
+
+function path() {
+    if [ $# = 0 ]; then
+        echo "$PATH" | tr : \\n
+    elif [ $# = 1 ]; then
+        local dir
+        dir="$(~/bin/relpath "$1")"
+        export DYLD_LIBRARY_PATH=$(~/bin/addpath "$dir" "$DYLD_LIBRARY_PATH")
+        export DYLD_FRAMEWORK_PATH=$(~/bin/addpath "$dir" "$DYLD_FRAMEWORK_PATH")
+        export PATH=$(~/bin/addpath "$dir" "$PATH")
+    else
+        echo ?
+        return 1
+    fi
+}

@@ -1,0 +1,19 @@
+#!/usr/bin/python
+
+import os
+import sys
+
+
+path = os.environ.get("PWD", os.getcwd())
+
+for x in sys.argv[1:]:
+    path = os.path.normpath(os.path.join(path, x))
+
+print path
+
+
+
+
+
+    
+    

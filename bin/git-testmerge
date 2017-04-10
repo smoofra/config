@@ -68,15 +68,15 @@ with TemporaryDirectory() as tmpdir:
 
     os.mkdir( os.path.join(tmpdir, ".git") )
     
-    if len(refs) == 2:
-        git = Git(env={"GIT_INDEX_FILE":os.path.join(tmpdir, ".git", "quick_index")})
-        base = original_git.cmd(["git", "merge-base", refs[0], refs[1]]).strip()
-        try:
-            git.cmd(['git', 'read-tree', '-m', base, refs[0], refs[1]], stderr=FNULL)
-            print git.cmd(['git', 'write-tree'], stderr=FNULL).strip()
-            sys.exit(0)
-        except Exception:
-            pass
+    # if len(refs) == 2:
+    #     git = Git(env={"GIT_INDEX_FILE":os.path.join(tmpdir, ".git", "quick_index")})
+    #     base = original_git.cmd(["git", "merge-base", refs[0], refs[1]]).strip()
+    #     try:
+    #         git.cmd(['git', 'read-tree', '-m', base, refs[0], refs[1]], stderr=FNULL)
+    #         print git.cmd(['git', 'write-tree'], stderr=FNULL).strip()
+    #         sys.exit(0)
+    #     except Exception:
+    #         pass
     
     for d in ('objects', 'refs', 'info', 'hooks', 'branches', 'config'):
         os.symlink( os.path.join(original_git.git_dir, d), os.path.join(tmpdir, ".git", d) )
@@ -89,6 +89,8 @@ with TemporaryDirectory() as tmpdir:
     git.cmd(["git", "read-tree", "HEAD"])
     git.cmd(["git", "checkout", "."])
     for ref in refs[1:]:
+        if ref == "HEAD":
+            ref = original_git.cmd(["git", "rev-parse", ref]).strip()
         try:
             git.cmd(["git", "merge", "--quiet", "-m", "testmerge", ref])
         except:

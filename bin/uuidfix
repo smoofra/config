@@ -1,0 +1,17 @@
+#!/usr/bin/python
+
+import re
+import sys
+
+for arg in sys.argv[1:]:
+
+    if not re.match(r'[a-fA-F0-9]{32}$', arg):
+        raise Exception
+
+    def indexes():
+        i = 0
+        for n in (8, 4, 4, 4, 12):
+            yield slice(i, i+n)
+            i += n
+
+    print '-'.join(arg[ix] for ix in indexes())

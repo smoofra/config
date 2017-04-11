@@ -87,6 +87,13 @@ with TemporaryDirectory() as tmpdir:
     git = Git(tmpdir)
 
     git.cmd(["git", "read-tree", "HEAD"])
+
+    #disable lfs in our temporary repo
+    git.cmd(["git", "config", "filter.lfs.smudge", ""])
+    git.cmd(["git", "config", "filter.lfs.process", ""])
+    git.cmd(["git", "config", "filter.lfs.clean", ""])
+    git.cmd(["git", "config", "filter.lfs.required", "false"])
+
     git.cmd(["git", "checkout", "."])
     for ref in refs[1:]:
         if ref == "HEAD":

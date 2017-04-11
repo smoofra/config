@@ -78,8 +78,11 @@ with TemporaryDirectory() as tmpdir:
     #     except Exception:
     #         pass
     
-    for d in ('objects', 'refs', 'info', 'hooks', 'branches', 'config'):
+    for d in ('objects', 'refs', 'info', 'hooks', 'branches'):
         os.symlink( os.path.join(original_git.git_dir, d), os.path.join(tmpdir, ".git", d) )
+
+    for f in ('config',):
+        shutil.copy( os.path.join(original_git.git_dir, f), os.path.join(tmpdir, ".git", f) )
 
     with open(os.path.join(tmpdir, ".git", "HEAD"), "w") as f:
         print >>f, original_git.cmd(["git", "rev-parse", refs[0]])

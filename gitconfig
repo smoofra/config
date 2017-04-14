@@ -25,6 +25,8 @@
 
 [alias]
 
+	findtag = ! f() {\n  git tag --contains $1 | grep -v '^eng/' | head -1\n}\nf
+
     # current relative path
     pwd = rev-parse --show-prefix
 

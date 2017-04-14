@@ -1,5 +1,13 @@
 #!/bin/bash
 
-# git findmerge branch..master 
-comm -12  <(git log --oneline --first-parent "$@")  <(git log --oneline --ancestry-path "$@") | tail -1
+if [ $# = 1 ]; then
+    arg=$1
+elif [ $# = 2 ]; then
+    arg="$1".."$2"
+else
+    echo "usage: git findmerge FROM..TO"
+    exit 1
+fi
+
+comm -12  <(git log --oneline --first-parent "$arg")  <(git log --oneline --ancestry-path "$arg") | tail -1
 

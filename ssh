@@ -47,7 +47,7 @@ Host odin odin.elder-gods.org
 #HostName odin.elder-gods.org
 #Port 21
 ProxyCommand ssh loki nc odin.lan 22
-User ldanna
+User lawrence_danna
 ServerAliveInterval 10
 HostKeyAlias odin
 LocalForward 5900 [::1]:5901

@@ -44,13 +44,13 @@ HostKeyAlias freyja
 ProxyCommand ssh loki nc freyja 22
 
 Host odin odin.elder-gods.org
-#HostName odin.elder-gods.org
-#Port 21
-ProxyCommand ssh loki nc odin.lan 22
+HostName odin.elder-gods.org
+Port 21
+#ProxyCommand ssh loki nc odin.lan 22
 User lawrence_danna
 ServerAliveInterval 10
 HostKeyAlias odin
-LocalForward 5900 [::1]:5901
+#LocalForward 5900 [::1]:5901
 #LocalForward 4200 localhost:4243
 #LocalForward 8000 loki.lan:443
 #LocalForward 8001 zuul.lan:80

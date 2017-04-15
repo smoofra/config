@@ -18,18 +18,14 @@ if args.chdir:
 
 quiet_flags = [] if args.verbose else ["--quiet"]
 
-repos = json.load(urllib2.urlopen('https://api.github.com/users/%s/repos' % args.user))
+
 
 def is_bare_repo(filename):
     return os.path.isdir(filename) and all(
         os.path.exists(os.path.join(filename, x)) for x in
         ['info', 'refs', 'objects', 'HEAD', 'config'])
 
-
-for repo in repos:
-    name = repo["name"]
-    url = repo["clone_url"]
-    filename = name + ".git"
+def go(name, url, filename):
 
     if os.path.exists(filename):
 
@@ -57,3 +53,21 @@ for repo in repos:
         proc = subprocess.Popen(["git", "clone", "--bare", "--mirror"] + quiet_flags + [url, filename])
         if proc.wait() != 0:
             raise Exception, "git clone failed for: " + url
+
+
+repos = json.load(urllib2.urlopen('https://api.github.com/users/%s/repos' % args.user))
+
+for repo in repos:
+    name = repo["name"]
+    url = repo["clone_url"]
+    filename = name + ".git"
+    go(name, url, filename)
+
+
+gists = json.load(urllib2.urlopen('https://api.github.com/users/%s/gists' % args.user))
+
+for gist in gists:
+    url = gist["git_pull_url"]
+    name = 'gist-' + gist["id"]
+    filename = name + ".git"
+    go(name, url, filename)

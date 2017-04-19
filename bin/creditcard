@@ -6,7 +6,7 @@ import re
 from collections import defaultdict
 
 
-cats = {'groceries': ['safeway', 'wholefds'],
+cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi'],
         'bike' : ['EVOLUTION BIKE SHOP'],
         'electronics' : ["fry's",
                          "adafruit",
@@ -29,9 +29,15 @@ cats = {'groceries': ['safeway', 'wholefds'],
                    'restful nest',
                    'HOTELTONIGHT'],
 
+	'house': ['ikea', 'home.*depot'],
+
         'food': ['red robin',
                  'KYUSU',
                  'ramen',
+		 'bagel',
+		'taque',
+		'101.*fish',
+		'baking',
                  'einstein bros',
                  'rubios',
                  'yogurt',
@@ -44,6 +50,7 @@ cats = {'groceries': ['safeway', 'wholefds'],
                  'le boulan',
                  'diner',
                  'frozos',
+		'restaur',
                  'yogolicious',
                  'coffee',
                  'the melt',
@@ -77,12 +84,13 @@ cats = {'groceries': ['safeway', 'wholefds'],
                  'smokehouse',
                  'baguette'],
         'entertainment': ['itunes', 'audible', 'netflix'],
-        'gas': ['shell.*oil',
+        'gas+tolls': ['shell.*oil',
                 'fastlane',
                 'gas mart',
                 'pioneer.*gas',
                 'chevron',
                 'exon',
+		'fastrak',
                 'EXXONMOBIL',
                 'valero'],
         'amazon': ['amazon']}
@@ -95,7 +103,7 @@ with open(sys.argv[1], 'rb') as csvfile:
     i = iter(reader)
     i.next() # skip col names
     for row in i:
-        (trans_type, trans_date, post_date, description, ammount) = row
+        (trans_type, trans_date, post_date, description, ammount, foo, bar) = row
 
         if not trans_type == 'Sale':
             continue

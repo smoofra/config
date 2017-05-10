@@ -1,6 +1,6 @@
 # -*- mode: shell-script -*-
 
-[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin" /data/homebrew/bin /usr/local/bin /usr/local/sbin "$PATH" )
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin" /homebrew/bin /usr/local/bin /usr/local/sbin "$PATH" )
 
 export PERL5LIB
 [[ -e ~/bin/addpath ]] && PERL5LIB=$(~/bin/addpath ~/perl5/lib/perl5 "$PERL5LIB" )
@@ -153,15 +153,13 @@ function rm-confdir {
 }
 
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-if [[ -e /data/tmp ]]; then
-    export HOMEBREW_TEMP=/data/tmp
-fi
+export HOMEBREW_TEMP=/tmp
 
 # wifi on, wifi off
 alias wifi='networksetup -setairportpower airport'
 
 # mouse on / mouse off
-alias mouse='tmux setw -g mode'
+alias mouse='tmux set -g mode'
 
 alias resetup='bash ~/config/setup-mac.sh'
 

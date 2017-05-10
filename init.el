@@ -2078,11 +2078,13 @@
 
 (load "~/config/init-slime.el")
 
+(defvar homebrew-path "/homebrew")
+
 (if
     (string-equal system-type "darwin")
     (progn
-
-      (setenv "PATH" (concat (getenv "PATH") ":/data/homebrew/bin:/usr/local/bin"))
+      
+      (setenv "PATH" (concat (getenv "PATH") ":" homebrew-path "/bin:/usr/local/bin"))
 
       (setq nice-font "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
 
@@ -2092,7 +2094,7 @@
       (set-frame-font nice-font)
       (set-nice-font-setter)
 
-      (setq ispell-program-name "/data/homebrew/bin/ispell")
+      (setq ispell-program-name (concat homebrew-path "/bin/ispell"))
 
       (global-set-key "\M-v" 'clipboard-yank)
 
@@ -2101,13 +2103,8 @@
       (setq scroll-step 1) ;; keyboard scroll one line at a time
 
       (add-to-list 'load-path "/usr/local/share/emacs/site-lisp")
-      (add-to-list 'load-path "/data/homebrew/share/emacs/site-lisp")
-      
-      ;;(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/rtags")
-
-      (add-to-list 'load-path "/data/homebrew/Cellar/rtags/2.3/share/emacs/site-lisp/")
-
-      ))
+      (add-to-list 'load-path (concat homebrew-path "/share/emacs/site-lisp"))
+      (add-to-list 'load-path (concat homebrew-path "/share/emacs/site-lisp/rtags"))))
 
 
 
@@ -2172,7 +2169,7 @@
  '(package-selected-packages
    (quote
     (pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
- '(rtags-path "/data/homebrew/bin")
+ '(rtags-path (concat homebrew-path "/bin"))
  '(safe-local-variable-values
    (quote
     ((eval unless

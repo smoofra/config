@@ -13,6 +13,28 @@ if ! [[ -e /data/homebrew ]]; then
 	cd /data && mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
 fi
 
+export PATH=/data/homebrew/bin:"$PATH"
+
+if ! which gls >/dev/null; then
+    brew install coreutils
+fi
+
+if ! which wget >/dev/null; then
+    brew install wget
+fi
+
+if ! which ispell >/dev/null; then
+    brew install ispell
+fi
+
+if ! which python3 >/dev/null; then
+    brew install python3
+fi
+
+if [[ $(which python) = /usr/bin/python ]]; then
+    brew install python
+fi
+
 if ! [[ -e ~/apple_config ]]; then
     git clone ssh://git@stash.sd.apple.com/~lawrence_danna/apple_config.git ~/apple_config
 fi

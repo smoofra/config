@@ -76,5 +76,15 @@ if ! [[ -e ~/Library/KeyBindings ]]; then
 fi
 cp ~/config/KeyBindings/* ~/Library/KeyBindings
 
+
+if ! [[ -e /Applications/Emacs.app ]]; then
+	url=$(wget -q  -O- https://emacsformacosx.com/atom/release | perl -lne 'print $1 if /<link.*href="(.*)"/' | head -1)
+	wget -O /tmp/$(basename $url) $url
+	hdiutil attach /tmp/$(basename $url)
+	cp -a /Volumes/Emacs/Emacs.app /Applications/
+	hdiutil  detach /Volumes/Emacs
+	ln -sf $(find /Applications/Emacs.app/ -name emacsclient | grep x86_64 | sort | tail -1) ~/bin.local/
+fi
+
 . ~/apple_config/setup.sh
 

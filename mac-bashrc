@@ -163,6 +163,11 @@ alias mouse='tmux set -g mode'
 
 alias resetup='bash ~/config/setup-mac.sh'
 
+function import-keys() {
+	 cp ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ~/config/Default.idekeybindings
+	 echo "KEYBINDS <--"
+}
+
 alias bear='bear -a'
 
 alias rerdm='launchctl unload  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist ; launchctl load  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist'

@@ -76,15 +76,10 @@ launchctl load ~/Library/LaunchAgents/org.elder-gods.ipython.plist >/dev/null 2>
 if ! [[ -e ~/Library/Developer/Xcode/UserData/KeyBindings ]]; then
     mkdir -p  ~/Library/Developer/Xcode/UserData/KeyBindings
 fi
-if !    [[ -e ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ]] || \
-        [[ ~/config/Default.idekeybindings -nt  ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ]]; then
+if !    [[ -e ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ]] ; then
     cp ~/config/Default.idekeybindings ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings
     echo "KEYBINDS ->"
-else
-    cp ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ~/config/Default.idekeybindings
-    echo "KEYBINDS <<--"
 fi
-
 
 ln -sf ~/config/dot-lldbinit ~/.lldbinit
 

@@ -168,6 +168,10 @@ function import-keys() {
 	 echo "KEYBINDS <--"
 }
 
+function backup() {
+   ~/config/bin/safari-bookmarks | ssh odin 'cat > /data/Backup/safari-bookmarks.plist'  && echo "BOOKMARKS -> odin"
+}
+
 alias bear='bear -a'
 
 alias rerdm='launchctl unload  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist ; launchctl load  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist'

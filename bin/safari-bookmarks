@@ -1,0 +1,32 @@
+#!/usr/bin/python
+
+import sys
+import Foundation
+import json
+import os
+
+plist_filename = os.path.expanduser('~/Library/Safari/Bookmarks.plist')
+
+with open(plist_filename, 'r') as f:
+    data = f.read()
+    nsdata = Foundation.NSMutableData.dataWithBytes_length_(data, len(data))
+    plist, fmt, error = Foundation.NSPropertyListSerialization.propertyListWithData_options_format_error_(
+            nsdata, Foundation.NSPropertyListImmutable, None, None)
+    if error:
+        raise Exception, "error reading plist: " + str(error)
+
+def clean(x):
+    if isinstance(x, (dict, Foundation.NSDictionary)):
+        return dict(((k,clean(v)) for k,v in x.iteritems() if not k == 'Sync'))
+    elif isinstance(x, (list, Foundation.NSArray)):
+        return [clean(e) for e in x]
+    else:
+        return x
+
+nsdata, error = Foundation.NSPropertyListSerialization.dataWithPropertyList_format_options_error_(
+    clean(plist), Foundation.NSPropertyListXMLFormat_v1_0, 0, None)
+
+if error:
+    raise Exception, "error writing plist: " + str(error)
+
+sys.stdout.write(bytes(nsdata))

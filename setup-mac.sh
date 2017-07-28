@@ -93,6 +93,9 @@ if ! [[ -e ~/Library/KeyBindings ]]; then
 fi
 cp ~/config/KeyBindings/* ~/Library/KeyBindings
 
+if ! [[ -e ~/.atom ]]; then
+	ln -s ~/config/dot-atom ~/.atom
+fi
 
 if ! [[ -e /Applications/Emacs.app ]]; then
 	url=$(wget -q  -O- https://emacsformacosx.com/atom/release | perl -lne 'print $1 if /<link.*href="(.*)"/' | head -1)
@@ -104,4 +107,3 @@ if ! [[ -e /Applications/Emacs.app ]]; then
 fi
 
 . ~/apple_config/setup.sh
-

@@ -1,6 +1,6 @@
 # -*- mode: shell-script -*-
 
-[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin" /homebrew/bin /usr/local/bin /usr/local/sbin "$PATH" )
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin" /homebrew/bin /usr/local/bin /usr/local/sbin /src/sysperf/bin "$PATH" )
 
 export PERL5LIB
 [[ -e ~/bin/addpath ]] && PERL5LIB=$(~/bin/addpath ~/perl5/lib/perl5 "$PERL5LIB" )
@@ -169,7 +169,8 @@ function import-keys() {
 }
 
 function backup() {
-   ~/config/bin/safari-bookmarks | ssh odin 'cat > /data/Backup/safari-bookmarks.plist'  && echo "BOOKMARKS -> odin"
+    ~/config/bin/safari-bookmarks | ssh odin 'cat > /data/Backup/safari-bookmarks.plist'  && echo "BOOKMARKS -> odin"
+    ~/config/bin/safari-bookmarks --owncloud --upload
 }
 
 alias bear='bear -a'

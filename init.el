@@ -2168,7 +2168,7 @@
  '(octave-block-offset 4)
  '(package-selected-packages
    (quote
-    (pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
+    (php-mode a pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
  '(rtags-path (concat homebrew-path "/bin"))
  '(safe-local-variable-values
    (quote

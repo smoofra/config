@@ -1,0 +1,236 @@
+#!/usr/bin/env python
+
+import logging
+import sys
+import Foundation
+import json
+import os
+import argparse
+import cgi
+import requests
+import keyring
+import csv
+import collections
+import StringIO
+from HTMLParser import HTMLParser
+
+plist_filename = os.path.expanduser('~/Library/Safari/Bookmarks.plist')
+
+parser = argparse.ArgumentParser(description='export safari bookmarks')
+parser.add_argument("--safari", action='store_true')
+parser.add_argument("--instapaper", action="store_true")
+parser.add_argument("--owncloud",  action='store_true')
+parser.add_argument("--upload",  action='store_true')
+args = parser.parse_args()
+
+if not (args.safari or args.instapaper):
+    parser.error("specify safari or instapaper")
+
+with open(plist_filename, 'r') as f:
+    data = f.read()
+    nsdata = Foundation.NSMutableData.dataWithBytes_length_(data, len(data))
+    plist, fmt, error = Foundation.NSPropertyListSerialization.propertyListWithData_options_format_error_(
+            nsdata, Foundation.NSPropertyListImmutable, None, None)
+    if error:
+        raise Exception, "error reading plist: " + str(error)
+
+def clean(x):
+    if isinstance(x, (dict, Foundation.NSDictionary)):
+        return dict(((k,clean(v)) for k,v in x.iteritems() if not k == 'Sync'))
+    elif isinstance(x, (list, Foundation.NSArray)):
+        return [clean(e) for e in x]
+    else:
+        return x
+
+
+def export_plist():
+
+    nsdata, error = Foundation.NSPropertyListSerialization.dataWithPropertyList_format_options_error_(
+        clean(plist), Foundation.NSPropertyListXMLFormat_v1_0, 0, None)
+
+    if error:
+        raise Exception, "error writing plist: " + str(error)
+
+    sys.stdout.write(bytes(nsdata))
+
+
+def export_owncloud_iter():
+
+    def visit(node, tags):
+        typ   = node['WebBookmarkType']
+
+        if typ == 'WebBookmarkTypeProxy':
+            return
+
+        if typ == 'WebBookmarkTypeList':
+            title = node['Title']
+            if title:
+                title_tags = (title),
+            else:
+                title_tags = ()
+
+            for child in node.get('Children', ()):
+                g = visit(child, tags + title_tags)
+                for x in g:
+                    yield x
+
+
+            return
+
+        if typ == 'WebBookmarkTypeLeaf':
+            url = node['URLString']
+            title = node['URIDictionary']['title']
+
+            link = u'<A TAGS="{tags}" HREF="{url}">{title}</A>'.format(tags=cgi.escape(','.join(tags)),
+                                                                        url=url,
+                                                                        title=cgi.escape(title))
+
+            yield link
+            return
+
+        raise Exception
+
+    return visit(plist, ())
+
+
+def export_owncloud():
+    for link in export_owncloud_iter():
+        print link.encode('utf-8')
+
+
+class GetTokenParser(HTMLParser):
+    def handle_starttag(self, tag, attrs):
+        if tag == 'head':
+            self.token = dict(attrs)['data-requesttoken']
+
+    @classmethod
+    def get_token(cls, html):
+        parser = cls()
+        parser.feed(html)
+        return parser.token
+
+
+def upload_owncloud(data):
+
+    # keyring.set_password('https://odin.elder-gods.org/owncloud', 'lawrence_danna', 'PASSWORD')
+    password = keyring.get_password('https://odin.elder-gods.org/owncloud', 'lawrence_danna')
+
+
+    s = requests.Session()
+
+    req = s.get('https://odin.elder-gods.org/owncloud/index.php/apps/bookmarks',
+                auth=('lawrence_danna', password))
+
+    if req.status_code != 200:
+        req.raise_for_status()
+        assert False
+
+    # for some reason we have to go around twice to get the cookies set
+
+    req = s.get('https://odin.elder-gods.org/owncloud/index.php/apps/bookmarks',
+                auth=('lawrence_danna', password))
+
+    if req.status_code != 200:
+        req.raise_for_status()
+        assert False
+
+    token = GetTokenParser.get_token(req.content)
+
+    req = s.post('https://odin.elder-gods.org/owncloud/index.php/apps/bookmarks/bookmark/import',
+                 headers={'requesttoken': token},
+                 files={'bm_import': ('bookmarks.html', data, 'text/html')})
+
+
+    print req
+    if req.status_code == 200:
+        print req.content
+    else:
+        print req.content[:200]
+        sys.exit(1)
+
+
+class GetFormkeyParser(HTMLParser):
+    def handle_starttag(self, tag, attrs):
+        if tag == 'input':
+            attrs = dict(attrs)
+            if attrs.get('name') == 'form_key':
+                self.form_key = attrs['value']
+
+    @classmethod
+    def get_form_key(cls, html):
+        parser = cls()
+        parser.feed(html)
+        return parser.form_key
+
+
+def export_instapaper(fmt='csv'):
+    assert fmt in ('html', 'csv')
+
+    s = requests.Session()
+    username = 'larry@elder-gods.org'
+
+    req = s.post("https://www.instapaper.com/user/login",
+                 data={'username': username,
+                       'password':keyring.get_password('http://instapaper.com', username)})
+
+    if req.status_code != 200:
+        req.raise_for_status()
+
+    req = s.get("https://www.instapaper.com/user")
+
+    if req.status_code != 200:
+        req.raise_for_status()
+
+    form_key = GetFormkeyParser.get_form_key(req.content)
+
+    req = s.post("https://www.instapaper.com/export/{}".format(fmt), data={'form_key':form_key})
+
+    if req.status_code != 200:
+        req.raise_for_status()
+
+    return req.content
+
+
+
+def iter_instapaper_to_owncloud(data):
+
+    reader = csv.reader(StringIO.StringIO(data))
+
+    column_names = reader.next()
+    row_class = collections.namedtuple('Row', column_names)
+    for row in reader:
+        if row:
+            row = row_class(*row)
+
+            tags = ['instapaper']
+            if row.Folder == 'Starred':
+                tags += ['starred']
+
+            link = '<A TAGS="{tags}" HREF="{url}">{title}</A>'.format(tags=cgi.escape(','.join(tags)),
+                                                                      url=row.URL,
+                                                                      title=cgi.escape(row.Title))
+            yield link
+
+
+
+
+if args.safari:
+
+    if args.owncloud:
+        if args.upload:
+            data = '\n'.join(x for x in export_owncloud_iter()).encode('utf-8')
+            upload_owncloud(data)
+        else:
+            export_owncloud()
+    else:
+        export_plist()
+
+if args.instapaper:
+    if args.owncloud:
+        data = '\n'.join(iter_instapaper_to_owncloud(export_instapaper()))
+        if args.upload:
+            upload_owncloud(data)
+        else:
+            print data
+    else:
+        print export_instapaper()

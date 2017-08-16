@@ -169,8 +169,14 @@ function import-keys() {
 }
 
 function backup() {
-    ~/config/bin/safari-bookmarks | ssh odin 'cat > /data/Backup/safari-bookmarks.plist'  && echo "BOOKMARKS -> odin"
-    ~/config/bin/safari-bookmarks --owncloud --upload
+    echo "safari bookmarks -> odin"
+    ~/config/bin/bookmarks --safari | ssh odin 'cat > /data/Backup/safari-bookmarks.plist'  && echo " ok"
+
+    echo "safari bookmarks -> owncloud"
+    ~/config/bin/bookmarks --safari --owncloud --upload  && echo " ok"
+
+    echo "instapaper bookmarks -> owncloud"    
+    ~/config/bin/bookmarks --instapaper --owncloud --upload  && echo " ok"
 }
 
 alias bear='bear -a'

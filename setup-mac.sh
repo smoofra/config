@@ -9,6 +9,10 @@ echo ". ~/.bashrc" >~/.bash_profile
 
 ( cd ~/config ; git config user.email larry@elder-gods.org )
 
+if ! [[ -e ~/.Brewfile ]]; then
+    ln -s ~/config/Brewfile ~/.Brewfile
+fi
+
 if ! [[ -e /data/homebrew ]]; then
 	cd /data && mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
 fi
@@ -16,23 +20,7 @@ fi
 export PATH=/data/homebrew/bin:"$PATH"
 
 if ! which gls >/dev/null; then
-    brew install coreutils
-fi
-
-if ! which wget >/dev/null; then
-    brew install wget
-fi
-
-if ! which ispell >/dev/null; then
-    brew install ispell
-fi
-
-if ! which python3 >/dev/null; then
-    brew install python3
-fi
-
-if [[ $(which python) = /usr/bin/python ]]; then
-    brew install python
+    brew bundle install --global
 fi
 
 if ! [[ -e ~/apple_config ]]; then

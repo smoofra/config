@@ -6,7 +6,7 @@ import re
 from collections import defaultdict
 
 
-cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi'],
+cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts farmers', '99 ranch'],
         'bike' : ['EVOLUTION BIKE SHOP'],
         'electronics' : ["fry's",
                          "adafruit",
@@ -29,10 +29,22 @@ cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi'],
                    'restful nest',
                    'HOTELTONIGHT'],
 
-	'house': ['ikea', 'home.*depot'],
+        'pets': ['petsmart'],
+
+	'house': ['ikea', 'home.*depot', 'regan nursery'],
 
         'food': ['red robin',
                  'KYUSU',
+                 'the wharf market',
+                 'saffron',
+                 'adobolicious',
+                 'MSC CNCRS GOLDN GATE PARK',
+                 'trinidad bay eater',
+                 'famous daves',
+                 'ice cream',
+                 'cloud bistro',
+                 'tutti frutti',
+                 'kona ice',
                  'ramen',
 		 'bagel',
 		'taque',
@@ -103,7 +115,8 @@ with open(sys.argv[1], 'rb') as csvfile:
     i = iter(reader)
     i.next() # skip col names
     for row in i:
-        (trans_type, trans_date, post_date, description, ammount, foo, bar) = row
+        print row
+        (trans_type, trans_date, post_date, description, ammount) = row
 
         if not trans_type == 'Sale':
             continue

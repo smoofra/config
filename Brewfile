@@ -29,5 +29,13 @@ brew "xhyve"
 brew "youtube-dl"
 brew "lawrence_danna/tap/rtags", args: ["HEAD"]
 cask "alcatraz"
+cask "atom"
+cask "chicken"
+cask "daisydisk"
+cask "emacs"
+cask "evernote"
+cask "google-chrome"
+cask "insomniax"
+cask "iterm2"
 cask "macdown"
 mas "Type2Phone", id: 472717129

@@ -37,5 +37,6 @@ cask "evernote"
 cask "google-chrome"
 cask "insomniax"
 cask "iterm2"
+cask "java"
 cask "macdown"
 mas "Type2Phone", id: 472717129

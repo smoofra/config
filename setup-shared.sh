@@ -2,7 +2,7 @@
 
 
 ln -sf ~/config/bin ~
-ln -sf ~/config/mac-bashrc ~/.bashrc
+ln -sf ~/config/bashrc ~/.bashrc
 ln -sf ~/config/init.el ~/.emacs
 test -e ~/.emacs.d || ln -sf ~/config/emacs.d ~/.emacs.d
 ln -sf ~/config/gitconfig ~/.gitconfig

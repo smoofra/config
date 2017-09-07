@@ -39,4 +39,7 @@ cask "insomniax"
 cask "iterm2"
 cask "java"
 cask "macdown"
+mas "Kindle", id: 405399194
+mas "Moom", id: 419330170
+mas "Textual", id: 896450579
 mas "Type2Phone", id: 472717129

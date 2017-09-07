@@ -125,6 +125,11 @@ alias lsd='gls -l -r --sort=time --color=auto'
 
 alias apm='/Applications/Atom.app//Contents/Resources/app/apm/bin/apm'
 
+
+alias dl='sudo -u www-data youtube-dl -x --audio-format mp3 -o "%(title)s.%(ext)s"'
+
+alias occ='sudo -u www-data php /data/owncloud/occ'
+
 if  [ -e ~/apple_config/bashrc ]; then
     . ~/apple_config/bashrc
 fi

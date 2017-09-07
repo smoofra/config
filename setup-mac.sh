@@ -87,13 +87,17 @@ if ! [[ -e ~/.atom ]]; then
 	ln -s ~/config/dot-atom ~/.atom
 fi
 
-if ! [[ -e /Applications/Emacs.app ]]; then
-	url=$(wget -q  -O- https://emacsformacosx.com/atom/release | perl -lne 'print $1 if /<link.*href="(.*)"/' | head -1)
-	wget -O /tmp/$(basename $url) $url
-	hdiutil attach /tmp/$(basename $url)
-	cp -a /Volumes/Emacs/Emacs.app /Applications/
-	hdiutil  detach /Volumes/Emacs
-	ln -sf $(find /Applications/Emacs.app/ -name emacsclient | grep x86_64 | sort | tail -1) ~/bin.local/
-fi
+# replaced by cask
+#
+# if ! [[ -e /Applications/Emacs.app ]]; then
+# 	url=$(wget -q  -O- https://emacsformacosx.com/atom/release | perl -lne 'print $1 if /<link.*href="(.*)"/' | head -1)
+# 	wget -O /tmp/$(basename $url) $url
+# 	hdiutil attach /tmp/$(basename $url)
+# 	cp -a /Volumes/Emacs/Emacs.app /Applications/
+# 	hdiutil  detach /Volumes/Emacs
+# 	ln -sf $(find /Applications/Emacs.app/ -name emacsclient | grep x86_64 | sort | tail -1) ~/bin.local/
+# fi
+
+ln -sf $(find /Applications/Emacs.app/ -name emacsclient | grep x86_64 | sort | tail -1) ~/bin.local/
 
 . ~/apple_config/setup.sh

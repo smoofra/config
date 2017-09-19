@@ -4,7 +4,7 @@ import csv
 import sys
 import re
 from collections import defaultdict
-
+import os
 
 cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts farmers', '99 ranch'],
         'bike' : ['EVOLUTION BIKE SHOP'],
@@ -21,6 +21,7 @@ cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts
                    'fastrack',
                    'short stop news',
                    'uber',
+                   'lyft',
                    'virgin amer',
                    'american air'],
 
@@ -34,6 +35,13 @@ cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts
 	'house': ['ikea', 'home.*depot', 'regan nursery'],
 
         'food': ['red robin',
+                 'CHEVYS',
+                 'wine',
+                 'YELLOW FARMHOUSE',
+                 'brewing',
+                 '5guys',
+                 'icebox',
+                 'in n out',
                  'KYUSU',
                  'the wharf market',
                  'saffron',
@@ -102,6 +110,8 @@ cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts
                 'pioneer.*gas',
                 'chevron',
                 'exon',
+                'PHILLIPS 66',
+                'conoco',
 		'fastrak',
                 'EXXONMOBIL',
                 'valero'],
@@ -110,27 +120,55 @@ cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts
 sums = defaultdict(lambda : 0)
 rows = defaultdict(list)
 
-with open(sys.argv[1], 'rb') as csvfile:
-    reader = csv.reader(csvfile)
-    i = iter(reader)
-    i.next() # skip col names
-    for row in i:
-        print row
-        (trans_type, trans_date, post_date, description, ammount) = row
 
-        if not trans_type == 'Sale':
+
+def iter_csv(filename):
+    with open(filename, 'rb') as csvfile:
+        reader = csv.reader(csvfile)
+        i = iter(reader)
+        i.next() # skip col names
+        for row in i:
+            print row
+            (trans_type, trans_date, post_date, description, amount) = row
+
+            if not trans_type == 'Sale':
+                continue
+
+            yield (trans_date, description, amount)
+
+
+def fmt_date(date):
+    return re.sub(r'T.*', '', date.isoformat())
+
+def iter_ofx(filename):
+    from ofxparse import OfxParser
+    with open(filename, 'rb') as f:
+        ofx = OfxParser.parse(f)
+    for transaction in ofx.account.statement.transactions:
+        if transaction.type != 'debit':
             continue
+        yield (fmt_date(transaction.date), transaction.payee, transaction.amount)
 
-        ammount = -float(ammount)
 
-        for (catname, res) in cats.items():
-            if any(re.search(x, description, re.IGNORECASE) for x in res):
-                break
-            else:
-                catname = 'other'
+def iter_file(filename):
+    (base, ext) = os.path.splitext(filename.lower())
+    if ext in ('.ofx', '.qfx'):
+        return iter_ofx(filename)
+    else:
+        return iter_csv(filename)
 
-        sums[catname] += ammount
-        rows[catname].append(row)
+
+for date,description,amount in iter_file(sys.argv[1]):
+    amount = -float(amount)
+
+    for (catname, res) in cats.items():
+        if any(re.search(x, description, re.IGNORECASE) for x in res):
+            break
+        else:
+            catname = 'other'
+
+    sums[catname] += amount
+    rows[catname].append([date,description,amount])
 
 for catname in sums.keys():
     print

@@ -19,7 +19,7 @@
 
     <key>ProgramArguments</key>
     <array>
-      <string>/data/homebrew/bin/ipython</string>
+      <string>/data/homebrew/bin/jupyter</string>
       <string>notebook</string>
       <string>--no-browser</string>
       <string>--notebook-dir=/Users/lawrence_danna/Documents</string>

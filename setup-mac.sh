@@ -20,7 +20,9 @@ fi
 export PATH=/data/homebrew/bin:"$PATH"
 
 if ! which gls >/dev/null; then
-    brew bundle install --global
+    brew bundle install --global --no-upgrade
+    # to reinstall all casks, do this:
+    # brew cask list | xargs brew cask install  --force
 fi
 
 if ! [[ -e ~/apple_config ]]; then

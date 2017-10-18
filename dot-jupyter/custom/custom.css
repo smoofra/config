@@ -1,6 +1,10 @@
 
 /* make code sections in text cells scrollable instead of wrapped */
 
+
+
+.container { width:90% !important; }
+
 .text_cell_render > pre > code {
     white-space: pre;
 }
@@ -11,3 +15,8 @@
     word-wrap: normal;
 }
 
+.output_subarea > pre {
+    overflow: auto;
+    white-space: pre;
+    word-wrap: normal;
+}

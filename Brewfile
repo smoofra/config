@@ -40,6 +40,9 @@ cask "iterm2"
 cask "java"
 cask "macdown"
 cask "nextcloud"
+cask "quicksilver"
+cask "messenger-for-desktop"
+cask "yakyak"
 mas "Kindle", id: 405399194
 mas "Moom", id: 419330170
 mas "Textual", id: 896450579

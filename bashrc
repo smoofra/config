@@ -101,6 +101,12 @@ function resetup() {
     fi
 }
 
+function export-keys() {
+	cp ~/config/Default.idekeybindings ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings 
+	echo "KEYBINDS -->"
+}
+
+
 function import-keys() {
 	 cp ~/Library/Developer/Xcode/UserData/KeyBindings/Default.idekeybindings ~/config/Default.idekeybindings
 	 echo "KEYBINDS <--"
@@ -203,6 +209,19 @@ function path() {
 
 function fwhich() {
     which "$@" | xargs -d\\n follow
+}
+
+function fix-rtags() {
+    old_rpath=$(otool -l /data/homebrew/Cellar/rtags/*/bin/rc  | perl -lne 'print $1 if m:([^\s]*Xcode.app[^\s]+):')
+    new_rpath=$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/lib
+    echo old: $old_rpath
+    echo new: $new_rpath
+    if [ $old_rpath != $new_rpath ]; then
+        echo fixing
+        install_name_tool -rpath $old_rpath $new_rpath /data/homebrew/Cellar/rtags/*/bin/rc
+        install_name_tool -rpath $old_rpath $new_rpath /data/homebrew/Cellar/rtags/*/bin/rp
+        install_name_tool -rpath $old_rpath $new_rpath /data/homebrew/Cellar/rtags/*/bin/rdm
+    fi
 }
 
 #export PYSPARK_PYTHON=python3

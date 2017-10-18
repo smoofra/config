@@ -1,0 +1,43 @@
+#!/usr/bin/python
+
+from pipes import quote
+import argparse
+import subprocess
+import sys
+import os
+import shlex
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("filename", nargs='?')
+args = parser.parse_args()
+
+
+if args.filename is None:
+    proc = subprocess.Popen(['pbpaste'], stdout=subprocess.PIPE)
+    (string, err) = proc.communicate()
+    if proc.wait() != 0:
+        raise Exception
+elif args.filename == '-':
+    string = sys.stdin.read()
+else:
+    with open(args.filename, 'r') as f:
+        string = f.read()
+
+cols = 100
+        
+for line in string.splitlines():
+    args = map(quote, shlex.split(line))
+    width = 0
+    for i,arg in enumerate(args):
+        new = width + len(arg)
+        if (arg.startswith('-') and i+1 < len(args)):
+            new += len(args[i+1]) + 1
+        if width > 0 and new > cols:
+            print "\\\n    ",
+            width = 0
+        print arg,
+        width += len(arg)
+
+print
+print        

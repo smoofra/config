@@ -22,6 +22,7 @@ apple_base_url = "ssh://git@stash.sd.apple.com/devtools/"
 parser = argparse.ArgumentParser()
 parser.add_argument("projects", nargs='*')
 parser.add_argument("--list", "-l", action='store_true')
+parser.add_argument("--apple", action='store_true')
 args = parser.parse_args()
 
 if args.list:
@@ -51,7 +52,7 @@ for proj in args.projects:
     if ret != 0:
         raise Exception
 
-    if 'apple' not in out.split('\n'):
+    if args.apple and 'apple' not in out.split('\n'):
 
         cmd = ['git', 'remote', 'add', 'apple', apple_base_url + proj + '.git']
         print ">>>", ' '.join(cmd)

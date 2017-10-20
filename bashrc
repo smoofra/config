@@ -2,6 +2,9 @@
 
 [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin" /homebrew/bin /usr/local/bin /usr/local/sbin /src/sysperf/bin "$PATH" )
 
+
+PATH=$(echo $PATH | tr : \\n | grep -v 'VMware Fusion' | tr \\n :)
+
 export PERL5LIB
 [[ -e ~/bin/addpath ]] && PERL5LIB=$(~/bin/addpath ~/perl5/lib/perl5 "$PERL5LIB" )
 
@@ -222,6 +225,10 @@ function fix-rtags() {
         install_name_tool -rpath $old_rpath $new_rpath /data/homebrew/Cellar/rtags/*/bin/rp
         install_name_tool -rpath $old_rpath $new_rpath /data/homebrew/Cellar/rtags/*/bin/rdm
     fi
+}
+
+function pywhich() {
+    python -c "import $1; print $1.__file__" | perl -pe 's/\.py[co]$/\.py/'
 }
 
 #export PYSPARK_PYTHON=python3

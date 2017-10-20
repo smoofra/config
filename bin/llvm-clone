@@ -61,7 +61,7 @@ for proj in args.projects:
         if ret != 0:
             raise Exception
 
-        cmd = ['git', 'fetch', '-q', 'apple']
+        cmd = ['git', 'fetch', 'apple']
         print ">>>", ' '.join(cmd)
         proc = subprocess.Popen(cmd, cwd=paths[proj])
         ret = proc.wait()

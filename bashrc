@@ -88,7 +88,7 @@ PERL_MM_OPT="INSTALL_BASE=/Users/lawrence_danna/perl5"; export PERL_MM_OPT;
 
 
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-export HOMEBREW_TEMP=/tmp
+export HOMEBREW_TEMP=/data/tmp
 
 # wifi on, wifi off
 alias wifi='networksetup -setairportpower airport'
@@ -197,6 +197,10 @@ function ptr() {
 function path() {
     if [ $# = 0 ]; then
         echo "$PATH" | tr : \\n
+    elif [ $# = 2 ] && [ $1 = "-d" ]; then
+        DYLD_LIBRARY_PATH=$(~/bin/delpath "$2" "$DYLD_LIBRARY_PATH")
+        DYLD_FRAMEWORK_PATH=$(~/bin/delpath "$2" "$DYLD_FRAMEWORK_PATH")
+        PATH=$(~/bin/delpath "$2" "$PATH")
     elif [ $# = 1 ]; then
         local dir
         dir="$(~/bin/relpath "$1")"
@@ -205,9 +209,14 @@ function path() {
         export DYLD_FRAMEWORK_PATH=$(~/bin/addpath "$dir" "$DYLD_FRAMEWORK_PATH")
         export PATH=$(~/bin/addpath "$dir" "$PATH")
     else
-        echo ?
+        echo '?'
         return 1
     fi
+}
+
+function xcpath() {
+    path $(xcode-select -p)/../Frameworks
+    path $(xcode-select -p)/../SharedFrameworks
 }
 
 function fwhich() {
@@ -227,9 +236,14 @@ function fix-rtags() {
     fi
 }
 
-function pywhich() {
-    python -c "import $1; print $1.__file__" | perl -pe 's/\.py[co]$/\.py/'
-}
+# function pywhich() {
+#     python -c "import $1; print $1.__file__" | perl -pe 's/\.py[co]$/\.py/'
+# }
+
 
 #export PYSPARK_PYTHON=python3
 export SPARK_LOCAL_IP=127.0.0.1
+
+export GOPATH=/data/go
+
+

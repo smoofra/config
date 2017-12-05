@@ -2168,7 +2168,7 @@
  '(octave-block-offset 4)
  '(package-selected-packages
    (quote
-    (cmake-mode archive-rpm fill-column-indicator php-mode a pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
+    (go-mode yaml-mode cmake-mode archive-rpm fill-column-indicator php-mode a pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
  '(rtags-path (concat homebrew-path "/bin"))
  '(safe-local-variable-values
    (quote
@@ -2346,6 +2346,26 @@
 (defun rdar ()
   (interactive)
   (open-radar-at-point))
+
+
+(defun open (url &optional dummy)
+  (shell-command (format "open %s" url)))
+
+(setq browse-url-browser-function 'open)
+
+(defun open-url-at-point ()
+  (interactive)
+  (save-excursion
+    (while (and (> (current-column) 0)
+                (not (looking-back "\\s-")))
+      (backward-char))
+    (if (looking-at "\\(\\w+:[^ \\n]+\\)")
+        (progn
+          (message (match-string 1))
+          ;;(shell-command (format "open %s" (match-string 1)))
+          ))))
+
+
 
 ;;;;;;; example: multi replace regexp on region
 

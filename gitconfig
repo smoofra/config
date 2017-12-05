@@ -2,7 +2,7 @@
 
 [core]
     pager = cat
-    excludesFile = ~/config/exclude
+	excludesfile = /Users/lawrence_danna/config/exclude
     attributesFile = ~/config/gitattributes
 
 [url "ssh://git@stash.sd.apple.com/"]
@@ -93,7 +93,7 @@
     dlog = log --date=relative --pretty=fuller
     tpush = push --dry-run --summary
     s = status
-	b = branch -vv
+	b = branch -vv --sort=committerdate
     f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary=200
 
     # example: git egc config.dlr
@@ -143,7 +143,8 @@
 
     ff = pull --ff-only
 
-    eg = ! \nf() { git grep -nH \"$@\" | el -g \n } \n f
+    # grep and pipe to emacs 
+	eg = "! \nf() {\n    if [ $(perl -le '$n = 0; for (@ARGV) { $n++ unless /^-/ } ; print $n' \"$@\") -gt 1 ]; then\n        cd $GIT_PREFIX\n    fi\n    git grep -nH \"$@\" | el -g \n} \nf"
 
     # fetch and check out a tag based on an XBS update name
     aco = ! \nf() {\n git fetch\n git checkout $(getvers \"$@\" `pwd | xargs basename` )\n}\nf
@@ -175,3 +176,14 @@
 
 [rerere]
     enabled = true
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+
+
+[diff "gz"]
+  textconv = gzcat
+  binary = true

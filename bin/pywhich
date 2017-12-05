@@ -1,0 +1,18 @@
+#!/usr/bin/python
+
+import sys
+import re
+
+mod = sys.argv[1]
+
+__import__(mod)
+
+for k in ('__file__', '__path__'):
+    path = getattr(sys.modules[mod], k, None)
+    if path is not None:
+        print re.sub(r'\.py[co]$', '.py', path)
+        sys.exit(0)
+
+
+"module exists but who knows from where?"
+sys.exit(1)        

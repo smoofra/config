@@ -1,0 +1,12 @@
+#!/usr/bin/python
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("bad")
+parser.add_argument("path")
+args = parser.parse_args()
+
+path = args.path.split(':')
+path = [d for d in path if d != args.bad]
+print ':'.join(path)

@@ -80,6 +80,11 @@ if [[ -e ~/.jupyter ]]; then
 fi
 ln -sf ~/config/dot-jupyter ~/.jupyter
 
+if ! [[ -e ~/.docker; ]]; then
+    mkdir ~/.docker
+fi
+ln -sf ~/config/docker-config.json ~/.docker/config.json
+
 if ! [[ -e ~/Library/KeyBindings ]]; then
     mkdir -p ~/Library/KeyBindings
 fi

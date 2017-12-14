@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+import requests
+from HTMLParser import HTMLParser
+import argparse
+
+parser = argparse.ArgumentParser(description='find link tags')
+parser.add_argument("url")
+args = parser.parse_args()
+
+
+req = requests.get(args.url)
+if req.status_code != 200:
+    req.raise_for_status()
+
+
+class Parser(HTMLParser):
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'link' and dict(attrs).get('rel') == 'alternate':
+            for (k,v) in attrs:
+                print "%s: %s" % (k, v)
+            print
+                
+
+            
+
+Parser().feed(req.content)
+
+
+
+
+
+
+
+

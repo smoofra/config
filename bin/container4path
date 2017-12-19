@@ -1,0 +1,38 @@
+#!/usr/bin/python
+
+import subprocess
+import plistlib
+import argparse
+import os
+import psutil
+import sys
+import re
+
+disk2path = {}
+
+for p in psutil.disk_partitions():
+    disk2path[p.device] = p.mountpoint
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("path")
+args = parser.parse_args()
+
+path = os.path.normpath(args.path)
+
+
+proc = subprocess.Popen(['diskutil', 'apfs', 'list', '-plist'], stdout=subprocess.PIPE)
+
+plist = plistlib.readPlist(proc.stdout)
+
+if proc.wait() != 0:
+    raise Exception
+
+for container in plist['Containers']:
+    for volume in container['Volumes']:
+        if disk2path.get('/dev/' + volume['DeviceIdentifier']) == path:
+            print container['ContainerReference']
+            sys.exit(0)
+
+print >>sys.stderr, "not found"
+sys.exit(1)

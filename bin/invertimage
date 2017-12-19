@@ -1,0 +1,56 @@
+#!/usr/bin/python
+
+import subprocess
+import plistlib
+import argparse
+import os
+import psutil
+import sys
+import re
+
+disk2path = {}
+
+for p in psutil.disk_partitions():
+    disk2path[p.device] = p.mountpoint
+
+parser = argparse.ArgumentParser()
+parser.add_argument("path")
+args = parser.parse_args()
+
+dmgpath = os.path.normpath(args.path)
+
+volpath = os.path.dirname(dmgpath)
+
+proc = subprocess.Popen(['diskutil', 'apfs', 'list', '-plist'], stdout=subprocess.PIPE)
+
+plist = plistlib.readPlist(proc.stdout)
+
+if proc.wait() != 0:
+    raise Exception
+
+devnode = None
+for container in plist['Containers']:
+    for volume in container['Volumes']:
+        if disk2path.get('/dev/' + volume['DeviceIdentifier']) == volpath:
+            devnode = '/dev/' + container['ContainerReference']
+            volno = re.match('disk\d+s(\d+)', volume['DeviceIdentifier']).group(1)
+            break
+    if devnode:
+        break
+else:
+    print >>sys.stderr, "not found"
+    sys.exit(1)
+
+
+proc = subprocess.Popen(['sudo', 'diskutil', 'unmount', 'force', volpath])
+if proc.wait() != 0:
+    raise Exception
+
+
+cmd = ['sudo', '/System/Library/Filesystems/apfs.fs/Contents/Resources/apfs_invert',
+       '-d', devnode, '-s', volno, '-n', os.path.basename(dmgpath)]
+
+print ' '.join(cmd)
+
+proc = subprocess.Popen(cmd)
+sys.exit(proc.wait())

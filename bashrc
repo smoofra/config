@@ -178,8 +178,14 @@ export HISTCONTROL=ignoredups:erasedups
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
 
+function histprompt() {
+	history -a
+	history -c
+	history -r
+}
+
 # After each command, append to the history file and reread it
-PROMPT_COMMAND+="history -a; history -c; history -r; "
+PROMPT_COMMAND+="histprompt"
 
 # eternal history
 export HISTFILESIZE=

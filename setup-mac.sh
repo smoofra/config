@@ -1,6 +1,18 @@
 #!/bin/bash
 
+set -e
+
 . ~/config/setup-shared.sh
+
+if ! [[ -e /data ]]; then
+	echo "where's /data?"
+	exit 1
+fi
+
+if ! [[ -e /src ]]; then
+	echo "where's /src?"
+	exit 1
+fi
 
 defaults write com.apple.finder AppleShowAllFiles TRUE
 defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool YES
@@ -8,6 +20,11 @@ defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool YES
 echo ". ~/.bashrc" >~/.bash_profile
 
 ( cd ~/config ; git config user.email larry@elder-gods.org )
+
+if ! [[ -e /homebrew ]]; then
+	echo sudo to link /homebrew
+	sudo ln -sf /data/homebrew /homebrew
+fi
 
 if ! [[ -e ~/.Brewfile ]]; then
     ln -s ~/config/Brewfile ~/.Brewfile
@@ -80,7 +97,7 @@ if [[ -e ~/.jupyter ]]; then
 fi
 ln -sf ~/config/dot-jupyter ~/.jupyter
 
-if ! [[ -e ~/.docker; ]]; then
+if ! [[ -e ~/.docker ]]; then
     mkdir ~/.docker
 fi
 ln -sf ~/config/docker-config.json ~/.docker/config.json

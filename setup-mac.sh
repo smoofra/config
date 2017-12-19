@@ -38,8 +38,11 @@ export PATH=/data/homebrew/bin:"$PATH"
 
 if ! which gls >/dev/null; then
     brew bundle install --global --no-upgrade
-    # to reinstall all casks, do this:
-    # brew cask list | xargs brew cask install  --force
+fi
+
+if ! -e [[ /Applications/Emacs.app ]]; then
+    # emacs isn't here, we're probably on a new mac.  Reinstall all casks.
+    brew cask list | xargs brew cask reinstall
 fi
 
 if ! [[ -e ~/apple_config ]]; then
@@ -52,15 +55,15 @@ if ! [[ -e ~/bin.local ]]; then
     mkdir ~/bin.local
 fi
 
-if ! [[ -e ~/corekernelutils ]]; then
-    git clone ssh://git@stash.sd.apple.com/coreosint/corekernelutils.git ~/corekernelutils
-fi
-ln -sf ~/corekernelutils/make_xnu.py ~/bin.local/make_xnu
-
-if ! [[ -e ~/flamegraph ]]; then
-    git clone git@github.com:brendangregg/FlameGraph.git ~/flamegraph
-fi
-ln -sf ~/flamegraph/flamegraph.pl ~/bin.local/flamegraph
+#if ! [[ -e ~/corekernelutils ]]; then
+#    git clone ssh://git@stash.sd.apple.com/coreosint/corekernelutils.git ~/corekernelutils
+#fi
+#ln -sf ~/corekernelutils/make_xnu.py ~/bin.local/make_xnu
+#
+#if ! [[ -e ~/flamegraph ]]; then
+#    git clone git@github.com:brendangregg/FlameGraph.git ~/flamegraph
+#fi
+#ln -sf ~/flamegraph/flamegraph.pl ~/bin.local/flamegraph
 
 if ! [[ -e ~/.ssh ]]; then
     mkdir ~/.ssh

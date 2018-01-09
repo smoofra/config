@@ -40,7 +40,7 @@ if ! which gls >/dev/null; then
     brew bundle install --global --no-upgrade
 fi
 
-if ! -e [[ /Applications/Emacs.app ]]; then
+if ! [[ -e /Applications/Emacs.app ]]; then
     # emacs isn't here, we're probably on a new mac.  Reinstall all casks.
     brew cask list | xargs brew cask reinstall
 fi

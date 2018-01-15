@@ -4,7 +4,7 @@ status_path = "~/.vdirsyncer/status/"
 [pair odin2local]
 a = "odin"
 b = "local"
-collections = ["from a", "from b"]
+collections = [["contacts", "contacts", "contacts"]]
 
 [pair kolab2local]
 a = "kolab"
@@ -17,6 +17,8 @@ type = "filesystem"
 path = "/data/Backup/vdirsyncer"
 fileext = ".vcf"
 
+
+
 [storage odin]
 type = "carddav"
 url = "https://odin.elder-gods.org/owncloud/remote.php/carddav/"
@@ -28,4 +30,21 @@ type = "carddav"
 url = "https://apps.kolabnow.com/addressbooks"
 username = "larry@elder-gods.org"
 password.fetch = ["command", "sh", "-c", "cat ~/.vdirsyncer/kolab-password"]
+
+[pair cal]
+a = "kolab_cal"
+b = "local_cal"
+collections = ["from a", "from b"]
+metadata = ["displayname"]
+
+[storage kolab_cal]
+type = "caldav"
+url = "https://apps.kolabnow.com/calendars"
+username = "larry@elder-gods.org"
+password.fetch = ["command", "sh", "-c", "cat ~/.vdirsyncer/kolab-password"]
+
+[storage local_cal]
+type = "filesystem"
+path = "/data/Backup/vdirsyncer/calendar"
+fileext = ".ics"
 

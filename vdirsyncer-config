@@ -1,0 +1,31 @@
+[general]
+status_path = "~/.vdirsyncer/status/"
+
+[pair odin2local]
+a = "odin"
+b = "local"
+collections = ["from a", "from b"]
+
+[pair kolab2local]
+a = "kolab"
+b = "local"
+collections = [["contacts", "358e5033-47c4-4a9e-bfd5-a03459697428", "contacts"]]
+conflict_resolution = "b wins"
+
+[storage local]
+type = "filesystem"
+path = "/data/Backup/vdirsyncer"
+fileext = ".vcf"
+
+[storage odin]
+type = "carddav"
+url = "https://odin.elder-gods.org/owncloud/remote.php/carddav/"
+username = "lawrence_danna"
+password.fetch = ["command", "sh", "-c", "cat ~/.vdirsyncer/odin-password"]
+
+[storage kolab]
+type = "carddav"
+url = "https://apps.kolabnow.com/addressbooks"
+username = "larry@elder-gods.org"
+password.fetch = ["command", "sh", "-c", "cat ~/.vdirsyncer/kolab-password"]
+

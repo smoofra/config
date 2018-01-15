@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+ssh mattermost@baconautics.com ./mattermost-docker/make-backup
+
+rsync -rucz mattermost@baconautics.com:mattermost-docker/backup/ /data/Backup/mattermost-backup/
+

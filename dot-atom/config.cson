@@ -1,7 +1,9 @@
 "*":
   core:
     telemetryConsent: "no"
+  "emacs-plus": {}
   "exception-reporting":
     userId: "f8d22d2c-11eb-4a07-9870-f1bf0e36dc04"
+  "remote-edit": {}
   welcome:
     showOnStartup: false

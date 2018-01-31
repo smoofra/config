@@ -1,12 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
-delete_unused = False
-
 import subprocess
 import argparse
 import os
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--delete-unused", "-d", action='store_true')
+parser.add_argument("--dry-run", "-n", action='store_true')
+args = parser.parse_args()
 
 notesdir = os.path.expanduser('~/Nextcloud/Notes')
 
@@ -32,9 +34,9 @@ if proc.wait() != 0:
     raise Exception
 
 
-if delete_unused:
+if args.delete_unused:
     for dirname in ('media', 'attachments'):
-        for filename in os.listdir(dirname):
+       for filename in os.listdir(os.path.join(notesdir, dirname)):
             path = os.path.join(dirname, filename)
             if path not in seen:
                 groups.append([path])
@@ -50,8 +52,9 @@ for root, dirs, files in os.walk(notesdir):
 
 
 def delete(x):
-    #print "rm", x
-    os.unlink(x)    
+    print "rm", x
+    if not args.dry_run:
+        os.unlink(x)    
                
 for group in groups:
     seen = set()
@@ -67,7 +70,7 @@ for group in groups:
                 delete(os.path.join(notesdir, name))
 
     else:
-        if delete_unused:
+        if args.delete_unused:
             for name in group:
                 delete(os.path.join(notesdir, name))
         else:

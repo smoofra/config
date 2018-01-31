@@ -2168,7 +2168,7 @@
  '(octave-block-offset 4)
  '(package-selected-packages
    (quote
-    (go-mode yaml-mode cmake-mode archive-rpm fill-column-indicator php-mode a pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
+    (confluence vdirel go-mode yaml-mode cmake-mode archive-rpm fill-column-indicator php-mode a pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
  '(rtags-path (concat homebrew-path "/bin"))
  '(safe-local-variable-values
    (quote
@@ -2394,6 +2394,9 @@
 ;;                       (setq ac-sources '(ac-source-rtags))
 ;;                       (auto-complete-mode)))
 
+
+
+(setf confluence-url "https://confluence.sd.apple.com/rpc/xmlrpc")
 
 
 (if

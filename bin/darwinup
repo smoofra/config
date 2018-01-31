@@ -3,6 +3,7 @@
 import sys
 import subprocess
 import os
+import re
 
 if len(sys.argv) >= 2 and sys.argv[1] == '-sdk':
     proc = subprocess.Popen(['xcrun', '-sdk', sys.argv[2], '-show-sdk-path'],
@@ -12,5 +13,24 @@ if len(sys.argv) >= 2 and sys.argv[1] == '-sdk':
         raise Exception, "xcrun failed"
 
     os.execl("/usr/bin/darwinup", "/usr/bin/darwinup", "-p", sdk, *sys.argv[3:])
+
+elif len(sys.argv) >= 2 and sys.argv[1] == '-toolchain':
+
+    proc = subprocess.Popen(['xcrun', '-sdk', sys.argv[2], '-f', 'clang'],
+                            stdout=subprocess.PIPE)
+    clang = proc.stdout.read().strip()
+    if proc.wait() != 0:
+        raise Exception, "xcrun failed"
+
+    suffix = '/usr/bin/clang'
+    if not clang.endswith(suffix):
+        raise Exception
+
+    toolchain = clang[:-len(suffix)]
+    if not toolchain.endswith('.xctoolchain'):
+        raise Exception
+
+    os.execl("/usr/bin/darwinup", "/usr/bin/darwinup", "-p", toolchain, *sys.argv[3:])
+    
 else:
     os.execl("/usr/bin/darwinup", "/usr/bin/darwinup", *sys.argv[1:])

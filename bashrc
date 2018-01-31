@@ -252,4 +252,8 @@ export SPARK_LOCAL_IP=127.0.0.1
 
 export GOPATH=/data/go
 
+function docker-screen() {
+    screen  ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty
+}
+
 

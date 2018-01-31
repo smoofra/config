@@ -1,18 +1,35 @@
 #!/usr/bin/python
 
 import sys
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-r", "--reverse", action='store_true')
+parser.add_argument("-s", "--symmetric", action='store_true')
+parser.add_argument("a")
+parser.add_argument("b")
+args = parser.parse_args()
 
 a = set()
 b = set()
 
-with open (sys.argv[1], 'r') as f:
+with open (args.a, 'r') as f:
     for x in f:
         a.add(x.strip())
 
-with open (sys.argv[2], 'r') as f:
+with open (args.b, 'r') as f:
     for x in f:
         b.add(x.strip())
 
+if args.reverse:
+    a, b = b, a
+
 for x in a - b:
     print x
+
+if args.symmetric:
+    print
+    for x in b - a:
+        print x
+
+        

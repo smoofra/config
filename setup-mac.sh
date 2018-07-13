@@ -40,10 +40,10 @@ if ! which gls >/dev/null; then
     brew bundle install --global --no-upgrade
 fi
 
-if ! [[ -e /Applications/Emacs.app ]]; then
-    # emacs isn't here, we're probably on a new mac.  Reinstall all casks.
-    brew cask list | xargs brew cask reinstall
-fi
+#if ! [[ -e /Applications/Emacs.app ]]; then
+#    # emacs isn't here, we're probably on a new mac.  Reinstall all casks.
+#    brew cask list | xargs brew cask reinstall
+#fi
 
 if ! [[ -e ~/apple_config ]]; then
     git clone ssh://git@stash.sd.apple.com/~lawrence_danna/apple_config.git ~/apple_config
@@ -70,7 +70,7 @@ if ! [[ -e ~/.ssh ]]; then
     chmod 0700 ~/.ssh
 fi
 
-~/config/replacements.py
+#~/config/replacements.py
 
 cat ~/config/ssh <(~/apple_config/ssh.py)  >~/.ssh/config
 
@@ -125,6 +125,11 @@ fi
 # 	ln -sf $(find /Applications/Emacs.app/ -name emacsclient | grep x86_64 | sort | tail -1) ~/bin.local/
 # fi
 
-ln -sf $(find /Applications/Emacs.app/ -name emacsclient | grep x86_64 | sort | tail -1) ~/bin.local/
+for emacs in /data/Applications/Emacs.app /Applications/Emacs.app; do
+    if [ -e $emacs ]; then
+	ln -sf $(find $emacs/ -name emacsclient | grep x86_64 | sort | tail -1) ~/bin.local/
+	break;
+    fi
+done
 
 . ~/apple_config/setup.sh

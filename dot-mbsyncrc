@@ -1,0 +1,98 @@
+
+IMAPAccount gmail
+Host imap.gmail.com
+User smoofra
+AuthMechs LOGIN
+SSLType IMAPS
+PassCmd "cat ~/.passwords/gmail-password"
+
+IMAPAccount gmail-elder-gods
+Host imap.gmail.com
+User larry@elder-gods.org
+AuthMechs LOGIN
+SSLType IMAPS
+PassCmd "cat ~/.passwords/gmail-password"
+
+IMAPStore gmail-remote
+Account gmail
+
+IMAPStore gmail-elder-gods-remote
+Account gmail-elder-gods
+
+MaildirStore gmail-local
+Path /data/Backup/Mail/gmail/
+Inbox /data/Backup/Mail/gmail/inbox
+Flatten .
+
+MaildirStore gmail-elder-gods-local
+Path /data/Backup/Mail/gmail-elder-gods/
+Inbox /data/Backup/Mail/gmail-elder-gods/inbox
+Flatten .
+
+
+Channel gmail
+Master :gmail-remote:
+Slave :gmail-local:
+Sync Pull
+Patterns "INBOX" "*" !"[Gmail]/Trash"
+Create Slave
+Expunge None
+SyncState *
+
+Channel gmail-elder-gods
+Master :gmail-elder-gods-remote:
+Slave :gmail-elder-gods-local:
+Sync Pull
+Patterns "INBOX" "*" !"[Gmail]/Trash"
+Create Slave
+Expunge None
+SyncState *
+
+
+IMAPAccount kolab
+Host imap.kolabnow.com
+User larry@elder-gods.org
+AuthMechs LOGIN
+SSLType IMAPS
+PassCmd "cat ~/.passwords/kolab-password"
+
+IMAPStore kolab-remote
+Account kolab
+
+MaildirStore kolab-local
+Path /data/Backup/Mail/kolab/
+Inbox /data/Backup/Mail/kolab/inbox
+Flatten .
+
+Channel kolab-folders
+Master :kolab-remote:
+Slave :kolab-local:
+Sync Pull
+Patterns "INBOX" "*"
+Create Slave
+Expunge None
+SyncState *
+
+Group kolab
+Channel kolab-folders
+
+
+# MaildirStore A
+# Path ~/t/a
+# Inbox ~/t/a/inbox
+# Flatten .
+
+# MaildirStore B
+# Path ~/t/b
+# Inbox ~/t/b/inbox
+# Flatten .
+
+# Channel test
+# Master :A:
+# Slave :B:
+# Pattern "INBOX" "*"
+# Create Both
+# Sync All
+# SyncState *
+
+

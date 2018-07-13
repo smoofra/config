@@ -1,0 +1,12 @@
+#!/bin/bash
+
+
+logfile="$HOME/log/vdirsyncer `date -R`"
+
+( yes | vdirsyncer discover >"$logfile" && vdirsyncer metasync >>"$logfile" && vdirsyncer sync >>"$logfile" ) || cat "$logfile"
+
+
+
+
+
+

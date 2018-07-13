@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $# != 1 ]; then
+   echo "?" >&2 
+   exit 1
+fi
+
+logfile="$HOME/log/mbsync-$1 `date -R`"
+
+mbsync -V $1 >"$logfile" || cat "$logfile"
+

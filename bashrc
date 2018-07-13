@@ -10,8 +10,10 @@ export PERL5LIB
 
 if which gls >/dev/null ; then
 	alias ls='gls --color=auto'
+    alias lsd='gls -l -r --sort=time --color=auto'
 elif ls --version 2>/dev/null | grep -iq gnu ; then
 	alias ls='ls --color=auto'
+    alias lsd='ls -l -r --sort=time --color=auto'
 fi
 
 if which grm >/dev/null ; then
@@ -115,7 +117,7 @@ function import-keys() {
 	 echo "KEYBINDS <--"
 }
 
-function backup() {
+function backup-bookmarks() {
     echo "safari bookmarks -> odin"
     ~/config/bin/bookmarks --safari | ssh odin 'cat > /data/Backup/safari-bookmarks.plist'  && echo " ok"
 
@@ -126,11 +128,14 @@ function backup() {
     ~/config/bin/bookmarks --instapaper --owncloud --upload  && echo " ok"
 }
 
+function backup-photos() {
+    rsync -v  -ru --progress /data/Photos\ Library.photoslibrary  odin:/data/Pictures/
+}
+
 alias bear='bear -a'
 
 alias rerdm='launchctl unload  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist ; launchctl load  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist'
 
-alias lsd='gls -l -r --sort=time --color=auto'
 
 alias apm='/Applications/Atom.app//Contents/Resources/app/apm/bin/apm'
 
@@ -250,7 +255,11 @@ function fix-rtags() {
 #export PYSPARK_PYTHON=python3
 export SPARK_LOCAL_IP=127.0.0.1
 
-export GOPATH=/data/go
+if [ `uname -s` = Darwin ]; then
+    export GOPATH=/data/go
+elif [ `uname -s` = Linux ]; then
+    export GOPATH=$HOME/src/go
+fi
 
 function docker-screen() {
     screen  ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty

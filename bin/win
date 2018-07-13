@@ -1,0 +1,28 @@
+#!/usr/bin/python
+
+import argparse
+import os
+
+parser = argparse.ArgumentParser()
+parser.add_argument("path")
+parser.add_argument("-n", "--lines", type=int, default=10)
+args = parser.parse_args()
+
+
+path, line = args.path.split(":", 1)
+line = int(line)
+    
+with open(os.path.expanduser(path), 'r') as f:
+    lines = list(f)
+
+
+start = line - args.lines / 2
+end = start + args.lines
+
+for i in range(args.lines):
+    lineno = start + i
+    if lineno == line:
+        marker = "->"
+    else:
+        marker = "  "
+    print lineno, marker, lines[lineno-1].strip()

@@ -12,7 +12,8 @@ cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts
                          "adafruit",
                          'digi key'],
 
-        'travel': ['HUDSONNEWS',
+        'travel': [
+                   'HUDSONNEWS',
                    'usair',
                    'clipper service',
                    'caltrain',
@@ -22,10 +23,12 @@ cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts
                    'short stop news',
                    'uber',
                    'lyft',
+                   'bird app',
                    'virgin amer',
                    'american air'],
 
         'hotels': ['AIRBNB',
+                   'hilton',
                    'holiday inn',
                    'restful nest',
                    'HOTELTONIGHT'],
@@ -34,7 +37,16 @@ cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts
 
 	'house': ['ikea', 'home.*depot', 'regan nursery'],
 
-        'food': ['red robin',
+        'food': [
+            'sushi',
+            'STIR IT UP EMERALD IS',
+            'chick-fil-a',
+            'jaleo',
+            'fuzzy peach',
+            'chopsticks pho',
+            'ihop',
+            'news and gifts dul',
+            'red robin',
                  'CHEVYS',
                  'wine',
                  'YELLOW FARMHOUSE',
@@ -107,9 +119,10 @@ cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts
                  'poki run',
                  'THE BRANDING IRON',
         ],
-        'entertainment': ['itunes', 'audible', 'netflix', 'kqed membership'],
+        'entertainment': ['itunes', 'audible', 'netflix', 'kqed membership', 'kqed public media'],
         'gas+tolls': ['shell.*oil',
                       'AUTOPIA',
+                      'bp.*mart',
                 'fastlane',
                 'gas mart',
                 'pioneer.*gas',

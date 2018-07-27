@@ -4,17 +4,25 @@ import newspaper
 import PyRSS2Gen as rss
 import datetime
 import sys
+import os
 
-paper = newspaper.build('http://nymag.com/author/Andrew%20Sullivan/', memoize_articles=False)
+verbose = os.isatty(1)
+
+class Source(newspaper.Source):
+    def _get_category_urls(self, domain):
+        return [self.url]
+
+paper = Source('http://nymag.com/author/Andrew%20Sullivan/', memoize_articles=False)
+paper.build()
 
 items = []
 
 for a in paper.articles:
-    a.build()
-    if 'Andrew Sullivan' not in a.authors:
-        continue
 
-    #print(a.url)
+    a.build()
+    if verbose:
+        print(a.url)
+        print(a.authors)
 
     items.append(rss.RSSItem(
         title = a.title,

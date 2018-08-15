@@ -115,6 +115,8 @@ def upload_owncloud(data):
     # keyring.set_password('https://odin.elder-gods.org/owncloud', 'lawrence_danna', 'PASSWORD')
     password = keyring.get_password('https://odin.elder-gods.org/owncloud', 'lawrence_danna')
 
+    if password is None:
+        raise Exception, "you need to save the password"
 
     s = requests.Session()
 
@@ -168,10 +170,14 @@ def export_instapaper(fmt='csv'):
 
     s = requests.Session()
     username = 'larry@elder-gods.org'
+    password = keyring.get_password('http://instapaper.com', username)
+
+    if password is None:
+        raise Exception, "you need to set a password"
 
     req = s.post("https://www.instapaper.com/user/login",
                  data={'username': username,
-                       'password':keyring.get_password('http://instapaper.com', username)})
+                       'password': password})
 
     if req.status_code != 200:
         req.raise_for_status()

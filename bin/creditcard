@@ -6,7 +6,7 @@ import re
 from collections import defaultdict
 import os
 
-cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts farmers', '99 ranch'],
+cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts farmers', '99 ranch', 'rancho gordo'],
         'bike' : ['EVOLUTION BIKE SHOP'],
         'electronics' : ["fry's",
                          "adafruit",
@@ -38,6 +38,14 @@ cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts
 	'house': ['ikea', 'home.*depot', 'regan nursery'],
 
         'food': [
+            'hometown noodle',
+            'original mel',
+            'doordash',
+            'happy lemon',
+            'ok noodle',
+            'krispy kreme',
+            'the kebab shop',
+            'smoking pig',
             'sushi',
             'STIR IT UP EMERALD IS',
             'chick-fil-a',
@@ -133,7 +141,7 @@ cats = {'groceries': ['safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts
 		'fastrak',
                 'EXXONMOBIL',
                 'valero'],
-        'amazon': ['amazon']}
+        'amazon': ['amazon', 'AMZN Mktp']}
 
 sums = defaultdict(lambda : 0)
 rows = defaultdict(list)

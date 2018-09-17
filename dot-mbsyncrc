@@ -1,4 +1,30 @@
 
+IMAPAccount apple
+Host mail.apple.com
+User lawrence_danna@apple.com
+AuthMechs LOGIN
+SSLType IMAPS
+PassCmd "security find-generic-password -a lawrence_danna@apple.com  -s 'imap password' -w"
+
+MaildirStore apple-local
+Path /data/Mail-backup/
+Inbox /data/Mail-backup/inbox
+Flatten .
+
+IMAPStore apple-remote
+Account apple
+
+Channel apple
+Master :apple-remote:
+Slave :apple-local:
+Sync Pull
+Patterns "INBOX" "*"
+Create Slave
+Expunge None
+SyncState *
+
+
+
 IMAPAccount gmail
 Host imap.gmail.com
 User smoofra

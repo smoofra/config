@@ -5,6 +5,17 @@
 
 PATH=$(echo $PATH | tr : \\n | grep -v 'VMware Fusion' | tr \\n :)
 
+#export LC_ALL="en_US.UTF-8"
+
+export LC_COLLATE="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+export LC_MESSAGES="en_US.UTF-8"
+export LC_MONETARY="en_US.UTF-8"
+export LC_NUMERIC="en_US.UTF-8"
+export LC_TIME="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
+
 export PERL5LIB
 [[ -e ~/bin/addpath ]] && PERL5LIB=$(~/bin/addpath ~/perl5/lib/perl5 "$PERL5LIB" )
 

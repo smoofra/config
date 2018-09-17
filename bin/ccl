@@ -1,11 +1,19 @@
 #!/usr/bin/python
 
-from pipes import quote
+import pipes
 import argparse
 import subprocess
 import sys
 import os
 import shlex
+import re
+
+def quote(s):
+    m = re.match(r'(\w+=)(.*)', s)
+    if m:
+        return m.group(1) + pipes.quote(m.group(2))
+    else:
+        return pipes.quote(s)
 
 
 parser = argparse.ArgumentParser()

@@ -1,7 +1,8 @@
 # -*- mode: shell-script -*-
 
-[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin" /homebrew/bin /usr/local/bin /usr/local/sbin /src/sysperf/bin "$PATH" )
+unset MAILCHECK
 
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin"  /usr/local/bin /homebrew/bin /usr/local/sbin /src/sysperf/bin "$PATH" )
 
 PATH=$(echo $PATH | tr : \\n | grep -v 'VMware Fusion' | tr \\n :)
 

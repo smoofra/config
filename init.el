@@ -2144,6 +2144,7 @@
      (awk-mode . "awk")
      (other . "gnu"))))
  '(cperl-invalid-face (quote default))
+ '(cscope-program "/homebrew/bin/cscope")
  '(custom-safe-themes
    (quote
     ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
@@ -2168,7 +2169,7 @@
  '(octave-block-offset 4)
  '(package-selected-packages
    (quote
-    (dtrace-script-mode confluence vdirel go-mode yaml-mode cmake-mode archive-rpm fill-column-indicator php-mode a pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
+    (xcscope dtrace-script-mode confluence vdirel go-mode yaml-mode cmake-mode archive-rpm fill-column-indicator php-mode a pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
  '(rtags-path (concat homebrew-path "/bin"))
  '(safe-local-variable-values
    (quote

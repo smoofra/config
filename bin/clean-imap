@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+
+import sys
+import subprocess
+import shlex
+import imaplib
+import email
+import re
+import ssl
+import datetime
+import argparse
+
+import certifi
+import imapclient
+
+from imaplib import IMAP4_SSL
+from imapclient import IMAPClient
+
+imaplib._MAXLINE = 5000000
+
+def oneline(s):
+    if s is None:
+        return None
+    return re.sub(r'[\r\n]+', ' ', s.strip())
+
+
+def chunks(iterable, n):
+    """group elements of iterable into chunks of size n and yield an iterator for
+    each chunk"""
+    i = iter(iterable)
+    def groupiter(first):
+        yield first
+        for x in range(n-1):
+            try:
+                yield next(i)
+            except StopIteration:
+                break
+    for item in i:
+        yield(groupiter(item))
+
+def get_password():
+    cmd = shlex.split("security find-generic-password -a lawrence_danna@apple.com  -s 'imap password' -w")
+    return subprocess.run(cmd, capture_output=True, check=True, encoding='utf8').stdout.strip()
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-f", "--force", action='store_true')
+args = parser.parse_args()
+
+if args.force:
+    action = "deleting"
+else:
+    action = "would delete"
+
+def clean_box(imap, box):
+    imap.select_folder(box)
+
+    one_month_ago = datetime.date.today() - datetime.timedelta(days=365.25 / 12)
+    messages = imap.search('BEFORE "%s"' % one_month_ago.strftime('%d-%b-%Y'))
+
+    for group in chunks(messages, 1000):
+        group = list(group)
+        for uid, message_data in imap.fetch(group, b'FLAGS BODY[HEADER.FIELDS (SUBJECT FROM)]').items():
+            message = email.message_from_bytes(message_data[b'BODY[HEADER.FIELDS (SUBJECT FROM)]'])
+            subject = message['Subject']
+            if subject is not None:
+                print(action, oneline(subject))
+            else:
+                print(action, "no subject, from %s" % message['From'])
+
+        if args.force:
+            imap.add_flags(group, [imapclient.DELETED])
+
+    if args.force:
+        imap.expunge()
+
+
+
+with IMAPClient(host="mail.apple.com",
+                ssl_context=ssl.create_default_context(cafile=certifi.where())) as imap:
+    imap.login('lawrence_danna@apple.com', get_password())
+
+    clean_box(imap, 'XBS')
+    clean_box(imap, 'XinXin')
+    clean_box(imap, 'build spam')
+    clean_box(imap, 'photos-review')
+
+    quota = imap.get_quota()[0]
+    print("%.1fG used / %.1fG " % (quota.usage / 1024.0 / 1024.0, quota.limit / 1024.0 / 1024.0))

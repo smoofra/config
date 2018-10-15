@@ -19,7 +19,12 @@ items = []
 
 for a in paper.articles:
 
-    a.build()
+    try:
+        a.build()
+    except newspaper.article.ArticleException as e:
+        print ("article failed: %s" % a.url)
+        continue
+
     if verbose:
         print(a.url)
         print(a.authors)

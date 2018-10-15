@@ -76,6 +76,7 @@ SyncState *
 
 
 IMAPAccount kolab
+Timeout 200
 Host imap.kolabnow.com
 User larry@elder-gods.org
 AuthMechs LOGIN

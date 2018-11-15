@@ -7,8 +7,8 @@ SSLType IMAPS
 PassCmd "security find-generic-password -a lawrence_danna@apple.com  -s 'imap password' -w"
 
 MaildirStore apple-local
-Path /data/Mail-backup/
-Inbox /data/Mail-backup/inbox
+Path /Volumes/Mail-backup/
+Inbox /Volumes/Mail-backup/inbox
 Flatten .
 
 IMAPStore apple-remote

@@ -6,20 +6,33 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--reverse", action='store_true')
 parser.add_argument("-s", "--symmetric", action='store_true')
+parser.add_argument("--split", action='store_true')
 parser.add_argument("a")
 parser.add_argument("b")
 args = parser.parse_args()
 
-a = set()
-b = set()
+if args.split:
+    
+    def readset(f):
+        s = set()
+        for x in f:
+            for y in x.strip().split():
+                s.add(y)
+        return s
+else:
+
+    def readset(f):
+        s = set()
+        for x in f:
+            s.add(x.strip())
+        return s
+
 
 with open (args.a, 'r') as f:
-    for x in f:
-        a.add(x.strip())
-
+    a = readset(f)
+    
 with open (args.b, 'r') as f:
-    for x in f:
-        b.add(x.strip())
+    b = readset(f)
 
 if args.reverse:
     a, b = b, a

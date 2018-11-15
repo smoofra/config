@@ -4,11 +4,12 @@ import argparse
 import sys
 import os
 import re
-
+import shlex
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--exclude", "-v", action='append')
 parser.add_argument("--chdir", "-C")
+parser.add_argument("--shlex", action='store_true')
 parser.add_argument('envfile')
 parser.add_argument('command', nargs=argparse.REMAINDER)
 args = parser.parse_args()
@@ -22,9 +23,12 @@ if args.chdir:
 env = dict()
 with open(args.envfile, 'r') as f:
     for line in f:
-        if '=' not in line:
-            continue
-        (key, value) = line.strip().split('=', 1)
+        if args.shlex:
+            (key, value) = shlex.split(line)
+        else:
+            if '=' not in line:
+                continue
+            (key, value) = line.strip().split('=', 1)
         if args.exclude and any(re.match(pat, key) for pat in args.exclude):
             continue
         env[key] = value

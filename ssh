@@ -43,7 +43,7 @@ AddressFamily inet
 User ldanna
 
 Host freyja
-User ldanna
+User lawrence_danna
 HostKeyAlias freyja
 ProxyCommand ssh loki nc freyja 22
 

@@ -17,9 +17,12 @@ fi
 
 #prevent  iTunes from launching every time  you plug in a phone
 defaults write com.apple.iTunes ignore-devices 1
+defaults write com.apple.iTunesHelper ignore-devices 1
 
 defaults write com.apple.finder AppleShowAllFiles TRUE
 defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool YES
+
+defaults write com.apple.dt.Xcode EnableRootTesting YES
 
 echo ". ~/.bashrc" >~/.bash_profile
 

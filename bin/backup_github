@@ -7,6 +7,9 @@ import json
 import subprocess
 import os.path
 
+if not os.path.exists('/data/Backup'):
+    sys.exit(0)
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--verbose", "-v", action='store_true')
 parser.add_argument("user")

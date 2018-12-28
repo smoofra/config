@@ -1,0 +1,109 @@
+#!/usr/bin/python
+
+import os
+import sys
+import xml.etree
+import json
+import xml.etree
+import argparse
+import multiprocessing
+import signal
+
+
+import flickrapi
+import requests
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-v", "--verbose", action='store_true')
+parser.add_argument("-o", "--output", required=True)
+args = parser.parse_args()
+
+if not os.path.isdir(args.output):
+    parser.error("OUTPUT is not a directory")
+
+photos_dir = os.path.join(args.output, "Photos")
+if not os.path.isdir(photos_dir):
+    os.mkdir(photos_dir)
+
+infos_dir = os.path.join(args.output, "Infos")
+if not os.path.isdir(infos_dir):
+    os.mkdir(infos_dir)
+
+with open(os.path.join(os.getenv("HOME"), ".flickr_key")) as f:
+    keydict = json.load(f)
+
+flickr = flickrapi.FlickrAPI(keydict['key'], keydict['secret'])
+flickr.authenticate_via_browser(perms='write')
+
+
+def download(url, filename):
+    tempfile = filename + '.part'
+    print "%s --> %s starting" % (url, filename)
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+        size = 0
+        try:
+            with open(tempfile, 'wb') as f:
+                for block in response.iter_content(500 * 1024):
+                    size += len(block)
+                    #print "%s --> %s %dk" % (url, filename, size / 1024)
+                    f.write(block)
+            os.rename(tempfile, filename)
+        finally:
+            if os.path.exists(tempfile):
+                os.unlink(tempfile)
+        print "%s --> %s done" % (url, filename)
+        return True
+    except Exception as e:
+        print "%s --> %s failed: %s" % (url, filename, e)
+        raise
+
+
+original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+pool = multiprocessing.Pool(10)
+signal.signal(signal.SIGINT, original_sigint_handler)
+
+try:
+    for photo in flickr.walk_user(extras='last_update'):
+
+        photo_id = photo.attrib['id']
+        photo_lastupdate = int(photo.attrib["lastupdate"])
+        path = os.path.join(photos_dir, photo_id + ".jpg")
+        info_path = os.path.join(infos_dir, photo_id + ".xml")
+
+        if os.path.exists(info_path):
+            with open(info_path, 'r') as f:
+                orig_info  = xml.etree.ElementTree.parse(f)
+                orig_date = int(orig_info.find("photo/dates").attrib["lastupdate"])
+        else:
+            orig_date = None
+
+        if orig_date and photo_lastupdate <= orig_date:
+            continue
+
+        print "getting info for", photo_id
+
+        info = flickr.photos_getInfo(photo_id=photo_id)
+
+        with open(info_path, 'wb') as f:
+            f.write(xml.etree.ElementTree.tostring(info, encoding='utf-8'))
+
+        if os.path.exists(path):
+            continue
+
+        sizes = flickr.photos_getSizes(photo_id=photo_id)
+        origurl = sizes.find("sizes/size[@label='Original']").attrib["source"]
+
+        #print "!!", photo_id, origurl, path
+        pool.apply_async(download, args=(origurl, path))
+
+except KeyboardInterrupt:
+    pool.terminate()
+    print "\ninterrupted."
+    sys.exit(1)
+else:
+    pool.close()
+
+pool.join()
+print "done."

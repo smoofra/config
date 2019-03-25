@@ -1,0 +1,78 @@
+#!/usr/bin/python3
+
+import argparse
+import os
+import sys
+import re
+import mmap
+
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import as_completed
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("mbox")
+parser.add_argument("--output", "-o")
+args = parser.parse_args()
+
+if args.output is None:
+    args.output = ''
+else:
+    if not os.path.exists(args.output):
+        os.mkdir(args.output)
+
+class Scanner():
+
+    def __init__(self, output, pool):
+        self.output = output
+        self.pool = pool
+
+
+    def write(self, fromline, raw_email):
+        email = re.sub(rb'^>(>*From )', rb'\1', raw_email, flags=re.MULTILINE)
+        filename = os.path.join(self.output, fromline)
+        with open(filename, 'wb') as o:
+            o.write(email)
+        return fromline
+
+    def scan(self, mbox):
+        with open(mbox, 'r+b') as f:
+            mm = mmap.mmap(f.fileno(), 0)
+            offset = 0
+
+            while offset < len(mm):
+
+                assert mm[offset:offset+5] == b'From '
+
+                start_index = mm.find(b'\n', offset)
+                assert start_index != -1 and (start_index - offset) < 100
+                start_index += 1
+
+                end_index = mm.find(b'\nFrom ', offset)
+                if end_index != -1:
+                    end_index += 1
+
+                fromline = mm[offset:start_index].decode().strip()
+                raw_email = mm[start_index:end_index]
+
+                yield self.pool.submit(self.write, fromline, raw_email)
+
+                if end_index == -1:
+                    break
+                else:
+                    offset = end_index
+
+
+N = 10
+with ThreadPoolExecutor(max_workers=N) as pool:
+    scanner = Scanner(output=args.output, pool=pool)
+    futures = list()
+
+    for future in scanner.scan(args.mbox):
+        futures.append(future)
+        if len(futures) >= N:
+            print(futures[0].result())
+            futures = futures[1:]
+
+    for future in futures:
+        print(future.result())

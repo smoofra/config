@@ -1,0 +1,21 @@
+#!/usr/bin/python3
+
+import pysolr
+
+solr = pysolr.Solr('http://localhost:8983/solr/email')
+
+
+r = solr.search("*:*", fl='id')
+while r.hits > len(r):
+    r = solr.search("*:*", fl='id', rows=r.hits)
+
+for d in r:
+    print(d['id'])
+
+
+
+
+
+
+
+

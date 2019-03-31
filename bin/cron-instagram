@@ -1,0 +1,7 @@
+#!/bin/bash
+
+password=`cat ~/.instagram-password`
+
+/usr/local/bin/instagram-scraper --quiet --latest --cookiejar $HOME/.instagram-cookies  christiebringetto -u  smoofra -p $password -d /data/Backup/christie-instagram
+/usr/local/bin/instagram-scraper --quiet --latest --cookiejar $HOME/.instagram-cookies  bridgettgwyer -u  smoofra -p $password -d /data/Backup/bridgett-instagram
+

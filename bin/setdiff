@@ -7,11 +7,27 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--reverse", action='store_true')
 parser.add_argument("-s", "--symmetric", action='store_true')
 parser.add_argument("--split", action='store_true')
+parser.add_argument("--sums", action='store_true')
 parser.add_argument("a")
 parser.add_argument("b")
 args = parser.parse_args()
 
-if args.split:
+class mystring(str):
+    pass
+
+if args.sums:
+
+    def readset(f):
+        s = set()
+        for line in f:
+            line = line.strip()
+            hash, extra = line.split(None, 1)
+            string = mystring(hash)
+            string.line = line
+            s.add(string)
+        return s
+
+elif args.split:
     
     def readset(f):
         s = set()
@@ -37,12 +53,19 @@ with open (args.b, 'r') as f:
 if args.reverse:
     a, b = b, a
 
+def show(x):
+    if isinstance(x, mystring):
+        print x.line
+    else:
+        print x
+        
+
 for x in a - b:
-    print x
+    show(x)
 
 if args.symmetric:
     print
     for x in b - a:
-        print x
+        show(x)
 
         

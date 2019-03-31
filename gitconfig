@@ -17,11 +17,11 @@
     smtpencryption = tls
     smtpserverport = 587
 
-    smtpserver = smtp.gmail.com
-    smtpuser = larry@elder-gods.org
+    #smtpserver = smtp.gmail.com
+    #smtpuser = larry@elder-gods.org
 
-    #smtpserver = mail.apple.com
-    #smtpuser = lawrence_danna
+    smtpserver = mail.apple.com
+    smtpuser = lawrence_danna
 
 [alias]
 
@@ -187,3 +187,6 @@
 [diff "gz"]
   textconv = gzcat
   binary = true
+[user]
+	name = Lawrence D'Anna
+	email = larry@elder-gods.org

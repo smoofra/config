@@ -60,6 +60,15 @@ HostKeyAlias odin
 #LocalForward 8001 zuul.lan:80
 #DynamicForward 9999
 
+
+Host blueberry
+HostName blueberry.lan
+ProxyCommand ssh loki nc blueberry.lan 22
+User pi
+ServerAliveInterval 10
+HostKeyAlias blueberry
+
+
 Host zuul
 HostName odin.elder-gods.org
 Port 21

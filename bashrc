@@ -141,7 +141,7 @@ function backup-bookmarks() {
 }
 
 function backup-photos() {
-    rsync -v  -ru --progress /data/Photos\ Library.photoslibrary  odin:/data/Pictures/
+    rsync -rul --progress /data/Photos\ Library.photoslibrary odin:/data/Pictures
 }
 
 alias bear='bear -a'
@@ -277,4 +277,6 @@ function docker-screen() {
     screen  ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty
 }
 
-
+function mksha() {
+    shasum $1 | awk '{print $1}' > $1.sha
+}

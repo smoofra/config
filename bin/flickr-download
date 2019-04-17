@@ -15,6 +15,7 @@ import requests
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-v", "--verbose", action='store_true')
+parser.add_argument("-q", "--quiet", action='store_true')
 parser.add_argument("-o", "--output", required=True)
 args = parser.parse_args()
 
@@ -82,7 +83,8 @@ try:
         if orig_date and photo_lastupdate <= orig_date:
             continue
 
-        print "getting info for", photo_id
+        if not args.quiet:
+            print "getting info for", photo_id
 
         info = flickr.photos_getInfo(photo_id=photo_id)
 
@@ -106,4 +108,5 @@ else:
     pool.close()
 
 pool.join()
-print "done."
+if not args.quiet:
+    print "done."

@@ -26,6 +26,46 @@ class lldb_command(object):
 
 
 @lldb_command()
+def layout(debugger, command, context, result, internal_dict):
+    target = debugger.GetSelectedTarget()
+    command = command.strip()
+
+    def fmt(offset):
+        s = "0x%x" % offset
+        while len(s) < 5:
+            s = ' ' + s
+        return s
+    cmd_offset = None
+    while True:
+        if command.startswith('-d '):
+            command = command[2:].strip()
+            def fmt(offset):
+                return "%4d" % offset
+        elif re.match(r'\s*-o\s*([\d]+|0x[a-fA-F\d]+)\s+(.*)', command):
+            m = re.match(r'\s*-o\s*([\d]+|0x[a-fA-F\d]+)\s+(.*)', command)
+            cmd_offset = m.group(1)
+            command = m.group(2)
+            if cmd_offset.startswith('0x'):
+                cmd_offset = int(cmd_offset, 16)
+            else:
+                cmd_offset = int(cmd_offset)
+        else:
+            break
+    typ = target.FindFirstType(command)
+    if not typ.IsValid():
+        raise Exception
+    print typ.name
+    print "=" * len(typ.name)
+    def visit(typ, indent=0, offset=0):
+        for x in typ.get_members_array():
+            xoffset = offset+x.GetOffsetInBytes()
+            if cmd_offset is None or (xoffset <= cmd_offset and cmd_offset < xoffset + x.GetType().GetByteSize()):
+                print "%s %s%s : %s" % (fmt(xoffset), " " * indent, x.GetName(), x.GetType().GetName())
+            visit(x.GetType(), indent=indent+2, offset=xoffset)
+    visit(typ)
+
+    
+@lldb_command()
 def calayer(debugger, command, context, result, internal_dict):
     """
     dfs a CALayer layer tree

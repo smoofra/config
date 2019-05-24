@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import traceback
 import newspaper
 import PyRSS2Gen as rss
 import datetime
@@ -12,7 +13,8 @@ class Source(newspaper.Source):
     def _get_category_urls(self, domain):
         return [self.url]
 
-paper = Source('http://nymag.com/author/Andrew%20Sullivan/', memoize_articles=False)
+paper = Source('http://nymag.com/author/Andrew%20Sullivan/', memoize_articles=False, request_timeout=60)
+
 paper.build()
 
 items = []
@@ -23,6 +25,7 @@ for a in paper.articles:
         a.build()
     except newspaper.article.ArticleException as e:
         print ("article failed: %s" % a.url)
+        traceback.print_exc()
         continue
 
     if verbose:

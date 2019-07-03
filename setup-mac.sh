@@ -4,16 +4,6 @@ set -e
 
 . ~/config/setup-shared.sh
 
-if ! [[ -e /data ]]; then
-	echo "where's /data?"
-	exit 1
-fi
-
-if ! [[ -e /src ]]; then
-	echo "where's /src?"
-	exit 1
-fi
-
 
 #prevent  iTunes from launching every time  you plug in a phone
 defaults write com.apple.iTunes ignore-devices 1
@@ -28,29 +18,9 @@ echo ". ~/.bashrc" >~/.bash_profile
 
 ( cd ~/config ; git config user.email larry@elder-gods.org )
 
-if ! [[ -e /homebrew ]]; then
-	echo sudo to link /homebrew
-	sudo ln -sf /data/homebrew /homebrew
-fi
 
-if ! [[ -e ~/.Brewfile ]]; then
-    ln -s ~/config/Brewfile ~/.Brewfile
-fi
 
-if ! [[ -e /data/homebrew ]]; then
-	cd /data && mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
-fi
 
-export PATH=/data/homebrew/bin:"$PATH"
-
-if ! which gls >/dev/null; then
-    brew bundle install --global --no-upgrade
-fi
-
-#if ! [[ -e /Applications/Emacs.app ]]; then
-#    # emacs isn't here, we're probably on a new mac.  Reinstall all casks.
-#    brew cask list | xargs brew cask reinstall
-#fi
 
 if ! [[ -e ~/apple_config ]]; then
     git clone ssh://git@stash.sd.apple.com/~lawrence_danna/apple_config.git ~/apple_config
@@ -121,16 +91,6 @@ if ! [[ -e ~/.atom ]]; then
 	ln -s ~/config/dot-atom ~/.atom
 fi
 
-# replaced by cask
-#
-# if ! [[ -e /Applications/Emacs.app ]]; then
-# 	url=$(wget -q  -O- https://emacsformacosx.com/atom/release | perl -lne 'print $1 if /<link.*href="(.*)"/' | head -1)
-# 	wget -O /tmp/$(basename $url) $url
-# 	hdiutil attach /tmp/$(basename $url)
-# 	cp -a /Volumes/Emacs/Emacs.app /Applications/
-# 	hdiutil  detach /Volumes/Emacs
-# 	ln -sf $(find /Applications/Emacs.app/ -name emacsclient | grep x86_64 | sort | tail -1) ~/bin.local/
-# fi
 
 for emacs in /data/Applications/Emacs.app /Applications/Emacs.app; do
     if [ -e $emacs ]; then

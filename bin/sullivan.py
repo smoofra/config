@@ -13,7 +13,7 @@ class Source(newspaper.Source):
     def _get_category_urls(self, domain):
         return [self.url]
 
-paper = Source('http://nymag.com/author/Andrew%20Sullivan/', memoize_articles=False, request_timeout=60)
+paper = Source('http://nymag.com/author/Andrew%20Sullivan/', memoize_articles=False, request_timeout=300)
 
 paper.build()
 

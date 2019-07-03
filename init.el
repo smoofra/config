@@ -13,6 +13,9 @@
 (require 'cl)
 
 (setq load-path (cons "~/usr/share/emacs/site-lisp" load-path))
+
+(setq load-path (cons "/opt/brew/Cellar/rtags/2.31/share/emacs/site-lisp/rtags" load-path))
+
 (autoload 'maxima "maxima")
 
 (autoload 'svn-status "psvn" "" t)
@@ -589,6 +592,8 @@
 (add-to-list 'auto-mode-alist '("\\.hs$" . haskell-mode))
 (add-to-list 'auto-mode-alist '("\\.c$" . c-mode))
 (add-to-list 'auto-mode-alist '("\\.h$" . c-mode))
+
+(add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode))
 
 ;;(add-to-list 'auto-mode-alist '("\\.js" . javascript-mode))
 ;;(add-to-list 'magic-mode-alist (cons "#!.*perl" 'cperl-mode))
@@ -2078,7 +2083,7 @@
 
 (load "~/config/init-slime.el")
 
-(defvar homebrew-path "/homebrew")
+(defvar homebrew-path "/opt/brew")
 
 (if
     (string-equal system-type "darwin")
@@ -2169,7 +2174,7 @@
  '(octave-block-offset 4)
  '(package-selected-packages
    (quote
-    (xcscope dtrace-script-mode confluence vdirel go-mode yaml-mode cmake-mode archive-rpm fill-column-indicator php-mode a pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
+    (typescript-mode xcscope dtrace-script-mode confluence vdirel go-mode yaml-mode cmake-mode archive-rpm fill-column-indicator php-mode a pbcopy rtags markdown-mode lua-mode dtrt-indent ack)))
  '(rtags-path (concat homebrew-path "/bin"))
  '(safe-local-variable-values
    (quote

@@ -2,9 +2,16 @@
 
 unset MAILCHECK
 
-[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin"  /usr/local/bin /homebrew/bin /usr/local/sbin /src/sysperf/bin "$PATH" )
+for dir in /homebrew/bin /Volumes/data/homebrew/bin /opt/brew/bin ; do 
+  if [[ -e $dir ]] ; then
+    [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath $dir "$PATH")
+    export HOMEBREW_TEMP=$(dirname $dir)/tmp
+  fi
+done
 
-PATH=$(echo $PATH | tr : \\n | grep -v 'VMware Fusion' | tr \\n :)
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin"  /usr/local/bin /usr/local/sbin "$PATH" )
+
+#PATH=$(echo $PATH | tr : \\n | grep -v 'VMware Fusion' | tr \\n :)
 
 #export LC_ALL="en_US.UTF-8"
 
@@ -102,7 +109,6 @@ PERL_MM_OPT="INSTALL_BASE=/Users/lawrence_danna/perl5"; export PERL_MM_OPT;
 
 
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-export HOMEBREW_TEMP=/data/tmp
 
 # wifi on, wifi off
 alias wifi='networksetup -setairportpower airport'

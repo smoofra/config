@@ -4,6 +4,8 @@ Host mail.apple.com
 User lawrence_danna@apple.com
 AuthMechs LOGIN
 SSLType IMAPS
+# openssl s_client -connect mail.apple.com:993 -showcerts
+CertificateFile ~/.apple-mail-cert
 PassCmd "security find-generic-password -a lawrence_danna@apple.com  -s 'imap password' -w"
 
 MaildirStore apple-local

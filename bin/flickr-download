@@ -91,7 +91,7 @@ try:
         else:
             orig_date = None
 
-        if orig_date and photo_lastupdate <= orig_date:
+        if os.path.exists(path) and orig_date and photo_lastupdate <= orig_date:
             if args.verbose:
                 print "photo is up to date:", photo_id
             continue

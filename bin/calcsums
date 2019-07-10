@@ -1,0 +1,74 @@
+#!/usr/bin/python3
+
+import argparse
+import multiprocessing
+import signal
+import os
+import sys
+import hashlib
+
+def sha_of_file(path):
+    h = hashlib.sha1()
+    with open(path, 'rb') as f:
+        while True:
+            buf = f.read(2 ** 22)
+            if not buf:
+                break
+            else:
+                h.update(buf)
+    return h.hexdigest()
+
+known = set()
+if os.path.exists('sums'):
+    with open('sums', 'r') as f:
+        for line in f:
+            sha, path = line.rstrip().split(None, 1)
+            path = os.path.normpath(path)
+            known.add(path)
+
+    
+
+original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+pool = multiprocessing.Pool(10)
+signal.signal(signal.SIGINT, original_sigint_handler)
+
+results = list()
+
+sumsfile = open('sums', 'a')
+
+try:            
+    for root, dirs, files in os.walk('.'):
+        for name in files:
+            path = os.path.normpath(os.path.join(root, name))
+            if path == 'sums' or path in known:
+                continue
+            def mkcallback(path):
+                def callback(sha):
+                    sumsfile.write(f"{sha}  {path}\n")
+                    print(f"{sha}  {path}")
+                return callback
+            result = pool.apply_async(sha_of_file, args=(path,), callback=mkcallback(path))
+            results.append(result)
+
+except KeyboardInterrupt:
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    pool.terminate()
+    print()
+    print("interrupted.")
+    sys.exit(1)
+else:
+    pool.close()
+    pool.join()
+
+for result in results:
+    result.get()
+
+    
+            
+        
+
+            
+            
+            
+
+

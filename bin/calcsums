@@ -50,18 +50,19 @@ try:
             result = pool.apply_async(sha_of_file, args=(path,), callback=mkcallback(path))
             results.append(result)
 
+    pool.close()
+    pool.join()
+
+    for result in results:
+        result.get()
+
 except KeyboardInterrupt:
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     pool.terminate()
     print()
     print("interrupted.")
     sys.exit(1)
-else:
-    pool.close()
-    pool.join()
 
-for result in results:
-    result.get()
 
     
             

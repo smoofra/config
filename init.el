@@ -2130,6 +2130,8 @@
 
 (require 'dtrt-indent nil 'noerror)
 
+;;(setq rtags-path (concat homebrew-path "/bin"))
+
 (setq custom-file "~/config/init.el")
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

@@ -6,6 +6,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--reverse", action='store_true')
 parser.add_argument("-s", "--symmetric", action='store_true')
+parser.add_argument("-i", "--intersection", action='store_true')
 parser.add_argument("--split", action='store_true')
 parser.add_argument("--sums", action='store_true')
 parser.add_argument("a")
@@ -59,13 +60,19 @@ def show(x):
     else:
         print x
         
+#print >>sys.stderr, len(a), len(b)
 
-for x in a - b:
-    show(x)
-
-if args.symmetric:
-    print
-    for x in b - a:
+if args.intersection:
+    for x in a & b:
         show(x)
 
-        
+else:
+
+    for x in a - b:
+        show(x)
+
+    if args.symmetric:
+        print
+        for x in b - a:
+            show(x)
+

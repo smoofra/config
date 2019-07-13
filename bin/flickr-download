@@ -31,6 +31,10 @@ infos_dir = os.path.join(args.output, "Infos")
 if not os.path.isdir(infos_dir):
     os.mkdir(infos_dir)
 
+albums_dir = os.path.join(args.output, "Albums")
+if not os.path.isdir(albums_dir):
+    os.mkdir(albums_dir)
+
 with open(os.path.join(os.getenv("HOME"), ".flickr_key")) as f:
     keydict = json.load(f)
 
@@ -77,6 +81,41 @@ else:
 
 
 try:
+
+    resp = flickr.photosets_getList(user_id=userid)
+    for album in resp.find('photosets').findall('photoset'):
+        albumid = album.attrib['id']
+        album_path = os.path.join(albums_dir, albumid + ".xml")
+        album_path_temp = os.path.join(albums_dir, albumid + ".xml.part")
+
+        date = int(album.attrib['date_update'])
+
+        if os.path.exists(album_path):
+            with open(album_path, 'r') as f:
+                root  = xml.etree.ElementTree.fromstring('<root>' + f.read() + '</root>')
+                orig_date = int(root.find("rsp/photoset").attrib["date_update"])
+        else:
+            orig_date = None
+
+        if os.path.exists(album_path) and orig_date and date <= orig_date:
+            if args.verbose:
+                print "album is up to date:", albumid
+            continue
+
+        if not args.quiet:
+            print "getting album info for", albumid
+
+        info = flickr.photosets_getInfo(user_id=userid, photoset_id=albumid)
+        with open(album_path_temp, 'w') as f:
+            f.write( xml.etree.ElementTree.tostring(info, encoding='utf-8').strip())
+            f.write('\n')
+            for photo in flickr.walk_set(user_id=userid, photoset_id=albumid):
+                f.write(xml.etree.ElementTree.tostring(photo, encoding='utf-8').strip())
+                f.write('\n')
+            f.write('\n')
+
+        os.rename(album_path_temp, album_path)
+
     for photo in flickr.walk_user(extras='last_update', user_id=userid):
 
         photo_id = photo.attrib['id']

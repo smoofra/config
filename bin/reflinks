@@ -1,0 +1,80 @@
+#!/usr/bin/python3
+
+import sys
+import argparse
+import shlex
+import os
+from collections import defaultdict
+
+# from collections import namedtuple
+# File = namedtuple('File', ['name', 'sum'])
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--prefix")
+parser.add_argument("src")
+parser.add_argument("dst")
+args = parser.parse_args()
+
+class Multidict:
+
+    def __init__(self):
+        self.sets = defaultdict(set)
+
+    def __setitem__(self, key, value):
+        self.sets[key].add(value)
+
+    def __getitem__(self, key):
+        for value in self.sets[key]:
+            return value
+        else:
+            raise KeyError
+
+    def get(self, key):
+        for value in self.sets[key]:
+            return value
+        else:
+            return None
+
+    def getall(self, key):
+        return self.sets[key]
+
+    def items(self):
+        for key,values in self.sets.items():
+            for value in values:
+                yield key, value
+            
+
+def readsums(f):
+    sums = Multidict()
+    for line in f:
+        line = line.strip()
+        sum, name = line.split(None, 1)
+        name = os.path.normpath(name)
+        sums[sum] = name
+    return sums
+    
+
+with open (args.src, 'r') as f:
+    src = readsums(f)
+    
+with open (args.dst, 'r') as f:
+    dst = readsums(f)
+
+print("set -e")
+    
+made = set()
+for sum,dstname in dst.items():
+    if args.prefix:
+        dstname = os.path.join(args.prefix, dstname)
+    srcname = src.get(sum)
+    if srcname is None:
+        continue
+    if dstname in src.getall(sum):
+        continue
+    dirname = os.path.dirname(dstname)
+    if dirname not in made:
+        print('mkdir -p', shlex.quote(dirname))
+        made.add(dirname)
+    print('cp --reflink=always', shlex.quote(srcname), shlex.quote(dstname))
+
+

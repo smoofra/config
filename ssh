@@ -5,6 +5,10 @@ Host demogorgon
 HostName demogorgon.apple.com
 ForwardAgent yes
 
+Host thor
+HostName thor.elder-gods.org
+User root
+
 Host demogorgon-test
 HostName demogorgon.apple.com
 HostKeyAlias demogorgon-test

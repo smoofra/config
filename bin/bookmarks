@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import logging
 import sys
@@ -6,13 +6,13 @@ import Foundation
 import json
 import os
 import argparse
-import cgi
+import html
 import requests
 import keyring
 import csv
 import collections
-import StringIO
-from HTMLParser import HTMLParser
+import io
+from html.parser import HTMLParser
 
 plist_filename = os.path.expanduser('~/Library/Safari/Bookmarks.plist')
 
@@ -26,17 +26,17 @@ args = parser.parse_args()
 if not (args.safari or args.instapaper):
     parser.error("specify safari or instapaper")
 
-with open(plist_filename, 'r') as f:
+with open(plist_filename, 'rb') as f:
     data = f.read()
     nsdata = Foundation.NSMutableData.dataWithBytes_length_(data, len(data))
     plist, fmt, error = Foundation.NSPropertyListSerialization.propertyListWithData_options_format_error_(
             nsdata, Foundation.NSPropertyListImmutable, None, None)
     if error:
-        raise Exception, "error reading plist: " + str(error)
+        raise Exception("error reading plist: " + str(error))
 
 def clean(x):
     if isinstance(x, (dict, Foundation.NSDictionary)):
-        return dict(((k,clean(v)) for k,v in x.iteritems() if not k == 'Sync'))
+        return dict(((k,clean(v)) for k,v in x.items() if not k == 'Sync'))
     elif isinstance(x, (list, Foundation.NSArray)):
         return [clean(e) for e in x]
     else:
@@ -49,9 +49,9 @@ def export_plist():
         clean(plist), Foundation.NSPropertyListXMLFormat_v1_0, 0, None)
 
     if error:
-        raise Exception, "error writing plist: " + str(error)
+        raise Exception("error writing plist: " + str(error))
 
-    sys.stdout.write(bytes(nsdata))
+    sys.stdout.write(bytes(nsdata).decode('utf8'))
 
 
 def export_owncloud_iter():
@@ -70,10 +70,7 @@ def export_owncloud_iter():
                 title_tags = ()
 
             for child in node.get('Children', ()):
-                g = visit(child, tags + title_tags)
-                for x in g:
-                    yield x
-
+                yield from visit(child, tags + title_tags)
 
             return
 
@@ -81,21 +78,23 @@ def export_owncloud_iter():
             url = node['URLString']
             title = node['URIDictionary']['title']
 
-            link = u'<A TAGS="{tags}" HREF="{url}">{title}</A>'.format(tags=cgi.escape(','.join(tags)),
-                                                                        url=url,
-                                                                        title=cgi.escape(title))
+            link = '<DT> <A TAGS="{tags}" HREF="{url}">{title}</A>'.format(tags=html.escape(','.join(tags)),
+                                                                           url=url,
+                                                                           title=html.escape(title))
 
             yield link
             return
 
         raise Exception
 
-    return visit(plist, ())
+    yield "<!DOCTYPE NETSCAPE-Bookmark-file-1>"
+    yield '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">'
+    yield '<TITLE>Bookmarks</TITLE><H1>Bookmarks</h1>'
+    yield '<DL><p>'
 
+    yield from visit(plist, ())
 
-def export_owncloud():
-    for link in export_owncloud_iter():
-        print link.encode('utf-8')
+    yield "</p></DL>"
 
 
 class GetTokenParser(HTMLParser):
@@ -116,7 +115,7 @@ def upload_owncloud(data):
     password = keyring.get_password('https://odin.elder-gods.org/owncloud', 'lawrence_danna')
 
     if password is None:
-        raise Exception, "you need to save the password"
+        raise Exception("you need to save the password")
 
     s = requests.Session()
 
@@ -136,18 +135,18 @@ def upload_owncloud(data):
         req.raise_for_status()
         assert False
 
-    token = GetTokenParser.get_token(req.content)
+    token = GetTokenParser.get_token(req.content.decode('utf8'))
 
     req = s.post('https://odin.elder-gods.org/owncloud/index.php/apps/bookmarks/bookmark/import',
                  headers={'requesttoken': token},
                  files={'bm_import': ('bookmarks.html', data, 'text/html')})
 
 
-    print req
+    print(req)
     if req.status_code == 200:
-        print req.content
+        print(req.content.decode('utf8'))
     else:
-        print req.content[:200]
+        print(req.content.decode('utf8'))
         sys.exit(1)
 
 
@@ -173,7 +172,7 @@ def export_instapaper(fmt='csv'):
     password = keyring.get_password('http://instapaper.com', username)
 
     if password is None:
-        raise Exception, "you need to set a password"
+        raise Exception("you need to set a password")
 
     req = s.post("https://www.instapaper.com/user/login",
                  data={'username': username,
@@ -187,23 +186,28 @@ def export_instapaper(fmt='csv'):
     if req.status_code != 200:
         req.raise_for_status()
 
-    form_key = GetFormkeyParser.get_form_key(req.content)
+    form_key = GetFormkeyParser.get_form_key(req.content.decode('utf8'))
 
     req = s.post("https://www.instapaper.com/export/{}".format(fmt), data={'form_key':form_key})
 
     if req.status_code != 200:
         req.raise_for_status()
 
-    return req.content
+    return req.content.decode('utf8')
 
 
 
 def iter_instapaper_to_owncloud(data):
 
-    reader = csv.reader(StringIO.StringIO(data))
-
-    column_names = reader.next()
+    reader = csv.reader(io.StringIO(data))
+    column_names = next(reader)
     row_class = collections.namedtuple('Row', column_names)
+
+    yield "<!DOCTYPE NETSCAPE-Bookmark-file-1>"
+    yield '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">'
+    yield '<TITLE>Bookmarks</TITLE><H1>Bookmarks</h1>'
+    yield '<DL><p>'
+
     for row in reader:
         if row:
             row = row_class(*row)
@@ -212,10 +216,13 @@ def iter_instapaper_to_owncloud(data):
             if row.Folder == 'Starred':
                 tags += ['starred']
 
-            link = '<A TAGS="{tags}" HREF="{url}">{title}</A>'.format(tags=cgi.escape(','.join(tags)),
-                                                                      url=row.URL,
-                                                                      title=cgi.escape(row.Title))
+            link = '<DT> <A TAGS="{tags}" HREF="{url}">{title}</A>'.format(tags=html.escape(','.join(tags)),
+                                                                           url=row.URL,
+                                                                           title=html.escape(row.Title))
             yield link
+
+
+    yield "</p></DL>"
 
 
 
@@ -223,11 +230,11 @@ def iter_instapaper_to_owncloud(data):
 if args.safari:
 
     if args.owncloud:
+        data = '\n'.join(export_owncloud_iter())
         if args.upload:
-            data = '\n'.join(x for x in export_owncloud_iter()).encode('utf-8')
             upload_owncloud(data)
         else:
-            export_owncloud()
+            print(data)
     else:
         export_plist()
 
@@ -237,6 +244,6 @@ if args.instapaper:
         if args.upload:
             upload_owncloud(data)
         else:
-            print data
+            print(data)
     else:
-        print export_instapaper()
+        print(export_instapaper())

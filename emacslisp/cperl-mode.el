@@ -1011,7 +1011,7 @@ In regular expressions (except character classes):
 				unrecognized escape sequences
   `cperl-nonoverridable-face'	Modifiers, as gism in m/REx/gism
   `font-lock-type-face'		POSIX classes inside charclasses,
-				escape sequences with arguments (\x \23 \p \N)
+				escape sequences with arguments (\\x \\23 \\p \\N)
 				and others match-a-char escape sequences
   `font-lock-keyword-face'	Capturing parens, and |
   `font-lock-function-name-face' Special symbols: $ ^ . [ ] [^ ] (?{ }) (??{ })
@@ -1736,31 +1736,32 @@ or as help on variables `cperl-tips', `cperl-problems',
 			  [(control c) (control h) f])))
   (setq major-mode cperl-use-major-mode)
   (setq mode-name "CPerl")
-  (let ((prev-a-c abbrevs-changed))
-    (define-abbrev-table 'cperl-mode-abbrev-table '(
-		("if" "if" cperl-electric-keyword 0)
-		("elsif" "elsif" cperl-electric-keyword 0)
-		("while" "while" cperl-electric-keyword 0)
-		("until" "until" cperl-electric-keyword 0)
-		("unless" "unless" cperl-electric-keyword 0)
-		("else" "else" cperl-electric-else 0)
-		("continue" "continue" cperl-electric-else 0)
-		("for" "for" cperl-electric-keyword 0)
-		("foreach" "foreach" cperl-electric-keyword 0)
-		("formy" "formy" cperl-electric-keyword 0)
-		("foreachmy" "foreachmy" cperl-electric-keyword 0)
-		("do" "do" cperl-electric-keyword 0)
-		("=pod" "=pod" cperl-electric-pod 0)
-		("=over" "=over" cperl-electric-pod 0)
-		("=head1" "=head1" cperl-electric-pod 0)
-		("=head2" "=head2" cperl-electric-pod 0)
-		("pod" "pod" cperl-electric-pod 0)
-		("over" "over" cperl-electric-pod 0)
-		("head1" "head1" cperl-electric-pod 0)
-		("head2" "head2" cperl-electric-pod 0)))
-	(setq abbrevs-changed prev-a-c))
-  (setq local-abbrev-table cperl-mode-abbrev-table)
-  (if (cperl-val 'cperl-electric-keywords)
+  (when (cperl-val 'cperl-electric-keywords)
+    (let ((prev-a-c abbrevs-changed))
+      (define-abbrev-table 'cperl-mode-abbrev-table '(
+		("if" "if" cperl-electric-keyword 0 :system)
+		("elsif" "elsif" cperl-electric-keyword 0 :system)
+		("while" "while" cperl-electric-keyword 0 :system)
+		("until" "until" cperl-electric-keyword 0 :system)
+		("unless" "unless" cperl-electric-keyword 0 :system)
+		("else" "else" cperl-electric-else 0 :system)
+		("continue" "continue" cperl-electric-else 0 :system)
+		("for" "for" cperl-electric-keyword 0 :system)
+		("foreach" "foreach" cperl-electric-keyword 0 :system)
+		("formy" "formy" cperl-electric-keyword 0 :system)
+		("foreachmy" "foreachmy" cperl-electric-keyword 0 :system)
+		("do" "do" cperl-electric-keyword 0 :system)
+		("=pod" "=pod" cperl-electric-pod 0 :system)
+		("=begin" "=begin" cperl-electric-pod 0 :system)
+		("=over" "=over" cperl-electric-pod 0 :system)
+		("=head1" "=head1" cperl-electric-pod 0 :system)
+		("=head2" "=head2" cperl-electric-pod 0 :system)
+		("pod" "pod" cperl-electric-pod 0 :system)
+		("over" "over" cperl-electric-pod 0 :system)
+		("head1" "head1" cperl-electric-pod 0 :system)
+		("head2" "head2" cperl-electric-pod 0 :system)))
+      (setq abbrevs-changed prev-a-c))
+      (setq local-abbrev-table cperl-mode-abbrev-table)
       (abbrev-mode 1))
   (set-syntax-table cperl-mode-syntax-table)
   ;; Until Emacs is multi-threaded, we do not actually need it local:
@@ -1935,7 +1936,7 @@ or as help on variables `cperl-tips', `cperl-problems',
   (perldb (read-from-minibuffer "Run perldb (like this): "
 				(if (consp gud-perldb-history)
 				    (car gud-perldb-history)
-				  (concat "perl " ;;(file-name-nondirectory
+				  (concat "perl -d " ;;(file-name-nondirectory
 					  ;; I have problems
 					  ;; in OS/2
 					  ;; otherwise
@@ -2188,8 +2189,8 @@ See `cperl-electric-parens'."
 	  (insert (make-string
 		   (prefix-numeric-value arg)
 		   (cdr (assoc last-command-event '((?{ .?})
-						   (?[ . ?])
-						   (?( . ?))
+						   (?\[ . ?\])
+						   (?\( . ?\))
 						   (?< . ?>))))))
 	  (forward-char (- (prefix-numeric-value arg))))
       (self-insert-command (prefix-numeric-value arg)))))
@@ -2253,6 +2254,7 @@ to nil."
 	 (save-excursion (or (not (re-search-backward "^=" nil t))
 			     (or
 			      (looking-at "=cut")
+			      (looking-at "=end")
 			      (and cperl-use-syntax-table-text-property
 				   (not (eq (get-text-property (point)
 							       'syntax-type)
@@ -2327,7 +2329,7 @@ to nil."
 	     (get-text-property (point) 'in-pod)
 	     (cperl-after-expr-p nil "{;:")
 	     (and (re-search-backward "\\(\\`\n?\\|^\n\\)=\\sw+" (point-min) t)
-		  (not (looking-at "\n*=cut"))
+		  (not (or (looking-at "\n*=cut")(looking-at "\n*=end")))
 		  (or (not cperl-use-syntax-table-text-property)
 		      (eq (get-text-property (point) 'syntax-type) 'pod))))))
 	 (progn
@@ -2386,6 +2388,7 @@ to nil."
 	     beg t)))
 	 (save-excursion (or (not (re-search-backward "^=" nil t))
 			     (looking-at "=cut")
+			     (looking-at "=end")
 			     (and cperl-use-syntax-table-text-property
 				  (not (eq (get-text-property (point)
 							      'syntax-type)
@@ -2485,7 +2488,7 @@ If in POD, insert appropriate lines."
 	  ;; We are after \n now, so look for the rest
 	  (if (looking-at "\\(\\`\n?\\|\n\\)=\\sw+")
 	      (progn
-		(setq cut (looking-at "\\(\\`\n?\\|\n\\)=cut\\>"))
+		(setq cut (looking-at "\\(\\`\n?\\|\n\\)=\\(cut\\|end\\)\\>"))
 		(setq over (looking-at "\\(\\`\n?\\|\n\\)=over\\>"))
 		t)))
 	(if (and over
@@ -2926,6 +2929,8 @@ Will not look before LIM."
 		     (cperl-backward-to-noncomment containing-sexp))
 		   ;; Now we get non-label preceeding the indent point
 		   (if (not (or (eq (1- (point)) containing-sexp)
+                                (and cperl-indent-parens-as-block
+                                     (not is-block))
 				(memq (preceding-char)
 				      (append (if is-block " ;{" " ,;{") '(nil)))
 				(and (eq (preceding-char) ?\})
@@ -3062,7 +3067,11 @@ and closing parentheses and brackets."
        ((vectorp i)
 	(setq what (assoc (elt i 0) cperl-indent-rules-alist))
 	(cond
-	 (what (cadr what))		; Load from table
+     (what
+      (let ((action (cadr what)))
+        (cond ((fboundp action) (apply action (list i parse-data)))
+              ((numberp action) (+ action (current-indentation)))
+              (t 0))))
 	 ;;
 	 ;; Indenters for regular expressions with //x and qw()
 	 ;;
@@ -3143,7 +3152,9 @@ and closing parentheses and brackets."
 	 ((eq 'continuation (elt i 0))
 	  ;; [continuation statement-start char-after is-block is-brace]
 	  (goto-char (elt i 1))		; statement-start
-	  (+ (if (memq (elt i 2) (append "}])" nil)) ; char-after
+	  (+ (if (or (memq (elt i 2) (append "}])" nil)) ; char-after
+                     (eq 'continuation ; do not repeat cperl-close-paren-offset
+                         (elt (cperl-sniff-for-indent parse-data) 0)))
 		 0			; Closing parenth
 	       cperl-continued-statement-offset)
 	     (if (or (elt i 3)		; is-block
@@ -3707,7 +3718,7 @@ the sections using `cperl-pod-head-face', `cperl-pod-face',
 	   "\\(\\`\n?\\|^\n\\)="	; POD
 	   "\\|"
 	   ;; One extra () before this:
-	   "<<"				; HERE-DOC
+	   "<<~?"			; HERE-DOC
 	   "\\("			; 1 + 1
 	   ;; First variant "BLAH" or just ``.
 	   "[ \t]*"			; Yes, whitespace is allowed!
@@ -3747,7 +3758,7 @@ the sections using `cperl-pod-head-face', `cperl-pod-face',
 		"\\|"
 		;; 1+6+2+1+1+6+1=18 extra () before this (old pack'var syntax;
 		;; we do not support intervening comments...):
-		"\\(\\<sub[ \t\n\f]+\\|[&*$@%]\\)[a-zA-Z0-9_]*'"
+		"\\(\\<" cperl-sub-regexp "[ \t\n\f]+\\|[&*$@%]\\)[a-zA-Z0-9_]*'"
 		;; 1+6+2+1+1+6+1+1=19 extra () before this:
 		"\\|"
 		"__\\(END\\|DATA\\)__"	; __END__ or __DATA__
@@ -3821,7 +3832,7 @@ the sections using `cperl-pod-head-face', `cperl-pod-face',
 			     state-point b nil nil state)
 		      state-point b)
 		(if (or (nth 3 state) (nth 4 state)
-			(looking-at "cut\\>"))
+			(looking-at "\\(cut\\|\\end\\)\\>"))
 		    (if (or (nth 3 state) (nth 4 state) ignore-max)
 			nil		; Doing a chunk only
 		      (message "=cut is not preceded by a POD section")
@@ -3834,10 +3845,10 @@ the sections using `cperl-pod-head-face', `cperl-pod-face',
 			b1 nil)		; error condition
 		  ;; We do not search to max, since we may be called from
 		  ;; some hook of fontification, and max is random
-		  (or (re-search-forward "^\n=cut\\>" stop-point 'toend)
+		  (or (re-search-forward "^\n=\\(cut\\|\\end\\)\\>" stop-point 'toend)
 		      (progn
 			(goto-char b)
-			(if (re-search-forward "\n=cut\\>" stop-point 'toend)
+			(if (re-search-forward "\n=\\(cut\\|\\end\\)\\>" stop-point 'toend)
 			    (progn
 			      (message "=cut is not preceded by an empty line")
 			      (setq b1 t)
@@ -3972,7 +3983,7 @@ the sections using `cperl-pod-head-face', `cperl-pod-face',
 		  (setq b (point))
 		  ;; We do not search to max, since we may be called from
 		  ;; some hook of fontification, and max is random
-		  (or (and (re-search-forward (concat "^" qtag "$")
+		  (or (and (re-search-forward (concat "^[ \t]*" qtag "$")
 					      stop-point 'toend)
 			   ;;;(eq (following-char) ?\n) ; XXXX WHY???
 			   )
@@ -4823,7 +4834,7 @@ statement would start; thus the block in ${func()} does not count."
 		  (save-excursion
 		    (forward-sexp -1)
 		    ;; else {}     but not    else::func {}
-		    (or (and (looking-at "\\(else\\|continue\\|grep\\|map\\|BEGIN\\|END\\|UNITCHECK\\|CHECK\\|INIT\\)\\>")
+		    (or (and (looking-at "\\(else\\|catch\\|try\\|continue\\|grep\\|map\\|BEGIN\\|END\\|UNITCHECK\\|CHECK\\|INIT\\)\\>")
 			     (not (looking-at "\\(\\sw\\|_\\)+::")))
 			;; sub f {}
 			(progn
@@ -4947,8 +4958,13 @@ CHARS is a string that contains good characters to have before us (however,
 	 (progn
 	   (forward-sexp -1)
 	   (not
-	    (looking-at
-	     "\\(map\\|grep\\|say\\|printf?\\|system\\|exec\\|tr\\|s\\)\\>")))))))
+            (and
+             (looking-at
+              "\\(map\\|grep\\|say\\|printf?\\|system\\|exec\\|tr\\|s\\)\\>")
+             (progn
+               (save-excursion
+                 (forward-sexp -1)
+                 (not (looking-at "sub[[:space:]]")))))))))))
 
 
 (defun cperl-indent-exp ()
@@ -5254,6 +5270,7 @@ conditional/loop constructs."
 	  (setq st (point))
 	  (if (or
 	       (setq empty (looking-at "[ \t]*\n"))
+	       (memq (get-text-property (point) 'syntax-type) '(in-pod here-doc))
 	       (and (setq comm (looking-at "[ \t]*#"))
 		    (or (eq (current-indentation) (or old-comm-indent
 						      comment-column))
@@ -5261,7 +5278,6 @@ conditional/loop constructs."
 	    (if (and old-comm-indent
 		       (not empty)
 		     (= (current-indentation) old-comm-indent)
-		       (not (eq (get-text-property (point) 'syntax-type) 'pod))
 		       (not (eq (get-text-property (point) 'syntax-table)
 				cperl-st-cfence)))
 		  (let ((comment-column new-comm-indent))
@@ -5275,9 +5291,6 @@ conditional/loop constructs."
 			(goto-char (cperl-fix-line-spacing end indent-info)))
 		    (if (setq old-comm-indent
 			      (and (cperl-to-comment-or-eol)
-				   (not (memq (get-text-property (point)
-								 'syntax-type)
-					      '(pod here-doc)))
 				   (not (eq (get-text-property (point)
 							       'syntax-table)
 					    cperl-st-cfence))
@@ -5668,11 +5681,12 @@ indentation and initial hashes.  Behaves usually outside of comment."
                 '("if" "until" "while" "elsif" "else"
                  "given" "when" "default" "break"
                  "unless" "for"
+                 "try" "catch" "finally"
 		 "foreach" "continue" "exit" "die" "last" "goto" "next"
 		 "redo" "return" "local" "exec"
                  "do" "dump"
                  "use" "our"
-		 "require" "package" "eval" "my" "state"
+		 "require" "package" "eval" "evalbytes" "my" "state"
                  "BEGIN" "END" "CHECK" "INIT" "UNITCHECK"))
 	       "\\|")			; Flow control
 	      "\\)\\>") 2)		; was "\\)[ \n\t;():,\|&]"
@@ -5681,13 +5695,13 @@ indentation and initial hashes.  Behaves usually outside of comment."
 	    (list
 	     (concat
 	      "\\(^\\|[^$@%&\\]\\)\\<\\("
-	      ;; "CORE" "__FILE__" "__LINE__" "abs" "accept" "alarm"
+	      ;; "CORE" "__FILE__" "__LINE__" "__SUB__" "abs" "accept" "alarm"
 	      ;; "and" "atan2" "bind" "binmode" "bless" "caller"
 	      ;; "chdir" "chmod" "chown" "chr" "chroot" "close"
 	      ;; "closedir" "cmp" "connect" "continue" "cos" "crypt"
 	      ;; "dbmclose" "dbmopen" "die" "dump" "endgrent"
 	      ;; "endhostent" "endnetent" "endprotoent" "endpwent"
-	      ;; "endservent" "eof" "eq" "exec" "exit" "exp" "fcntl"
+	      ;; "endservent" "eof" "eq" "exec" "exit" "exp" "fc" "fcntl"
 	      ;; "fileno" "flock" "fork" "formline" "ge" "getc"
 	      ;; "getgrent" "getgrgid" "getgrnam" "gethostbyaddr"
 	      ;; "gethostbyname" "gethostent" "getlogin"
@@ -5710,7 +5724,7 @@ indentation and initial hashes.  Behaves usually outside of comment."
 	      ;; "setsockopt" "shmctl" "shmget" "shmread" "shmwrite"
 	      ;; "shutdown" "sin" "sleep" "socket" "socketpair"
 	      ;; "sprintf" "sqrt" "srand" "stat" "substr" "symlink"
-	      ;; "syscall" "sysopen" "sysread" "system" "syswrite" "tell"
+	      ;; "syscall" "sysopen" "sysread" "sysseek" "system" "syswrite" "tell"
 	      ;; "telldir" "time" "times" "truncate" "uc" "ucfirst"
 	      ;; "umask" "unlink" "unpack" "utime" "values" "vec"
 	      ;; "wait" "waitpid" "wantarray" "warn" "write" "x" "xor"
@@ -5721,7 +5735,7 @@ indentation and initial hashes.  Behaves usually outside of comment."
 	      "CORE\\|d\\(ie\\|bm\\(close\\|open\\)\\|ump\\)\\|"
 	      "e\\(x\\(p\\|it\\|ec\\)\\|q\\|nd\\(p\\(rotoent\\|went\\)\\|"
 	      "hostent\\|servent\\|netent\\|grent\\)\\|of\\)\\|"
-	      "f\\(ileno\\|cntl\\|lock\\|or\\(k\\|mline\\)\\)\\|"
+	      "f\\(ileno\\|c\\(ntl\\)?\\|lock\\|or\\(k\\|mline\\)\\)\\|"
 	      "g\\(t\\|lob\\|mtime\\|e\\(\\|t\\(p\\(pid\\|r\\(iority\\|"
 	      "oto\\(byn\\(ame\\|umber\\)\\|ent\\)\\)\\|eername\\|w"
 	      "\\(uid\\|ent\\|nam\\)\\|grp\\)\\|host\\(by\\(addr\\|name\\)\\|"
@@ -5739,12 +5753,12 @@ indentation and initial hashes.  Behaves usually outside of comment."
 	      "\\(iority\\|otoent\\)\\|went\\|grp\\)\\|hostent\\|s\\(ervent\\|"
 	      "ockopt\\)\\|netent\\|grent\\)\\|ek\\(\\|dir\\)\\|lect\\|"
 	      "m\\(ctl\\|op\\|get\\)\\|nd\\)\\|h\\(utdown\\|m\\(read\\|ctl\\|"
-	      "write\\|get\\)\\)\\|y\\(s\\(read\\|call\\|open\\|tem\\|write\\)\\|"
+	      "write\\|get\\)\\)\\|y\\(s\\(read\\|call\\|open\\|tem\\|write\\|seek\\)\\|"
 	      "mlink\\)\\|in\\|leep\\|ocket\\(pair\\|\\)\\)\\|t\\(runcate\\|"
 	      "ell\\(\\|dir\\)\\|ime\\(\\|s\\)\\)\\|u\\(c\\(\\|first\\)\\|"
 	      "time\\|mask\\|n\\(pack\\|link\\)\\)\\|v\\(alues\\|ec\\)\\|"
 	      "w\\(a\\(rn\\|it\\(pid\\|\\)\\|ntarray\\)\\|rite\\)\\|"
-	      "x\\(\\|or\\)\\|__\\(FILE__\\|LINE__\\|PACKAGE__\\)"
+	      "x\\(\\|or\\)\\|__\\(FILE\\|LINE\\|PACKAGE\\|SUB\\)__"
 	      "\\)\\>") 2 'font-lock-type-face)
 	    ;; In what follows we use `other' style
 	    ;; for nonoverwritable builtins
@@ -5754,20 +5768,20 @@ indentation and initial hashes.  Behaves usually outside of comment."
 	      "\\(^\\|[^$@%&\\]\\)\\<\\("
 	      ;; "AUTOLOAD" "BEGIN" "CHECK" "DESTROY" "END" "INIT" "UNITCHECK" "__END__" "chomp"
 	      ;; "break" "chop" "default" "defined" "delete" "do" "each" "else" "elsif"
-	      ;; "eval" "exists" "for" "foreach" "format" "given" "goto"
+	      ;; "eval" "evalbytes" "exists" "for" "foreach" "format" "given" "goto"
 	      ;; "grep" "if" "keys" "last" "local" "map" "my" "next"
-	      ;; "no" "our" "package" "pop" "pos" "print" "printf" "push"
+	      ;; "no" "our" "package" "pop" "pos" "print" "printf" "prototype" "push"
 	      ;; "q" "qq" "qw" "qx" "redo" "return" "say" "scalar" "shift"
 	      ;; "sort" "splice" "split" "state" "study" "sub" "tie" "tr"
 	      ;; "undef" "unless" "unshift" "untie" "until" "use"
 	      ;; "when" "while" "y"
-	      "AUTOLOAD\\|BEGIN\\|\\(UNIT\\)?CHECK\\|break\\|cho\\(p\\|mp\\)\\|d\\(e\\(f\\(ault|ined\\)\\|lete\\)\\|"
-	      "o\\)\\|DESTROY\\|e\\(ach\\|val\\|xists\\|ls\\(e\\|if\\)\\)\\|"
+	      "AUTOLOAD\\|BEGIN\\|\\(UNIT\\)?CHECK\\|break\\|c\\(atch\\|ho\\(p\\|mp\\)\\)\\|d\\(e\\(f\\(inally\\|ault\\|ined\\)\\|lete\\)\\|"
+	      "o\\)\\|DESTROY\\|e\\(ach\\|val\\(bytes\\)?\\|xists\\|ls\\(e\\|if\\)\\)\\|"
 	      "END\\|for\\(\\|each\\|mat\\)\\|g\\(iven\\|rep\\|oto\\)\\|INIT\\|if\\|keys\\|"
 	      "l\\(ast\\|ocal\\)\\|m\\(ap\\|y\\)\\|n\\(ext\\|o\\)\\|our\\|"
-	      "p\\(ackage\\|rint\\(\\|f\\)\\|ush\\|o\\(p\\|s\\)\\)\\|"
+	      "p\\(ackage\\|rototype\\|rint\\(\\|f\\)\\|ush\\|o\\(p\\|s\\)\\)\\|"
 	      "q\\(\\|q\\|w\\|x\\|r\\)\\|re\\(turn\\|do\\)\\|s\\(ay\\|pli\\(ce\\|t\\)\\|"
-	      "calar\\|t\\(ate\\|udy\\)\\|ub\\|hift\\|ort\\)\\|t\\(r\\|ie\\)\\|"
+	      "calar\\|t\\(ate\\|udy\\)\\|ub\\|hift\\|ort\\)\\|t\\(ry?\\|ied?\\)\\|"
 	      "u\\(se\\|n\\(shift\\|ti\\(l\\|e\\)\\|def\\|less\\)\\)\\|"
 	      "wh\\(en\\|ile\\)\\|y\\|__\\(END\\|DATA\\)__" ;__DATA__ added manually
 	      "\\|[sm]"			; Added manually
@@ -5934,7 +5948,7 @@ indentation and initial hashes.  Behaves usually outside of comment."
 	  (if cperl-highlight-variables-indiscriminately
 	      (setq t-font-lock-keywords-1
 		    (append t-font-lock-keywords-1
-			    (list '("\\([$*]{?\\sw+\\)" 1
+			    (list '("\\([$*]{?\\(?:\\sw+\\|::\\)+\\)" 1
 				    font-lock-variable-name-face)))))
 	  (setq cperl-font-lock-keywords-1
 		(if cperl-syntaxify-by-font-lock
@@ -6730,8 +6744,8 @@ in subdirectories too."
   (interactive)
   (let ((cmd "etags")
 	(args '("-l" "none" "-r"
-		;;       1=fullname  2=package?             3=name                       4=proto?             5=attrs? (VERY APPROX!)
-		"/\\<sub[ \\t]+\\(\\([a-zA-Z0-9:_]*::\\)?\\([a-zA-Z0-9_]+\\)\\)[ \\t]*\\(([^()]*)[ \t]*\\)?\\([ \t]*:[^#{;]*\\)?\\([{#]\\|$\\)/\\3/"
+		;;                        1=fullname  2=package?             3=name                       4=proto?             5=attrs? (VERY APPROX!)
+		"/\\<" cperl-sub-regexp "[ \\t]+\\(\\([a-zA-Z0-9:_]*::\\)?\\([a-zA-Z0-9_]+\\)\\)[ \\t]*\\(([^()]*)[ \t]*\\)?\\([ \t]*:[^#{;]*\\)?\\([{#]\\|$\\)/\\3/"
 		"-r"
 		"/\\<package[ \\t]+\\(\\([a-zA-Z0-9:_]*::\\)?\\([a-zA-Z0-9_]+\\)\\)[ \\t]*\\([#;]\\|$\\)/\\1/"
 		"-r"
@@ -6947,7 +6961,7 @@ by CPerl."
 			(number-to-string (1- (elt elt 1))) ; Char pos 0-based
 			"\n")
 		(if (and (string-match "^[_a-zA-Z]+::" (car elt))
-			 (string-match "^sub[ \t]+\\([_a-zA-Z]+\\)[^:_a-zA-Z]"
+			 (string-match (concat "^" cperl-sub-regexp "[ \t]+\\([_a-zA-Z]+\\)[^:_a-zA-Z]")
 				       (elt elt 3)))
 		    ;; Need to insert the name without package as well
 		    (setq lst (cons (cons (substring (elt elt 3)
@@ -7077,7 +7091,7 @@ Use as
    "^\\("
       "\\(package\\)\\>"
      "\\|"
-      "sub\\>[^\n]+::"
+      cperl-sub-regexp "\\>[^\n]+::"
      "\\|"
       "[a-zA-Z_][a-zA-Z_0-9:]*(\C-?[^\n]+::" ; XSUB?
      "\\|"
@@ -7708,6 +7722,7 @@ __DATA__	Ends program source.
 __FILE__	Current (source) filename.
 __LINE__	Current line in current source.
 __PACKAGE__	Current package.
+__SUB__	Current sub.
 ARGV	Default multi-file input filehandle.  <ARGV> is a synonym for <>.
 ARGVOUT	Output filehandle with -i flag.
 BEGIN { ... }	Immediately executed (during compilation) piece of code.
@@ -7754,6 +7769,7 @@ endservent
 eof[([FILEHANDLE])]
 ... eq ...	String equality.
 eval(EXPR) or eval { BLOCK }
+evalbytes   See eval.
 exec([TRUENAME] ARGV0, ARGVs)     or     exec(SHELL_COMMAND_LINE)
 exit(EXPR)
 exp(EXPR)
@@ -7943,6 +7959,7 @@ chr		Converts a number to char with the same ordinal.
 else		Part of if/unless {BLOCK} elsif {BLOCK} else {BLOCK}.
 elsif		Part of if/unless {BLOCK} elsif {BLOCK} else {BLOCK}.
 exists $HASH{KEY}	True if the key exists.
+fc EXPR    Returns the casefolded version of EXPR.
 format [NAME] =	 Start of output format.  Ended by a single dot (.) on a line.
 formline PICTURE, LIST	Backdoor into \"format\" processing.
 glob EXPR	Synonym of <EXPR>.
@@ -7954,6 +7971,7 @@ no PACKAGE [SYMBOL1, ...]  Partial reverse for `use'.  Runs `unimport' method.
 not ...		Low-precedence synonym for ! - negation.
 ... or ...		Low-precedence synonym for ||.
 pos STRING    Set/Get end-position of the last match over this string, see \\G.
+prototype FUNC   Returns the prototype of a function as a string, or undef.
 quotemeta [ EXPR ]	Quote regexp metacharacters.
 qw/WORD1 .../		Synonym of split('', 'WORD1 ...')
 readline FH	Synonym of <FH>.
@@ -7970,12 +7988,17 @@ use PACKAGE [SYMBOL1, ...]  Compile-time `require' with consequent `import'.
 prototype \\&SUB	Returns prototype of the function given a reference.
 =head1		Top-level heading.
 =head2		Second-level heading.
-=head3		Third-level heading (is there such?).
+=head3		Third-level heading.
+=head4		Fourth-level heading.
 =over [ NUMBER ]	Start list.
 =item [ TITLE ]		Start new item in the list.
 =back		End list.
 =cut		Switch from POD to Perl.
 =pod		Switch from Perl to POD.
+=begin formatname	Start directly formatted region.
+=end formatname	End directly formatted region.
+=for formatname text	Paragraph in special format.
+=encoding encodingname	Encoding of the document.
 ")
 
 (defun cperl-switch-to-doc-buffer (&optional interactive)
@@ -8565,7 +8588,7 @@ the appropriate statement modifier."
             (pargs (cdr (car flist))))
         (setq command
               (concat command " | " pcom " "
-                      (mapconcat '(lambda (phrase)
+                      (mapconcat #'(lambda (phrase)
                                     (if (not (stringp phrase))
                                         (error "Malformed Man-filter-list"))
                                     phrase)
@@ -8936,7 +8959,7 @@ do extra unwind via `cperl-unwind-to-safe'."
 	  (cperl-fontify-syntaxically to)))))
 
 (defvar cperl-version
-  (let ((v  "Revision: 5.23"))
+  (let ((v  "Revision: 6.2"))
     (string-match ":\\s *\\([0-9.]+\\)" v)
     (substring v (match-beginning 1) (match-end 1)))
   "Version of IZ-supported CPerl package this file is based on.")

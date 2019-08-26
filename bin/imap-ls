@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+import sys
+import subprocess
+import shlex
+import imaplib
+import email
+import re
+import ssl
+import datetime
+import argparse
+import getpass
+
+import certifi
+import imapclient
+
+from imaplib import IMAP4_SSL
+from imapclient import IMAPClient
+
+imaplib._MAXLINE = 5000000
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("host")
+parser.add_argument("user")
+args = parser.parse_args()
+
+password = getpass.getpass()
+
+with IMAPClient(host=args.host,
+                ssl_context=ssl.create_default_context(cafile=certifi.where())) as imap:
+    imap.login(args.user, password)
+
+    for flags, delimiter, name in imap.list_folders():
+        if not b'\\HasNoChildren' in flags:
+            print(name, "+")
+        else:
+            print(name)

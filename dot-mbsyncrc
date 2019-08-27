@@ -49,7 +49,6 @@ Account gmail-elder-gods
 
 MaildirStore gmail-local
 Path /data/Backup/Mail/gmail/
-Inbox /data/Backup/Mail/gmail/inbox
 Flatten .
 
 MaildirStore gmail-elder-gods-local
@@ -62,7 +61,8 @@ Channel gmail
 Master :gmail-remote:
 Slave :gmail-local:
 Sync Pull
-Patterns "INBOX" "*" !"[Gmail]/Trash"
+Patterns "[Gmail]/All Mail" "[Gmail]/Spam" "[Gmail]/Trash" 
+
 Create Slave
 Expunge None
 SyncState *

@@ -4,6 +4,11 @@ if ! [ -e /data/Backup ]; then
 	exit 0
 fi
 
+if [ "$1" = "-q" ]; then
+   quiet=true
+   shift
+fi
+
 if [ $# != 1 ]; then
    echo "?" >&2 
    exit 1
@@ -11,5 +16,5 @@ fi
 
 logfile="$HOME/log/mbsync-$1 `date -R`"
 
-mbsync -V $1 >"$logfile" || cat "$logfile"
+mbsync -V $1 >"$logfile" 2>&1 || test \! -z "$quiet" || cat "$logfile"
 

@@ -32,6 +32,11 @@
 # http://flight-manual.atom.io/using-atom/sections/basic-customization/#_cson
 
 
+'atom-text-editor':
+  'ctrl-c': 'core:cancel'
 
 'atom-text-editor:not([mini])':
   'alt-y': 'clipboard-plus:toggle'
+  "ctrl-space": "text-select-mode:toggle"
+  'cmd->': 'core:move-to-bottom'
+  'cmd-<': 'core:move-to-top'

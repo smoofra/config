@@ -1,5 +1,8 @@
 "*":
   core:
+    disabledPackages: [
+      "autocomplete-java"
+    ]
     telemetryConsent: "no"
     themes: [
       "one-dark-ui"

@@ -7,6 +7,10 @@ import os
 import sys
 import hashlib
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--sums", default="sums")
+args = parser.parse_args()
+
 def sha_of_file(path):
     h = hashlib.sha1()
     with open(path, 'rb') as f:
@@ -19,8 +23,8 @@ def sha_of_file(path):
     return h.hexdigest()
 
 known = set()
-if os.path.exists('sums'):
-    with open('sums', 'r') as f:
+if os.path.exists(args.sums):
+    with open(args.sums, 'r') as f:
         for line in f:
             sha, path = line.rstrip().split(None, 1)
             path = os.path.normpath(path)
@@ -34,19 +38,26 @@ signal.signal(signal.SIGINT, original_sigint_handler)
 
 results = list()
 
-sumsfile = open('sums', 'a')
+sumsfile = open(args.sums, 'a')
 
 try:            
     for root, dirs, files in os.walk('.'):
+
+        dirs[:] = [dir for dir in dirs
+                   if not os.path.ismount(os.path.join(root, dir))]
+        
         for name in files:
             path = os.path.normpath(os.path.join(root, name))
-            if path == 'sums' or path in known:
+            if os.path.islink(path) or not os.path.isfile(path):
+                continue
+            if path == args.sums or path in known:
                 continue
             def mkcallback(path):
                 def callback(sha):
                     sumsfile.write(f"{sha}  {path}\n")
                     print(f"{sha}  {path}")
                 return callback
+            print ("reading", path)
             result = pool.apply_async(sha_of_file, args=(path,), callback=mkcallback(path))
             results.append(result)
 

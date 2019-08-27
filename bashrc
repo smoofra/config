@@ -11,7 +11,7 @@ done
 
 [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin"  /usr/local/bin /usr/local/sbin "$PATH" )
 
-#PATH=$(echo $PATH | tr : \\n | grep -v 'VMware Fusion' | tr \\n :)
+PATH=$(echo $PATH | tr : \\n | grep -v 'VMware Fusion' | tr \\n :)
 
 #export LC_ALL="en_US.UTF-8"
 

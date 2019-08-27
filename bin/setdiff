@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import sys
 import argparse
 
@@ -9,6 +10,7 @@ parser.add_argument("-s", "--symmetric", action='store_true')
 parser.add_argument("-i", "--intersection", action='store_true')
 parser.add_argument("--split", action='store_true')
 parser.add_argument("--sums", action='store_true')
+parser.add_argument("--normpath", action='store_true')
 parser.add_argument("a")
 parser.add_argument("b")
 args = parser.parse_args()
@@ -36,6 +38,15 @@ elif args.split:
             for y in x.strip().split():
                 s.add(y)
         return s
+
+elif args.normpath:
+
+    def readset(f):
+        s = set()
+        for p in f:
+            s.add(os.path.normpath(os.path.join('/', p.strip())))
+        return s
+            
 else:
 
     def readset(f):

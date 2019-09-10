@@ -91,6 +91,10 @@ if ! [[ -e ~/.atom ]]; then
 	ln -s ~/config/dot-atom ~/.atom
 fi
 
+if ! [[ -e ~/Library/"Application Support"/Code/User ]]; then
+    mkdir -p ~/Library/"Application Support"/Code/User
+fi
+ln -sf ~/config/vscode/keybindings.json ~/Library/"Application Support"/Code/User/
 
 for emacs in /data/Applications/Emacs.app /Applications/Emacs.app; do
     if [ -e $emacs ]; then

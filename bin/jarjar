@@ -1,0 +1,57 @@
+#!/usr/bin/python3
+
+from collections import defaultdict
+import zipfile
+import argparse
+import os
+
+
+parser = argparse.ArgumentParser(description='jarjar')
+parser.add_argument("jarsa")
+parser.add_argument("jarsb")
+args = parser.parse_args()
+
+def iter_classes(jarname, jar):
+    with zipfile.ZipFile(jar, 'r') as zip:
+        for name in zip.namelist():
+            if name.endswith('.class'):
+                yield jarname, name
+
+def iter_jars(top):
+    if os.path.isdir(top):
+        for root, dirs, files in os.walk(top):
+            for name in files:
+                if name.endswith(".jar"):
+                    yield from iter_classes(name, os.path.join(root, name))
+    elif top.endswith('.zip'):
+        with zipfile.ZipFile(top, 'r') as zip:
+            for name in zip.namelist():
+                if name.endswith('.jar'):
+                    with zip.open(name, 'r') as jar:
+                        yield from iter_classes(os.path.basename(name), jar)
+    elif top.endswith('.jar'):
+        yield from iter_classes(os.path.basename(top), top)
+    else:
+        raise NotImplementedError
+
+def scan_jars(top):
+    class2jars = defaultdict(set);
+    for jarname, classname in iter_jars(top):
+        class2jars[classname].add(jarname)
+    return class2jars
+
+a = scan_jars(args.jarsa)
+b = scan_jars(args.jarsb)
+
+intersection = set(a.keys()) & set(b.keys())
+
+if not intersection:
+    print("no overlap")
+
+for cls in intersection:
+    print(f"{cls} is duplicated")
+    for jar in a[cls]:
+        print(f"jar_a: {jar}")
+    for jar in b[cls]:
+        print(f"jar_b: {jar}")
+    print()

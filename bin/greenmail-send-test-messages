@@ -1,0 +1,27 @@
+#!/usr/bin/python3
+
+import smtplib
+import uuid
+
+
+email_template = """
+From: larry@elder-gods.org
+To: larry@elder-gods.org
+Subject: Test
+Message-ID: {id}
+
+test
+test
+test
+""".lstrip()
+
+def make_email():
+    return email_template.format(id=uuid.uuid4())
+
+with smtplib.SMTP("localhost", port=3025) as smtp:
+    #print(smtp.noop())
+    for i in range(50):
+        smtp.sendmail('larry@elder-gods.org', 'larry@elder-gods.org', make_email())
+
+print("done.")
+

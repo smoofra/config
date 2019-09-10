@@ -37,6 +37,14 @@
 
 'atom-text-editor:not([mini])':
   'alt-y': 'clipboard-plus:toggle'
-  "ctrl-space": "text-select-mode:toggle"
+  #"ctrl-space": "text-select-mode:toggle"
   'cmd->': 'core:move-to-bottom'
   'cmd-<': 'core:move-to-top'
+
+  'ctrl-:': 'atom-rtags-plus:find-symbols-by-keyword'
+  'ctrl-.': 'atom-rtags-plus:find-symbol-at-point'
+  'ctrl-,': 'atom-rtags-plus:find-references-at-point'
+  'ctrl-/': 'atom-rtags-plus:get-symbol-info'
+
+  'ctrl-[': 'last-cursor-position:previous'
+  'ctrl-]': 'last-cursor-position:next'

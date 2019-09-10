@@ -1,16 +1,30 @@
 "*":
   core:
     disabledPackages: [
+      "atomic-rtags"
       "autocomplete-java"
+      "remote-atom"
+      "text-select-mode"
     ]
+    packagesWithKeymapsDisabled: []
     telemetryConsent: "no"
     themes: [
-      "one-dark-ui"
-      "solarized-dark-syntax"
+      "atom-dark-ui"
+      "atom-dark-syntax"
     ]
+  editor: {}
   "emacs-plus": {}
   "exception-reporting":
     userId: "f8d22d2c-11eb-4a07-9870-f1bf0e36dc04"
+  "ide-python":
+    pylsPlugins:
+      autopep8:
+        enabled: false
+      pycodestyle:
+        enabled: false
+    python: "python3"
+  "linter-ui-default":
+    panelHeight: 260
   "remote-edit": {}
   welcome:
     showOnStartup: false

@@ -33,6 +33,7 @@ User smoofra
 AuthMechs LOGIN
 SSLType IMAPS
 PassCmd "cat ~/.passwords/gmail-password"
+DisableExtension COMPRESS=DEFLATE
 
 IMAPAccount gmail-elder-gods
 Host imap.gmail.com

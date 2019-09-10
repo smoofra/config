@@ -9,12 +9,23 @@ if [ "$1" = "-q" ]; then
    shift
 fi
 
+mbsync=mbsync
+if [ x`basename -- "$1"` = x"mbsync" ]; then
+    mbsync="$1"
+    shift
+fi
+
 if [ $# != 1 ]; then
    echo "?" >&2 
    exit 1
 fi
 
+if [ "$1" = "-v" ]; then
+    $mbsync -v
+    exit 0
+fi
+
 logfile="$HOME/log/mbsync-$1 `date -R`"
 
-mbsync -V $1 >"$logfile" 2>&1 || test \! -z "$quiet" || cat "$logfile"
+$mbsync -V $1 >"$logfile" 2>&1 || test \! -z "$quiet" || cat "$logfile"
 

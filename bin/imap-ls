@@ -23,16 +23,36 @@ imaplib._MAXLINE = 5000000
 parser = argparse.ArgumentParser()
 parser.add_argument("host")
 parser.add_argument("user")
+parser.add_argument("--port", "-p", type=int)
+parser.add_argument("--ssl", default=True, action='store_true')
+parser.add_argument("--no-ssl", action='store_false', dest='ssl')
 args = parser.parse_args()
 
-password = getpass.getpass()
+if sys.platform == 'darwin':
+    password = subprocess.run(
+        f"security find-generic-password -a {args.user}  -s 'imap password' -w", 
+        shell=True, stdout=subprocess.PIPE, check=True).stdout.strip()
+else:
+    password = getpass.getpass()
 
-with IMAPClient(host=args.host,
-                ssl_context=ssl.create_default_context(cafile=certifi.where())) as imap:
+kw = {'host': args.host}
+if args.port:
+    kw['port'] = args.port
+if args.ssl:
+    kw['ssl_context'] = ssl.create_default_context(cafile=certifi.where())
+else:
+    kw['ssl'] = False
+
+with IMAPClient(**kw) as imap:
     imap.login(args.user, password)
 
     for flags, delimiter, name in imap.list_folders():
+        try:
+            resp = imap.select_folder(name)
+            n = resp[b'EXISTS']
+        except imaplib.IMAP4.error:
+            n = "?"
         if not b'\\HasNoChildren' in flags:
-            print(name, "+")
+            print(name, n, "+")
         else:
-            print(name)
+            print(name, n)

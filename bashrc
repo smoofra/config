@@ -9,7 +9,14 @@ for dir in /homebrew/bin /Volumes/data/homebrew/bin /opt/brew/bin ; do
   fi
 done
 
-[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath "$HOME/bin.local" "$HOME/bin" "$HOME/apple_config/bin"  /usr/local/bin /usr/local/sbin "$PATH" )
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath \
+    "$HOME/bin.local" \
+    "$HOME/bin" \
+    "$HOME/apple_config/bin" \
+    "$HOME/Library/Python/3.7/bin" \
+    /usr/local/bin \
+    /usr/local/sbin \
+    "$PATH" )
 
 PATH=$(echo $PATH | tr : \\n | grep -v 'VMware Fusion' | tr \\n :)
 
@@ -22,7 +29,6 @@ export LC_MONETARY="en_US.UTF-8"
 export LC_NUMERIC="en_US.UTF-8"
 export LC_TIME="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
-
 
 export PERL5LIB
 [[ -e ~/bin/addpath ]] && PERL5LIB=$(~/bin/addpath ~/perl5/lib/perl5 "$PERL5LIB" )

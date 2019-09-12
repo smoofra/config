@@ -19,7 +19,7 @@ Account apple
 Channel apple
 Master :apple-remote:
 Slave :apple-local:
-Sync Pull
+Sync PullNew PullReNew PullFlags
 Patterns "INBOX" "*"
 Create Slave
 Expunge None
@@ -61,7 +61,7 @@ Flatten .
 Channel gmail
 Master :gmail-remote:
 Slave :gmail-local:
-Sync Pull
+Sync PullNew PullReNew PullFlags
 Patterns "[Gmail]/All Mail" "[Gmail]/Spam" "[Gmail]/Trash" 
 
 Create Slave
@@ -71,7 +71,7 @@ SyncState *
 Channel gmail-elder-gods
 Master :gmail-elder-gods-remote:
 Slave :gmail-elder-gods-local:
-Sync Pull
+Sync PullNew PullReNew PullFlags
 Patterns "INBOX" "*" !"[Gmail]/Trash"
 Create Slave
 Expunge None
@@ -97,7 +97,7 @@ Flatten .
 Channel kolab-folders
 Master :kolab-remote:
 Slave :kolab-local:
-Sync Pull
+Sync PullNew PullReNew PullFlags
 Patterns "INBOX" "*"
 Create Slave
 Expunge None

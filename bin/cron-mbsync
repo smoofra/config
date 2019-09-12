@@ -29,3 +29,8 @@ logfile="$HOME/log/mbsync-$1 `date -R`"
 
 $mbsync -V $1 >"$logfile" 2>&1 || test \! -z "$quiet" || cat "$logfile"
 
+if [ $1 = 'gmail' ]; then
+	if grep -q -v '\Seen' '/data/Backup/Mail/gmail/[Gmail].All Mail/.mbsyncstate.flags'; then
+		echo "You have unread messages in gmail."
+	fi
+fi

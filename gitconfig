@@ -61,7 +61,7 @@
 	work = "! git config user.email lawrence_danna@apple.com; git config user.name \"Lawrence D'Anna\""
 
     # run clang-format on changes
-    clang-format = ! \nf() { \n ( cd \"$GIT_PREFIX\" && git diff HEAD -- \"$@\" ) | clang-format-diff.py -p1 -i \n } \nf
+    #clang-format = ! \nf() { \n ( cd \"$GIT_PREFIX\" && git diff HEAD -- \"$@\" ) | clang-format-diff.py -p1 -i \n } \nf
 
     # show commit in emacs
     se = ! \nf() { \n git show \"$@\"  | el -d \n } \nf
@@ -167,6 +167,9 @@
 [filter "clean_ipynb"]
 	clean = ipynb_drop_output
 	smudge = cat
+
+[filter "stripspace"]
+    clean = git-stripspace
 
 [filter "lfs"]
 	clean = git-lfs clean -- %f

@@ -43,16 +43,58 @@ if args.ssl:
 else:
     kw['ssl'] = False
 
+def i():
+    with open('mbsyncstate.flags', 'r') as f:
+        for line in f:
+            muid, suid, flags = line.split(' ', 2)
+            yield int(muid)
+muids = set(i())
+
 with IMAPClient(**kw) as imap:
+
     imap.login(args.user, password)
 
-    for flags, delimiter, name in imap.list_folders():
-        try:
-            resp = imap.select_folder(name)
-            n = resp[b'EXISTS']
-        except imaplib.IMAP4.error:
-            n = "?"
-        if not b'\\HasNoChildren' in flags:
-            print(name, n, "+")
-        else:
-            print(name, n)
+    print("caps: ", imap.capabilities())
+    print()
+
+
+    resp = imap.select_folder('[Gmail]/All Mail')
+    print(resp)
+    print()
+
+    # all_messages = '1:' + str(resp[b'UIDNEXT'])
+    # resp = imap.fetch(all_messages, ['UID'])
+    # print(len(resp))
+    # missing = set(resp.keys()) - muids
+    # print("len(missing) = ", len(missing))
+    # print()
+
+    missing = [644936, 644942, 644934]
+
+    resp = imap.fetch(missing, ['UID', 'FLAGS', 'BODY.PEEK[]', 'X-GM-LABELS'])
+    for uid, email in resp.items():
+        print("==================", uid)
+        print("SEQ", email[b'SEQ'])
+        print("FLAGS", email[b'FLAGS'])
+        print("X-GM-LABELS", email[b'X-GM-LABELS'])
+        print()
+        print(email[b'BODY[]'].decode('utf8'))
+        print()
+
+
+
+
+    # with open('uids', 'w') as f:
+    #     for uid in resp.keys():
+    #         print(uid, file=f)
+
+    # for flags, delimiter, name in imap.list_folders():
+    #     try:
+    #         resp = imap.select_folder(name)
+    #         n = resp[b'EXISTS']
+    #     except imaplib.IMAP4.error:
+    #         n = "?"
+    #     if not b'\\HasNoChildren' in flags:
+    #         print(name, n, "+")
+    #     else:
+    #         print(name, n)

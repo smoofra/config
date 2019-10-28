@@ -292,3 +292,8 @@ function docker-screen() {
 function mksha() {
     shasum $1 | awk '{print $1}' > $1.sha
 }
+
+if [ `uname -n` = odin ]; then
+	export CCACHE_MAXSIZE=500G
+	export CCACHE_DIR=/data/ccache
+fi

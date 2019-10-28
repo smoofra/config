@@ -1,3 +1,26 @@
+IMAPAccount test
+Host localhost
+User larry@elder-gods.org
+AuthMechs LOGIN
+Port 3143
+SSLType None
+PassCmd "echo foo"
+
+MaildirStore test-local
+Path /tmp/email
+Inbox /tmp/email/inbox
+
+ImapStore test-remote
+Account test
+
+Channel test
+Master :test-remote:
+Slave :test-local:
+Sync Pull
+Create Slave
+Expunge None
+SyncState *
+
 
 IMAPAccount apple
 Host mail.apple.com

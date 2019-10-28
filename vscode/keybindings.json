@@ -2,4 +2,32 @@
 [
     { "key": "ctrl+p",  "command": "history.showPrevious", "when": "inDebugRepl" },
     { "key": "ctrl+n",  "command": "history.showNext", "when": "inDebugRepl" },
+    {
+        "key": "cmd+k cmd+k",
+        "command": "workbench.output.action.clearOutput",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "cmd+k \\",
+        "command": "workbench.action.editorLayoutSingle"
+    },
+    {
+        "key": "ctrl+shift+j",
+        "command": "editor.action.joinLines",
+        "when": "editorTextFocus && !editorReadonly"
+    },
+    {
+        "key": "j",
+        "command": "scrollLineDown",
+        "when": "editorTextFocus && editorReadonly"
+    },
+    {
+        "key": "k",
+        "command": "scrollLineUp",
+        "when": "editorTextFocus && editorReadonly"
+    },
+    {
+        "key": "ctrl+=",
+        "command": "workbench.action.terminal.toggleTerminal"
+    },
 ]

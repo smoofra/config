@@ -5,9 +5,9 @@ Host demogorgon
 HostName demogorgon.apple.com
 ForwardAgent yes
 
-Host thor
-HostName thor.elder-gods.org
-User root
+#Host thor
+#HostName thor.elder-gods.org
+#User root
 
 Host demogorgon-test
 HostName demogorgon.apple.com
@@ -31,6 +31,18 @@ Host reliant
 HostName home.wjoe.tv
 User ldanna
 
+Host win
+HostKeyAlias win
+User temp
+LocalForward 3389 localhost:3389
+ProxyCommand ssh reliant nc 192.168.1.151 22
+
+Host bill
+User smoofra
+HostName bill.elder-gods.org
+ServerAliveInterval 5
+
+
 Host aule
 HostKeyAlias aule
 User ldanna
@@ -50,6 +62,12 @@ Host freyja
 User lawrence_danna
 HostKeyAlias freyja
 ProxyCommand ssh loki nc freyja 22
+
+Host thor
+ProxyCommand ssh loki nc thor.lan 22
+User ldanna
+LocalForward 3389 localhost:3389
+ServerAliveInterval 10
 
 Host odin odin.elder-gods.org
 HostName odin.elder-gods.org

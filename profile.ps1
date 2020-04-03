@@ -1,5 +1,9 @@
 
+# copy profile.ps1 $profile.CurrentUserAllHosts
+
 Set-PSReadLineOption -EditMode Emacs
+
+Set-Alias -Name which -Value Get-Command
 
 # $env:Path += ";C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Python37_64"
 #

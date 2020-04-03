@@ -1,3 +1,6 @@
+# to remap caps lock to ctrl https://docs.microsoft.com/en-us/sysinternals/downloads/ctrl2cap
+.\ctrl2cap.exe /install
+
 
 # https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse
 Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0

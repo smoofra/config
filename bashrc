@@ -13,7 +13,7 @@ done
     "$HOME/bin.local" \
     "$HOME/bin" \
     "$HOME/apple_config/bin" \
-    "$HOME/Library/Python/3.7/bin" \
+    "$HOME/Library/Python/3.8/bin" \
     /usr/local/bin \
     /usr/local/sbin \
     "$PATH" )
@@ -280,7 +280,7 @@ function fix-rtags() {
 export SPARK_LOCAL_IP=127.0.0.1
 
 if [ `uname -s` = Darwin ]; then
-    export GOPATH=/data/go
+    export GOPATH=/Volumes/data/go
 elif [ `uname -s` = Linux ]; then
     export GOPATH=$HOME/src/go
 fi
@@ -297,3 +297,33 @@ if [ `uname -n` = odin ]; then
 	export CCACHE_MAXSIZE=500G
 	export CCACHE_DIR=/data/ccache
 fi
+
+function rm-python-links() {
+    for x in /usr/local/bin/*;  do
+        if readlink "$x" | grep -q 'Python\.framework'; then
+            echo + rm "$x"
+            rm "$x"
+        fi
+    done
+}
+
+function link-python() {
+    # for x in /usr/local/bin/*;  do
+    #     if readlink "$x" | grep -q Python.framework; then
+    #         rm "$x"
+    #     fi
+    # done
+   ln -sf /AppleInternal/Library/Frameworks/Python.framework/Versions/Current/bin/python3 /usr/local/bin/python3
+}
+
+function link-public-python() {
+    # for x in /usr/local/bin/*;  do
+    #     if readlink "$x" | grep -q Python.framework; then
+    #         rm "$x"
+    #     fi
+    # done
+   ln -sf /Library/Frameworks/Python.framework/Versions/3.8/bin/python3 /usr/local/bin/python3
+}
+
+alias pip3='python3 -m pip'
+alias virtualenv='python3 -m virtualenv'

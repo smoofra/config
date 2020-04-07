@@ -1,6 +1,10 @@
 
 # -*- mode: conf -*-
 
+Host kraken darwin-kraken
+HostName darwin-kraken.sd.apple.com
+ForwardAgent yes
+
 Host demogorgon
 HostName demogorgon.apple.com
 ForwardAgent yes

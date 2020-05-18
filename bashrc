@@ -325,5 +325,9 @@ function link-public-python() {
    ln -sf /Library/Frameworks/Python.framework/Versions/3.8/bin/python3 /usr/local/bin/python3
 }
 
+function dockertags() {
+    curl https://registry.hub.docker.com/v1/repositories/$1/tags | jq -r  ' .[] | .name'
+}
+
 alias pip3='python3 -m pip'
 alias virtualenv='python3 -m virtualenv'

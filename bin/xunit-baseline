@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+
+import sys
+import argparse
+import os
+import subprocess
+import re
+
+from junitparser import JUnitXml, TestSuite, Failure, Error
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--baseline', '-b', required=True)
+parser.add_argument('--results', '-r', required=True)
+parser.add_argument('--output', '--out', '-o')
+parser.add_argument('--view', '-v', action='store_true')
+args = parser.parse_args()
+
+bad = set()
+
+xml = JUnitXml.fromfile(args.baseline)
+for suite in xml:
+    for case in suite:
+        if isinstance(case.result, (Failure, Error)):
+            bad.add((suite.name, case.classname, case.name))
+
+
+
+xml = JUnitXml.fromfile(args.results)
+for suite in xml:
+    for case in list(iter(suite)):
+        if (suite.name, case.classname, case.name) in bad:
+            print('removing', case)
+            suite._elem.remove(case._elem)
+
+
+if args.view and not args.output:
+    args.output = f'/tmp/results.{os.getpid()}.xml'
+
+if args.output:
+    xml.write(args.output)
+else:
+    xml.write(sys.stdout)
+
+if args.view:
+    html, n = re.subn(r'\.xml$', '.html', args.output)
+    assert n == 1
+    subprocess.run(['xunit-viewer', '-r', args.output, '-o', html], check=True)
+    subprocess.run(['open', html], check=True)

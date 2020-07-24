@@ -331,3 +331,6 @@ function dockertags() {
 
 alias pip3='python3 -m pip'
 alias virtualenv='python3 -m virtualenv'
+
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home
+

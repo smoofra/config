@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import subprocess
 import sys
@@ -39,7 +39,7 @@ class Git(object):
                                 stdin=FNULL, stdout=subprocess.PIPE, **kw)
         (out, err) = proc.communicate()
         if proc.wait() != 0:
-            raise Exception, "git failed"
+            raise Exception("git failed")
         return out
 
     def cmd_test(self, args, **kw):
@@ -47,7 +47,7 @@ class Git(object):
                                 stdin=FNULL, **kw)
         code = proc.wait()
         if code not in [0,1]:
-            raise Exception, "git failed"
+            raise Exception("git failed")
         return not code
 
     def __init__(self, directory=None):
@@ -56,7 +56,7 @@ class Git(object):
         self.directory = directory
         self.directory = self.cmd("git rev-parse --show-toplevel".split()).strip()
         if self.directory == '':
-            raise Exception, "can't find top-level.  (bare repo?)"
+            raise Exception("can't find top-level.  (bare repo?)")
 
     def is_clean(self):
         return ('' == self.cmd("git diff-index --cached --name-only HEAD".split()) and
@@ -87,7 +87,7 @@ class Git(object):
     def current_branch(self):
         branch = self.cmd(['git', 'symbolic-ref', 'HEAD']).strip()
         if branch == 'refs/heads/' or not branch.startswith('refs/heads/'):
-            raise Exception, "not on a branch"
+            raise Exception("not on a branch")
         return branch[len('refs/heads/'):]
 
     def trees_differ(self, a, b):
@@ -97,7 +97,7 @@ class Git(object):
 git = Git()
 
 if not git.is_clean():
-    raise Exception, "repo not clean"
+    raise Exception("repo not clean")
 
 head = Commit(git, 'HEAD')
 
@@ -128,28 +128,28 @@ try:
     while len(merges) >= 2:
         last = merges[-1]
 
-        print "trying base:", git.cmd(['git', 'log', '-n1', '--oneline', last.parents[0]]).strip()
+        print("trying base:", git.cmd(['git', 'log', '-n1', '--oneline', last.parents[0]]).strip())
         git.checkout(last.parents[0])
         merged = git.merge(head.parents[1], head.message)
 
         if not merged:
-            print "merge failed"
+            print("merge failed")
         elif git.trees_differ('HEAD', head.sha):
-            print "merge differed:", \
+            print("merge differed:", \
                 git.cmd(['git', 'rev-parse', '--short', 'HEAD']).strip(),  \
-                git.cmd(['git', 'rev-parse', '--short', head.sha]).strip()
+                git.cmd(['git', 'rev-parse', '--short', head.sha]).strip())
 
         if merged and not git.trees_differ('HEAD', head.sha):
             new = git.rev_parse('HEAD')
             git.checkout(current_branch)
             git.cmd(['git', 'reset', '--hard', new])
-            print "remerged!"
+            print("remerged!")
             break
 
         merges.pop()
 
     else:
-        print "nothing changed"
+        print("nothing changed")
         git.checkout(current_branch)
 
 except:

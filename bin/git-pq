@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import glob
+import sys
+from collections import namedtuple
+import shutil
+
+import yaml
+import git   #gitpython
+
+def relpath_nodots(path, start):
+    ret = os.path.relpath(path, start)
+    if any(x == '.' or x == '..' for x in os.path.split(ret)):
+        raise Exception("relative path has dots in it")
+    return ret
+
+class Repo(git.Repo):
+
+    def worktrees(self):
+        out = self.git.worktree('list', '--porcelain')
+        for stanza in out.split('\n\n'):
+            def pairs():
+                for line in stanza.strip().split("\n"):
+                    yield line.split(" ", 1)
+            yield dict(pairs())
+
+    def main_worktree(self):
+        return next(self.worktrees())['worktree']
+
+    # def is_worktree(self, path):
+    #     worktrees = self.worktrees()
+    #     primary_worktree = next(worktrees)['worktree']
+    #     path = os.path.realpath(os.path.join(primary_worktree, path))
+    #     for worktree in worktrees:
+    #         if os.path.realpath(worktree['worktree']) == path:
+    #             return True
+    #     return False
+
+    def get_worktree(self, path):
+        if not os.path.exists(path):
+            return False
+        for worktree in self.worktrees():
+            wtpath = worktree['worktree']
+            if os.path.exists(wtpath) and os.path.samefile(path, wtpath):
+                return wtpath
+        return None
+
+    def is_worktree(self, path):
+        return self.get_worktree(path) is not None
+
+    def worktree_relpath(self, target):
+        if not os.path.exists(target):
+            return None
+        base = os.path.realpath(self.working_dir)
+        for worktree in self.worktrees():
+            path = os.path.relpath(os.path.realpath(worktree['worktree']), start=base)
+            if path == '..' or path.startswith('..' + os.path.sep):
+                continue
+            if os.path.samefile(path, target):
+                return path
+
+    def apply_patches_keep_tree(self, patchdir, base, name):
+        restype = namedtuple('Worktree', ['worktree', 'branch', 'git_dir'])
+
+        temp = os.path.join(self.git_dir, 'pq', 'temp-' + name)
+        temp_branch = 'pq-' + name
+        if os.path.exists(temp):
+            raise Exception(f"{temp} already exists")
+        try:
+            self.git.worktree('add', '-b', temp_branch, temp, base)
+            temp_repo = Repo(temp)
+            patches = sorted(glob.glob(os.path.join(os.path.abspath(patchdir), "*.patch")))
+            temp_repo.git.am('--whitespace=nowarn', '--quiet', *patches)
+            return restype(temp, temp_branch, temp_repo.git_dir)
+        except:
+            if os.path.exists(temp):
+                self.git.worktree('remove', '--force', temp)
+                self.git.branch('-D', temp_branch)
+            raise
+
+    def apply_patches(self, patchdir, base):
+        temp = os.path.join(self.git_dir, 'pq', 'temp')
+        temp_branch = 'pq-apply-patches'
+        if os.path.exists(temp):
+            raise Exception(f"{temp} already exists")
+        try:
+            self.git.worktree('add', '-b', temp_branch, temp, base)
+            temp_repo = Repo(temp)
+            patches = sorted(glob.glob(os.path.join(os.path.abspath(patchdir), "*.patch")))
+            temp_repo.git.am('--whitespace=nowarn', '--quiet', *patches)
+            return temp_repo.head.commit
+        finally:
+            self.git.worktree('remove', '--force', temp)
+            self.git.branch('-D', temp_branch)
+
+    def edit(self, subtree_path, patchs_path, base, name=None):
+        if not name:
+            name = os.path.basename(subtree_path)
+
+        if self.is_worktree(subtree_path):
+            raise Exception(f"{subtree_path} is already a worktree")
+        if os.path.exists(os.path.join(self.git_dir, 'commondir')):
+            raise Exception(f"{self.git_dir} is not the primary GIT_DIR")
+
+        relpath = relpath_nodots(subtree_path, self.working_dir)
+        abspath = os.path.join(self.working_dir, relpath)
+
+        wt = self.apply_patches_keep_tree(patchs_path, base, name)
+
+        with open(os.path.join(wt.git_dir, 'gitdir'), 'w') as f:
+            f.write(os.path.join(abspath, ".git"))
+            f.write("\n")
+        with open(os.path.join(abspath, '.git'), 'w') as f:
+            f.write(f"gitdir: {wt.git_dir}\n")
+
+        shutil.rmtree(wt.worktree)
+
+
+        # n = 1
+        # basename = os.path.basename(subtree_path)
+        # wtname = basename
+        # while os.path.exists(os.path.join(repo.git_dir, 'worktrees', wtname)):
+        #     wtname = basename + str(n)
+        #     n += 1
+
+        # wt_git_dir = os.path.join(repo.git_dir, 'worktrees', wtname
+        # os.makedirs(wt_git_dir)
+        # with open(os.path.join(wt_git_dir, "commondir"), 'w') as f:
+        #     f.write(f"..{os.path.sep}..\n")
+
+        # with open(os.path.join(wt_git_dir, "commondir"), 'w') as f:
+        #     f.write(f"..{os.path.sep}..\n")
+
+
+
+
+
+
+
+def main():
+
+    repo = Repo(search_parent_directories=True)
+
+    config_file = os.path.join(repo.working_dir, '.git-pq')
+    if os.path.exists(config_file):
+        with open(config_file, 'r') as f:
+            config = yaml.load(f, Loader=yaml.SafeLoader)
+    else:
+        config = dict()
+
+    #print(repo.worktree_relpath('./postbacfffsk'))
+
+    repo.edit('Python', 'patches', 'v3.8.2')
+
+    sys.exit(0)
+
+
+    print(config)
+    print(repo.working_dir)
+    print(repo)
+    #print(repo.working_dir)
+    #print(repo.is_worktree('postback'))
+    #print(repo.is_worktree('Python'))
+    #print(repo.apply_patches('patches', 'v3.8.2'))
+
+    print(repo.main_worktree())
+
+
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest="command", required=True) # this line changed
+    foo_parser = subparsers.add_parser('foo')
+    bar_parser = subparsers.add_parser('bar')
+    args = parser.parse_args()
+
+
+if __name__ == "__main__":
+    main()

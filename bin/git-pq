@@ -91,15 +91,6 @@ class Repo(git.Repo):
     def main_worktree(self):
         return next(self.worktrees())['worktree']
 
-    # def is_worktree(self, path):
-    #     worktrees = self.worktrees()
-    #     primary_worktree = next(worktrees)['worktree']
-    #     path = os.path.realpath(os.path.join(primary_worktree, path))
-    #     for worktree in worktrees:
-    #         if os.path.realpath(worktree['worktree']) == path:
-    #             return True
-    #     return False
-
     def get_worktree(self, path):
         if not os.path.exists(path):
             return False
@@ -112,17 +103,6 @@ class Repo(git.Repo):
     def is_worktree(self, path):
         return self.get_worktree(path) is not None
 
-    # def worktree_relpath(self, target):
-    #     if not os.path.exists(target):
-    #         return None
-    #     base = os.path.realpath(self.working_dir)
-    #     for worktree in self.worktrees():
-    #         path = os.path.relpath(os.path.realpath(worktree['worktree']), start=base)
-    #         if path == '..' or path.startswith('..' + os.path.sep):
-    #             continue
-    #         if os.path.samefile(path, target):
-    #             return path
-
     def apply_patches_keep_tree(self, patchdir, base, name):
         restype = namedtuple('AppliedPatches', ['worktree', 'branch', 'git_dir'])
 
@@ -131,6 +111,7 @@ class Repo(git.Repo):
         if os.path.exists(temp):
             raise Exception(f"{temp} already exists")
         try:
+        
             self.git.worktree('add', '-b', temp_branch, temp, base)
             temp_repo = Repo(temp)
             patches = sorted(glob.glob(os.path.join(os.path.abspath(patchdir), "*.patch")))
@@ -151,23 +132,6 @@ class Repo(git.Repo):
             if worktree:
                 self.git.worktree('remove', '--force', worktree)
                 self.git.branch('-D', branch)
-
-    # def apply_patches(self, patchdir, base):
-    #     temp = os.path.join(self.git_dir, 'pq', 'temp')
-    #     temp_branch = 'pq-apply-patches'
-    #     if os.path.exists(temp):
-    #         raise Exception(f"{temp} already exists")
-    #     try:
-    #         self.git.worktree('add', '-b', temp_branch, temp, base)
-    #         temp_repo = Repo(temp)
-    #         patches = sorted(glob.glob(os.path.join(os.path.abspath(patchdir), "*.patch")))
-    #         temp_repo.git.am('--whitespace=nowarn', '--quiet', *patches)
-    #         return temp_repo.head.commit
-    #     finally:
-
-    # def edit_pq(self, subtree_path, patchs_path, base, name=None):
-    #     if not name:
-    #         name = os.path.basename(subtree_path)
 
     def edit_pq(self, subtree):
         if subtree.worktree:
@@ -194,22 +158,6 @@ class Repo(git.Repo):
         finally:
             if wt:
                 shutil.rmtree(wt.worktree)
-
-        # n = 1
-        # basename = os.path.basename(subtree_path)
-        # wtname = basename
-        # while os.path.exists(os.path.join(repo.git_dir, 'worktrees', wtname)):
-        #     wtname = basename + str(n)
-        #     n += 1
-
-        # wt_git_dir = os.path.join(repo.git_dir, 'worktrees', wtname
-        # os.makedirs(wt_git_dir)
-        # with open(os.path.join(wt_git_dir, "commondir"), 'w') as f:
-        #     f.write(f"..{os.path.sep}..\n")
-
-        # with open(os.path.join(wt_git_dir, "commondir"), 'w') as f:
-        #     f.write(f"..{os.path.sep}..\n")
-
 
     def finish_pq(self, subtree, out=sys.stdout):
         if not subtree.worktree:
@@ -238,7 +186,6 @@ class Repo(git.Repo):
         else:
             config = dict()
         return config
-
 
     def get_pq_subtrees(self):
         config = self.read_pq_config()
@@ -310,28 +257,7 @@ class Repo(git.Repo):
             pr(f"✓ Patches match HEAD:{subtree.relpath}, but worktree or index is dirty.")
 
 
-
-
-
 def main():
-
-
-
-    #print(repo.worktree_relpath('./postbacfffsk'))
-
-    # repo.edit('Python', 'patches', 'v3.8.2')
-
-    # sys.exit(0)
-
-    # print(config)
-    # print(repo.working_dir)
-    # print(repo)
-    #print(repo.working_dir)
-    #print(repo.is_worktree('postback'))
-    #print(repo.is_worktree('Python'))
-    #print(repo.apply_patches('patches', 'v3.8.2'))
-    #print(repo.main_worktree())
-
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command", required=True) # this line changed
@@ -349,8 +275,6 @@ def main():
 
     verify_parser = subparsers.add_parser('verify', help="verify that a subtree matches its patch directory")
     verify_parser.add_argument('subtree')
-
-
 
     args = parser.parse_args()
 

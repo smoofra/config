@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-#requirements: PyRSS2Gen
+# pip install PyRSS2Gen
+# apt install chromium-browser
 
 from html.parser import HTMLParser
 import subprocess
@@ -10,12 +11,16 @@ import datetime
 import re
 import sys
 
-chrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+if sys.platform == 'linux':
+    chrome = 'chromium'
+elif sys.p.platform == 'darwin':
+    chrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 
 cmd = [chrome] + shlex.split(
-    '--headless -run-all-compositor-stages-before-draw --virtual-time-budget=10000 '
+    '--headless -run-all-compositor-stages-before-draw --virtual-time-budget=20000 '
     ' --dump-dom https://www.tabletmag.com/contributors/bari-weiss')
 
+#print(' '.join(cmd))
 content = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8').stdout
 
 class Parser(HTMLParser):
@@ -52,4 +57,7 @@ feed = rss.RSS2(
     description = 'Bari Weiss',
     items = parser.rss_itmes)
 
-feed.write_xml(sys.stdout)
+with open('/var/www/html/feeds/bari.xml', 'w', encoding='utf-8') as f:
+    feed.write_xml(f)
+
+#feed.write_xml(sys.stdout)

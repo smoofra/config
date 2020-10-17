@@ -13,11 +13,11 @@ import sys
 
 if sys.platform == 'linux':
     chrome = 'chromium'
-elif sys.p.platform == 'darwin':
+elif sys.platform == 'darwin':
     chrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 
 cmd = [chrome] + shlex.split(
-    '--headless -run-all-compositor-stages-before-draw --virtual-time-budget=20000 '
+    '--headless --virtual-time-budget=20000 '
     ' --dump-dom https://www.tabletmag.com/contributors/bari-weiss')
 
 #print(' '.join(cmd))

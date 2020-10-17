@@ -71,18 +71,24 @@ class Git(object):
         output = self.cmd(['git', 'worktree', 'list', '--porcelain'])
         def trees():
             for worktree in output.rstrip().split("\n\n"):
-                yield dict(l.split(None, 1) for l in worktree.splitlines())
+                def to_pair(line):
+                    sp = line.split(None, 1)
+                    if len(sp) == 1:
+                        return (sp[0], True)
+                    else:
+                        return sp
+                yield dict(to_pair(l) for l in worktree.splitlines())
         return list(trees())
 
     
 original_git = Git()
 
 for wt_dict in original_git.worktrees():
-    if wt_dict['branch'] == 'refs/heads/testmerge':
+    if wt_dict.get('branch') == 'refs/heads/testmerge':
         worktree = wt_dict['worktree']
         break
 else:
-    worktree = path.join(original_git.git_dir, 'testmerge')
+    worktree = os.path.join(original_git.git_dir, 'testmerge')
     original_git.cmd(['git', 'worktree', 'add', worktree, '-b', 'testmerge'])
 
 git = Git(worktree)

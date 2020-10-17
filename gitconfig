@@ -89,6 +89,12 @@
 
     sb = show-branch
 
+    rp = rebase --show-current-patch
+
+    rpc = ! git -c color.ui=always rebase --show-current-patch
+
+    rpl = ! git log -n1 $(git rp | head -1 | awk '{print $2}' )
+
     dw = diff --color-words
     dlog = log --date=relative --pretty=fuller
     tpush = push --dry-run --summary
@@ -162,7 +168,7 @@
     conflictStyle = diff3
 
 [diff "clean_ipynb"]
-      textconv = ipynb_drop_output -a
+      #textconv = ipynb_drop_output -a
 
 [filter "clean_ipynb"]
 	clean = ipynb_drop_output

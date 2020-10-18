@@ -12,7 +12,7 @@ import re
 import sys
 
 if sys.platform == 'linux':
-    chrome = 'chromium'
+    chrome = '/snap/bin/chromium'
 elif sys.platform == 'darwin':
     chrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 

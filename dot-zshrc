@@ -81,21 +81,66 @@ source $ZSH/oh-my-zsh.sh
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+if [[ -n $SSH_CONNECTION ]]; then
+    export EDITOR='vim'
+else
+    export EDITOR='code -w'
+fi
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+for dir in /homebrew/bin /Volumes/data/homebrew/bin /opt/brew/bin ; do 
+  if [[ -e $dir ]] ; then
+    [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath $dir "$PATH")
+    export HOMEBREW_TEMP=$(dirname $dir)/tmp
+  fi
+done
+
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath \
+    "$HOME/bin.local" \
+    "$HOME/bin" \
+    "$HOME/apple_config/bin" \
+    "$HOME/Library/Python/3.9/bin" \
+    "$HOME/Library/Python/3.8/bin" \
+    /usr/local/bin \
+    /usr/local/sbin \
+    "$PATH" )
+
+export PERL5LIB
+[[ -e ~/bin/addpath ]] && PERL5LIB=$(~/bin/addpath ~/perl5/lib/perl5 "$PERL5LIB" )
+
+if which gls >/dev/null ; then
+	alias ls='gls --color=auto'
+    alias lsd='gls -l -r --sort=time --color=auto'
+elif ls --version 2>/dev/null | grep -iq gnu ; then
+	alias ls='ls --color=auto'
+    alias lsd='ls -l -r --sort=time --color=auto'
+fi
+
+if which grm >/dev/null ; then
+	alias rm=grm
+fi
+
+if which gfind >/dev/null ; then
+    alias find=gfind
+fi
+
+if which gxargs >/dev/null ; then
+    alias xargs=gxargs
+fi
+
+alias rerc='source ~/.zshrc'
+
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+
+# wifi on, wifi off
+alias wifi='networksetup -setairportpower airport'
+
+# mouse on / mouse off
+alias mouse='tmux set -g mode'
+
+PROMPT="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
+PROMPT+=' %{$fg[cyan]%}%3~%{$reset_color%} $(git_prompt_info)'
+
+alias k='kubectl'
+
+

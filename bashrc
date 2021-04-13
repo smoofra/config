@@ -13,6 +13,7 @@ done
     "$HOME/bin.local" \
     "$HOME/bin" \
     "$HOME/apple_config/bin" \
+    "$HOME/Library/Python/3.9/bin" \
     "$HOME/Library/Python/3.8/bin" \
     /usr/local/bin \
     /usr/local/sbin \
@@ -334,3 +335,6 @@ alias virtualenv='python3 -m virtualenv'
 
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home
 
+function scan-build() {
+    `xcrun -sdk macosx.internal -f clang | xargs dirname | xargs dirname`/local/bin/scan-build "$@"
+}

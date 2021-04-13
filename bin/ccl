@@ -52,6 +52,15 @@ if __name__ == '__main__':
         with open(args.filename, 'r') as f:
             string = f.read()
 
+    group = ''
     for line in string.splitlines():
-        ccl(line)
+        if line.endswith("\\"):
+            group += line[:-1]
+        else:
+            ccl(group+line)
+            group = ''
+
+    if group:
+        raise Exception
+
     print()

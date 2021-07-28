@@ -27,7 +27,7 @@ ZSH_THEME="robbyrussell"
 # DISABLE_AUTO_UPDATE="true"
 
 # Uncomment the following line to automatically update without prompting.
-# DISABLE_UPDATE_PROMPT="true"
+DISABLE_UPDATE_PROMPT="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
 # export UPDATE_ZSH_DAYS=13
@@ -143,4 +143,72 @@ PROMPT+=' %{$fg[cyan]%}%3~%{$reset_color%} $(git_prompt_info)'
 
 alias k='kubectl'
 
+alias acc='appleconnect authenticate -a lawrence_danna'
 
+unalias grm
+
+alias xcs='xcode-select'
+
+alias xiar='xia restore --download-cache-path=/Volumes/data '
+
+# download Mac OS installer
+alias nsdm='nsd --output-descriptive-name --output-dir /Volumes/data/  --softwarename UniversalMacInternalAssistant% --filename-exclude-pattern BuildItems --buildversion'
+
+function vpn() {
+    case $1 in
+        c*)
+            appleconnect network  -a connect
+            ;;
+        d*)
+            appleconnect network  -a disconnect
+            ;;
+    esac
+}
+
+# xc /opt/Whitetail14A190                # run Xcode UI
+# xc /opt/Whitetail14A190 xcodebuild...  # run an xcode command line tool
+function xc {
+    local developer
+    if [[ $# -eq 0 ]]; then
+        developer=$(xcode-select -p)
+    else
+        if [[ -e /opt/$1 ]]; then
+            developer=/opt/$1/Xcode.app/Contents/Developer
+        elif [[ -e $1/Contents/Developer ]]; then
+            developer=$1/Contents/Developer
+            shift
+        elif [[ -e $1/Xcode.app ]]; then
+            developer=$1/Xcode.app/Contents/Developer
+            shift
+        else
+            echo huh?
+            return 1
+        fi
+    fi
+    if [[ $# -eq 0 ]]; then
+        open -a $developer/../..
+    else
+        env DEVELOPER_DIR=$developer "$@"
+    fi
+}
+
+
+function path() {
+    if [ $# = 0 ]; then
+        echo "$PATH" | tr : \\n
+    elif [ $# = 2 ] && [ $1 = "-d" ]; then
+        DYLD_LIBRARY_PATH=$(~/bin/delpath "$2" "$DYLD_LIBRARY_PATH")
+        DYLD_FRAMEWORK_PATH=$(~/bin/delpath "$2" "$DYLD_FRAMEWORK_PATH")
+        PATH=$(~/bin/delpath "$2" "$PATH")
+    elif [ $# = 1 ]; then
+        local dir
+        dir="$(~/bin/relpath "$1")"
+        export DT_NO_RESPAWN=1
+        export DYLD_LIBRARY_PATH=$(~/bin/addpath "$dir" "$DYLD_LIBRARY_PATH")
+        export DYLD_FRAMEWORK_PATH=$(~/bin/addpath "$dir" "$DYLD_FRAMEWORK_PATH")
+        export PATH=$(~/bin/addpath "$dir" "$PATH")
+    else
+        echo '?'
+        return 1
+    fi
+}

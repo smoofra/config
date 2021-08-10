@@ -88,9 +88,9 @@ else
 fi
 
 
-for dir in /homebrew/bin /Volumes/data/homebrew/bin /opt/brew/bin ; do 
+for dir in /homebrew/bin /Volumes/data/homebrew/bin /opt/homebrew/bin /opt/brew/bin ; do
   if [[ -e $dir ]] ; then
-    [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath $dir "$PATH")
+    [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath $dir $(dirname $dir)/sbin "$PATH")
     export HOMEBREW_TEMP=$(dirname $dir)/tmp
   fi
 done
@@ -103,6 +103,7 @@ done
     "$HOME/Library/Python/3.8/bin" \
     /usr/local/bin \
     /usr/local/sbin \
+    "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/" \
     "$PATH" )
 
 export PERL5LIB
@@ -116,6 +117,7 @@ elif ls --version 2>/dev/null | grep -iq gnu ; then
     alias lsd='ls -l -r --sort=time --color=auto'
 fi
 
+unalias grm
 if which grm >/dev/null ; then
 	alias rm=grm
 fi
@@ -145,14 +147,19 @@ alias k='kubectl'
 
 alias acc='appleconnect authenticate -a lawrence_danna'
 
-unalias grm
 
 alias xcs='xcode-select'
 
 alias xiar='xia restore --download-cache-path=/Volumes/data '
 
+NSDDOWNLOADS=~/Downloads
+
 # download Mac OS installer
-alias nsdm='nsd --output-descriptive-name --output-dir /Volumes/data/  --softwarename UniversalMacInternalAssistant% --filename-exclude-pattern BuildItems --buildversion'
+alias nsdm='nsd --output-descriptive-name --output-dir "$NSDDOWNLOADS"  --softwarename "UniversalMacInternalAssistant%" --filename-exclude-pattern BuildItems --buildversion'
+
+# download xia image
+alias nsdx='nsd --output-descriptive-name --output-dir "$NSDDOWNLOADS" --validate-xia-hash --filename'
+
 
 function vpn() {
     case $1 in

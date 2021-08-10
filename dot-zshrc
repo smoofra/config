@@ -116,6 +116,7 @@ elif ls --version 2>/dev/null | grep -iq gnu ; then
     alias lsd='ls -l -r --sort=time --color=auto'
 fi
 
+unalias grm
 if which grm >/dev/null ; then
 	alias rm=grm
 fi
@@ -145,14 +146,27 @@ alias k='kubectl'
 
 alias acc='appleconnect authenticate -a lawrence_danna'
 
-unalias grm
-
 alias xcs='xcode-select'
 
 alias xiar='xia restore --download-cache-path=/Volumes/data '
 
 # download Mac OS installer
 alias nsdm='nsd --output-descriptive-name --output-dir /Volumes/data/  --softwarename UniversalMacInternalAssistant% --filename-exclude-pattern BuildItems --buildversion'
+
+# download iOS image
+function nsdi() {
+    if [ -z "$1" ]; then
+        echo "usage: nsdi BUILD DEV"
+        echo "eg. nsdi nsdi Azul18A346 D221"
+        echo
+        return 0
+    fi
+    build=$1
+    dev=$2
+    echo + nsd --output-descriptive-name --output-dir /Volumes/data  --buildversion $build --softwarename  \"%${dev}%InternalRestore %\"
+    nsd --output-descriptive-name --output-dir /Volumes/data --buildversion $build --softwarename  "%${dev}%InternalRestore %"
+}
+
 
 function vpn() {
     case $1 in
@@ -192,6 +206,7 @@ function xc {
     fi
 }
 
+alias pr='open -a $(xcode-select -p)/"Platforms/iPhoneOS.platform/AppleInternal/Applications/PurpleRestore 3.app"'
 
 function path() {
     if [ $# = 0 ]; then

@@ -154,7 +154,7 @@ alias xiar='xia restore --download-cache-path=/Volumes/data '
 NSDDOWNLOADS=~/Downloads
 
 # download Mac OS installer
-alias nsdm='nsd --output-descriptive-name --output-dir "$NSDDOWNLOADS"  --softwarename "UniversalMacInternalAssistant%" --filename-exclude-pattern BuildItems --buildversion'
+alias nsdm='nsd --nfa --output-descriptive-name --output-dir "$NSDDOWNLOADS"  --softwarename "UniversalMacInternalAssistant%" --filename-exclude-pattern "manifest|BuildItems"  --buildversion'
 
 # download xia image
 alias nsdx='nsd --output-descriptive-name --output-dir "$NSDDOWNLOADS" --validate-xia-hash --filename'
@@ -211,6 +211,10 @@ function xc {
     else
         env DEVELOPER_DIR=$developer "$@"
     fi
+}
+
+function sdk() {
+     xcrun -sdk "$@" --show-sdk-path 2>/dev/null
 }
 
 alias pr='open -a $(xcode-select -p)/"Platforms/iPhoneOS.platform/AppleInternal/Applications/PurpleRestore 3.app"'

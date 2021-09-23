@@ -87,6 +87,12 @@ else
     export EDITOR='code -w'
 fi
 
+PROMPT="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
+if [[ -n $SSH_CONNECTION ]]; then
+    PROMPT+=" %{$fg[magenta]%}%m%{$reset_color%} "
+fi
+PROMPT+=' %{$fg[cyan]%}%3~%{$reset_color%} $(git_prompt_info)'
+
 
 for dir in /homebrew/bin /Volumes/data/homebrew/bin /opt/homebrew/bin /opt/brew/bin ; do
   if [[ -e $dir ]] ; then
@@ -101,6 +107,7 @@ done
     "$HOME/apple_config/bin" \
     "$HOME/Library/Python/3.9/bin" \
     "$HOME/Library/Python/3.8/bin" \
+    /AppleInternal/usr/local/bin \
     /usr/local/bin \
     /usr/local/sbin \
     "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/" \
@@ -140,8 +147,6 @@ alias wifi='networksetup -setairportpower airport'
 # mouse on / mouse off
 alias mouse='tmux set -g mode'
 
-PROMPT="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
-PROMPT+=' %{$fg[cyan]%}%3~%{$reset_color%} $(git_prompt_info)'
 
 alias k='kubectl'
 

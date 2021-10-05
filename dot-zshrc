@@ -154,7 +154,7 @@ alias acc='appleconnect authenticate -a lawrence_danna'
 
 alias xcs='xcode-select'
 
-alias xiar='xia restore --download-cache-path=/Volumes/data '
+alias xiar='/usr/local/bin/xia restore --download-cache-path=/Volumes/data --no-open-xcode '
 
 NSDDOWNLOADS=~/Downloads
 

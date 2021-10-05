@@ -228,9 +228,11 @@ function path() {
     if [ $# = 0 ]; then
         echo "$PATH" | tr : \\n
     elif [ $# = 2 ] && [ $1 = "-d" ]; then
-        DYLD_LIBRARY_PATH=$(~/bin/delpath "$2" "$DYLD_LIBRARY_PATH")
-        DYLD_FRAMEWORK_PATH=$(~/bin/delpath "$2" "$DYLD_FRAMEWORK_PATH")
-        PATH=$(~/bin/delpath "$2" "$PATH")
+        local dir
+        dir="$(~/bin/relpath "$2")"
+        DYLD_LIBRARY_PATH=$(~/bin/delpath "$dir" "$DYLD_LIBRARY_PATH")
+        DYLD_FRAMEWORK_PATH=$(~/bin/delpath "$dir" "$DYLD_FRAMEWORK_PATH")
+        PATH=$(~/bin/delpath "$dir" "$PATH")
     elif [ $# = 1 ]; then
         local dir
         dir="$(~/bin/relpath "$1")"

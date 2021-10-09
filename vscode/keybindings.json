@@ -30,4 +30,8 @@
         "key": "ctrl+=",
         "command": "workbench.action.terminal.toggleTerminal"
     },
+    {
+        "key": "f1",
+        "command": "workbench.action.terminal.toggleTerminal"
+    }
 ]

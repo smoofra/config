@@ -4,7 +4,6 @@ set -e
 
 . ~/config/setup-shared.sh
 
-
 #prevent  iTunes from launching every time  you plug in a phone
 defaults write com.apple.iTunes ignore-devices 1
 defaults write com.apple.iTunesHelper ignore-devices 1
@@ -19,9 +18,6 @@ echo ". ~/.bashrc" >~/.bash_profile
 ( cd ~/config ; git config user.email larry@elder-gods.org )
 
 
-
-
-
 if ! [[ -e ~/apple_config ]]; then
     git clone ssh://git@stash.sd.apple.com/~lawrence_danna/apple_config.git ~/apple_config
     git -C ~/apple_config remote set-url --add --push origin ssh://git@stash.sd.apple.com/~lawrence_danna/apple_config.git
@@ -31,6 +27,11 @@ fi
 if ! [[ -e ~/bin.local ]]; then
     mkdir ~/bin.local
 fi
+
+if ! [[ -e ~/.oh-my-zsh ]]; then 
+    git clone https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
+fi
+ln -sf ~/config/dot-zshrc ~/.zshrc
 
 #if ! [[ -e ~/corekernelutils ]]; then
 #    git clone ssh://git@stash.sd.apple.com/coreosint/corekernelutils.git ~/corekernelutils
@@ -52,13 +53,13 @@ fi
 cat ~/config/ssh <(~/apple_config/ssh.py)  >~/.ssh/config
 
 
-test -e ~/Library/LaunchAgents || mkdir -p ~/Library/LaunchAgents
+# test -e ~/Library/LaunchAgents || mkdir -p ~/Library/LaunchAgents
 
-ln -sf ~/config/com.andersbakken.rtags.agent.plist  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist
-launchctl load ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist >/dev/null 2>&1
+# ln -sf ~/config/com.andersbakken.rtags.agent.plist  ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist
+# launchctl load ~/Library/LaunchAgents/com.andersbakken.rtags.agent.plist >/dev/null 2>&1
 
-ln -sf ~/config/org.elder-gods.ipython.plist ~/Library/LaunchAgents/org.elder-gods.ipython.plist
-launchctl load ~/Library/LaunchAgents/org.elder-gods.ipython.plist >/dev/null 2>&1
+# ln -sf ~/config/org.elder-gods.ipython.plist ~/Library/LaunchAgents/org.elder-gods.ipython.plist
+# launchctl load ~/Library/LaunchAgents/org.elder-gods.ipython.plist >/dev/null 2>&1
 
 
 #UGH
@@ -95,12 +96,15 @@ if ! [[ -e ~/Library/"Application Support"/Code/User ]]; then
     mkdir -p ~/Library/"Application Support"/Code/User
 fi
 ln -sf ~/config/vscode/keybindings.json ~/Library/"Application Support"/Code/User/
+mkdir -p ~/Library/"Application Support"/Code/User/snippets/
+ln -sf ~/config/vscode/snippets.code-snippets ~/Library/"Application Support"/Code/User/snippets/
 
-for emacs in /data/Applications/Emacs.app /Applications/Emacs.app; do
-    if [ -e $emacs ]; then
-	ln -sf $(find $emacs/ -name emacsclient | grep x86_64 | sort | tail -1) ~/bin.local/
-	break;
-    fi
-done
+
+# for emacs in /data/Applications/Emacs.app /Applications/Emacs.app; do
+#     if [ -e $emacs ]; then
+# 	ln -sf $(find $emacs/ -name emacsclient | grep x86_64 | sort | tail -1) ~/bin.local/
+# 	break;
+#     fi
+# done
 
 . ~/apple_config/setup.sh

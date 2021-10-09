@@ -23,25 +23,25 @@
 
 0 0 * * *  crontab -l >$HOME/config/odin-crontab
 
-0 0 * * *  $HOME/bin/backup_github -C /data/Backup/github/ smoofra
+0 0 * * * test -w /data/Backup &&  $HOME/bin/backup_github -C /data/Backup/github/ smoofra
 
-0 0 * * *  $HOME/bin/backup-mattermost
+0 0 * * * test -w /data/Backup &&  $HOME/bin/backup-mattermost
 
-10 0 * * * $HOME/bin/cron-vdirsyncer
+10 0 * * * test -w /data/Backup && $HOME/bin/cron-vdirsyncer
 
-20 0 * * * $HOME/bin/cron-mbsync /usr/local/bin/mbsync kolab
+20 0 * * * test -w /data/Backup && $HOME/bin/cron-mbsync /usr/local/bin/mbsync kolab
 
-20 0 * * * $HOME/bin/cron-mbsync /usr/local/bin/mbsync gmail
+20 0 * * * test -w /data/Backup && $HOME/bin/cron-mbsync /usr/local/bin/mbsync gmail
 
-30 3 * * * $HOME/bin/sullivan.py
+#30 3 * * * $HOME/bin/sullivan.py
 
-30 2 * * * $HOME/bin/cron-instagram
+30 2 * * * test -w /data/Backup && $HOME/bin/cron-instagram
 
-0 3 * * *  $HOME/bin/flickr-download -q -o /data/Backup/flickr --user smoofra
+0 3 * * *  test -w /data/Backup && $HOME/bin/flickr-download -q -o /data/Backup/flickr --user smoofra
 
-30 3 * * * $HOME/bin/flickr-download -q -o /data/Backup/flickr-joey --user jdanna
+30 3 * * * test -w /data/Backup && $HOME/bin/flickr-download -q -o /data/Backup/flickr-joey --user jdanna
 
-45 3 * * * $HOME/bin/flickr-download -q -o /data/Backup/flickr-bridgett --user bridgettgwyer
+45 3 * * * test -w /data/Backup && $HOME/bin/flickr-download -q -o /data/Backup/flickr-bridgett --user bridgettgwyer
 
 0 9 1 * *  echo CRON TEST
 

@@ -7,80 +7,87 @@ import os
 import sys
 import hashlib
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--mount-ok", action="store_true")
+parser.add_argument("--absolute", "--abs", action="store_true")
+parser.add_argument("--sums", default="sums")
+args = parser.parse_args()
+
 def sha_of_file(path):
     h = hashlib.sha1()
-    with open(path, 'rb') as f:
-        while True:
-            buf = f.read(2 ** 22)
-            if not buf:
-                break
-            else:
-                h.update(buf)
+    try:
+        with open(path, 'rb') as f:
+            while True:
+                buf = f.read(2 ** 22)
+                if not buf:
+                    break
+                else:
+                    h.update(buf)
+    except OSError as e:
+        print(f"failed to read {path}: {e}")
+        return "failed"
     return h.hexdigest()
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--sums", default="sums")
-    args = parser.parse_args()
-
-    known = set()
-    if os.path.exists(args.sums):
-        with open(args.sums, 'r') as f:
-            for line in f:
-                sha, path = line.rstrip().split(None, 1)
-                path = os.path.normpath(path)
-                known.add(path)
-
-
-
-    original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
-    pool = multiprocessing.Pool(10)
-    signal.signal(signal.SIGINT, original_sigint_handler)
-
-    results = list()
-
-    sumsfile = open(args.sums, 'a')
-
-    try:
-        for root, dirs, files in os.walk('.'):
-
-            dirs[:] = [dir for dir in dirs
-                    if not os.path.ismount(os.path.join(root, dir))]
-
-            for name in files:
-                path = os.path.normpath(os.path.join(root, name))
-                if os.path.islink(path) or not os.path.isfile(path):
-                    continue
-                if path == args.sums or path in known:
-                    continue
-                def mkcallback(path):
-                    def callback(sha):
-                        sumsfile.write(f"{sha}  {path}\n")
-                        print(f"{sha}  {path}")
-                    return callback
-                print ("reading", path)
-                result = pool.apply_async(sha_of_file, args=(path,), callback=mkcallback(path))
-                results.append(result)
-
-        pool.close()
-        pool.join()
-
-        for result in results:
-            result.get()
-
-    except KeyboardInterrupt:
-        signal.signal(signal.SIGINT, signal.SIG_IGN)
-        pool.terminate()
-        print()
-        print("interrupted.")
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()
+known = set()
+if os.path.exists(args.sums):
+    with open(args.sums, 'r') as f:
+        for line in f:
+            sha, path = line.rstrip().split(None, 1)
+            path = os.path.normpath(path)
+            known.add(path)
 
     
 
+original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+pool = multiprocessing.Pool(10)
+signal.signal(signal.SIGINT, original_sigint_handler)
+
+results = list()
+
+sumsfile = open(args.sums, 'a')
+
+try:            
+    for root, dirs, files in os.walk('.'):
+
+        dirs[:] = [dir for dir in dirs
+                if not os.path.islink(os.path.join(root, dir))]
+
+        if not args.mount_ok:
+            dirs[:] = [dir for dir in dirs
+                    if not os.path.ismount(os.path.join(root, dir))]
+        
+        for name in files:
+            path = os.path.normpath(os.path.join(root, name))
+            if args.absolute:
+                path = os.path.abspath(path)
+            if os.path.islink(path) or not os.path.isfile(path):
+                continue
+            if path == args.sums or path in known:
+                continue
+            def mkcallback(path):
+                def callback(sha):
+                    sumsfile.write(f"{sha}  {path}\n")
+                    print(f"{sha}  {path}")
+                return callback
+            print ("reading", path)
+            result = pool.apply_async(sha_of_file, args=(path,), callback=mkcallback(path))
+            results.append(result)
+
+    pool.close()
+    pool.join()
+
+    for result in results:
+        result.get()
+
+except KeyboardInterrupt:
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    pool.terminate()
+    print()
+    print("interrupted.")
+    sys.exit(1)
+
+
+    
             
         
 

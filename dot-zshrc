@@ -1,0 +1,247 @@
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+# Path to your oh-my-zsh installation.
+export ZSH=~/.oh-my-zsh
+
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time oh-my-zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+ZSH_THEME="robbyrussell"
+
+# Set list of themes to pick from when loading at random
+# Setting this variable when ZSH_THEME=random will cause zsh to load
+# a theme from this variable instead of looking in $ZSH/themes/
+# If set to an empty array, this variable will have no effect.
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+
+# Uncomment the following line to use case-sensitive completion.
+# CASE_SENSITIVE="true"
+
+# Uncomment the following line to use hyphen-insensitive completion.
+# Case-sensitive completion must be off. _ and - will be interchangeable.
+# HYPHEN_INSENSITIVE="true"
+
+# Uncomment the following line to disable bi-weekly auto-update checks.
+# DISABLE_AUTO_UPDATE="true"
+
+# Uncomment the following line to automatically update without prompting.
+DISABLE_UPDATE_PROMPT="true"
+
+# Uncomment the following line to change how often to auto-update (in days).
+# export UPDATE_ZSH_DAYS=13
+
+# Uncomment the following line if pasting URLs and other text is messed up.
+# DISABLE_MAGIC_FUNCTIONS="true"
+
+# Uncomment the following line to disable colors in ls.
+# DISABLE_LS_COLORS="true"
+
+# Uncomment the following line to disable auto-setting terminal title.
+# DISABLE_AUTO_TITLE="true"
+
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
+
+# Uncomment the following line to display red dots whilst waiting for completion.
+# Caution: this setting can cause issues with multiline prompts (zsh 5.7.1 and newer seem to work)
+# See https://github.com/ohmyzsh/ohmyzsh/issues/5765
+# COMPLETION_WAITING_DOTS="true"
+
+# Uncomment the following line if you want to disable marking untracked files
+# under VCS as dirty. This makes repository status check for large repositories
+# much, much faster.
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
+
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# You can set one of the optional three formats:
+# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# or set a custom format using the strftime function format specifications,
+# see 'man strftime' for details.
+# HIST_STAMPS="mm/dd/yyyy"
+
+# Would you like to use another custom folder than $ZSH/custom?
+# ZSH_CUSTOM=/path/to/new-custom-folder
+
+# Which plugins would you like to load?
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(git)
+
+source $ZSH/oh-my-zsh.sh
+
+# User configuration
+
+# export MANPATH="/usr/local/man:$MANPATH"
+
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
+
+if [[ -n $SSH_CONNECTION ]]; then
+    export EDITOR='vim'
+else
+    export EDITOR='code -w'
+fi
+
+PROMPT="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
+if [[ -n $SSH_CONNECTION ]]; then
+    PROMPT+=" %{$fg[magenta]%}%m%{$reset_color%} "
+fi
+PROMPT+=' %{$fg[cyan]%}%3~%{$reset_color%} $(git_prompt_info)'
+
+
+for dir in /homebrew/bin /Volumes/data/homebrew/bin /opt/homebrew/bin /opt/brew/bin ; do
+  if [[ -e $dir ]] ; then
+    [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath $dir $(dirname $dir)/sbin "$PATH")
+    export HOMEBREW_TEMP=$(dirname $dir)/tmp
+  fi
+done
+
+[[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath \
+    "$HOME/bin.local" \
+    "$HOME/bin" \
+    "$HOME/apple_config/bin" \
+    "$HOME/Library/Python/3.9/bin" \
+    "$HOME/Library/Python/3.8/bin" \
+    /AppleInternal/usr/local/bin \
+    /usr/local/bin \
+    /usr/local/sbin \
+    "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/" \
+    "$PATH" )
+
+export PERL5LIB
+[[ -e ~/bin/addpath ]] && PERL5LIB=$(~/bin/addpath ~/perl5/lib/perl5 "$PERL5LIB" )
+
+if which gls >/dev/null ; then
+	alias ls='gls --color=auto'
+    alias lsd='gls -l -r --sort=time --color=auto'
+elif ls --version 2>/dev/null | grep -iq gnu ; then
+	alias ls='ls --color=auto'
+    alias lsd='ls -l -r --sort=time --color=auto'
+fi
+
+unalias grm
+if which grm >/dev/null ; then
+	alias rm=grm
+fi
+
+if which gfind >/dev/null ; then
+    alias find=gfind
+fi
+
+if which gxargs >/dev/null ; then
+    alias xargs=gxargs
+fi
+
+alias rerc='source ~/.zshrc'
+
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+
+# wifi on, wifi off
+alias wifi='networksetup -setairportpower airport'
+
+# mouse on / mouse off
+alias mouse='tmux set -g mode'
+
+
+alias k='kubectl'
+
+alias acc='appleconnect authenticate -a lawrence_danna'
+
+alias xcs='xcode-select'
+
+alias xiar='/usr/local/bin/xia restore --download-cache-path=/Volumes/data --no-open-xcode '
+
+NSDDOWNLOADS=~/Downloads
+
+# download Mac OS installer
+alias nsdm='nsd --nfa --output-descriptive-name --output-dir "$NSDDOWNLOADS"  --softwarename "UniversalMacInternalAssistant%" --filename-exclude-pattern "manifest|BuildItems"  --buildversion'
+
+# download xia image
+alias nsdx='nsd --output-descriptive-name --output-dir "$NSDDOWNLOADS" --validate-xia-hash --filename'
+
+
+# download iOS image
+function nsdi() {
+    if [ -z "$1" ]; then
+        echo "usage: nsdi BUILD DEV"
+        echo "eg. nsdi nsdi Azul18A346 D221"
+        echo
+        return 0
+    fi
+    build=$1
+    dev=$2
+    echo + nsd --output-descriptive-name --output-dir /Volumes/data  --buildversion $build --softwarename  \"%${dev}%InternalRestore %\"
+    nsd --output-descriptive-name --output-dir /Volumes/data --buildversion $build --softwarename  "%${dev}%InternalRestore %"
+}
+
+
+function vpn() {
+    case $1 in
+        c*)
+            appleconnect network  -a connect
+            ;;
+        d*)
+            appleconnect network  -a disconnect
+            ;;
+    esac
+}
+
+# xc /opt/Whitetail14A190                # run Xcode UI
+# xc /opt/Whitetail14A190 xcodebuild...  # run an xcode command line tool
+function xc {
+    local developer
+    if [[ $# -eq 0 ]]; then
+        developer=$(xcode-select -p)
+    else
+        if [[ -e /opt/$1 ]]; then
+            developer=/opt/$1/Xcode.app/Contents/Developer
+        elif [[ -e $1/Contents/Developer ]]; then
+            developer=$1/Contents/Developer
+            shift
+        elif [[ -e $1/Xcode.app ]]; then
+            developer=$1/Xcode.app/Contents/Developer
+            shift
+        else
+            echo huh?
+            return 1
+        fi
+    fi
+    if [[ $# -eq 0 ]]; then
+        open -a $developer/../..
+    else
+        env DEVELOPER_DIR=$developer "$@"
+    fi
+}
+
+function sdk() {
+     xcrun -sdk "$@" --show-sdk-path 2>/dev/null
+}
+
+alias pr='open -a $(xcode-select -p)/"Platforms/iPhoneOS.platform/AppleInternal/Applications/PurpleRestore 3.app"'
+
+function path() {
+    if [ $# = 0 ]; then
+        echo "$PATH" | tr : \\n
+    elif [ $# = 2 ] && [ $1 = "-d" ]; then
+        local dir
+        dir="$(~/bin/relpath "$2")"
+        DYLD_LIBRARY_PATH=$(~/bin/delpath "$dir" "$DYLD_LIBRARY_PATH")
+        DYLD_FRAMEWORK_PATH=$(~/bin/delpath "$dir" "$DYLD_FRAMEWORK_PATH")
+        PATH=$(~/bin/delpath "$dir" "$PATH")
+    elif [ $# = 1 ]; then
+        local dir
+        dir="$(~/bin/relpath "$1")"
+        export DT_NO_RESPAWN=1
+        export DYLD_LIBRARY_PATH=$(~/bin/addpath "$dir" "$DYLD_LIBRARY_PATH")
+        export DYLD_FRAMEWORK_PATH=$(~/bin/addpath "$dir" "$DYLD_FRAMEWORK_PATH")
+        export PATH=$(~/bin/addpath "$dir" "$PATH")
+    else
+        echo '?'
+        return 1
+    fi
+}

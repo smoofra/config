@@ -18,7 +18,7 @@ echo ". ~/.bashrc" >~/.bash_profile
 ( cd ~/config ; git config user.email larry@elder-gods.org )
 
 
-if ! [[ -e ~/apple_config ]]; then
+if false && ! [[ -e ~/apple_config ]]; then
     git clone ssh://git@stash.sd.apple.com/~lawrence_danna/apple_config.git ~/apple_config
     git -C ~/apple_config remote set-url --add --push origin ssh://git@stash.sd.apple.com/~lawrence_danna/apple_config.git
     git -C ~/apple_config remote set-url --add --push origin ssh://odin/data/Backup/apple_config.git
@@ -50,7 +50,11 @@ fi
 
 #~/config/replacements.py
 
-cat ~/config/ssh <(~/apple_config/ssh.py)  >~/.ssh/config
+if [ -d ~/apple_config ]; then
+    cat ~/config/ssh <(~/apple_config/ssh.py)  >~/.ssh/config
+else
+    ln -sf ~/config/ssh ~/.ssh/config
+fi
 
 
 # test -e ~/Library/LaunchAgents || mkdir -p ~/Library/LaunchAgents
@@ -107,4 +111,6 @@ ln -sf ~/config/vscode/snippets.code-snippets ~/Library/"Application Support"/Co
 #     fi
 # done
 
-. ~/apple_config/setup.sh
+if [ -d ~/apple_config ]; then
+    . ~/apple_config/setup.sh
+fi

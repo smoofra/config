@@ -175,8 +175,8 @@ function nsdi() {
     fi
     build=$1
     dev=$2
-    echo + nsd --output-descriptive-name --output-dir /Volumes/data  --buildversion $build --softwarename  \"%${dev}%InternalRestore %\"
-    nsd --output-descriptive-name --output-dir /Volumes/data --buildversion $build --softwarename  "%${dev}%InternalRestore %"
+    echo + nsd --nfa --output-descriptive-name --output-dir /Volumes/data  --buildversion $build --softwarename  \"%${dev}%InternalRestore %\"
+    nsd --nfa --output-descriptive-name --output-dir /Volumes/data --buildversion $build --softwarename  "%${dev}%InternalRestore %"
 }
 
 
@@ -245,3 +245,13 @@ function path() {
         return 1
     fi
 }
+
+function resetup() {
+    if [ `uname -s` = Darwin ]; then
+        bash ~/config/setup-mac.sh
+    else
+        bash ~/config/setup-shared.sh
+    fi
+}
+
+setopt NO_AUTO_PUSHD

@@ -49,13 +49,39 @@ def iter_platforms() -> Iterable[Tuple[int,str]]:
             if m := re.match(r'\s*#\s*define\s+PLATFORM_([^\s]+)\s+(\d.*)', line):
                 yield int(m.group(2)), m.group(1).strip().lower()
 
-try:
-    platforms = dict(iter_platforms())
-except OSError:
-    platforms = {1: 'macos', 2: 'ios', 3: 'tvos', 4: 'watchos'}
+class PlatformNames:
 
-Platform = str
-Version = str
+    @staticmethod
+    def iter_platforms() -> Iterable[Tuple[int,str]]:
+        sdk = subprocess.run(['xcrun', '-sdk', 'macosx', '--show-sdk-path'],
+            stdout=subprocess.PIPE, check=True, encoding='utf8').stdout.strip()
+        with open(os.path.join(sdk, 'usr', 'include', 'mach-o', 'loader.h'), 'r') as f:
+            for line in f:
+                if m := re.match(r'\s*#\s*define\s+PLATFORM_([^\s]+)\s+(\d.*)', line):
+                    yield int(m.group(2)), m.group(1).strip().lower()
+
+    def __getitem__(self, platform:int) -> str:
+        if name := mach_o.PLATFORM_NAMES.get(platform):
+            return name
+        if not hasattr(self, 'from_header'):
+            try:
+                self.from_header = dict(self.iter_platforms())
+            except OSError:
+                self.from_header = dict()
+        if name := self.from_header.get(platform):
+            return name
+        else:
+            return f"unknown_platform_{platform}"
+
+    def from_lc_name(self, lcname:str) -> str:
+        m = re.match('LC_VERSION_MIN_(.*)', lcname)
+        assert m
+        platform_name = m.group(1)
+        platform_name = {"MACOSX":"MACOS", "IPHONEOS":"IOS"}.get(platform_name, platform_name)
+        platform =  mach_o.__dict__["PLATFORM_" + platform_name.upper()]
+        return self[platform]
+
+platforms = PlatformNames()
 
 def decode_version(version:int) -> str:
     # X.Y.Z is encoded in nibbles xxxx.yy.zz
@@ -75,18 +101,11 @@ def get_vers(header:MachOHeader) -> Iterable[PlatVer]:
     for lc,cmd,data in header.commands:
         if isinstance(cmd,mach_o.version_min_command):
             lcname = mach_o.LC_NAMES[lc.cmd]
-            m = re.match('LC_VERSION_MIN_(.*)', lcname)
-            assert m
-            platform_name = m.group(1).lower()
-            platform_name = {"macosx":"macos", "iphoneos":"ios"}.get(platform_name, platform_name)
+            platform_name = platforms.from_lc_name(lcname)
             yield PlatVer(platform_name, decode_version(cmd.version))
         elif lc.cmd == mach_o.LC_BUILD_VERSION:
-            if s := platforms.get(cmd.platform):
-                platform_name = s
-            else:
-                platform_name = f"unknown_platform_{cmd.platform}"
+            platform_name = platforms[cmd.platform]
             yield PlatVer(platform_name, decode_version(cmd.minos))
-
 
 def get_all_vers(macho:MachO) -> Iterable[Tuple[MachOHeader, Tuple[PlatVer, ...]]]:
     for header in macho.headers:

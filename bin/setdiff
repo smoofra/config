@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -11,12 +11,13 @@ parser.add_argument("-i", "--intersection", action='store_true')
 parser.add_argument("--split", action='store_true')
 parser.add_argument("--sums", action='store_true')
 parser.add_argument("--normpath", action='store_true')
+parser.add_argument("-u", "--unified-diff", action='store_true')
 parser.add_argument("a")
 parser.add_argument("b")
 args = parser.parse_args()
 
 class mystring(str):
-    pass
+    line : str
 
 if args.sums:
 
@@ -65,25 +66,32 @@ with open (args.b, 'r') as f:
 if args.reverse:
     a, b = b, a
 
-def show(x):
+def show(x, sign):
     if isinstance(x, mystring):
-        print x.line
+        x = x.line
+    if args.unified_diff:
+        print(sign, x)
     else:
-        print x
+        print(x)
+
         
 #print >>sys.stderr, len(a), len(b)
 
 if args.intersection:
+    if args.unified_diff:
+        parser.error("--intersection not compatibile with --unified-diff")
     for x in a & b:
-        show(x)
+        show(x, sign=None)
 
 else:
 
-    for x in a - b:
-        show(x)
+    def i():
+        for x in a - b:
+            yield (x, '-')
+        if args.symmetric:
+            for x in b - a:
+                yield (x, '+')
 
-    if args.symmetric:
-        print
-        for x in b - a:
-            show(x)
+    for x,sign in sorted(i(), key=lambda p: p[0].lower()):
+        show(x,sign)
 

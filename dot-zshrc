@@ -149,6 +149,8 @@ alias mouse='tmux set -g mode'
 
 
 alias k='kubectl'
+alias kc='kubectl config'
+
 
 alias acc='appleconnect authenticate -a lawrence_danna'
 
@@ -252,6 +254,25 @@ function resetup() {
     else
         bash ~/config/setup-shared.sh
     fi
+}
+
+function xbs-platforms() {
+    local update
+    if [ $#@ = 1 ]; then
+        update="$1"
+    else
+        update=StashedSydney
+    fi
+    snapshot=`xbs snapshot get $update` || return 1
+    echo 'select name from PlatformName; ' | sqlite3 -batch "$snapshot"
+}
+
+function cortex-blame() {
+    jq '.projects | with_entries({key, value:.value | {radarComponents,sourceRepositoryURL,primaryOwner,secondaryOwners}})'
+}
+
+function cortex-target() {
+    jq '.projects | with_entries({key, value:.value | {targetArchitectures,buildsAgainstSDKs,buildTarget,embeddedProjectss,minimumOSDeployments,toolchain}})'
 }
 
 setopt NO_AUTO_PUSHD

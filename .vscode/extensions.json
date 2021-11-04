@@ -3,11 +3,10 @@
         "lfs.vscode-emacs-friendly",
         "ms-python.python",
         "ms-vscode.cpptools",
-        "waderyan.gitblame",
-        "eamodio.gitlens",
         "tht13.html-preview-vscode",
         "jasonlhy.hungry-delete",
         "redhat.java",
-        "rioj7.select-by"
+        "rioj7.select-by",
+        "streetsidesoftware.code-spell-checker"
     ]
   }

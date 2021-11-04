@@ -96,13 +96,15 @@ if ! [[ -e ~/.atom ]]; then
 	ln -s ~/config/dot-atom ~/.atom
 fi
 
-if ! [[ -e ~/Library/"Application Support"/Code/User ]]; then
-    mkdir -p ~/Library/"Application Support"/Code/User
-fi
-ln -sf ~/config/vscode/keybindings.json ~/Library/"Application Support"/Code/User/
-mkdir -p ~/Library/"Application Support"/Code/User/snippets/
-ln -sf ~/config/vscode/snippets.code-snippets ~/Library/"Application Support"/Code/User/snippets/
-
+for code in Code "Code - Insiders"; do
+    if ! [[ -e ~/Library/"Application Support"/"$code"/User ]]; then
+        mkdir -p ~/Library/"Application Support"/"$code"/User
+    fi
+    ln -sf ~/config/vscode/keybindings.json ~/Library/"Application Support"/"$code"/User/
+    mkdir -p ~/Library/"Application Support"/"$code"/User/snippets/
+    ln -sf ~/config/vscode/snippets.code-snippets ~/Library/"Application Support"/"$code"/User/snippets/
+    ln -sf ~/config/vscode/settings.json ~/Library/"Application Support"/"$code"/User/
+done
 
 # for emacs in /data/Applications/Emacs.app /Applications/Emacs.app; do
 #     if [ -e $emacs ]; then

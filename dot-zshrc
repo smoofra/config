@@ -271,8 +271,30 @@ function cortex-blame() {
     jq '.projects | with_entries({key, value:.value | {radarComponents,sourceRepositoryURL,primaryOwner,secondaryOwners}})'
 }
 
+export TRAIN=StashedRome
+
+function xbs-blame() {
+    xbs snapshot dump -u $TRAIN --cortex $1 | cortex-blame
+}
+
+function xbs-sibs() {
+    xbs snapshot dump -u $TRAIN --cortex --siblings $1 | \
+        jq '.projects | with_entries({key, value:.value | {buildAliasOf}})'
+}
+
 function cortex-target() {
     jq '.projects | with_entries({key, value:.value | {targetArchitectures,buildsAgainstSDKs,buildTarget,embeddedProjectss,minimumOSDeployments,toolchain}})'
 }
 
+
+function podimages() {
+    kubectl get pods -o=jsonpath='{range .items[*]}{range .spec.containers[*]}{.name}{"\t"}{.image}{"\n"}'  | column -c 2 -s $'\t' -t
+}
+
 setopt NO_AUTO_PUSHD
+
+
+if [ -e /Volumes/data ]; then
+	export CCACHE_MAXSIZE=500G
+	export CCACHE_DIR=/Volumes/data/ccache
+fi

@@ -74,9 +74,6 @@ def show(x, sign):
     else:
         print(x)
 
-        
-#print >>sys.stderr, len(a), len(b)
-
 if args.intersection:
     if args.unified_diff:
         parser.error("--intersection not compatibile with --unified-diff")

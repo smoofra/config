@@ -1,5 +1,9 @@
-
 # -*- mode: conf -*-
+
+Host echolink
+HostName 104.248.57.166
+User root
+
 
 Host kraken darwin-kraken
 HostName darwin-kraken.sd.apple.com
@@ -43,7 +47,8 @@ ProxyCommand ssh reliant nc 192.168.1.151 22
 
 Host bill
 User smoofra
-HostName bill.elder-gods.org
+HostName 40.76.245.248
+#HostName bill.elder-gods.org
 ServerAliveInterval 5
 
 
@@ -53,14 +58,8 @@ User ldanna
 ProxyCommand ssh reliant nc 192.168.1.5 22
 
 Host juiblex
-HostKeyAlias juiblex
-User ldanna
-ProxyCommand ssh loki nc juiblex.lan 22
-
-Host juiblex.local
-HostKeyAlias juiblex
-AddressFamily inet
-User ldanna
+HostName juiblex.local
+User lawrence_danna
 
 Host freyja
 User lawrence_danna

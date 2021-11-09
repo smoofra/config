@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+
+from macholib import mach_o
+from macholib.MachO import MachO, MachOHeader
+import argparse
+from typing import *
+import subprocess
+import os
+import re
+import ctypes
+import ctypes.util
+from collections import namedtuple
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("filename", metavar="MACHO_FILE")
+parser.add_argument('-v', '--verbose', action='store_true')
+args = parser.parse_args()
+
+libc = ctypes.cdll[cast(str, ctypes.util.find_library('c'))]
+
+class NXArchInfo(ctypes.Structure):
+    _fields_ = [
+        ('name', ctypes.c_char_p),
+        ('cputype', ctypes.c_int),
+        ('cpusubtype', ctypes.c_int),
+        ('byteorder', ctypes.c_int),
+        ('description', ctypes.c_char_p)]
+
+
+NXGetArchInfoFromCpuType = libc.NXGetArchInfoFromCpuType
+NXGetArchInfoFromCpuType.restype = ctypes.POINTER(NXArchInfo)
+NXGetArchInfoFromCpuType.argtypes = [ ctypes.c_int, ctypes.c_int ]
+
+def get_archname(header: MachO):
+    h = header.header
+    archinfo = NXGetArchInfoFromCpuType(h.cputype, h.cpusubtype)
+    if archinfo:
+        return archinfo.contents.name.decode('utf8')
+    else:
+        return f"{hex(h.cputype)}/{hex(h.cpusubtype)}"
+
+
+def iter_platforms() -> Iterable[Tuple[int,str]]:
+    sdk = subprocess.run(['xcrun', '-sdk', 'macosx', '--show-sdk-path'],
+        stdout=subprocess.PIPE, check=True, encoding='utf8').stdout.strip()
+    with open(os.path.join(sdk, 'usr', 'include', 'mach-o', 'loader.h'), 'r') as f:
+        for line in f:
+            if m := re.match(r'\s*#\s*define\s+PLATFORM_([^\s]+)\s+(\d.*)', line):
+                yield int(m.group(2)), m.group(1).strip().lower()
+
+class PlatformNames:
+
+    @staticmethod
+    def iter_platforms() -> Iterable[Tuple[int,str]]:
+        sdk = subprocess.run(['xcrun', '-sdk', 'macosx', '--show-sdk-path'],
+            stdout=subprocess.PIPE, check=True, encoding='utf8').stdout.strip()
+        with open(os.path.join(sdk, 'usr', 'include', 'mach-o', 'loader.h'), 'r') as f:
+            for line in f:
+                if m := re.match(r'\s*#\s*define\s+PLATFORM_([^\s]+)\s+(\d.*)', line):
+                    yield int(m.group(2)), m.group(1).strip().lower()
+
+    def __getitem__(self, platform:int) -> str:
+        if name := mach_o.PLATFORM_NAMES.get(platform):
+            return name
+        if not hasattr(self, 'from_header'):
+            try:
+                self.from_header = dict(self.iter_platforms())
+            except OSError:
+                self.from_header = dict()
+        if name := self.from_header.get(platform):
+            return name
+        else:
+            return f"unknown_platform_{platform}"
+
+    def from_lc_name(self, lcname:str) -> str:
+        m = re.match('LC_VERSION_MIN_(.*)', lcname)
+        assert m
+        platform_name = m.group(1)
+        platform_name = {"MACOSX":"MACOS", "IPHONEOS":"IOS"}.get(platform_name, platform_name)
+        platform =  mach_o.__dict__["PLATFORM_" + platform_name.upper()]
+        return self[platform]
+
+platforms = PlatformNames()
+
+def decode_version(version:int) -> str:
+    # X.Y.Z is encoded in nibbles xxxx.yy.zz
+    a = version >> 16
+    b = (version >> 8) & 0xff
+    c = version & 0xff
+    if c:
+        return f"{a}.{b}.{c}"
+    else:
+        return f"{a}.{b}"
+
+class PlatVer(NamedTuple):
+    platform: str
+    version: str
+
+def get_vers(header:MachOHeader) -> Iterable[PlatVer]:
+    for lc,cmd,data in header.commands:
+        if isinstance(cmd,mach_o.version_min_command):
+            lcname = mach_o.LC_NAMES[lc.cmd]
+            platform_name = platforms.from_lc_name(lcname)
+            yield PlatVer(platform_name, decode_version(cmd.version))
+        elif lc.cmd == mach_o.LC_BUILD_VERSION:
+            platform_name = platforms[cmd.platform]
+            yield PlatVer(platform_name, decode_version(cmd.minos))
+
+def get_all_vers(macho:MachO) -> Iterable[Tuple[MachOHeader, Tuple[PlatVer, ...]]]:
+    for header in macho.headers:
+        yield header, tuple(sorted(get_vers(header), key=lambda x: x.platform))
+
+all_vers = dict(get_all_vers(MachO(args.filename)))
+
+unique_vers = set(all_vers.values())
+
+if not args.verbose and len(unique_vers) == 1:
+    for ver in next(iter(unique_vers)):
+        print(f"{ver.platform}: {ver.version}")
+else:
+    for header, vers in all_vers.items():
+        print(get_archname(header))
+        for ver in vers:
+            print(f"    {ver.platform}: {ver.version}")

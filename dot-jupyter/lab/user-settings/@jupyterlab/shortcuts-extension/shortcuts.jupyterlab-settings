@@ -1,0 +1,11 @@
+{
+    "shortcuts":[
+        {
+            "command": "editmenu:clear-current",
+            "keys": [
+                "Ctrl C"
+            ],
+            "selector": "[data-jp-undoer]"
+        }
+    ]
+}

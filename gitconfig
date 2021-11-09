@@ -177,12 +177,6 @@
 [filter "stripspace"]
     clean = git-stripspace
 
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
-
 [rerere]
     enabled = true
 [difftool "sourcetree"]
@@ -199,3 +193,8 @@
 [user]
 	name = Lawrence D'Anna
 	email = larry@elder-gods.org
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

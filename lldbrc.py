@@ -31,7 +31,7 @@ def layout(debugger, command, context, result, internal_dict):
 
     def fmt(offset):
         s = "0x%x" % offset
-        while len(s) < 5:
+        while len(s) < 6:
             s = ' ' + s
         return s
     cmd_offset = None

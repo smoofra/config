@@ -294,8 +294,8 @@ function mksha() {
 }
 
 if [ `uname -n` = odin ]; then
-	export CCACHE_MAXSIZE=500G
-	export CCACHE_DIR=/data/ccache
+	export CCACHE_MAXSIZE=100G
+	export CCACHE_DIR=$HOME/build/ccache
 fi
 
 function rm-python-links() {

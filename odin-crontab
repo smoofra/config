@@ -21,6 +21,7 @@
 # 
 # m h  dom mon dow   command
 
+
 0 0 * * *  crontab -l >$HOME/config/odin-crontab
 
 0 0 * * * test -w /data/Backup &&  $HOME/bin/backup_github -C /data/Backup/github/ smoofra
@@ -35,7 +36,7 @@
 
 #30 3 * * * $HOME/bin/sullivan.py
 
-30 3 * * * $HOME/bin/bari.py
+# 30 3 * * * $HOME/bin/bari.py
 
 30 2 * * * test -w /data/Backup && $HOME/bin/cron-instagram
 

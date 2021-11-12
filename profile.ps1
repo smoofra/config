@@ -5,35 +5,56 @@ Set-PSReadLineOption -EditMode Emacs
 
 Set-Alias -Name which -Value Get-Command
 
-# $env:Path += ";C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Python37_64"
-#
-#
 Function path() {
  $hklm = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name Path).Path
  $hkcu = (Get-ItemProperty -Path 'Registry::HKEY_CURRENT_USER\Environment' -Name Path).Path
 
  echo "==== HKLM"
- echo $hklm.split(";")
+ echo $hklm.split(";") | where{$_ -ne ""}
  echo ""
 
  echo "==== HKCU"
- echo $hkcu.split(";")
+ echo $hkcu.split(";") | where{$_ -ne ""}
  echo ""
 
  echo "==== process"
- echo $env:path.split(";")
+ echo $env:path.split(";") | where{$_ -ne ""}
  echo ""
+}
+
+function env() {
+    python -c   'import os; [print(f\"{k}={v}\") for k,v in os.environ.items()]'
+}
+
+function add-to-global-path($x) {
+    $p = 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment'
+    $r = (Get-ItemProperty -Path $p -Name Path).Path
+    $r += ";" + $x
+    Set-ItemProperty -Path $p -Name Path -Value $r
+}
+
+function add-to-user-path($x) {
+    $p  = 'Registry::HKEY_CURRENT_USER\Environment'
+    $r = (Get-ItemProperty -Path $p -Name Path).Path
+    $r += ";" + $x
+    Set-ItemProperty -Path $p -Name Path -Value $r
+}
+
+if ($(hostname) -eq "tengu") {
+    $dotfiles = "z:\config"
+} else {
+    $dotfiles = "$HOME\config"
 }
 
 #remember, invoke as ". vcvars"
 Function vcvars() {
-    cmd /c "$HOME\config\vcvars.bat"
+    cmd /c "$dotfiles\vcvars.bat"
     Import-CliXml ~/vcvars.clixml | % { Set-Item "env:$($_.Name)" $_.Value }
 }
 
 # remember, invoke as ". rerc"
 Function rerc() {
-     copy ~/config/profile.ps1 $profile.CurrentUserAllHosts
+     copy $dotfiles/profile.ps1 $profile.CurrentUserAllHosts
      . $profile.CurrentUserAllHosts
 }
 

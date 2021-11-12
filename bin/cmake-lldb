@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import argparse
+import subprocess
+import shutil
+from pathlib import Path
+
+
+if os.name == 'nt':
+    g_build_dir = Path(r"z:\build")
+    g_src_dir = Path(r"z:\src")
+else:
+    g_build_dir = Path(os.path.realpath(os.path.expanduser("~/build")))
+    g_src_dir = Path(os.path.realpath(os.path.expanduser("~/src")))
+
+dotfiles_dir = Path(__file__).parent.parent
+
+class Config:
+
+    name : str
+
+    def defines(self):
+        return []
+
+    @property
+    def build_dir(self):
+        return g_build_dir / ('lldb-' + self.name)
+
+    def cmd(self):
+        cmd = [
+            'cmake',
+            '-G', 'Ninja',
+            '-B', self.build_dir,
+            '-S', g_src_dir / 'llvm-project' / 'llvm',
+            *(f"-D{key}={str(value)}" for key,value in self.defines())]
+        return list(map(str, cmd))
+
+    def run(self):
+        subprocess.run(self.cmd(), check=True)
+        with open(self.build_dir / 'cc.json', 'w') as f:
+            subprocess.run(['ninja', '-t', 'compdb'],
+            check=True, stdout=f, cwd=self.build_dir)
+
+
+
+
+class WinClang(Config):
+
+    name = 'win-clang'
+
+    def defines(self):
+        return [
+            ('CMAKE_BUILD_TYPE', 'Release'),
+            ('LLVM_ENABLE_PROJECTS', 'clang;lldb;libcxx;libcxxabi'),
+            ('Python3_EXECUTABLE', sys.executable),
+            ('LLDB_ENABLE_PYTHON', '1'),
+            ('CMAKE_C_COMPILER', dotfiles_dir / 'bin' / 'clang-cl-x64.bat'),
+            ('CMAKE_CXX_COMPILER', dotfiles_dir / 'bin' / 'clang-cl-x64.bat')
+        ]
+
+class WinMsvc(Config):
+
+    name = 'win-msvc'
+
+    def defines(self):
+        return [
+            ('CMAKE_BUILD_TYPE', 'Release'),
+            ('LLVM_ENABLE_PROJECTS', 'clang;lldb;libcxx;libcxxabi'),
+            ('Python3_EXECUTABLE', sys.executable),
+            ('LLDB_ENABLE_PYTHON', '1'),
+        ]
+
+class MacOS(Config):
+
+    name = 'macos'
+
+    def defines(self):
+        sdk = Path(subprocess.run("xcrun -sdk macosx --show-sdk-path".split(),
+            check=True, text=True, stdout=subprocess.PIPE).stdout.strip())
+
+        pyframework = Path("/opt/homebrew/opt/python@3.9/Frameworks/Python.framework")
+        pyprefix = pyframework / 'Versions' / 'Current'
+        return [
+            ('LLVM_ENABLE_PROJECTS', 'clang;lldb'),
+            ('LLVM_ENABLE_RUNTIMES', 'libcxx;libcxxabi'),
+            ('LLDB_ENABLE_PYTHON', '1'),
+            ('LLVM_CODESIGNING_IDENTITY', 'lldb_codesign'),
+            ('Python3_INCLUDE_DIRS', pyprefix / 'Headers'),
+            ('Python3_LIBRARIES', pyframework),
+            ('Python3_EXECUTABLE', pyprefix / 'bin' / 'python3'),
+            ('LIBXML2_INCLUDE_DIR', sdk / 'usr' / 'include' / 'libxml2'),
+            ('CMAKE_C_COMPILER', '/opt/homebrew/opt/ccache/libexec/cc'),
+            ('CMAKE_ASM_COMPILER', '/opt/homebrew/opt/ccache/libexec/cc'),
+            ('CMAKE_CXX_COMPILER', '/opt/homebrew/opt/ccache/libexec/c++'),
+            ('LibEdit_INCLUDE_DIRS', '/opt/homebrew/opt/libedit/include/'),
+            ('LibEdit_LIBRARIES', '/opt/homebrew/opt/libedit/lib/libedit.dylib'),
+            #('LLDB_ENABLE_LUA', '1'),
+            #('LUA_LIBRARIES', 'opt/homebrew/opt/lua/lib/liblua.dylib'),
+            #('LUA_INCLUDE_DIR', '/opt/homebrew/opt/lua/include/lua')
+        ]
+
+
+class Linux(Config):
+
+    name = 'linux'
+
+    def defines(self):
+        return [
+            ('CMAKE_C_COMPILER', '/usr/lib/ccache/gcc-11'),
+            ('CMAKE_ASM_COMPILER', '/usr/lib/ccache/gcc-11'),
+            ('CMAKE_CXX_COMPILER', '/usr/lib/ccache/g++-11'),
+            ('LLVM_ENABLE_ASSERTIONS', 'ON'),
+            ('LLVM_USE_SPLIT_DWARF', 'ON'),
+            ('LLVM_ENABLE_PROJECTS', "clang;lldb;libcxx;libcxxabi"),
+            ('SWIG_EXECUTABLE, /usr/bin/swig'),
+            ('CMAKE_EXE_LINKER_FLAGS', '-fuse-ld=bfd'),
+            ('CMAKE_MODULE_LINKER_FLAGS', '-fuse-ld=bfd'),
+            ('CMAKE_SHARED_LINKER_FLAGS', '-fuse-ld=bfd'),
+            ('Python3_EXECUTABLE', '/usr/bin/python3.9'),
+            ('Python3_INCLUDE_DIRS', '/usr/include/python3.9'),
+            ('Python3_LIBRARIES', '/usr/lib/x86_64-linux-gnu/libpython3.9.so')
+        ]
+
+configs = {cls.name:cls for cls in Config.__subclasses__()}
+
+parser = argparse.ArgumentParser(description="run cmake to setup lldb build directory")
+parser.add_argument("--clean", action='store_true')
+subparsers = parser.add_subparsers(dest="config", required=True)
+for name in configs.keys():
+    subparsers.add_parser(name)
+args = parser.parse_args()
+
+config = configs[args.config]()
+if args.clean and os.path.exists(config.build_dir):
+    shutil.rmtree(config.build_dir)
+config.run()

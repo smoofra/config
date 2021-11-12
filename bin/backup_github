@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import sys
 import argparse
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import json
 import subprocess
 import os.path
@@ -33,32 +33,35 @@ def go(name, url, filename):
     if os.path.exists(filename):
 
         if not is_bare_repo(filename):
-            raise Exception, "%s exists but is not a bare git repo" + filename
+            raise Exception("%s exists but is not a bare git repo" + filename)
 
 
         proc = subprocess.Popen(["git", "config", "remote.origin.url"],
                                 cwd=filename,
+                                encoding='utf8',
                                 stdout=subprocess.PIPE)
         check_url = proc.stdout.read().strip()
         if proc.wait() != 0:
-            raise Exception, "git config failed!"
+            raise Exception("git config failed!")
 
         if check_url != url:
-            raise Exception, "Url for repo %s changed from %s to %s" % (name, check_url, url)
+            raise Exception("Url for repo %s changed from %s to %s" % (name, check_url, url))
 
         proc = subprocess.Popen(["git", "fetch", "origin"] + quiet_flags,
+                                encoding='utf8',
                                 cwd=filename)
         if proc.wait() != 0:
-            raise Exception, "git fetch failed for: " + name
+            raise Exception("git fetch failed for: " + name)
 
     else:
 
-        proc = subprocess.Popen(["git", "clone", "--bare", "--mirror"] + quiet_flags + [url, filename])
+        proc = subprocess.Popen(["git", "clone", "--bare", "--mirror"] + quiet_flags + [url, filename], 
+            encoding='utf8')
         if proc.wait() != 0:
-            raise Exception, "git clone failed for: " + url
+            raise Exception("git clone failed for: " + url)
 
 
-repos = json.load(urllib2.urlopen('https://api.github.com/users/%s/repos' % args.user))
+repos = json.load(urllib.request.urlopen('https://api.github.com/users/%s/repos' % args.user))
 
 for repo in repos:
     name = repo["name"]
@@ -67,7 +70,7 @@ for repo in repos:
     go(name, url, filename)
 
 
-gists = json.load(urllib2.urlopen('https://api.github.com/users/%s/gists' % args.user))
+gists = json.load(urllib.request.urlopen('https://api.github.com/users/%s/gists' % args.user))
 
 for gist in gists:
     url = gist["git_pull_url"]

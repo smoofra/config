@@ -25,16 +25,21 @@ class Config:
         return []
 
     @property
-    def build_dir(self):
+    def build_dir(self) -> Path:
         return g_build_dir / ('lldb-' + self.name)
 
     def cmd(self):
+        def normalize_value(x):
+            if isinstance(x, Path):
+                return str(x).replace('\\', '/')
+            else:
+                return x
         cmd = [
             'cmake',
             '-G', 'Ninja',
             '-B', self.build_dir,
             '-S', g_src_dir / 'llvm-project' / 'llvm',
-            *(f"-D{key}={str(value)}" for key,value in self.defines())]
+            *(f"-D{key}={normalize_value(value)}" for key,value in self.defines())]
         return list(map(str, cmd))
 
     def run(self):
@@ -56,8 +61,9 @@ class WinClang(Config):
             ('LLVM_ENABLE_PROJECTS', 'clang;lldb;libcxx;libcxxabi'),
             ('Python3_EXECUTABLE', sys.executable),
             ('LLDB_ENABLE_PYTHON', '1'),
-            ('CMAKE_C_COMPILER', dotfiles_dir / 'bin' / 'clang-cl-x64.bat'),
-            ('CMAKE_CXX_COMPILER', dotfiles_dir / 'bin' / 'clang-cl-x64.bat')
+            ('CMAKE_C_COMPILER',  dotfiles_dir / 'bin' / 'clang-cl-x64.bat'),
+            ('CMAKE_ASM_COMPILER', dotfiles_dir / 'bin' / 'clang-cl-x64.bat'),
+            ('CMAKE_CXX_COMPILER', dotfiles_dir / 'bin' / 'clang-cl-x64.bat'),
         ]
 
 class WinMsvc(Config):
@@ -96,6 +102,7 @@ class MacOS(Config):
             ('CMAKE_CXX_COMPILER', '/opt/homebrew/opt/ccache/libexec/c++'),
             ('LibEdit_INCLUDE_DIRS', '/opt/homebrew/opt/libedit/include/'),
             ('LibEdit_LIBRARIES', '/opt/homebrew/opt/libedit/lib/libedit.dylib'),
+            ('CMAKE_INSTALL_PREFIX', '/usr/local'),
             #('LLDB_ENABLE_LUA', '1'),
             #('LUA_LIBRARIES', 'opt/homebrew/opt/lua/lib/liblua.dylib'),
             #('LUA_INCLUDE_DIR', '/opt/homebrew/opt/lua/include/lua')

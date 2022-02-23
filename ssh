@@ -5,23 +5,11 @@ HostName 104.248.57.166
 User root
 
 
-Host kraken darwin-kraken
-HostName darwin-kraken.sd.apple.com
-ForwardAgent yes
 
-Host demogorgon
-HostName demogorgon.apple.com
-ForwardAgent yes
 
 #Host thor
 #HostName thor.elder-gods.org
 #User root
-
-Host demogorgon-test
-HostName demogorgon.apple.com
-HostKeyAlias demogorgon-test
-StrictHostKeyChecking no
-User local
 
 Host ahriman ahriman.baconautics.com
 HostName ahriman.baconautics.com
@@ -50,16 +38,6 @@ User smoofra
 HostName 40.76.245.248
 #HostName bill.elder-gods.org
 ServerAliveInterval 5
-
-
-Host aule
-HostKeyAlias aule
-User ldanna
-ProxyCommand ssh reliant nc 192.168.1.5 22
-
-Host juiblex
-HostName juiblex.local
-User lawrence_danna
 
 Host freyja
 User lawrence_danna
@@ -92,13 +70,6 @@ ProxyCommand ssh loki nc blueberry.lan 22
 User pi
 ServerAliveInterval 10
 HostKeyAlias blueberry
-
-
-Host zuul
-HostName odin.elder-gods.org
-Port 21
-User root
-HostKeyAlias zuul
 
 Host loki
 HostName loki.elder-gods.org

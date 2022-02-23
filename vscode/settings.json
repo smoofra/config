@@ -3,7 +3,6 @@
     "C_Cpp.dimInactiveRegions": false,
     "workbench.editor.enablePreview": false,
     "terminal.integrated.macOptionIsMeta": true,
-    "C_Cpp.updateChannel": "Insiders",
     "go.formatTool": "goimports",
     "diffEditor.ignoreTrimWhitespace": false,
     "cSpell.enabled": false,

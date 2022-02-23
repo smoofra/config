@@ -1,11 +1,4 @@
 # Custom Dictionary Words
-DSTROOT
-DWORD
-EPIPE
-Kubeless
-MSVC
-Memgraph
-SIGTERM
 anna
 asyncio
 bitfields
@@ -16,16 +9,23 @@ cpus
 cyto
 d'anna
 disasm
+DSTROOT
+DWORD
 dyld
 endpoint
+EPIPE
 framework
 highleveltools
+kext
 kube
+Kubeless
 kubernetes
 lldb
 mcqueen
 memdistill
+Memgraph
 memgraphs
+MSVC
 nelements
 path
 pointee
@@ -35,6 +35,7 @@ pytest
 qcow
 qemu
 rdar
+SIGTERM
 sjeng
 symbolication
 toolchains

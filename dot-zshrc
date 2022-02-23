@@ -104,10 +104,9 @@ done
 [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath \
     "$HOME/bin.local" \
     "$HOME/bin" \
-    "$HOME/apple_config/bin" \
     "$HOME/Library/Python/3.9/bin" \
     "$HOME/Library/Python/3.8/bin" \
-    /AppleInternal/usr/local/bin \
+    "$HOME/.cargo/bin" \
     /usr/local/bin \
     /usr/local/sbin \
     "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/" \

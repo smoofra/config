@@ -72,3 +72,20 @@ choco install cmder
 Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
 Start-Service sshd
 Set-Service -Name sshd -StartupType 'Automatic'
+
+
+###### winrm fuckery
+Set-Item wsman:\localhost\Client\TrustedHosts -value "*"
+Enable-PSRemoting -Force
+winrm quickconfig
+Set-NetConnectionProfile -NetworkCategory Private
+winrm get config winrm/config/service
+Enter-PSSession -ComputerName win7.foo.com  -Credential user
+
+$s = New-PSSession -ComputerName win7.foo.com -Credential user
+Enter-PSSession -Session $s
+Exit-PSSession
+
+
+ New-PSDrive -PSProvider FileSystem  -Root \\win7.foo.com\c -Credential user
+

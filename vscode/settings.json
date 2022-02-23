@@ -87,4 +87,6 @@
     "cmake.configureOnOpen": false,
     "C_Cpp.intelliSenseMemoryLimit": 16384,
     "window.zoomLevel": 1,
+    "gitlens.mode.active": "zen",
+    "rust-client.rustupPath": "$HOME/.cargo/bin/rustup",
 }

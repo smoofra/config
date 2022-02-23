@@ -1,31 +1,4 @@
 {
-    "cSpell.userWords": [
-        "anna",
-        "asyncio",
-        "bitfields",
-        "coro",
-        "cpus",
-        "cyto",
-        "d'anna",
-        "dyld",
-        "endpoint",
-        "framework",
-        "highleveltools",
-        "kube",
-        "kubernetes",
-        "lldb",
-        "mcqueen",
-        "memdistill",
-        "nelements",
-        "path",
-        "pointee",
-        "posix",
-        "posixpath",
-        "pytest",
-        "qemu",
-        "sjeng",
-        "symbolication"
-    ],
     "editor.minimap.enabled": false,
     "C_Cpp.dimInactiveRegions": false,
     "workbench.editor.enablePreview": false,
@@ -86,6 +59,14 @@
     "editor.renderWhitespace": "all",
     "cmake.configureOnOpen": false,
     "C_Cpp.intelliSenseMemoryLimit": 16384,
+    "cSpell.customDictionaries": {
+        "custom-dictionary-user": {
+            "name": "custom-dictionary-user",
+            "path": "~/config/cspell-dictionary.txt",
+            "addWords": true,
+            "scope": "user"
+        }
+    },
     "window.zoomLevel": 1,
     "gitlens.mode.active": "zen",
     "rust-client.rustupPath": "$HOME/.cargo/bin/rustup",

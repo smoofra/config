@@ -17,11 +17,8 @@ echo ". ~/.bashrc" >~/.bash_profile
 
 ( cd ~/config ; git config user.email larry@elder-gods.org )
 
-
-if false && ! [[ -e ~/apple_config ]]; then
-    git clone ssh://git@stash.sd.apple.com/~lawrence_danna/apple_config.git ~/apple_config
-    git -C ~/apple_config remote set-url --add --push origin ssh://git@stash.sd.apple.com/~lawrence_danna/apple_config.git
-    git -C ~/apple_config remote set-url --add --push origin ssh://odin/data/Backup/apple_config.git
+if ! [[ -e ~/config/private ]]; then
+    git clone git@github.com:smoofra/config-private.git private
 fi
 
 if ! [[ -e ~/bin.local ]]; then
@@ -33,11 +30,7 @@ if ! [[ -e ~/.oh-my-zsh ]]; then
 fi
 ln -sf ~/config/dot-zshrc ~/.zshrc
 
-#if ! [[ -e ~/corekernelutils ]]; then
-#    git clone ssh://git@stash.sd.apple.com/coreosint/corekernelutils.git ~/corekernelutils
-#fi
-#ln -sf ~/corekernelutils/make_xnu.py ~/bin.local/make_xnu
-#
+
 #if ! [[ -e ~/flamegraph ]]; then
 #    git clone git@github.com:brendangregg/FlameGraph.git ~/flamegraph
 #fi
@@ -50,12 +43,7 @@ fi
 
 #~/config/replacements.py
 
-if [ -d ~/apple_config ]; then
-    cat ~/config/ssh <(~/apple_config/ssh.py)  >~/.ssh/config
-else
-    ln -sf ~/config/ssh ~/.ssh/config
-fi
-
+ln -sf ~/config/private/ssh ~/.ssh/config
 
 # test -e ~/Library/LaunchAgents || mkdir -p ~/Library/LaunchAgents
 
@@ -113,6 +101,3 @@ done
 #     fi
 # done
 
-if [ -d ~/apple_config ]; then
-    . ~/apple_config/setup.sh
-fi

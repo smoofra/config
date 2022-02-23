@@ -1,2 +1,3 @@
 .atom-socket*
 dot-jupyter/lab/workspaces/*.jupyterlab-workspace
+private

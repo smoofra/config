@@ -58,7 +58,7 @@
     co = checkout
 
 	personal = "! git config user.email larry@elder-gods.org ; git config user.name \"Lawrence D'Anna\""
-	work = "! git config user.email lawrence_danna@apple.com; git config user.name \"Lawrence D'Anna\""
+	work = "! git config user.email ldanna@volexity.com; git config user.name \"Lawrence D'Anna\""
 
     # run clang-format on changes
     #clang-format = ! \nf() { \n ( cd \"$GIT_PREFIX\" && git diff HEAD -- \"$@\" ) | clang-format-diff.py -p1 -i \n } \nf

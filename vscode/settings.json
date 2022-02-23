@@ -69,4 +69,5 @@
     "window.zoomLevel": 1,
     "gitlens.mode.active": "zen",
     "rust-client.rustupPath": "$HOME/.cargo/bin/rustup",
+    "python.insidersChannel": "weekly",
 }

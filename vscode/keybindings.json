@@ -33,5 +33,9 @@
     {
         "key": "f1",
         "command": "workbench.action.terminal.toggleTerminal"
+    },
+    {
+        "key": "ctrl+shift+j",
+        "command": "workbench.action.toggleMaximizedPanel"
     }
 ]

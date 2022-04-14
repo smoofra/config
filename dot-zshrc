@@ -234,3 +234,32 @@ if [ -e /Volumes/data ]; then
 	export CCACHE_MAXSIZE=500G
 	export CCACHE_DIR=/Volumes/data/ccache
 fi
+
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Users/larry/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/larry/miniforge3/etc/profile.d/conda.sh" ]; then
+        . "/Users/larry/miniforge3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/larry/miniforge3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+alias pd=pushd
+alias conan='python3 -m conans.conan'
+
+
+function submit() {
+    build=$1
+    shift
+    python3 ~/src/volexity/Infrastructure/Package/python/submit-test.py \
+        https://build.research.volexity.com/Surge/Surge-Collect-build/$build/test.tar.gz \
+        Surge/Collect/test/buildbot.py \
+        "$@"
+}

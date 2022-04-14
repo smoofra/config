@@ -1,5 +1,6 @@
 # Custom Dictionary Words
 anna
+armv
 asyncio
 bitfields
 cakey
@@ -8,15 +9,19 @@ coro
 cpus
 cyto
 d'anna
+deps
 disasm
+diskutil
 DSTROOT
 DWORD
 dyld
 endpoint
 EPIPE
 framework
+goroutines
 highleveltools
 kext
+klass
 kube
 Kubeless
 kubernetes
@@ -25,8 +30,12 @@ mcqueen
 memdistill
 Memgraph
 memgraphs
+minio
 MSVC
+mtab
+nargs
 nelements
+NTSTATUS
 path
 pointee
 posix
@@ -37,8 +46,14 @@ qemu
 rdar
 SIGTERM
 sjeng
+struct
 symbolication
+syscall
 toolchains
+ULONGLONG
+untar
+vhdx
 vmmmap
 volexity
 webservers
+winehq

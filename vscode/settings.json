@@ -66,8 +66,9 @@
             "scope": "user"
         }
     },
-    "window.zoomLevel": 1,
     "gitlens.mode.active": "zen",
     "rust-client.rustupPath": "$HOME/.cargo/bin/rustup",
-    "python.insidersChannel": "weekly",
+    "python.defaultInterpreterPath": "python3",
+    "window.zoomLevel": 1,
+    "editor.unicodeHighlight.ambiguousCharacters": false,
 }

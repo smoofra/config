@@ -79,7 +79,7 @@ Set-Item wsman:\localhost\Client\TrustedHosts -value "*"
 Enable-PSRemoting -Force
 winrm quickconfig
 Set-NetConnectionProfile -NetworkCategory Private
-winrm get config winrm/config/service
+winrm get winrm/config/service
 Enter-PSSession -ComputerName win7.foo.com  -Credential user
 
 $s = New-PSSession -ComputerName win7.foo.com -Credential user
@@ -89,3 +89,9 @@ Exit-PSSession
 
  New-PSDrive -PSProvider FileSystem  -Root \\win7.foo.com\c -Credential user
 
+
+Copy-Item .\local\file  -ToSession $s -Destination "c:\file"
+New-PSDrive -Credential Administrator -PSProvider FileSystem -Root \\host\c  -Name x
+
+
+Invoke-Command -Session $s -ScriptBlock { ls }

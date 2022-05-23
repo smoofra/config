@@ -8,15 +8,10 @@ import json
 import argparse
 import multiprocessing
 import signal
-from xml.etree.ElementTree import Element
-from typing import cast, Any
+
 
 import flickrapi
 import requests
-
-def getchildren(self):
-    return list(self)
-cast(Any, Element).getchildren = getchildren
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-v", "--verbose", action='store_true')

@@ -42,9 +42,16 @@ function add-to-user-path($x) {
 
 if ($(hostname) -eq "tengu") {
     $dotfiles = "z:\config"
+    $env:CCACHE_DIR = "z:\build\ccache-win"
+    $env:CCACHE_MAXSIZE = "500G"
 } else {
     $dotfiles = "$HOME\config"
 }
+
+function cmake-lldb() { 
+    python z:/config/bin/cmake-lldb @args
+}
+
 
 #remember, invoke as ". vcvars"
 Function vcvars() {

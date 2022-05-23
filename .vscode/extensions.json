@@ -7,6 +7,11 @@
         "jasonlhy.hungry-delete",
         "redhat.java",
         "rioj7.select-by",
-        "streetsidesoftware.code-spell-checker"
+        "streetsidesoftware.code-spell-checker",
+        "stkb.rewrap",
+        "tamasfe.even-better-toml",
+        "eamodio.gitlens",
+        "jakob-erzar.llvm-tablegen",
+        "surajbarkale.ninja"
     ]
   }

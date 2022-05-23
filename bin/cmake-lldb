@@ -86,7 +86,8 @@ class MacOS(Config):
         sdk = Path(subprocess.run("xcrun -sdk macosx --show-sdk-path".split(),
             check=True, text=True, stdout=subprocess.PIPE).stdout.strip())
 
-        pyframework = Path("/opt/homebrew/opt/python@3.9/Frameworks/Python.framework")
+        brew = Path("/opt/homebrew")
+        pyframework = brew / "opt/python@3.9/Frameworks/Python.framework"
         pyprefix = pyframework / 'Versions' / 'Current'
         return [
             ('LLVM_ENABLE_PROJECTS', 'clang;lldb'),
@@ -97,11 +98,11 @@ class MacOS(Config):
             ('Python3_LIBRARIES', pyframework),
             ('Python3_EXECUTABLE', pyprefix / 'bin' / 'python3'),
             ('LIBXML2_INCLUDE_DIR', sdk / 'usr' / 'include' / 'libxml2'),
-            ('CMAKE_C_COMPILER', '/opt/homebrew/opt/ccache/libexec/cc'),
-            ('CMAKE_ASM_COMPILER', '/opt/homebrew/opt/ccache/libexec/cc'),
-            ('CMAKE_CXX_COMPILER', '/opt/homebrew/opt/ccache/libexec/c++'),
-            ('LibEdit_INCLUDE_DIRS', '/opt/homebrew/opt/libedit/include/'),
-            ('LibEdit_LIBRARIES', '/opt/homebrew/opt/libedit/lib/libedit.dylib'),
+            ('CMAKE_C_COMPILER', brew / 'opt/ccache/libexec/cc'),
+            ('CMAKE_ASM_COMPILER', brew / 'opt/ccache/libexec/cc'),
+            ('CMAKE_CXX_COMPILER', brew / 'opt/ccache/libexec/c++'),
+            ('LibEdit_INCLUDE_DIRS', brew / 'opt/libedit/include/'),
+            ('LibEdit_LIBRARIES', brew / 'opt/libedit/lib/libedit.dylib'),
             ('CMAKE_INSTALL_PREFIX', '/usr/local'),
             #('LLDB_ENABLE_LUA', '1'),
             #('LUA_LIBRARIES', 'opt/homebrew/opt/lua/lib/liblua.dylib'),

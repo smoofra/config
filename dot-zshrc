@@ -24,10 +24,10 @@ ZSH_THEME="robbyrussell"
 # HYPHEN_INSENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+DISABLE_AUTO_UPDATE="true"
 
 # Uncomment the following line to automatically update without prompting.
-DISABLE_UPDATE_PROMPT="true"
+# DISABLE_UPDATE_PROMPT="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
 # export UPDATE_ZSH_DAYS=13
@@ -104,10 +104,9 @@ done
 [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath \
     "$HOME/bin.local" \
     "$HOME/bin" \
-    "$HOME/apple_config/bin" \
     "$HOME/Library/Python/3.9/bin" \
     "$HOME/Library/Python/3.8/bin" \
-    /AppleInternal/usr/local/bin \
+    "$HOME/.cargo/bin" \
     /usr/local/bin \
     /usr/local/sbin \
     "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/" \
@@ -160,38 +159,6 @@ alias xiar='/usr/local/bin/xia restore --download-cache-path=/Volumes/data --no-
 
 NSDDOWNLOADS=~/Downloads
 
-# download Mac OS installer
-alias nsdm='nsd --nfa --output-descriptive-name --output-dir "$NSDDOWNLOADS"  --softwarename "UniversalMacInternalAssistant%" --filename-exclude-pattern "manifest|BuildItems"  --buildversion'
-
-# download xia image
-alias nsdx='nsd --output-descriptive-name --output-dir "$NSDDOWNLOADS" --validate-xia-hash --filename'
-
-
-# download iOS image
-function nsdi() {
-    if [ -z "$1" ]; then
-        echo "usage: nsdi BUILD DEV"
-        echo "eg. nsdi nsdi Azul18A346 D221"
-        echo
-        return 0
-    fi
-    build=$1
-    dev=$2
-    echo + nsd --nfa --output-descriptive-name --output-dir /Volumes/data  --buildversion $build --softwarename  \"%${dev}%InternalRestore %\"
-    nsd --nfa --output-descriptive-name --output-dir /Volumes/data --buildversion $build --softwarename  "%${dev}%InternalRestore %"
-}
-
-
-function vpn() {
-    case $1 in
-        c*)
-            appleconnect network  -a connect
-            ;;
-        d*)
-            appleconnect network  -a disconnect
-            ;;
-    esac
-}
 
 # xc /opt/Whitetail14A190                # run Xcode UI
 # xc /opt/Whitetail14A190 xcodebuild...  # run an xcode command line tool
@@ -256,36 +223,6 @@ function resetup() {
     fi
 }
 
-function xbs-platforms() {
-    local update
-    if [ $#@ = 1 ]; then
-        update="$1"
-    else
-        update=StashedSydney
-    fi
-    snapshot=`xbs snapshot get $update` || return 1
-    echo 'select name from PlatformName; ' | sqlite3 -batch "$snapshot"
-}
-
-function cortex-blame() {
-    jq '.projects | with_entries({key, value:.value | {radarComponents,sourceRepositoryURL,primaryOwner,secondaryOwners}})'
-}
-
-export TRAIN=StashedRome
-
-function xbs-blame() {
-    xbs snapshot dump -u $TRAIN --cortex $1 | cortex-blame
-}
-
-function xbs-sibs() {
-    xbs snapshot dump -u $TRAIN --cortex --siblings $1 | \
-        jq '.projects | with_entries({key, value:.value | {buildAliasOf}})'
-}
-
-function cortex-target() {
-    jq '.projects | with_entries({key, value:.value | {targetArchitectures,buildsAgainstSDKs,buildTarget,embeddedProjectss,minimumOSDeployments,toolchain}})'
-}
-
 
 function podimages() {
     kubectl get pods -o=jsonpath='{range .items[*]}{range .spec.containers[*]}{.name}{"\t"}{.image}{"\n"}'  | column -c 2 -s $'\t' -t
@@ -293,8 +230,36 @@ function podimages() {
 
 setopt NO_AUTO_PUSHD
 
-
 if [ -e /Volumes/data ]; then
 	export CCACHE_MAXSIZE=500G
 	export CCACHE_DIR=/Volumes/data/ccache
 fi
+
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Users/larry/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/larry/miniforge3/etc/profile.d/conda.sh" ]; then
+        . "/Users/larry/miniforge3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/larry/miniforge3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+alias pd=pushd
+alias conan='python3 -m conans.conan'
+
+
+function submit() {
+    build=$1
+    shift
+    python3 ~/src/volexity/Infrastructure/Package/python/submit-test.py \
+        https://build.research.volexity.com/Surge/Surge-Collect-build/$build/test.tar.gz \
+        Surge/Collect/test/buildbot.py \
+        "$@"
+}

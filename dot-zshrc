@@ -262,4 +262,5 @@ function submit() {
         https://build.research.volexity.com/Surge/Surge-Collect-build/$build/test.tar.gz \
         Surge/Collect/test/buildbot.py \
         "$@"
-}
+
+export CONAN_V2_MODE=1

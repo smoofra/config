@@ -9,7 +9,8 @@ parser.add_argument("url")
 args = parser.parse_args()
 
 
-req = requests.get(args.url)
+headers = {"User-Agent": "curl/7.79.1"}
+req = requests.get(args.url, headers=headers)
 if req.status_code != 200:
     req.raise_for_status()
 

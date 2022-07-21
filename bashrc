@@ -338,4 +338,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/
 function scan-build() {
     `xcrun -sdk macosx.internal -f clang | xargs dirname | xargs dirname`/local/bin/scan-build "$@"
 }
-. "$HOME/.cargo/env"
+
+if [ -e ~/.cargo/env ]; then
+    . ~/.cargo/env
+fi

@@ -4,215 +4,251 @@ import csv
 import sys
 import re
 from collections import defaultdict
+from datetime import datetime
 import os
+from typing import Dict
+import argparse
 
-cats = {'groceries': ['spice house', 'safeway', 'wholefds', 'trader.*joe', 'delucchi', 'sprouts farmers', '99 ranch', 'rancho gordo'],
-        'bike' : ['EVOLUTION BIKE SHOP'],
-        'electronics' : ["fry's",
-                         "adafruit",
-                         'digi key'],
+cats = {
+    "other": ["clive coffee"],
+    "groceries": [
+        "weis",
+        "supercenter",
+        "food maxx",
+        "va abc",
+        "martins",
+        "target",
+        "south mountain",
+        "trade coffee",
+        "weiss",
+        "giant martins",
+        "target",
+        "spice house",
+        "safeway",
+        "wholefds",
+        "trader.*joe",
+        "delucchi",
+        "sprouts farmers",
+        "99 ranch",
+        "rancho gordo",
+    ],
+    "bike": ["EVOLUTION BIKE SHOP"],
+    "it": ["no-ip", "crashplan", "linode", "winchester wireless", "Akamai"],
+    "electronics": ["fry's", "adafruit", "digi key"],
+    "travel": [
+        "HUDSONNEWS",
+        "usair",
+        "clipper service",
+        "caltrain",
+        "amtrak",
+        "hudson news",
+        "fastrack",
+        "short stop news",
+        "uber",
+        "lyft",
+        "bird app",
+        "virgin amer",
+        "american air",
+    ],
+    "hotels": ["AIRBNB", "hilton", "holiday inn", "restful nest", "HOTELTONIGHT"],
+    "pets": ["petsmart"],
+    "house": ["ASHLEY INTERIORS", "ikea", "home.*depot", "regan nursery", "lowes", "fh furr"],
+    "restaurants": [
+        "mcdonald's",
+        "wendys",
+        "dunkin",
+        "hometown noodle",
+        "original mel",
+        "doordash",
+        "happy lemon",
+        "ok noodle",
+        "krispy kreme",
+        "the kebab shop",
+        "smoking pig",
+        "sushi",
+        "STIR IT UP EMERALD IS",
+        "chick-fil-a",
+        "jaleo",
+        "fuzzy peach",
+        "chopsticks pho",
+        "ihop",
+        "news and gifts dul",
+        "red robin",
+        "CHEVYS",
+        "wine",
+        "YELLOW FARMHOUSE",
+        "brewing",
+        "5guys",
+        "icebox",
+        "in n out",
+        "KYUSU",
+        "the wharf market",
+        "saffron",
+        "adobolicious",
+        "MSC CNCRS GOLDN GATE PARK",
+        "trinidad bay eater",
+        "famous daves",
+        "ice cream",
+        "cloud bistro",
+        "tutti frutti",
+        "kona ice",
+        "ramen",
+        "bagel",
+        "taque",
+        "101.*fish",
+        "baking",
+        "einstein bros",
+        "rubios",
+        "yogurt",
+        "u-haul",
+        "bakery",
+        "liquor",
+        "chaya",
+        "chipotle",
+        "super burrito",
+        "le boulan",
+        "diner",
+        "frozos",
+        "restaur",
+        "yogolicious",
+        "coffee",
+        "the melt",
+        "COFFEETOPIA",
+        "GUAVA & JAVA SFO INC",
+        "oyamel",
+        "la madeleine",
+        "victoria",
+        "silver diner",
+        "farmers mark",
+        "noodles",
+        "cafe",
+        "caffe",
+        "pizza",
+        "starbucks",
+        "falafel",
+        "panera",
+        "go *chi",
+        "chowder",
+        "grubhub",
+        "restaurant",
+        "in-n-out",
+        "roadhouse",
+        "philz",
+        "five.*guys",
+        "yosemite.*treats",
+        "pho.*minh",
+        "grain d'or",
+        "aqui willow glen",
+        "high.*country",
+        "smokehouse",
+        "baguette",
+        "mandarin gourmet",
+        "poki run",
+        "THE BRANDING IRON",
+    ],
+    "entertainment": [
+        "substack",
+        "podcast",
+        "itunes",
+        "audible",
+        "netflix",
+        "kqed membership",
+        "kqed public media",
+        "apple.com",
+    ],
+    "gas+tolls": [
+        "shell.*oil",
+        "AUTOPIA",
+        "bp.*mart",
+        "fastlane",
+        "gas mart",
+        "pioneer.*gas",
+        "chevron",
+        "exon",
+        "PHILLIPS 66",
+        "conoco",
+        "fastrak",
+        "EXXONMOBIL",
+        "valero",
+    ],
+    "amazon": ["amazon", "AMZN Mktp"],
+}
 
-        'travel': [
-                   'HUDSONNEWS',
-                   'usair',
-                   'clipper service',
-                   'caltrain',
-                   'amtrak',
-                   'hudson news',
-                   'fastrack',
-                   'short stop news',
-                   'uber',
-                   'lyft',
-                   'bird app',
-                   'virgin amer',
-                   'american air'],
-
-        'hotels': ['AIRBNB',
-                   'hilton',
-                   'holiday inn',
-                   'restful nest',
-                   'HOTELTONIGHT'],
-
-        'pets': ['petsmart'],
-
-	'house': ['ASHLEY INTERIORS', 'ikea', 'home.*depot', 'regan nursery', 'lowes'],
-
-        'restaurants': [
-            'wendys',
-            'hometown noodle',
-            'original mel',
-            'doordash',
-            'happy lemon',
-            'ok noodle',
-            'krispy kreme',
-            'the kebab shop',
-            'smoking pig',
-            'sushi',
-            'STIR IT UP EMERALD IS',
-            'chick-fil-a',
-            'jaleo',
-            'fuzzy peach',
-            'chopsticks pho',
-            'ihop',
-            'news and gifts dul',
-            'red robin',
-            'CHEVYS',
-            'wine',
-            'YELLOW FARMHOUSE',
-            'brewing',
-            '5guys',
-            'icebox',
-            'in n out',
-            'KYUSU',
-            'the wharf market',
-            'saffron',
-            'adobolicious',
-            'MSC CNCRS GOLDN GATE PARK',
-            'trinidad bay eater',
-            'famous daves',
-            'ice cream',
-            'cloud bistro',
-            'tutti frutti',
-            'kona ice',
-            'ramen',
-	        'bagel',
-            'taque',
-            '101.*fish',
-            'baking',
-            'einstein bros',
-            'rubios',
-            'yogurt',
-            'u-haul',
-            'bakery',
-            'liquor',
-            'chaya',
-            'chipotle',
-            'super burrito',
-            'le boulan',
-            'diner',
-            'frozos',
-	    	'restaur',
-            'yogolicious',
-            'coffee',
-            'the melt',
-            'COFFEETOPIA',
-            'GUAVA & JAVA SFO INC',
-            'oyamel',
-            'la madeleine',
-            'victoria',
-            'silver diner',
-            'farmers mark',
-            'noodles',
-            'cafe',
-            'caffe',
-            'pizza',
-            'starbucks',
-            'falafel',
-            'panera',
-            'go *chi',
-            'chowder',
-            'grubhub',
-            'restaurant',
-            'in-n-out',
-            'roadhouse',
-            'philz',
-            'five.*guys',
-            'yosemite.*treats',
-            'pho.*minh',
-            'grain d\'or',
-            'aqui willow glen',
-            'high.*country',
-            'smokehouse',
-            'baguette',
-            'mandarin gourmet',
-            'poki run',
-            'THE BRANDING IRON',
-        ],
-        'entertainment': ['itunes', 'audible', 'netflix', 'kqed membership', 'kqed public media', 'apple.com'],
-        'gas+tolls': ['shell.*oil',
-                      'AUTOPIA',
-                      'bp.*mart',
-                'fastlane',
-                'gas mart',
-                'pioneer.*gas',
-                'chevron',
-                'exon',
-                'PHILLIPS 66',
-                'conoco',
-		'fastrak',
-                'EXXONMOBIL',
-                'valero'],
-        'amazon': ['amazon', 'AMZN Mktp']}
-
-sums = defaultdict(lambda : 0)
+sums: Dict[str, int] = defaultdict(lambda: 0)
 rows = defaultdict(list)
 
 
-
 def iter_csv(filename):
-    with open(filename, 'rb') as csvfile:
+    with open(filename, "r") as csvfile:
         reader = csv.reader(csvfile)
         i = iter(reader)
-        next(i) # skip col names
+        header = next(i)
         for row in i:
-            print(row)
-            (trans_type, trans_date, post_date, description, amount) = row
-
-            if not trans_type == 'Sale':
+            record = dict(zip(header, row))
+            if record["Type"] == "Payment":
                 continue
-
-            yield (trans_date, description, amount)
+            date = datetime.strptime(record["Transaction Date"], r"%m/%d/%Y")
+            yield (date, record["Description"], record["Amount"])
 
 
 def fmt_date(date):
-    return re.sub(r'T.*', '', date.isoformat())
+    return re.sub(r"T.*", "", date.isoformat())
+
 
 def iter_ofx(filename):
     from ofxparse import OfxParser
-    with open(filename, 'rb') as f:
+
+    with open(filename, "rb") as f:
         ofx = OfxParser.parse(f)
     for transaction in ofx.account.statement.transactions:
-        if transaction.type != 'debit':
+        if transaction.type != "debit":
             continue
-        if True or transaction.date.month == 12:
-            yield (fmt_date(transaction.date), transaction.payee, transaction.amount)
+        yield (transaction.date, transaction.payee, transaction.amount)
 
 
 def iter_file(filename):
     (base, ext) = os.path.splitext(filename.lower())
-    if ext in ('.ofx', '.qfx'):
+    if ext in (".ofx", ".qfx"):
         return iter_ofx(filename)
     else:
         return iter_csv(filename)
 
 
-for date,description,amount in iter_file(sys.argv[1]):
-    amount = -float(amount)
+def main():
 
-    for (catname, res) in list(cats.items()):
-        if any(re.search(x, description, re.IGNORECASE) for x in res):
-            break
-        else:
-            catname = 'other'
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input")
+    parser.add_argument("--month", "-m", type=int)
+    args = parser.parse_args()
 
-    sums[catname] += amount
-    rows[catname].append([date,description,amount])
+    for date, description, amount in iter_file(args.input):
+        if args.month and date.month != args.month:
+            continue
+        amount = -float(amount)
+        for (catname, res) in list(cats.items()):
+            if any(re.search(x, description, re.IGNORECASE) for x in res):
+                break
+            else:
+                catname = "other"
 
-for catname in list(sums.keys()):
+        sums[catname] += amount
+        rows[catname].append(f"{fmt_date(date)} {amount:7} {description}")
+
+    for catname in list(sums.keys()):
+        print()
+        print("%s: " % catname)
+        for row in rows[catname]:
+            print("\t", row)
+
     print()
-    print("%s: " % catname)
-    for row in rows[catname]:
-        print("\t", row)
 
-print()        
-        
-for catname in list(sums.keys()):
-    print("SUM %s: %.2f" % (catname, sums[catname]))
+    for catname in list(sums.keys()):
+        print("SUM %s: %.2f" % (catname, sums[catname]))
 
-print() 
-    
-print("TOTAL %.2f" % sum(sums.values()))
+    print()
+
+    print("TOTAL %.2f" % sum(sums.values()))
 
 
-    
-
+if __name__ == "__main__":
+    main()

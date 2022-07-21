@@ -108,6 +108,7 @@ User larry@elder-gods.org
 AuthMechs LOGIN
 SSLType IMAPS
 PassCmd "cat ~/.passwords/kolab-password"
+PipelineDepth 1
 
 IMAPStore kolab-remote
 Account kolab

@@ -122,7 +122,7 @@ class Linux(Config):
             ('LLVM_ENABLE_ASSERTIONS', 'ON'),
             ('LLVM_USE_SPLIT_DWARF', 'ON'),
             ('LLVM_ENABLE_PROJECTS', "clang;lldb;libcxx;libcxxabi"),
-            ('SWIG_EXECUTABLE, /usr/bin/swig'),
+            ('SWIG_EXECUTABLE', '/usr/bin/swig'),
             ('CMAKE_EXE_LINKER_FLAGS', '-fuse-ld=bfd'),
             ('CMAKE_MODULE_LINKER_FLAGS', '-fuse-ld=bfd'),
             ('CMAKE_SHARED_LINKER_FLAGS', '-fuse-ld=bfd'),

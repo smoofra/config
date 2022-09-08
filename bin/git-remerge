@@ -100,10 +100,11 @@ class Git(object):
 
 git = Git()
 
-if not git.is_clean():
-    raise Exception("repo not clean")
 
 def remerge_multi_merges():
+    if not git.is_clean():
+        raise Exception("repo not clean")
+
     head = Commit(git, 'HEAD')
 
     merges = [head]
@@ -165,6 +166,12 @@ def remerge_integration_branch():
     with open('.branches', 'r') as f:
         branches_content = f.read()
     branches = shlex.split(branches_content)
+
+    if ".branches" in git.cmd("git diff-files --name-only".split(), quiet=True).splitlines():
+        git.cmd(['git', 'commit', '-m', 'branches', '.branches'])
+
+    if not git.is_clean():
+        raise Exception("repo not clean")
 
     git.cmd(['git', 'reset', '--hard', branches[0]])
 

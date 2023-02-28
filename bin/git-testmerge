@@ -80,7 +80,17 @@ class Git(object):
                 yield dict(to_pair(l) for l in worktree.splitlines())
         return list(trees())
 
-    
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--cleanup", action="store_true")
+parser.add_argument("--head", action='store_true')
+parser.add_argument("--cherry-pick", "-p", action='store_true')
+parser.add_argument("refs", nargs="*")
+args = parser.parse_args()
+
+if bool(args.cleanup) + bool(args.refs) != 1:
+    parser.error("specify refs or --cleanup")
+
 original_git = Git()
 
 for wt_dict in original_git.worktrees():
@@ -89,15 +99,18 @@ for wt_dict in original_git.worktrees():
         break
 else:
     worktree = os.path.join(original_git.git_dir, 'testmerge')
-    original_git.cmd(['git', 'worktree', 'add', worktree, '-b', 'testmerge'])
+    if not args.cleanup:
+        original_git.cmd(['git', 'worktree', 'add', worktree, '-b', 'testmerge'])
+
+if args.cleanup:
+    if os.path.exists(worktree):
+        shutil.rmtree(worktree)
+    original_git.cmd(['git', 'worktree', 'prune'])
+    original_git.cmd(['git', 'branch', '-D', 'testmerge'])
+    sys.exit(0)
+
 
 git = Git(worktree)
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--head", action='store_true')
-parser.add_argument("--cherry-pick", "-p", action='store_true')
-parser.add_argument("refs", nargs="+")
-args = parser.parse_args()
 
 refs = args.refs
 

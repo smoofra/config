@@ -13,7 +13,7 @@ for k in ('__file__', '__path__'):
     path = getattr(sys.modules[mod], k, None)
     if path is not None:
        print(path)
-       print(re.sub(r'\.py[co]$', '.py', path))
+       print(re.sub(r'\.py[co]$', '.py', str(path)))
        sys.exit(0)
 
 

@@ -180,7 +180,11 @@ def remerge_integration_branch():
     git.cmd(['git', 'add', '.branches'])
     git.cmd(['git', 'commit', '-m', '.branches'])
 
-    git.cmd(['git', 'merge'] + branches[1:])
+    if True:
+        for branch in branches[1:]:
+            git.cmd(['git', 'merge', branch])
+    else:
+        git.cmd(['git', 'merge'] + branches[1:])
 
 
 if os.path.exists('.branches'):

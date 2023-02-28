@@ -1,4 +1,5 @@
 {
+    "editor.rulers": [100],
     "editor.minimap.enabled": false,
     "C_Cpp.dimInactiveRegions": false,
     "workbench.editor.enablePreview": false,
@@ -66,9 +67,12 @@
             "scope": "user"
         }
     },
-    "gitlens.mode.active": "zen",
     "rust-client.rustupPath": "$HOME/.cargo/bin/rustup",
     "python.defaultInterpreterPath": "python3",
-    "window.zoomLevel": 1,
     "editor.unicodeHighlight.ambiguousCharacters": false,
+    "window.zoomLevel": 2,
+    "rewrap.wrappingColumn": 85,
+    "editor.wordwrap": "wordWrapColumn",
+    "editor.wrappingIndent": "indent",
+    "gitlens.mode.active": "zen",
 }

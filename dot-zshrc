@@ -264,3 +264,10 @@ function submit() {
         "$@"
 
 export CONAN_V2_MODE=1
+
+alias surge=~/src/volexity/Surge/Collect/go/bin/darwin_fat/surge-collect-pro-dropper
+alias sage=~/src/volexity/Scout/Sage/go/bin/darwin_fat/sage
+alias ssage='sudo ~/src/volexity/Scout/Sage/go/bin/darwin_fat/sage'
+alias proxygen=~/src/volexity/Scout/Sage/go/bin/darwin_fat/proxygen
+alias vol=~/src/volatility3/vol.py
+alias vol2='python2 ~/src/volexity/Volcano/volatility_volc/vol.py'

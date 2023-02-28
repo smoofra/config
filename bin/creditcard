@@ -12,6 +12,7 @@ import argparse
 cats = {
     "other": ["clive coffee"],
     "groceries": [
+        "wegmans",
         "weis",
         "supercenter",
         "food maxx",
@@ -32,9 +33,12 @@ cats = {
         "99 ranch",
         "rancho gordo",
         "HEATONIST",
+        "coco food",
+        "nalls farm",
+        "shiraz market",
     ],
     "bike": ["EVOLUTION BIKE SHOP"],
-    "it": ["no-ip", "crashplan", "linode", "winchester wireless", "Akamai"],
+    "it": ["no-ip", "crashplan", "linode", "winchester wireless", "Akamai", "VZWRLSS"],
     "electronics": ["fry's", "adafruit", "digi key"],
     "travel": [
         "HUDSONNEWS",
@@ -53,8 +57,17 @@ cats = {
     ],
     "hotels": ["AIRBNB", "hilton", "holiday inn", "restful nest", "HOTELTONIGHT"],
     "pets": ["petsmart"],
-    "house": ["ASHLEY INTERIORS", "ikea", "home.*depot", "regan nursery", "lowes", "fh furr"],
+    "house": ["ASHLEY INTERIORS", "ikea", "home.*depot", "regan nursery", "lowes", "fh furr",
+        "HOME PARAMOUNT", "ENVIROAIRE",
+    ],
     "restaurants": [
+        "main cup",
+        "kung fu tea",
+        "WETZELS PRETZELS",
+        "SANTORINI GRILL",
+        "silver din",
+        "ale works",
+        "pho bar",
         "glory days grill",
         "POLLON RANSON",
         "TJ's PIT STOP",
@@ -156,6 +169,7 @@ cats = {
         "THE BRANDING IRON",
     ],
     "entertainment": [
+        "kindle svcs",
         "substack",
         "podcast",
         "itunes",
@@ -164,6 +178,7 @@ cats = {
         "kqed membership",
         "kqed public media",
         "apple.com",
+        "thedispatch",
     ],
     "gas+tolls": [
         "shell.*oil",
@@ -179,6 +194,8 @@ cats = {
         "fastrak",
         "EXXONMOBIL",
         "valero",
+        "SOMERSET BP",
+        "sheetz",
     ],
     "amazon": ["amazon", "AMZN Mktp"],
 }

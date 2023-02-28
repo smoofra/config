@@ -100,6 +100,7 @@
     tpush = push --dry-run --summary
     s = status
 	b = branch -vv --sort=committerdate
+    br = branch
     f = ! git remote | xargs -d\\\\n -n1 git fetch -v --summary=200
 
     # example: git egc config.dlr
@@ -186,12 +187,27 @@
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
 
+[tig "bind"]
+
+    diff = j scroll-line-down
+    diff = k scroll-line-up
+    diff = u scroll-half-page-up
+    diff = d scroll-half-page-down
+
+    help = j scroll-line-down
+    help = k scroll-line-up
+    help = u scroll-half-page-up
+    help = d scroll-half-page-down
+
+    generic = B >git branch %(prompt) %(commit)
+
 
 [diff "gz"]
   textconv = gzcat
   binary = true
+
 [user]
-	name = Lawrence D'Anna
+	name = "Lawrence D'Anna"
 	email = larry@elder-gods.org
 [filter "lfs"]
 	clean = git-lfs clean -- %f

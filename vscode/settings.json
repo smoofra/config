@@ -1,6 +1,8 @@
 {
-    "editor.rulers": [100],
-    "editor.minimap.enabled": false,
+    "editor.rulers": [
+        80,
+        100
+    ],
     "C_Cpp.dimInactiveRegions": false,
     "workbench.editor.enablePreview": false,
     "terminal.integrated.macOptionIsMeta": true,
@@ -45,6 +47,9 @@
         // "--strict-equality",
     ],
     "python.linting.pylintEnabled": false,
+    "python.linting.pylintArgs": [
+        "--enable=W0614"
+    ],
     "jupyter.alwaysTrustNotebooks": true,
     "workbench.editorAssociations": {
         "*.ipynb": "jupyter-notebook",
@@ -70,9 +75,19 @@
     "rust-client.rustupPath": "$HOME/.cargo/bin/rustup",
     "python.defaultInterpreterPath": "python3",
     "editor.unicodeHighlight.ambiguousCharacters": false,
-    "window.zoomLevel": 2,
-    "rewrap.wrappingColumn": 85,
+    "rewrap.wrappingColumn": 80,
     "editor.wordwrap": "wordWrapColumn",
     "editor.wrappingIndent": "indent",
+    "[shellscript]": {
+        "files.eol": "\n"
+    },
+    "editor.minimap.maxColumn": 80,
+    "terminal.integrated.macOptionClickForcesSelection": true,
+    "window.zoomLevel": 2,
+    "editor.wordWrapColumn": 100,
+    "editor.minimap.enabled": false,
+    "editor.wordWrap": "bounded",
     "gitlens.mode.active": "zen",
+    "workbench.activityBar.visible": false,
+    "go.alternateTools": {},
 }

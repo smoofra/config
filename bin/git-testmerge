@@ -20,7 +20,7 @@ def TemporaryDirectory():
             shutil.rmtree(d)
 
 
-FNULL = open(os.devnull, 'w')
+FNULL = open(os.devnull, 'r+')
 
 g_verbose = False
 
@@ -32,19 +32,12 @@ class Git(object):
             print(f"+ cd {q(self.cwd)} &&", ' '.join(map(q, args)))
         proc = subprocess.Popen(args, cwd=self.cwd, env=self.env,
                                 encoding='utf8',
+                                stderr=subprocess.PIPE,
                                 stdin=FNULL, stdout=subprocess.PIPE, **kw)
         (out, err) = proc.communicate()
         if proc.wait() != 0:
-            raise Exception("git failed")
+            raise Exception("git failed: " + err.strip())
         return out
-
-    def cmd_test(self, args, **kw):
-        proc = subprocess.Popen(args, cwd=self.cwd, env=self.env,
-                                stdin=FNULL, **kw)
-        code = proc.wait()
-        if code not in [0,1]:
-            raise Exception("git failed")
-        return not code
 
     def __init__(self, directory=None, env=None):
         if directory is None:
@@ -81,100 +74,62 @@ class Git(object):
         return list(trees())
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--cleanup", action="store_true")
-parser.add_argument("--head", action='store_true')
-parser.add_argument("--cherry-pick", "-p", action='store_true')
-parser.add_argument("refs", nargs="*")
-args = parser.parse_args()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--cleanup", action="store_true")
+    parser.add_argument("--head", action='store_true')
+    parser.add_argument("--cherry-pick", "-p", action='store_true')
+    parser.add_argument("refs", nargs="*")
+    args = parser.parse_args()
 
-if bool(args.cleanup) + bool(args.refs) != 1:
-    parser.error("specify refs or --cleanup")
+    if bool(args.cleanup) + bool(args.refs) != 1:
+        parser.error("specify refs or --cleanup")
 
-original_git = Git()
+    original_git = Git()
 
-for wt_dict in original_git.worktrees():
-    if wt_dict.get('branch') == 'refs/heads/testmerge':
-        worktree = wt_dict['worktree']
-        break
-else:
-    worktree = os.path.join(original_git.git_dir, 'testmerge')
-    if not args.cleanup:
-        original_git.cmd(['git', 'worktree', 'add', worktree, '-b', 'testmerge'])
+    for wt_dict in original_git.worktrees():
+        if wt_dict.get('branch') == 'refs/heads/testmerge':
+            worktree = wt_dict['worktree']
+            break
+    else:
+        worktree = os.path.join(original_git.git_dir, 'testmerge')
+        if not args.cleanup:
+            original_git.cmd(['git', 'worktree', 'add', worktree, '-b', 'testmerge'])
 
-if args.cleanup:
+    if args.cleanup:
+        cleanup(original_git, worktree)
+        return
+
+    try:
+        git = Git(worktree)
+        refs = args.refs
+        head = original_git.cmd(['git', 'rev-parse', '--short', 'HEAD']).strip()
+        refs = [(ref if ref != "HEAD" else head) for ref in refs]
+
+        if args.head:
+            git.cmd(['git' "reset", '--hard', 'HEAD'])
+        else:
+            git.cmd(['git', "reset", '--hard', refs[0]])
+            refs = refs[1:]
+
+        if args.cherry_pick:
+            git.cmd(['git', 'cherry-pick'] + refs)
+        else:
+            git.cmd(['git', 'merge'] + refs)
+
+        sha = git.cmd(['git', 'rev-parse', '--short', 'HEAD']).strip()
+
+    finally:
+        cleanup(original_git, worktree)
+
+    print(sha)
+
+def cleanup(git, worktree):
     if os.path.exists(worktree):
         shutil.rmtree(worktree)
-    original_git.cmd(['git', 'worktree', 'prune'])
-    original_git.cmd(['git', 'branch', '-D', 'testmerge'])
-    sys.exit(0)
+    git.cmd(['git', 'worktree', 'prune'])
+    git.cmd(['git', 'branch', '-D', 'testmerge'])
 
 
-git = Git(worktree)
-
-refs = args.refs
-
-head = original_git.cmd(['git', 'rev-parse', '--short', 'HEAD']).strip()
-refs = [(ref if ref != "HEAD" else head) for ref in refs]
-
-if args.head:
-    git.cmd(['git' "reset", '--hard', 'HEAD'])
-else:
-    git.cmd(['git', "reset", '--hard', refs[0]])
-    refs = refs[1:]
-
-if args.cherry_pick:
-    git.cmd(['git', 'cherry-pick'] + refs)
-else:
-    git.cmd(['git', 'merge'] + refs)
-
-
-sha = git.cmd(['git', 'rev-parse', '--short', 'HEAD']).strip()
-print(sha)
-
-# with TemporaryDirectory() as tmpdir:
-
-#     os.mkdir( os.path.join(tmpdir, ".git") )
-    
-#     # if len(refs) == 2:
-#     #     git = Git(env={"GIT_INDEX_FILE":os.path.join(tmpdir, ".git", "quick_index")})
-#     #     base = original_git.cmd(["git", "merge-base", refs[0], refs[1]]).strip()
-#     #     try:
-#     #         git.cmd(['git', 'read-tree', '-m', base, refs[0], refs[1]], stderr=FNULL)
-#     #         print git.cmd(['git', 'write-tree'], stderr=FNULL).strip()
-#     #         sys.exit(0)
-#     #     except Exception:
-#     #         pass
-    
-#     for d in ('objects', 'refs', 'info', 'hooks', 'branches'):
-#         os.symlink( os.path.join(original_git.git_dir, d), os.path.join(tmpdir, ".git", d) )
-
-#     for f in ('config',):
-#         shutil.copy( os.path.join(original_git.git_dir, f), os.path.join(tmpdir, ".git", f) )
-
-#     with open(os.path.join(tmpdir, ".git", "HEAD"), "w") as f:
-#         print(original_git.cmd(["git", "rev-parse", refs[0]]), file=f)
-
-#     git = Git(tmpdir)
-
-#     git.cmd(["git", "read-tree", "HEAD"])
-
-#     #disable lfs in our temporary repo
-#     git.cmd(["git", "config", "filter.lfs.smudge", ""])
-#     git.cmd(["git", "config", "filter.lfs.process", ""])
-#     git.cmd(["git", "config", "filter.lfs.clean", ""])
-#     git.cmd(["git", "config", "filter.lfs.required", "false"])
-
-#     git.cmd(["git", "checkout", "."])
-#     for ref in refs[1:]:
-#         if ref == "HEAD":
-#             ref = original_git.cmd(["git", "rev-parse", ref]).strip()
-#         try:
-#             git.cmd(["git", "merge", "--quiet", "-m", "testmerge", ref])
-#         except:
-#             print("merge failed!", file=sys.stderr)
-#             sys.exit(1)
-
-#     result = git.cmd(["git", "rev-parse", "HEAD"]).strip()
-#     print(result)
-
+if __name__ == '__main__':
+    main()

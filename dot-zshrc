@@ -191,7 +191,7 @@ function sdk() {
      xcrun -sdk "$@" --show-sdk-path 2>/dev/null
 }
 
-alias pr='open -a $(xcode-select -p)/"Platforms/iPhoneOS.platform/AppleInternal/Applications/PurpleRestore 3.app"'
+#alias pr='open -a $(xcode-select -p)/"Platforms/iPhoneOS.platform/AppleInternal/Applications/PurpleRestore 3.app"'
 
 function path() {
     if [ $# = 0 ]; then
@@ -255,19 +255,47 @@ alias pd=pushd
 alias conan='python3 -m conans.conan'
 
 
-function submit() {
-    build=$1
-    shift
-    python3 ~/src/volexity/Infrastructure/Package/python/submit-test.py \
-        https://build.research.volexity.com/Surge/Surge-Collect-build/$build/test.tar.gz \
-        Surge/Collect/test/buildbot.py \
-        "$@"
-
 export CONAN_V2_MODE=1
 
 alias surge=~/src/volexity/Surge/Collect/go/bin/darwin_fat/surge-collect-pro-dropper
 alias sage=~/src/volexity/Scout/Sage/go/bin/darwin_fat/sage
 alias ssage='sudo ~/src/volexity/Scout/Sage/go/bin/darwin_fat/sage'
 alias proxygen=~/src/volexity/Scout/Sage/go/bin/darwin_fat/proxygen
+alias pdiff=~/src/volexity/Scout/Sage/go/bin/darwin_fat/pdiff
+alias dwarf2json=~/src/volexity/Infrastructure/dwarf2json/bin/darwin_arm64/dwarf2json
 alias vol=~/src/volatility3/vol.py
 alias vol2='python2 ~/src/volexity/Volcano/volatility_volc/vol.py'
+alias conan1=~/src/conan/old-ass-conan/bin/conan
+alias make=gmake
+
+export POETRY_REPOSITORIES_NEXUS_URL=https://nexus.research.volexity.com/repository/pypi-volexity/
+export POETRY_REPOSITORIES_INTERNAL_URL=https://artifactory.research.volexity.com/artifactory/api/pypi/pypi-volexity
+
+
+export CFLAGS=
+export CPPFLAGS=
+export LDFLAGS=
+export CXXFLAGS=
+export MAKEFLAGS="-j$(nproc)"
+
+
+function zjq() {
+    local f=$1
+    shift
+    zstdcat $f | jq "$@"
+    [[ $pipestatus[1] = 0 ]] || return $pipestatus[1]
+    [[ $pipestatus[2] = 0 ]] || return $pipestatus[2]
+}
+
+function darwin-version() {
+    zjq $1 .symbols.version.constant_data -r  | base64 -d | perl -pe 's/[\r\n\x00]//g'
+}
+
+function linux-version() {
+    zjq $1 .metadata.linux.proc_version -r | base64 -d | perl -pe 's/[\r\n\x00]//g'
+}
+
+function remake() {
+    rm -f "$@" || return $?
+    make "$@" || return $?
+}

@@ -287,6 +287,15 @@ function zjq() {
     [[ $pipestatus[2] = 0 ]] || return $pipestatus[2]
 }
 
+function zjcurl() {
+    local url=$1
+    shift
+    curl -sf $url | zstdcat | jq "$@"
+    [[ $pipestatus[1] = 0 ]] || return $pipestatus[1]
+    [[ $pipestatus[2] = 0 ]] || return $pipestatus[2]
+    [[ $pipestatus[3] = 0 ]] || return $pipestatus[3]
+}
+
 function darwin-version() {
     zjq $1 .symbols.version.constant_data -r  | base64 -d | perl -pe 's/[\r\n\x00]//g'
 }

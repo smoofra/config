@@ -219,7 +219,17 @@ def remerge_integration_branch():
             else:
                 break
 
-        git.cmd(['git', 'cherry-pick', *cherries])
+        if cherries:
+            if False:
+                git.cmd(['git', 'cherry-pick', '--allow-empty', *cherries])
+            else:
+                new_base = Commit(git, 'HEAD')
+                git.checkout(cherries[-1])
+                try:
+                    git.cmd(['git', 'rebase', base.sha, '--onto', new_base.sha])
+                except:
+                    git.cmd(['git', 'rebase', '--abort'])
+                    raise
 
     except:
         git.force_checkout(current_branch)

@@ -44,6 +44,7 @@ CXXFLAGS
 cython
 cyto
 d'anna
+Datacenter
 datetime
 decompressor
 defragmentation
@@ -151,6 +152,7 @@ metacharacters
 metafunc
 minio
 mkdir
+mmap
 Mntfromname
 mountpoint
 mountpoints
@@ -164,7 +166,9 @@ NOTPARALLEL
 notsep
 nproc
 NTFS
+ntkrnlmp
 ntkrnlpa
+ntkrpamp
 ntoskrnl
 NTSTATUS
 OBJCOPY

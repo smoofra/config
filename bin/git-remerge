@@ -6,7 +6,7 @@ import os
 import signal
 import shlex
 
-from typing import List
+from typing import List, Iterable
 
 class Commit(object):
 
@@ -100,6 +100,11 @@ class Git(object):
 
     def trees_differ(self, a, b):
         return not git.cmd_test(['git', 'diff', '--quiet', a, b])
+
+    def unmerged(self) -> Iterable[str]:
+        for line in self.cmd(['git', 'ls-files', '--unmerged']).splitlines():
+            _, filename = line.split("\t", 1)
+            yield filename
 
 
 git = Git()
@@ -208,7 +213,15 @@ def remerge_integration_branch():
 
                 if not octopus:
                     for branch in branches[1:]:
-                        git.cmd(['git', 'merge', branch])
+                        try:
+                            git.cmd(['git', 'merge', branch])
+                        except:
+                            if set(git.unmerged()) == {".branches"}:
+                                git.cmd(['git', 'checkout', '--ours', '.branches'])
+                                git.cmd(['git', 'add', '.branches'])
+                                git.cmd(['git', '-c', 'core.editor=true', 'merge', '--continue'])
+                            else:
+                                raise
                 else:
                     git.cmd(['git', 'merge'] + branches[1:])
             except:

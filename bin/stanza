@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+import re
+import sys
+import argparse
+from contextlib import contextmanager
+
+parser = argparse.ArgumentParser()
+parser.add_argument("file", nargs="?")
+args = parser.parse_args()
+
+@contextmanager
+def input(file):
+    if file is None:
+        yield sys.stdin
+    else:
+        with open(file, 'r') as f:
+            yield f
+
+with input(args.file) as f:
+    sys.stdout.write('\x00'.join(re.split(r'\n\s*\n', f.read())))

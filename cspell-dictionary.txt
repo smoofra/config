@@ -61,6 +61,7 @@ distro
 DSTROOT
 dsym
 dsymutil
+dups
 Dwarfdump
 dwarfwrap
 DWIM
@@ -76,6 +77,7 @@ eprocess
 errgroup
 Errorf
 errorp
+fastfind
 fieldname
 fileglob
 fileinfo
@@ -97,6 +99,7 @@ fsizes
 getcwd
 goroutines
 Gvars
+hasher
 hashtable
 hexdump
 highleveltools
@@ -119,6 +122,7 @@ Kaslr
 kernelcache
 kext
 klass
+kmem
 Kmod
 kube
 Kubeless
@@ -142,6 +146,7 @@ MAKEFLAGS
 maprows
 maxint
 mcqueen
+melka
 memdistill
 Memgraph
 memgraphs
@@ -230,11 +235,14 @@ struct
 structs
 Stype
 stypes
+subapi
+subdir
 submap
 submaps
 Subqueries
 subquery
 Subrange
+subranges
 symbolication
 syms
 syscall
@@ -269,6 +277,7 @@ vmmmap
 volatilityfoundation
 volcanoserver
 volexity
+vsyscall
 Vtop
 vtype
 vtypes
@@ -284,4 +293,6 @@ xlog
 xname
 xprr
 yeet
+zdebug
+Zprint
 zstdcat

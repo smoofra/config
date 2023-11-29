@@ -49,6 +49,9 @@
     upstream = rev-parse --abbrev-ref HEAD@{upstream}
     up = rev-parse --abbrev-ref HEAD@{upstream}
 
+    # print the sha of the latest merge in the history
+    m = log --merges -1 --pretty='%h'
+
     # print the name of our description tag
     des = describe --tags --abbrev=0
 

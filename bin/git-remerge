@@ -50,7 +50,7 @@ class Git(object):
             raise Exception("git failed")
         return out
 
-    def cmd_test(self, args, **kw):
+    def cmd_test(self, args, **kw) -> bool:
         proc = subprocess.Popen(args, cwd=self.directory,
                                 stdin=FNULL, **kw)
         code = proc.wait()
@@ -66,39 +66,39 @@ class Git(object):
         if self.directory == '':
             raise Exception("can't find top-level.  (bare repo?)")
 
-    def is_clean(self):
+    def is_clean(self) -> bool:
         return ('' == self.cmd("git diff-index --cached --name-only HEAD".split(), quiet=True) and
                 '' == self.cmd("git diff-files --name-only".split(), quiet=True))
 
     # is a an ancestor of b
-    def is_ancestor(self, a, b):
+    def is_ancestor(self, a: str, b: str) -> bool:
         return self.cmd_test(['git', 'merge-base', '--is-ancestor', a, b])
 
-    def rev_parse(self, commit):
+    def rev_parse(self, commit: str) -> str:
         return self.cmd(['git', 'rev-parse', commit]).strip()
 
-    def checkout(self, branch):
+    def checkout(self, branch: str) -> None:
         self.cmd(['git', 'checkout', branch], stderr=FNULL)
 
-    def force_checkout(self, branch):
+    def force_checkout(self, branch: str) -> None:
         self.cmd(['git', 'checkout', '-f', branch], stderr=FNULL)
 
-    def detach(self):
+    def detach(self) -> None:
         self.cmd(['git', 'checkout', self.rev_parse('HEAD')], stderr=FNULL)
 
-    def merge(self, commit, message):
+    def merge(self, commit: str, message: str) -> bool:
         merged = self.cmd_test(['git', 'merge', '--no-edit', '-m', message, commit], stdout=FNULL)
         if not merged:
             self.cmd(['git', 'merge', '--abort'])
         return merged
 
-    def current_branch(self):
+    def current_branch(self) -> str:
         branch = self.cmd(['git', 'symbolic-ref', 'HEAD']).strip()
         if branch == 'refs/heads/' or not branch.startswith('refs/heads/'):
             raise Exception("not on a branch")
         return branch[len('refs/heads/'):]
 
-    def trees_differ(self, a, b):
+    def trees_differ(self, a, b) -> bool:
         return not git.cmd_test(['git', 'diff', '--quiet', a, b])
 
     def unmerged(self) -> Iterable[str]:
@@ -110,13 +110,13 @@ class Git(object):
 git = Git()
 
 
-def remerge_multi_merges():
+def remerge_multi_merges() -> None:
     if not git.is_clean():
         raise Exception("repo not clean")
 
     head = Commit(git, 'HEAD')
 
-    merges = [head]
+    merges : List[Commit] = [head]
     prev = None
     while True:
         commit = merges[-1]
@@ -132,7 +132,7 @@ def remerge_multi_merges():
     current_branch = git.current_branch()
 
     def sigint_handler(signal, frame):
-        git.checkout(current_branch)
+        git.force_checkout(current_branch)
         sys.exit(0)
     signal.signal(signal.SIGINT, sigint_handler)
 
@@ -155,9 +155,8 @@ def remerge_multi_merges():
                     git.cmd(['git', 'rev-parse', '--short', head.sha]).strip())
 
             if merged and not git.trees_differ('HEAD', head.sha):
-                new = git.rev_parse('HEAD')
+                git.cmd(['git', 'update-ref', '-m', 'remerge', 'refs/heads/' + current_branch, 'HEAD'])
                 git.checkout(current_branch)
-                git.cmd(['git', 'reset', '--hard', new])
                 print("remerged!")
                 break
 
@@ -171,7 +170,7 @@ def remerge_multi_merges():
         git.force_checkout(current_branch)
         raise
 
-def remerge_integration_branch():
+def remerge_integration_branch() -> None:
     with open('.branches', 'r') as f:
         branches_content = f.read()
     branches = shlex.split(branches_content)
@@ -252,9 +251,10 @@ def remerge_integration_branch():
     git.cmd(['git', 'checkout', current_branch])
 
 
-if os.path.exists('.branches'):
-    print("resetting integration branch")
-    remerge_integration_branch()
-else:
-    print("attempting to coalesce redundant merges")
-    remerge_multi_merges()
+if __name__ == "__main__":
+    if os.path.exists('.branches'):
+        print("resetting integration branch")
+        remerge_integration_branch()
+    else:
+        print("attempting to coalesce redundant merges")
+        remerge_multi_merges()

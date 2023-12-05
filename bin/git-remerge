@@ -173,9 +173,22 @@ def remerge_multi_merges() -> None:
 
 def pick_cherries(git: Git, cherries: List[str], contiguous: bool) -> None:
     if not cherries:
-        return
+            return
 
     base = git.rev_parse("HEAD")
+
+    if contiguous:
+        # Since the list of cherries is contiguous, they can be picked using
+        # rebase.   This will automatically remove any commits in the series
+        # that were cherry-picked down into branches
+        git.checkout(cherries[-1])
+        try:
+            git.cmd(['git', 'rebase', f"{cherries[0]}^", '--onto', base])
+            return
+        except:
+            git.cmd(['git', 'rebase', '--abort'])
+            raise
+
 
     # Try using cherry-pick.   This can fail if commits from this series
     # have been cherry picked down into some of the branches that got
@@ -184,18 +197,7 @@ def pick_cherries(git: Git, cherries: List[str], contiguous: bool) -> None:
         git.cmd(['git', 'cherry-pick', '--allow-empty', *cherries])
         return
     except:
-        if not contiguous:
-            raise
-        git.force_checkout(base)
-
-    # Since the list of cherries is contiguous, they can be picked using
-    # rebase.   This will automatically remove any commits in the series
-    # that were cherry-picked down into branches
-    git.checkout(cherries[-1])
-    try:
-        git.cmd(['git', 'rebase', f"{cherries[0]}^", '--onto', base])
-    except:
-        git.cmd(['git', 'rebase', '--abort'])
+        git.cmd(['git', 'cherry-pick', '--abort'])
         raise
 
 

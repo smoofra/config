@@ -6,8 +6,8 @@ import os
 import re
 import signal
 import shlex
-
 from typing import List, Iterable
+import argparse
 
 class Commit(object):
 
@@ -171,7 +171,7 @@ def remerge_multi_merges() -> None:
         git.force_checkout(current_branch)
         raise
 
-def pick_cherries(git: Git, cherries: List[str], contiguous: bool) -> None:
+def pick_cherries(git: Git, cherries: List[str], contiguous: bool, keep: bool) -> None:
     if not cherries:
             return
 
@@ -186,7 +186,8 @@ def pick_cherries(git: Git, cherries: List[str], contiguous: bool) -> None:
             git.cmd(['git', 'rebase', f"{cherries[0]}^", '--onto', base])
             return
         except:
-            git.cmd(['git', 'rebase', '--abort'])
+            if not keep:
+                git.cmd(['git', 'rebase', '--abort'])
             raise
 
 
@@ -197,11 +198,12 @@ def pick_cherries(git: Git, cherries: List[str], contiguous: bool) -> None:
         git.cmd(['git', 'cherry-pick', '--allow-empty', *cherries])
         return
     except:
-        git.cmd(['git', 'cherry-pick', '--abort'])
+        if not keep:
+            git.cmd(['git', 'cherry-pick', '--abort'])
         raise
 
 
-def remerge_integration_branch() -> None:
+def remerge_integration_branch(keep: bool) -> None:
     with open('.branches', 'r') as f:
         branches_content = f.read()
     branches = shlex.split(branches_content)
@@ -266,20 +268,29 @@ def remerge_integration_branch() -> None:
             else:
                 break
 
-        pick_cherries(git, cherries, cherries_are_contiguous)
+        pick_cherries(git, cherries, cherries_are_contiguous, keep)
 
     except:
-        git.force_checkout(current_branch)
+        if not keep:
+            git.force_checkout(current_branch)
         raise
 
     git.cmd(['git', 'update-ref', '-m', 'remerge', 'refs/heads/' + current_branch, 'HEAD'])
     git.cmd(['git', 'checkout', current_branch])
 
 
-if __name__ == "__main__":
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--keep", action="store_true")
+    args = parser.parse_args()
+
     if os.path.exists('.branches'):
         print("resetting integration branch")
-        remerge_integration_branch()
+        remerge_integration_branch(args.keep)
     else:
         print("attempting to coalesce redundant merges")
         remerge_multi_merges()
+
+
+if __name__ == "__main__":
+    main()

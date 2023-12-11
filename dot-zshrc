@@ -264,7 +264,7 @@ alias proxygen=~/src/volexity/Scout/Sage/go/bin/darwin_fat/proxygen
 alias pdiff=~/src/volexity/Scout/Sage/go/bin/darwin_fat/pdiff
 alias dwarf2json=~/src/volexity/Infrastructure/dwarf2json/bin/darwin_arm64/dwarf2json
 alias vol=~/src/volatility3/vol.py
-alias vol2='python2 ~/src/volexity/Volcano/volatility_volc/vol.py'
+alias vol2='python2 ~/src/volexity/Volcano-Future/volatility_volc/vol.py'
 alias conan1=~/src/conan/old-ass-conan/bin/conan
 alias make=gmake
 

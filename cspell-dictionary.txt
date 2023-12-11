@@ -12,6 +12,7 @@ automagically
 autotools
 basenames
 basetype
+bcopy
 binutils
 bitfield
 bitfields
@@ -81,12 +82,14 @@ fastfind
 fieldname
 fileglob
 fileinfo
+fileproc
 FILESET
 filesystems
 Filesz
 filetime
 fixincludes
 flink
+FNULL
 foffset
 foffsets
 forcescheduler
@@ -97,6 +100,7 @@ freetype
 Frobnicate
 fsizes
 getcwd
+gitdir
 goroutines
 Gvars
 hasher

@@ -289,14 +289,13 @@ class KeepGoing(Continuation):
         except Abort:
             raise
         except (SwapFailed, Stop):
-            print("this far and no further!")
             return
         A = self.git.commit("HEAD")
         B = self.git.unique_parent(A)
         self.git.checkout(B.sha)
         with PickCherries(self.git, cherries=[A.sha]):
             with KeepGoing(self.git, edit=self.edit):
-                self.git.swap(edit=self.edit)
+                self.git.swap_or_squash(edit=self.edit)
 
 
 @contextmanager
@@ -389,29 +388,36 @@ class Git:
             raise Exception(f"{commit} is a merge")
         return self.commit(commit.parents[0])
 
-    def swap(self, *, edit:bool = False) -> None:
+
+    def swap_or_squash(self, *, edit:bool = False) -> None:
         with OrSquash(self):
-            one = self.commit("HEAD")
-            two = self.unique_parent(one)
-            three = self.unique_parent(two)
-            try:
-                with Checkpoint(self, head=one.sha):
-                    self.checkout(three.sha)
-                    with PickCherryWithReference(self, cherry=two.sha, reference=one.sha):
-                        try:
-                            self.cherry_pick(one.sha, edit=edit)
-                        except Suspend as e:
-                            e.status = dedent(f"""
-                            Attempting to swap:
-                              {one.summary}
-                              {two.summary}
-                            """)
-                            raise
-            except Exception as e:
-                raise SwapFailed from e
+            self.swap(edit=edit)
 
+    def swap(self, *, edit:bool = False) -> None:
+        one = self.commit("HEAD")
+        two = self.unique_parent(one)
+        three = self.unique_parent(two)
+        try:
+            with Checkpoint(self, head=one.sha):
+                self.checkout(three.sha)
+                with PickCherryWithReference(self, cherry=two.sha, reference=one.sha):
+                    try:
+                        self.cherry_pick(one.sha, edit=edit)
+                    except Suspend as e:
+                        e.status = dedent(f"""
+                        Attempting to swap:
+                            {one.summary}
+                            {two.summary}
+                        """)
+                        raise
+        except Exception as e:
+            raise SwapFailed from e
 
-    def swap_commit(self, commit:str, *, edit:bool = False, keep_going:bool = False) -> None:
+    @contextmanager
+    def collect_cherries(self, commit:Optional[str]) -> Iterator[None]:
+        if not commit:
+            yield
+            return
         sha = self.rev_parse(commit)
         cherries: List[str] = list()
         head = self.commit('HEAD')
@@ -421,9 +427,13 @@ class Git:
             cherries.append(head.sha)
             head = self.unique_parent(head)
         self.checkout(sha)
-        with PickCherries(self, cherries=cherries):
+        with PickCherries(self, cherries=list(reversed(cherries))):
+            yield
+
+    def swap_commit(self, commit:Optional[str], *, edit:bool = False, keep_going:bool = False) -> None:
+        with self.collect_cherries(commit):
             with maybe_keep_going(keep_going, git=self, edit=edit):
-                self.swap(edit=edit)
+                self.swap_or_squash(edit=edit)
 
 
 class Commit(object):
@@ -496,12 +506,7 @@ def main() -> None:
 
     with Continuation.main(git):
         with EditBranch(git):
-            if args.commit:
-                git.swap_commit(args.commit, edit=args.edit, keep_going=args.keep_going)
-            else:
-                with maybe_keep_going(args.keep_going, git=git, edit=args.edit):
-                    git.swap(edit=args.edit)
-
+            git.swap_commit(args.commit, edit=args.edit, keep_going=args.keep_going)
 
 if __name__ == "__main__":
     main()

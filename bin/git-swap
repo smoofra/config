@@ -179,7 +179,10 @@ class PickCherries(Continuation):
 
     @contextmanager
     def impl(self) -> Iterator[None]:
-        yield
+        try:
+            yield
+        except Exception as e:
+            raise
         for cherry in self.cherries:
             self.git.cherry_pick(cherry)
 
@@ -246,6 +249,8 @@ class OrSquash(Continuation):
         squash = False
         try:
             yield
+        except Exception as e:
+            raise
         except Squash:
             squash = True
         if squash:
@@ -260,7 +265,8 @@ class OrSquash(Continuation):
             raise Stop
 
 
-class Checkpoint(Continuation):
+# restore git state if swap failed
+class SwapCheckpoint(Continuation):
 
     def __init__(self, git:'Git', head:str):
         super().__init__(git)
@@ -286,8 +292,6 @@ class KeepGoing(Continuation):
     def impl(self) -> Iterator[None]:
         try:
             yield #swap
-        except Abort:
-            raise
         except (SwapFailed, Stop):
             return
         A = self.git.commit("HEAD")
@@ -374,7 +378,8 @@ class Git:
             new_one = self.rev_parse('HEAD')
         except GitFailed:
             if edit and self.conflicted:
-                raise Suspend
+                with CherryPickContinue(self):
+                    raise Suspend
             else:
                 self.cmd(['git', 'cherry-pick', '--abort'])
                 raise
@@ -397,21 +402,21 @@ class Git:
         one = self.commit("HEAD")
         two = self.unique_parent(one)
         three = self.unique_parent(two)
-        try:
-            with Checkpoint(self, head=one.sha):
-                self.checkout(three.sha)
-                with PickCherryWithReference(self, cherry=two.sha, reference=one.sha):
-                    try:
-                        self.cherry_pick(one.sha, edit=edit)
-                    except Suspend as e:
-                        e.status = dedent(f"""
-                        Attempting to swap:
-                            {one.summary}
-                            {two.summary}
-                        """)
-                        raise
-        except Exception as e:
-            raise SwapFailed from e
+        with SwapCheckpoint(self, head=one.sha):
+            self.checkout(three.sha)
+            with PickCherryWithReference(self, cherry=two.sha, reference=one.sha):
+                try:
+                    self.cherry_pick(one.sha, edit=edit)
+                except GitFailed as e:
+                    raise SwapFailed from e
+                except Suspend as e:
+                    e.status = dedent(f"""
+                    Attempting to swap:
+                        {one.summary}
+                        {two.summary}
+                    """)
+                    raise
+
 
     @contextmanager
     def collect_cherries(self, commit:Optional[str]) -> Iterator[None]:

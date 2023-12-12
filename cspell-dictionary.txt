@@ -70,6 +70,7 @@ DWORD
 dyld
 dylib
 dysmutil
+effectful
 elif
 endianness
 endpoint
@@ -215,6 +216,7 @@ radare
 RANLIB
 rdar
 realpath
+reflog
 Reparse
 retval
 rodata

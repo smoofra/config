@@ -13,442 +13,19 @@ from textwrap import dedent
 
 FNULL = open(os.devnull, 'w')
 
-# Suspend execution and save a stack of continuations in .git/swap.json
-class Suspend(BaseException):
-    continuations: List['Continuation']
-    status: Optional[str]
-    def __init__(self) -> None:
-        self.continuations = list()
-        self.status = None
-
-
-class Abort(Exception):
-    pass
-
-# raised into a resume stack by git-swap --stop
-class Stop(Exception):
-    pass
-
-# raised into a resume stack by git-swap --squash
-class Squash(Exception):
-    pass
-
 class GitFailed(Exception):
     pass
 
-class SwapFailed(Exception):
+class UserError(Exception):
     pass
-
-# A metaclass for continuation types.  This just collects a dict of them all
-# indexed by name.
-class ContinuationClass(type):
-    types : Dict[str, 'ContinuationClass'] = dict()
-    def __new__(cls, name, bases, attrs):
-        T = type.__new__(cls, name, bases, attrs)
-        cls.types[name] = T
-        return T
-
-
-# A continuation is  is a context manager that can suspended, serialized out to
-# json, and then resumed in a subsequent execution of this program.
-class Continuation(metaclass=ContinuationClass):
-
-    manager : ContextManager[None]
-    git : 'Git'
-
-    def __init__(self, git: 'Git') -> None:
-        self.git = git
-
-    def __enter__(self) -> None:
-        self.manager = self.impl()
-        return self.manager.__enter__()
-
-    def __exit__(self, typ, value, traceback) -> bool | None:
-        if typ and issubclass(typ, Suspend):
-            if value is None:
-                value = typ()
-            value.continuations.append(self)
-            return None
-        else:
-            return self.manager.__exit__(typ, value, traceback)
-
-    def impl(self) -> ContextManager[None]:
-        # any initialization that occurs before yield should be done in __init__, not here
-        raise NotImplementedError
-
-    @classmethod
-    def resume(cls, git: 'Git', *, abort:bool = False, stop:bool = False, squash:bool = False) -> None:
-
-        def r(ks: List[Dict]) -> None:
-            if not len(ks):
-                if abort:
-                    raise Abort
-                elif stop:
-                    raise Stop
-                elif squash:
-                    raise Squash
-                else:
-                    return
-            [k, *ks] = ks
-            T = ContinuationClass.types[k['kind']]
-            del k['kind']
-            with T(git, **k):
-                r(ks)
-
-        with open(git.swap_json, 'r') as f:
-            j = json.load(f)
-        os.unlink(git.swap_json)
-
-        with cls.main(git):
-            try:
-                r(j['continuations'])
-            except Abort:
-                pass
-
-    @staticmethod
-    @contextmanager
-    def main(git: 'Git') -> Iterator[None]:
-        if os.path.exists(git.swap_json):
-            raise Exception("git-swap operation is already in progress")
-        try:
-            yield
-        except Suspend as e:
-            if e.status:
-                print(e.status)
-            print(" === Suspended!  Resolve conflicts and run: git swap --continue ==")
-            with open(git.swap_json, 'w') as f:
-                ks = [k.to_json_dict() for k in reversed(e.continuations)]
-                j : Dict
-                j = {"continuations": ks}
-                if e.status:
-                    j["status"] = e.status
-                json.dump(j, f, indent=True)
-                f.write("\n")
-
-    @staticmethod
-    def status(git: 'Git') -> None:
-        if os.path.exists(git.swap_json):
-            with open(git.swap_json, 'r') as f:
-                print(json.load(f).get("status", "unknown"))
-        else:
-            print("no swap operation in progress")
-
-
-    def to_json_dict(self) -> Dict:
-        j = self.__dict__
-        j['kind'] = self.__class__.__name__
-        del j['manager']
-        del j['git']
-        return j
-
-
-class EditBranch(Continuation):
-
-    def __init__(self, git: 'Git', *, head: Optional[str] = None) -> None:
-        super().__init__(git)
-        if head:
-            self.head = head
-        else:
-            self.head = git.head()
-            git.detach()
-
-    @property
-    def branch(self) -> Optional[str]:
-        if self.head.startswith("refs/heads/"):
-            return self.head.removeprefix("refs/heads/") or None
-        return None
-
-    @contextmanager
-    def impl(self) -> Iterator[None]:
-        try:
-            yield
-        except Exception:
-            self.git.force_checkout(self.branch or self.head)
-            raise
-        else:
-            if self.branch:
-                self.git.cmd(['git', 'update-ref', '-m', 'git-swap', self.head, 'HEAD'])
-                self.git.checkout(self.branch)
-
-
-class PickCherries(Continuation):
-
-    def __init__(self, git: 'Git', *, cherries: List[str]):
-        super().__init__(git)
-        self.cherries = cherries
-
-    @contextmanager
-    def impl(self) -> Iterator[None]:
-        try:
-            yield
-        except Exception as e:
-            raise
-        for cherry in self.cherries:
-            self.git.cherry_pick(cherry)
-
-
-# pick a cherry, resolving conflicts using a reference commit
-class PickCherryWithReference(Continuation):
-
-    def __init__(self, git:'Git', *, cherry:str, reference:str):
-        super().__init__(git)
-        self.cherry = cherry
-        self.reference = reference
-
-    @contextmanager
-    def impl(self) -> Iterator[None]:
-        yield
-        ok = False
-        try:
-            try:
-                self.git.cmd(["git", "cherry-pick", self.cherry], stderr=FNULL)
-                ok = True
-            except GitFailed:
-                if self.git.conflicted:
-                    self.git.cmd(['git', 'checkout', self.reference, '.'])
-                    self.git.cmd(['git', 'cherry-pick', '--continue'])
-                    ok = True
-                else:
-                    raise
-        finally:
-            if not ok:
-                self.git.cmd(['git', 'cherry-pick', '--abort'])
-
-
-class CherryPickContinue(Continuation):
-
-    def __init__(self, git:'Git'):
-        super().__init__(git)
-
-    @contextmanager
-    def impl(self) -> Iterator[None]:
-        try:
-            yield
-        except Exception:
-            self.git.cmd(['git', 'cherry-pick', '--abort'])
-            raise
-        else:
-            if self.git.conflicted:
-                self.git.cmd(['git', 'cherry-pick', '--continue'])
-
-
-class OrSquash(Continuation):
-
-    def __init__(self, git:'Git'):
-        super().__init__(git)
-
-    @staticmethod
-    def edit():
-        (_, _, A, B, path) = sys.argv
-        with open(path, "w") as f:
-            print("pick", A, file=f)
-            print("squash", B, file=f)
-
-    @contextmanager
-    def impl(self) -> Iterator[None]:
-        squash = False
-        try:
-            yield
-        except Exception as e:
-            raise
-        except Squash:
-            squash = True
-        if squash:
-            A = self.git.commit("HEAD")
-            B = self.git.unique_parent(A)
-            C = self.git.unique_parent(B)
-            try:
-                self.git.cmd(['git', '-c', f"sequence.editor={sys.executable} {__file__} --edit-rebase {B.sha} {A.sha}", 'rebase', '-i', C.sha], interactive=True)
-            except GitFailed:
-                self.git.cmd(['git', 'rebase', '--abort'])
-                raise
-            raise Stop
-
-
-# restore git state if swap failed
-class SwapCheckpoint(Continuation):
-
-    def __init__(self, git:'Git', head:str):
-        super().__init__(git)
-        self.head = head
-
-    @contextmanager
-    def impl(self) -> Iterator[None]:
-        try:
-            yield
-        except Exception:
-            self.git.force_checkout(self.head)
-            raise
-
-
-# after ...AB as been swapped to ...BA, keep trying to push B down further
-class KeepGoing(Continuation):
-
-    def __init__(self, git:'Git', *, edit:bool = False):
-        super().__init__(git)
-        self.edit = edit
-
-    @contextmanager
-    def impl(self) -> Iterator[None]:
-        try:
-            yield #swap
-        except (SwapFailed, Stop):
-            return
-        A = self.git.commit("HEAD")
-        B = self.git.unique_parent(A)
-        self.git.checkout(B.sha)
-        with PickCherries(self.git, cherries=[A.sha]):
-            with KeepGoing(self.git, edit=self.edit):
-                self.git.swap_or_squash(edit=self.edit)
-
-
-@contextmanager
-def maybe_keep_going(keep_going:bool, *, edit:bool, git:'Git') -> Iterator[None]:
-    if keep_going:
-        with KeepGoing(git, edit=edit):
-            yield
-    else:
-        yield
-
-
-class Git:
-
-    def __init__(self, directory=None):
-        if directory is None:
-            directory = '.'
-        self.directory = directory
-        self.directory = self.cmd("git rev-parse --show-toplevel".split(), quiet=True).strip()
-        if self.directory == '':
-            raise Exception("can't find top-level.  (bare repo?)")
-        self.gitdir = self.cmd("git rev-parse --git-dir".split(), quiet=True).strip()
-
-
-    def cmd(self, args, *, quiet:bool = False, interactive:bool = False, **kw) -> str:
-        if not quiet:
-            print("+", ' '.join(map(shlex.quote, args)))
-        if not interactive:
-            kw['stdin'] = FNULL
-            kw['stdout'] = subprocess.PIPE
-        proc = subprocess.Popen(args, cwd=self.directory, encoding='utf8', **kw)
-        (out, err) = proc.communicate()
-        if proc.wait() != 0:
-            raise GitFailed("git failed")
-        return out
-
-    def cmd_test(self, args, **kw) -> bool:
-        proc = subprocess.Popen(args, cwd=self.directory, stdin=FNULL, **kw)
-        code = proc.wait()
-        if code not in [0,1]:
-            raise GitFailed("git failed")
-        return not code
-
-    def rev_parse(self, commit: str) -> str:
-        return self.cmd(['git', 'rev-parse', commit], quiet=True).strip()
-
-
-    def detach(self) -> None:
-        self.cmd(['git', 'checkout', self.rev_parse('HEAD')], stderr=FNULL)
-
-    def head(self) -> str:
-        try:
-            return self.cmd(['git', 'symbolic-ref', 'HEAD'], quiet=True).strip()
-        except GitFailed:
-            return self.rev_parse('HEAD')
-
-    def force_checkout(self, branch: str) -> None:
-        self.cmd(['git', 'checkout', '-f', branch], stderr=FNULL)
-
-    def commit(self, ref:str) -> 'Commit':
-        return Commit(self, ref)
-
-    def checkout(self, branch: str) -> None:
-        self.cmd(['git', 'checkout', branch], stderr=FNULL)
-
-    @property
-    def swap_json(self) -> str:
-        return os.path.join(self.gitdir, 'swap.json')
-
-    def is_clean(self) -> bool:
-        return ('' == self.cmd("git diff-index --cached --name-only HEAD".split(), quiet=True) and
-                '' == self.cmd("git diff-files --name-only".split(), quiet=True))
-
-    def cherry_pick(self, ref:str, edit:bool = False) -> None:
-        try:
-            self.cmd(['git', 'cherry-pick', ref])
-            new_one = self.rev_parse('HEAD')
-        except GitFailed:
-            if edit and self.conflicted:
-                with CherryPickContinue(self):
-                    raise Suspend
-            else:
-                self.cmd(['git', 'cherry-pick', '--abort'])
-                raise
-
-    @property
-    def conflicted(self) -> bool:
-        return os.path.exists(os.path.join(self.gitdir, "CHERRY_PICK_HEAD"))
-
-    def unique_parent(self, commit: 'Commit') -> 'Commit':
-        if len(commit.parents) != 1:
-            raise Exception(f"{commit} is a merge")
-        return self.commit(commit.parents[0])
-
-
-    def swap_or_squash(self, *, edit:bool = False) -> None:
-        with OrSquash(self):
-            self.swap(edit=edit)
-
-    def swap(self, *, edit:bool = False) -> None:
-        one = self.commit("HEAD")
-        two = self.unique_parent(one)
-        three = self.unique_parent(two)
-        with SwapCheckpoint(self, head=one.sha):
-            self.checkout(three.sha)
-            with PickCherryWithReference(self, cherry=two.sha, reference=one.sha):
-                try:
-                    self.cherry_pick(one.sha, edit=edit)
-                except GitFailed as e:
-                    raise SwapFailed from e
-                except Suspend as e:
-                    e.status = dedent(f"""
-                    Attempting to swap:
-                        {one.summary}
-                        {two.summary}
-                    """)
-                    raise
-
-
-    @contextmanager
-    def collect_cherries(self, commit:Optional[str]) -> Iterator[None]:
-        if not commit:
-            yield
-            return
-        sha = self.rev_parse(commit)
-        cherries: List[str] = list()
-        head = self.commit('HEAD')
-        while True:
-            if head.sha == sha:
-                break
-            cherries.append(head.sha)
-            head = self.unique_parent(head)
-        self.checkout(sha)
-        with PickCherries(self, cherries=list(reversed(cherries))):
-            yield
-
-    def swap_commit(self, commit:Optional[str], *, edit:bool = False, keep_going:bool = False) -> None:
-        with self.collect_cherries(commit):
-            with maybe_keep_going(keep_going, git=self, edit=edit):
-                self.swap_or_squash(edit=edit)
-
 
 class Commit(object):
 
     parents : List[str]
 
-    def __init__(self, git : Git, rev:str):
+    def __init__(self, *, log:str):
         self.parents = list()
-        buffer = git.cmd("git log -n1 --no-notes --pretty=raw".split() + [rev], quiet=True)
-        (headers, message) = buffer.split("\n\n", 1)
+        (headers, message) = log.split("\n\n", 1)
         for header in headers.split("\n"):
             (key, value) = header.strip().split(' ', 1)
             if key == 'commit':
@@ -476,6 +53,477 @@ class Commit(object):
         return self.sha[:10]
 
 
+class Git:
+
+    def __init__(self, directory=None):
+        if directory is None:
+            directory = '.'
+        self.directory = directory
+        try:
+            self.directory = self.cmd("git rev-parse --show-toplevel".split(),
+                quiet=True, stderr=FNULL).strip()
+        except GitFailed as e:
+            raise UserError("Error: not a git repository") from e
+        if self.directory == '':
+            raise UserError("Error: cannot find working directory.  bare repository?")
+        self.gitdir = self.cmd("git rev-parse --git-dir".split(), quiet=True).strip()
+
+    def cmd(self, args, *, quiet:bool = False, interactive:bool = False, **kw) -> str:
+        if not quiet:
+            print("+", ' '.join(map(shlex.quote, args)))
+        if not interactive:
+            kw['stdin'] = FNULL
+            kw['stdout'] = subprocess.PIPE
+        proc = subprocess.Popen(args, cwd=self.directory, encoding='utf8', **kw)
+        (out, err) = proc.communicate()
+        if proc.wait() != 0:
+            raise GitFailed("git failed")
+        return out
+
+    def cmd_test(self, args, **kw) -> bool:
+        proc = subprocess.Popen(args, cwd=self.directory, stdin=FNULL, **kw)
+        code = proc.wait()
+        if code not in [0,1]:
+            raise GitFailed("git failed")
+        return not code
+
+    def rev_parse(self, commit: str) -> str:
+        return self.cmd(['git', 'rev-parse', commit], quiet=True).strip()
+
+    def detach(self) -> None:
+        self.cmd(['git', 'checkout', self.rev_parse('HEAD')], stderr=FNULL)
+
+    def head(self) -> str:
+        try:
+            return self.cmd(['git', 'symbolic-ref', 'HEAD'], quiet=True, stderr=FNULL).strip()
+        except GitFailed:
+            return self.rev_parse('HEAD')
+
+    def force_checkout(self, branch: str) -> None:
+        self.cmd(['git', 'checkout', '-f', branch], stderr=FNULL)
+
+    def commit(self, ref:str) -> Commit:
+        log = self.cmd("git log -n1 --no-notes --pretty=raw".split() + [ref], quiet=True)
+        return Commit(log=log)
+
+    def checkout(self, branch: str) -> None:
+        self.cmd(['git', 'checkout', branch], stderr=FNULL)
+
+    @property
+    def swap_json(self) -> str:
+        return os.path.join(self.gitdir, 'swap.json')
+
+    def is_clean(self) -> bool:
+        return ('' == self.cmd("git diff-index --cached --name-only HEAD".split(), quiet=True) and
+                '' == self.cmd("git diff-files --name-only".split(), quiet=True))
+
+    @property
+    def conflicted(self) -> bool:
+        return os.path.exists(os.path.join(self.gitdir, "CHERRY_PICK_HEAD"))
+
+    def unique_parent(self, commit: Commit) -> Commit:
+        if len(commit.parents) != 1:
+            raise MergeFound(f"{commit} is a merge")
+        return self.commit(commit.parents[0])
+
+
+# Suspend execution and save a stack of continuations in .git/swap.json
+class Suspend(BaseException):
+    continuations: List['Continuation']
+    status: Optional[str]
+    def __init__(self) -> None:
+        self.continuations = list()
+        self.status = None
+
+# Raised into a resume stack by `git swap --abort`.  This will abort the swap
+# operation and restore git to its previous state.
+class Abort(Exception):
+    pass
+
+# Raised into a resume stack by `git swap --stop`.  This will abandon the
+# most recent swap operation and push everything back onto the branch.
+class Stop(Exception):
+    pass
+
+# raised into a resume stack by `git swap --squash`.   This will replace the
+# most recent swap operation with a squash, and then push everything back onto
+# the branch.
+class Squash(Exception):
+    pass
+
+class SwapFailed(Exception):
+    pass
+
+class MergeFound(Exception):
+    pass
+
+# A metaclass for continuation types.  This just collects a dict of them all
+# indexed by name.
+class ContinuationClass(type):
+    types : Dict[str, 'ContinuationClass'] = dict()
+    def __new__(cls, name, bases, attrs):
+        T = type.__new__(cls, name, bases, attrs)
+        cls.types[name] = T
+        return T
+
+
+# A continuation is  is a context manager that can be suspended, serialized out
+# to json, and then resumed in a subsequent execution of this program.
+#
+# A continuation class must:
+#
+#   * have only json-serializable attributes
+#
+#   * have a 1-1 correspondence between those attributes and `__init__`
+#     keywords
+#
+#   * perform no side effects in `__init__`, EXCEPT as a result of normalizing
+#     those attributes.  For example, `EditBranch` takes an optional argument
+#     `head`.   If `head is None`, then it does an effectful initialization, and
+#     sets `head` to something.   If `head is not None`, then no initialization
+#     is performed.
+#
+#   * implement a context manager overriding .impl()
+#
+#   * perform no side effects in impl() prior to yield
+#
+class Continuation(metaclass=ContinuationClass):
+
+    manager : ContextManager[None]
+    git : Git
+
+    def __init__(self, git: Git) -> None:
+        self.git = git
+
+    def __enter__(self) -> None:
+        self.manager = self.impl()
+        return self.manager.__enter__()
+
+    def __exit__(self, typ, value, traceback) -> bool | None:
+        if typ and issubclass(typ, Suspend):
+            if value is None:
+                value = typ()
+            value.continuations.append(self)
+            return None
+        else:
+            return self.manager.__exit__(typ, value, traceback)
+
+    def impl(self) -> ContextManager[None]:
+        # any initialization that occurs before yield should be done in __init__, not here
+        raise NotImplementedError
+
+    @classmethod
+    def resume(cls, git: Git, *, abort:bool=False, stop:bool=False, squash:bool=False) -> None:
+
+        if not os.path.exists(git.swap_json):
+            raise UserError("Error: no git swap operation is in progress")
+
+        def r(ks: List[Dict]) -> None:
+            if not len(ks):
+                if abort:
+                    raise Abort
+                elif stop:
+                    raise Stop
+                elif squash:
+                    raise Squash
+                else:
+                    return
+            [k, *ks] = ks
+            T = ContinuationClass.types[k['kind']]
+            del k['kind']
+            with T(git, **k):
+                r(ks)
+
+        with open(git.swap_json, 'r') as f:
+            j = json.load(f)
+        os.unlink(git.swap_json)
+
+        with cls.main(git):
+            try:
+                r(j['continuations'])
+            except (Abort, Stop):
+                pass
+
+    @staticmethod
+    @contextmanager
+    def main(git: Git) -> Iterator[None]:
+        if os.path.exists(git.swap_json):
+            raise UserError("git-swap operation is already in progress")
+        try:
+            yield
+        except Suspend as e:
+            if e.status:
+                print(e.status)
+            print("Suspended!  Resolve conflicts and run: git swap --continue")
+            with open(git.swap_json, 'w') as f:
+                ks = [k.to_json_dict() for k in reversed(e.continuations)]
+                j : Dict
+                j = {"continuations": ks}
+                if e.status:
+                    j["status"] = e.status
+                json.dump(j, f, indent=True)
+                f.write("\n")
+            sys.exit(2)
+
+    @staticmethod
+    def status(git: Git) -> None:
+        if os.path.exists(git.swap_json):
+            with open(git.swap_json, 'r') as f:
+                print(json.load(f).get("status", "unknown"))
+        else:
+            print("no swap operation in progress")
+
+
+    def to_json_dict(self) -> Dict:
+        j = self.__dict__
+        j['kind'] = self.__class__.__name__
+        del j['git']
+        del j['manager']
+        return j
+
+# Detach from the current branch, so it can be edited without polluting the
+# reflog with a bunch of intermediate steps.   At the end, update the branch and
+# check it back out again.
+class EditBranch(Continuation):
+
+    def __init__(self, git: Git, *, head: Optional[str] = None) -> None:
+        super().__init__(git)
+        if head:
+            self.head = head
+        else:
+            self.head = git.head()
+            git.detach()
+
+    @property
+    def branch(self) -> Optional[str]:
+        if self.head.startswith("refs/heads/"):
+            return self.head.removeprefix("refs/heads/") or None
+        return None
+
+    @contextmanager
+    def impl(self) -> Iterator[None]:
+        try:
+            yield
+        except Exception:
+            self.git.force_checkout(self.branch or self.head)
+            raise
+        else:
+            if self.branch:
+                self.git.cmd(['git', 'update-ref', '-m', 'git-swap', self.head, 'HEAD'])
+                self.git.checkout(self.branch)
+
+
+# Yield and then pick a list of cherries.
+class PickCherries(Continuation):
+
+    def __init__(self, git: Git, *, cherries: List[str]):
+        super().__init__(git)
+        self.cherries = cherries
+
+    @contextmanager
+    def impl(self) -> Iterator[None]:
+        try:
+            yield
+        except Exception as e:
+            raise
+        for cherry in self.cherries:
+            cherry_pick(cherry, git=self.git)
+
+
+# Pick a cherry, resolving conflicts using a reference commit.  When we swap the
+# order of two commits, we want the resulting tree to be the same.  This means
+# the user should only need to resolve conflicts once, when the now-first commit
+# is applied.
+class PickCherryWithReference(Continuation):
+
+    def __init__(self, git:Git, *, cherry:str, reference:str):
+        super().__init__(git)
+        self.cherry = cherry
+        self.reference = reference
+
+    @contextmanager
+    def impl(self) -> Iterator[None]:
+        yield
+        ok = False
+        try:
+            try:
+                self.git.cmd(["git", "cherry-pick", self.cherry], stderr=FNULL)
+                ok = True
+            except GitFailed:
+                if self.git.conflicted:
+                    self.git.cmd(['git', 'checkout', self.reference, '.'])
+                    self.git.cmd(['git', 'cherry-pick', '--continue'])
+                    ok = True
+                else:
+                    raise
+        finally:
+            if not ok:
+                self.git.cmd(['git', 'cherry-pick', '--abort'])
+
+
+# When resuming, check if the user ran `git cherry-pick --continue`, and do it for
+# them if they have't.
+class CherryPickContinue(Continuation):
+
+    def __init__(self, git:Git):
+        super().__init__(git)
+
+    @contextmanager
+    def impl(self) -> Iterator[None]:
+        try:
+            yield
+        except Exception:
+            self.git.cmd(['git', 'cherry-pick', '--abort'])
+            raise
+        else:
+            if self.git.conflicted:
+                self.git.cmd(['git', 'cherry-pick', '--continue'])
+
+
+# Handle the case when the user calls `git swap --squash`.
+class OrSquash(Continuation):
+
+    def __init__(self, git:Git):
+        super().__init__(git)
+
+    @staticmethod
+    def edit():
+        (_, _, A, B, path) = sys.argv
+        with open(path, "w") as f:
+            print("pick", A, file=f)
+            print("squash", B, file=f)
+
+    @contextmanager
+    def impl(self) -> Iterator[None]:
+        try:
+            yield
+            return
+        except Squash:
+            pass
+        A = self.git.commit("HEAD")
+        B = self.git.unique_parent(A)
+        C = self.git.unique_parent(B)
+        try:
+            self.git.cmd(['git', '-c', f"sequence.editor={sys.executable} {__file__} --edit-rebase {B.sha} {A.sha}", 'rebase', '-i', C.sha], interactive=True)
+        except GitFailed:
+            self.git.cmd(['git', 'rebase', '--abort'])
+            raise
+        raise Stop
+
+
+# restore git state if swap failed
+class SwapCheckpoint(Continuation):
+
+    def __init__(self, git:Git, head:str):
+        super().__init__(git)
+        self.head = head
+
+    @contextmanager
+    def impl(self) -> Iterator[None]:
+        try:
+            yield
+        except Exception:
+            self.git.force_checkout(self.head)
+            raise
+
+
+# after ...AB as been swapped to ...BA, keep trying to push B down further
+class KeepGoing(Continuation):
+
+    def __init__(self, git:Git, *, edit:bool = False):
+        super().__init__(git)
+        self.edit = edit
+
+    @contextmanager
+    def impl(self) -> Iterator[None]:
+        try:
+            yield #swap
+        except (SwapFailed, Stop):
+            return
+        A = self.git.commit("HEAD")
+        B = self.git.unique_parent(A)
+        self.git.checkout(B.sha)
+        with PickCherries(self.git, cherries=[A.sha]):
+            with KeepGoing(self.git, edit=self.edit):
+                swap_or_squash(edit=self.edit, git=self.git)
+
+
+# wrap with KeepGoing if the user specified `--keep-going`
+@contextmanager
+def maybe_keep_going(keep_going:bool, *, edit:bool, git:Git) -> Iterator[None]:
+    if keep_going:
+        with KeepGoing(git, edit=edit):
+            yield
+    else:
+        yield
+
+
+# move HEAD to the specified commit, yield, then cherry-pick everything above it
+@contextmanager
+def collect_cherries(commit:Optional[str], *, git:Git) -> Iterator[None]:
+    if not commit:
+        yield
+        return
+    sha = git.rev_parse(commit)
+    cherries: List[str] = list()
+    head = git.commit('HEAD')
+    while True:
+        if head.sha == sha:
+            break
+        cherries.append(head.sha)
+        try:
+            head = git.unique_parent(head)
+        except MergeFound as e:
+            raise UserError(f"Error: {e}") from e
+    git.checkout(sha)
+    with PickCherries(git, cherries=list(reversed(cherries))):
+        yield
+
+
+# Perform a single cherry pick operation.  This is the only place Suspend can be
+# raised.
+def cherry_pick(ref:str, *, edit:bool=False, git:Git) -> None:
+    try:
+        git.cmd(['git', 'cherry-pick', ref])
+    except GitFailed:
+        if edit and git.conflicted:
+            with CherryPickContinue(git):
+                raise Suspend
+        else:
+            git.cmd(['git', 'cherry-pick', '--abort'])
+            raise
+
+
+# swap HEAD with HEAD^
+def swap(*, git:Git, edit:bool = False) -> None:
+    one = git.commit("HEAD")
+    try:
+        two = git.unique_parent(one)
+        three = git.unique_parent(two)
+    except MergeFound as e:
+        raise SwapFailed(f"Swap failed: {e}") from e
+    with SwapCheckpoint(git, head=one.sha):
+        git.checkout(three.sha)
+        with PickCherryWithReference(git, cherry=two.sha, reference=one.sha):
+            try:
+                cherry_pick(one.sha, edit=edit, git=git)
+            except GitFailed as e:
+                raise SwapFailed("Swap failed.") from e
+            except Suspend as e:
+                e.status = dedent(f"""
+                Attempting to swap:
+                    {one.summary}
+                    {two.summary}
+                """)
+                raise
+
+
+# swap HEAD or HEAD^, or squash them together if the user resumes with `--squash`
+def swap_or_squash(*, edit:bool = False, git:Git) -> None:
+    with OrSquash(git):
+        swap(edit=edit, git=git)
+
+
 def main() -> None:
 
     if len(sys.argv) > 1 and sys.argv[1] == "--edit-rebase":
@@ -483,35 +531,45 @@ def main() -> None:
         return
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--keep-going", "-k", action='store_true', help="push HEAD as far down the stack as it will go")
-    parser.add_argument("--continue", action='store_true', dest="resume")
-    parser.add_argument("--abort", action='store_true')
-    parser.add_argument("--stop", action='store_true', help="abandon the latest swap operation")
+    parser.add_argument("--keep-going", "-k", action='store_true', help="push COMMIT as far down the stack as it will go")
+    parser.add_argument("--continue", action='store_true', dest="resume", help="resume after conflicts have been resolved")
+    parser.add_argument("--abort", action='store_true', help="give up and restore git to original state")
+    parser.add_argument("--stop", action='store_true', help="abandon the latest swap operation, and continue")
     parser.add_argument("--squash", action='store_true', help="squash instead of completing this swap")
-    parser.add_argument("--edit", "-e", action="store_true")
-    parser.add_argument("--status", action="store_true")
-    parser.add_argument("commit", nargs='?')
+    parser.add_argument("--edit", "-e", action="store_true", help="if conflicts arise, suspend so the user can resolve them")
+    parser.add_argument("--status", action="store_true", help="print status")
+    parser.add_argument("commit", nargs='?', metavar="COMMIT", help="swap COMMIT with COMMIT^. defaults to HEAD")
     args = parser.parse_args()
 
     if sum(bool(x) for x in (args.resume,args.abort,args.stop, args.squash, args.status)) > 1:
         parser.error("use only one of --continue, --abort, --stop, --status, or --squash")
 
-    git = Git()
+    try:
+        git = Git()
 
-    if args.status:
-        Continuation.status(git)
-        return
+        if args.status:
+            Continuation.status(git)
+            return
 
-    if args.resume or args.abort or args.stop or args.squash:
-        Continuation.resume(git, abort=args.abort, stop=args.stop, squash=args.squash)
-        return
+        if args.resume or args.abort or args.stop or args.squash:
+            Continuation.resume(git, abort=args.abort, stop=args.stop, squash=args.squash)
+            return
 
-    if not git.is_clean():
-        raise Exception("repo not clean")
+        if os.path.exists(git.swap_json):
+            raise UserError("Error: git swap operation is already in progress")
 
-    with Continuation.main(git):
-        with EditBranch(git):
-            git.swap_commit(args.commit, edit=args.edit, keep_going=args.keep_going)
+        if not git.is_clean():
+            raise UserError("Error: repo not clean")
+
+        with Continuation.main(git):
+            with EditBranch(git):
+                with collect_cherries(args.commit, git=git):
+                    with maybe_keep_going(args.keep_going, git=git, edit=args.edit):
+                        swap_or_squash(edit=args.edit, git=git)
+
+    except (SwapFailed, UserError) as e:
+        print(e)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

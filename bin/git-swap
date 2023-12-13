@@ -320,10 +320,7 @@ class PickCherries(Continuation):
 
     @contextmanager
     def impl(self) -> Iterator[None]:
-        try:
-            yield
-        except Exception as e:
-            raise
+        yield
         for cherry in self.cherries:
             cherry_pick(cherry, git=self.git)
 

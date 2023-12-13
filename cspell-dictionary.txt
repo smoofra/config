@@ -150,6 +150,7 @@ makefiles
 MAKEFLAGS
 maprows
 maxint
+maxval
 mcqueen
 melka
 memdistill

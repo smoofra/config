@@ -5,8 +5,7 @@ import sys
 from contextlib import contextmanager
 import subprocess
 import shlex
-from typing import ContextManager, Generator, List, Optional, Tuple, Any, Dict, cast, Iterator
-from typing_extensions import Self
+from typing import ContextManager, List, Optional, Dict, Iterator
 import argparse
 import json
 from textwrap import dedent
@@ -254,7 +253,6 @@ class Continuation(metaclass=ContinuationClass):
         except Suspend as e:
             if e.status:
                 print(e.status)
-            print("Suspended!  Resolve conflicts and run: git swap --continue")
             with open(git.swap_json, 'w') as f:
                 ks = [k.to_json_dict() for k in reversed(e.continuations)]
                 j : Dict
@@ -263,6 +261,7 @@ class Continuation(metaclass=ContinuationClass):
                     j["status"] = e.status
                 json.dump(j, f, indent=True)
                 f.write("\n")
+            print("Suspended!  Resolve conflicts and run: git swap --continue")
             sys.exit(2)
 
     @staticmethod
@@ -272,7 +271,6 @@ class Continuation(metaclass=ContinuationClass):
                 print(json.load(f).get("status", "unknown"))
         else:
             print("no swap operation in progress")
-
 
     def to_json_dict(self) -> Dict:
         j = self.__dict__
@@ -530,7 +528,7 @@ def main() -> None:
         OrSquash.edit()
         return
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="swap the order of commits")
     parser.add_argument("--keep-going", "-k", action='store_true', help="push COMMIT as far down the stack as it will go")
     parser.add_argument("--continue", action='store_true', dest="resume", help="resume after conflicts have been resolved")
     parser.add_argument("--abort", action='store_true', help="give up and restore git to original state")

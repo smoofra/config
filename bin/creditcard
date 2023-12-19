@@ -3,15 +3,14 @@
 import csv
 import sys
 import re
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from datetime import datetime
 import os
 from typing import Dict
 import argparse
 
-cats = {
-    "other": ["clive coffee"],
-    "groceries": [
+cats = OrderedDict([
+    ('groceries', [
         "wegmans",
         "weis",
         "supercenter",
@@ -42,11 +41,11 @@ cats = {
         "costco",
         "aldi",
 
-    ],
-    "bike": ["EVOLUTION BIKE SHOP"],
-    "it": ["no-ip", "crashplan", "linode", "winchester wireless", "Akamai", "VZWRLSS"],
-    "electronics": ["fry's", "adafruit", "digi key"],
-    "travel": [
+    ]),
+    ("bike", ["EVOLUTION BIKE SHOP"]),
+    ("it", ["no-ip", "crashplan", "linode", "winchester wireless", "Akamai", "VZWRLSS", "starlink", "kolab"]),
+    ("electronics", ["fry's", "adafruit", "digi key"]),
+    ("travel", [
         "HUDSONNEWS",
         "usair",
         "clipper service",
@@ -60,13 +59,14 @@ cats = {
         "bird app",
         "virgin amer",
         "american air",
-    ],
-    "hotels": ["AIRBNB", "hilton", "holiday inn", "restful nest", "HOTELTONIGHT"],
-    "pets": ["petsmart"],
-    "house": ["ASHLEY INTERIORS", "ikea", "home.*depot", "regan nursery", "lowes", "fh furr",
+    ]),
+    ("hotels", ["AIRBNB", "hilton", "holiday inn", "restful nest", "HOTELTONIGHT", "best western"]),
+    ("pets", ["petsmart"]),
+    ("house", ["ASHLEY INTERIORS", "ikea", "home.*depot", "regan nursery", "lowes", "fh furr",
         "HOME PARAMOUNT", "ENVIROAIRE", "SPICHERS", "build.com", "wall control",
-    ],
-    "restaurants": [
+    ]),
+    ("restaurants", [
+        "rams head",
         "brobear",
         "WILLIE SUTTONS SALOON",
         "water street kitchen",
@@ -190,8 +190,8 @@ cats = {
         "GOGI 92",
         "sweet basil",
         "TOUS LES JOURS",
-    ],
-    "entertainment": [
+    ]),
+    ("entertainment", [
         "kindle svcs",
         "substack",
         "podcast",
@@ -203,8 +203,10 @@ cats = {
         "apple.com",
         "thedispatch",
         "YouTubePremium",
-    ],
-    "gas+tolls": [
+    ]),
+    ("gas+tolls", [
+        "ezpassva",
+        "exxon",
         "highs",
         "shell.*oil",
         "AUTOPIA",
@@ -223,16 +225,19 @@ cats = {
         "sheetz",
         "gb10",
         "E Z PASS",
-    ],
-    "medical": [
+        "CONNECTED SERVICES", # toyota
+    ]),
+    ("medical", [
         "WINCHESTER MEDICAL",
+        "dental",
         "pharmacy",
         "EAST MOUNTAIN HEALTH",
         "LOUDOUN PED ASSC",
         "dermatology",
-    ],
-    "amazon": ["amazon", "AMZN Mktp"],
-}
+    ]),
+    ("amazon", ["amazon", "AMZN Mktp"]),
+    ("other", ["clive coffee"]),
+])
 
 sums: Dict[str, int] = defaultdict(lambda: 0)
 rows = defaultdict(list)
@@ -294,7 +299,7 @@ def main():
         sums[catname] += amount
         rows[catname].append(f"{fmt_date(date)} {amount:7} {description}")
 
-    for catname in list(sums.keys()):
+    for catname in cats.keys():
         print()
         print("%s: " % catname)
         for row in rows[catname]:
@@ -302,8 +307,9 @@ def main():
 
     print()
 
-    for catname in list(sums.keys()):
-        print("SUM %s: %.2f" % (catname, sums[catname]))
+    for catname in cats.keys():
+        if sums[catname] > 0:
+            print("SUM %s: %.2f" % (catname, sums[catname]))
 
     print()
 

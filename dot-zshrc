@@ -308,3 +308,5 @@ function remake() {
     rm -f "$@" || return $?
     make "$@" || return $?
 }
+
+alias volcano-curl='curl -H "Authorization: Bearer `cat ~/.volcanoserver-token`"'

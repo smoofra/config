@@ -66,6 +66,8 @@ cats = OrderedDict([
         "HOME PARAMOUNT", "ENVIROAIRE", "SPICHERS", "build.com", "wall control",
     ]),
     ("restaurants", [
+        "el habanero",
+        "burgers fries",
         "rams head",
         "brobear",
         "WILLIE SUTTONS SALOON",
@@ -203,8 +205,10 @@ cats = OrderedDict([
         "apple.com",
         "thedispatch",
         "YouTubePremium",
+        "weekly dish llc",
     ]),
     ("gas+tolls", [
+        "gill bros",
         "ezpassva",
         "exxon",
         "highs",
@@ -228,6 +232,7 @@ cats = OrderedDict([
         "CONNECTED SERVICES", # toyota
     ]),
     ("medical", [
+        "urgentcare",
         "WINCHESTER MEDICAL",
         "dental",
         "pharmacy",
@@ -261,7 +266,7 @@ def fmt_date(date):
 
 
 def iter_ofx(filename):
-    from ofxparse import OfxParser
+    from ofxparse import OfxParser # type: ignore
 
     with open(filename, "rb") as f:
         ofx = OfxParser.parse(f)

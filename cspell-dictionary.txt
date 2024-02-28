@@ -13,6 +13,7 @@ autotools
 basenames
 basetype
 bcopy
+bifunctor
 binutils
 bitfield
 bitfields
@@ -28,6 +29,7 @@ chdir
 clickthrough
 cmake
 Codeview
+codomain
 Commandline
 conanbuildenv
 conanbuildinfo
@@ -100,6 +102,7 @@ frappuccino
 freetype
 Frobnicate
 fsizes
+functors
 getcwd
 gitdir
 goroutines
@@ -165,14 +168,20 @@ minio
 mkdir
 mmap
 Mntfromname
+morphisms
 mountpoint
 mountpoints
 mpfr
 MSVC
 mtab
+Multifunctor
+Multifunctors
+nameinfo
 namespacing
 nargs
 nelements
+nonabelian
+noncommutative
 NOTPARALLEL
 notsep
 nproc
@@ -199,6 +208,7 @@ Pdpte
 pgde
 pkgconfig
 pmap
+PMMVAD
 pointee
 popcount
 posix
@@ -207,6 +217,7 @@ printenv
 Progressf
 protobuf
 proxygen
+Ptr
 Ptrauth
 PTRS
 pytest
@@ -273,6 +284,9 @@ usagef
 Userinfo
 userspace
 vaddr
+vadflags
+vadnode
+vads
 Velociraptor
 venv
 vfsmount

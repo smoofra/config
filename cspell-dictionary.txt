@@ -293,6 +293,8 @@ vfsmount
 vhdx
 virtualrunenv
 vmalloc
+vmas
+vmas2rows
 vmmap
 vmmmap
 volatilityfoundation

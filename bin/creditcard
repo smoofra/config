@@ -63,9 +63,10 @@ cats = OrderedDict([
     ("hotels", ["AIRBNB", "hilton", "holiday inn", "restful nest", "HOTELTONIGHT", "best western"]),
     ("pets", ["petsmart"]),
     ("house", ["ASHLEY INTERIORS", "ikea", "home.*depot", "regan nursery", "lowes", "fh furr",
-        "HOME PARAMOUNT", "ENVIROAIRE", "SPICHERS", "build.com", "wall control",
+        "HOME PARAMOUNT", "ENVIROAIRE", "SPICHERS", "build.com", "wall control", "roofin", "bbqguys",
     ]),
     ("restaurants", [
+        "subway",
         "el habanero",
         "burgers fries",
         "rams head",

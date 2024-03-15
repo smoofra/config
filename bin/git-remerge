@@ -206,7 +206,14 @@ def pick_cherries(git: Git, cherries: List[str], contiguous: bool, keep: bool) -
 def remerge_integration_branch(keep: bool) -> None:
     with open('.branches', 'r') as f:
         branches_content = f.read()
-    branches = shlex.split(branches_content)
+
+    def i():
+        for line in branches_content.splitlines():
+            if re.match(r'^\s*(\#|$)', line):
+                continue
+            for branch in shlex.split(line):
+                yield branch
+    branches = list(i())
 
     if ".branches" in git.cmd("git diff-files --name-only".split(), quiet=True).splitlines():
         git.cmd(['git', 'commit', '-m', 'branches', '.branches'])

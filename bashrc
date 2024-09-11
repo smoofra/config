@@ -239,7 +239,7 @@ function path() {
         PATH=$(~/bin/delpath "$2" "$PATH")
     elif [ $# = 1 ]; then
         local dir
-        dir="$(~/bin/relpath "$1")"
+        dir="$(realpath "$1")"
         export DT_NO_RESPAWN=1
         export DYLD_LIBRARY_PATH=$(~/bin/addpath "$dir" "$DYLD_LIBRARY_PATH")
         export DYLD_FRAMEWORK_PATH=$(~/bin/addpath "$dir" "$DYLD_FRAMEWORK_PATH")

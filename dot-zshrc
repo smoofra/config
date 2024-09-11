@@ -198,13 +198,13 @@ function path() {
         echo "$PATH" | tr : \\n
     elif [ $# = 2 ] && [ $1 = "-d" ]; then
         local dir
-        dir="$(~/bin/relpath "$2")"
+        dir="$(realpath "$2")"
         DYLD_LIBRARY_PATH=$(~/bin/delpath "$dir" "$DYLD_LIBRARY_PATH")
         DYLD_FRAMEWORK_PATH=$(~/bin/delpath "$dir" "$DYLD_FRAMEWORK_PATH")
         PATH=$(~/bin/delpath "$dir" "$PATH")
     elif [ $# = 1 ]; then
         local dir
-        dir="$(~/bin/relpath "$1")"
+        dir="$(realpath "$1")"
         export DT_NO_RESPAWN=1
         export DYLD_LIBRARY_PATH=$(~/bin/addpath "$dir" "$DYLD_LIBRARY_PATH")
         export DYLD_FRAMEWORK_PATH=$(~/bin/addpath "$dir" "$DYLD_FRAMEWORK_PATH")

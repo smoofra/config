@@ -5,10 +5,11 @@ import sys
 from contextlib import contextmanager
 import subprocess
 import shlex
-from typing import ContextManager, List, Optional, Dict, Iterator
+from typing import ContextManager, List, Optional, Dict, Iterator, Set, TypeVar, Generic
 import argparse
 import json
 from textwrap import dedent
+from functools import cached_property
 
 FNULL = open(os.devnull, 'w')
 
@@ -112,6 +113,16 @@ class Git:
     def swap_json(self) -> str:
         return os.path.join(self.gitdir, 'swap.json')
 
+    def baselines(self, branch:str) -> Set[str]:
+        if not branch.startswith("refs/heads/"):
+            return set()
+        branch = branch.removeprefix("refs/heads/")
+        try:
+            baseline = self.cmd(["git", "config", f"branch.{branch}.baseline"]).strip()
+        except GitFailed:
+            return set()
+        return {self.rev_parse(baseline)}
+
     def is_clean(self) -> bool:
         return ('' == self.cmd("git diff-index --cached --name-only HEAD".split(), quiet=True) and
                 '' == self.cmd("git diff-files --name-only".split(), quiet=True))
@@ -166,6 +177,8 @@ class ContinuationClass(type):
         return T
 
 
+T = TypeVar('T')
+
 # A continuation is  is a context manager that can be suspended, serialized out
 # to json, and then resumed in a subsequent execution of this program.
 #
@@ -186,15 +199,15 @@ class ContinuationClass(type):
 #
 #   * perform no side effects in impl() prior to yield
 #
-class Continuation(metaclass=ContinuationClass):
+class Continuation(Generic[T], metaclass=ContinuationClass):
 
-    manager : ContextManager[None]
+    manager : ContextManager[T]
     git : Git
 
     def __init__(self, git: Git) -> None:
         self.git = git
 
-    def __enter__(self) -> None:
+    def __enter__(self) -> T:
         self.manager = self.impl()
         return self.manager.__enter__()
 
@@ -207,7 +220,7 @@ class Continuation(metaclass=ContinuationClass):
         else:
             return self.manager.__exit__(typ, value, traceback)
 
-    def impl(self) -> ContextManager[None]:
+    def impl(self) -> ContextManager[T]:
         # any initialization that occurs before yield should be done in __init__, not here
         raise NotImplementedError
 
@@ -282,7 +295,7 @@ class Continuation(metaclass=ContinuationClass):
 # Detach from the current branch, so it can be edited without polluting the
 # reflog with a bunch of intermediate steps.   At the end, update the branch and
 # check it back out again.
-class EditBranch(Continuation):
+class EditBranch(Continuation[str]):
 
     def __init__(self, git: Git, *, head: Optional[str] = None) -> None:
         super().__init__(git)
@@ -299,9 +312,9 @@ class EditBranch(Continuation):
         return None
 
     @contextmanager
-    def impl(self) -> Iterator[None]:
+    def impl(self) -> Iterator[str]:
         try:
-            yield
+            yield self.head
         except Exception:
             self.git.force_checkout(self.branch or self.head)
             raise
@@ -425,9 +438,10 @@ class SwapCheckpoint(Continuation):
 # after ...AB as been swapped to ...BA, keep trying to push B down further
 class KeepGoing(Continuation):
 
-    def __init__(self, git:Git, *, edit:bool = False):
+    def __init__(self, git:Git, *, edit:bool = False, baselines: Set[str]):
         super().__init__(git)
         self.edit = edit
+        self.baselines = baselines
 
     @contextmanager
     def impl(self) -> Iterator[None]:
@@ -439,15 +453,15 @@ class KeepGoing(Continuation):
         B = self.git.unique_parent(A)
         self.git.checkout(B.sha)
         with PickCherries(self.git, cherries=[A.sha]):
-            with KeepGoing(self.git, edit=self.edit):
-                swap_or_squash(edit=self.edit, git=self.git)
+            with KeepGoing(self.git, edit=self.edit, baselines=self.baselines):
+                swap_or_squash(edit=self.edit, git=self.git, baselines=self.baselines)
 
 
 # wrap with KeepGoing if the user specified `--keep-going`
 @contextmanager
-def maybe_keep_going(keep_going:bool, *, edit:bool, git:Git) -> Iterator[None]:
+def maybe_keep_going(keep_going:bool, *, edit:bool, git:Git, baselines: Set[str]) -> Iterator[None]:
     if keep_going:
-        with KeepGoing(git, edit=edit):
+        with KeepGoing(git, edit=edit, baselines=baselines):
             yield
     else:
         yield
@@ -490,13 +504,15 @@ def cherry_pick(ref:str, *, edit:bool=False, git:Git) -> None:
 
 
 # swap HEAD with HEAD^
-def swap(*, git:Git, edit:bool = False) -> None:
+def swap(*, git:Git, edit:bool = False, baselines: Set[str]) -> None:
     one = git.commit("HEAD")
     try:
         two = git.unique_parent(one)
         three = git.unique_parent(two)
     except MergeFound as e:
         raise SwapFailed(f"Swap failed: {e}") from e
+    if two.sha in baselines:
+        raise SwapFailed("hit baseline")
     with SwapCheckpoint(git, head=one.sha):
         git.checkout(three.sha)
         with PickCherryWithReference(git, cherry=two.sha, reference=one.sha):
@@ -514,9 +530,9 @@ def swap(*, git:Git, edit:bool = False) -> None:
 
 
 # swap HEAD or HEAD^, or squash them together if the user resumes with `--squash`
-def swap_or_squash(*, edit:bool = False, git:Git) -> None:
+def swap_or_squash(*, edit:bool = False, git:Git, baselines: Set[str]) -> None:
     with OrSquash(git):
-        swap(edit=edit, git=git)
+        swap(edit=edit, git=git, baselines=baselines)
 
 
 def main() -> None:
@@ -557,10 +573,11 @@ def main() -> None:
             raise UserError("Error: repo not clean")
 
         with Continuation.main(git):
-            with EditBranch(git):
+            with EditBranch(git) as branch:
+                baselines = git.baselines(branch)
                 with collect_cherries(args.commit, git=git):
-                    with maybe_keep_going(args.keep_going, git=git, edit=args.edit):
-                        swap_or_squash(edit=args.edit, git=git)
+                    with maybe_keep_going(args.keep_going, git=git, edit=args.edit, baselines=baselines):
+                        swap_or_squash(edit=args.edit, git=git, baselines=baselines)
 
     except (SwapFailed, UserError) as e:
         print(e)

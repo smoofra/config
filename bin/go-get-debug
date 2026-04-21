@@ -1,0 +1,47 @@
+#!/usr/bin/env -S uv run -s
+# /// script
+# dependencies = ["requests", "beautifulsoup4"]
+# ///
+
+import requests
+from bs4 import BeautifulSoup
+import argparse
+import netrc
+from urllib.parse import urlparse
+
+parser = argparse.ArgumentParser(description='debug problems with "go get"')
+parser.add_argument("url")
+parser.add_argument("--verbose", "-v", action="count", default=0)
+parser.add_argument("--netrc", "-n", action="store_true")
+parser.add_argument("--trust-env", "-t", action="store_true")
+args = parser.parse_args()
+
+url = args.url
+if not url.startswith("https://"):
+    url = "https://" + url
+
+auth = None
+if args.netrc:
+    creds = netrc.netrc().authenticators(urlparse(url).hostname)
+    if creds:
+        auth = (creds[0], creds[2])
+session = requests.Session()
+session.trust_env = args.trust_env
+req = session.get(url, auth=auth, params={'go-get': '1'})
+if args.verbose >= 2:
+    p = req.request
+    print(f"> {p.method} {p.url}")
+    for k, v in p.headers.items():
+        print(f"> {k}: {v}")
+    print(">")
+    print(f"< {req.status_code} {req.reason}")
+    for k, v in req.headers.items():
+        print(f"< {k}: {v}")
+    print()
+req.raise_for_status()
+
+soup = BeautifulSoup(req.content, 'html.parser')
+for tag in soup.find_all('meta', attrs={'name': 'go-import'}):
+    if args.verbose >= 1:
+        print(tag)
+    print(tag.attrs["content"])

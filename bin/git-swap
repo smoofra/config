@@ -367,6 +367,11 @@ class PickCherryWithReference(Continuation):
         finally:
             if not ok:
                 self.git.cmd(['git', 'cherry-pick', '--abort'])
+            elif not self.git.cmd_test(["git", "diff", "--quiet", 'HEAD', self.reference]):
+                # cherry pick succeeded, but resulted in a different tree.  Fix it.
+                self.git.cmd(["git", "read-tree", self.reference])
+                self.git.cmd(["git", "commit", "--allow-empty", "--amend", "-C", "HEAD"])
+                self.git.cmd(["git", "checkout", "-f", "HEAD"])
 
 
 # When resuming, check if the user ran `git cherry-pick --continue`, and do it for

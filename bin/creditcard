@@ -11,6 +11,16 @@ import argparse
 
 cats = OrderedDict([
     ('groceries', [
+        "MIGUELENA",
+        'namaste',
+        "pars market",
+        "patel brothers",
+        "bourbon barrel food",
+        "bushel and peck",
+        "bluemont general",
+        "lotte",
+        "namaste winchester marke",
+        "mi esperanza latina",
         "wegmans",
         "weis",
         "supercenter",
@@ -43,9 +53,11 @@ cats = OrderedDict([
 
     ]),
     ("bike", ["EVOLUTION BIKE SHOP"]),
-    ("it", ["no-ip", "crashplan", "linode", "winchester wireless", "Akamai", "VZWRLSS", "starlink", "kolab"]),
+    ("it", ["no-ip", "crashplan", "linode", "winchester wireless", "Akamai", "VZWRLSS", "starlink", "kolab", "chatgpt", "flickr"]),
     ("electronics", ["fry's", "adafruit", "digi key"]),
     ("travel", [
+        "smartrip",
+        "iad dulles",
         "HUDSONNEWS",
         "usair",
         "clipper service",
@@ -61,11 +73,48 @@ cats = OrderedDict([
         "american air",
     ]),
     ("hotels", ["AIRBNB", "hilton", "holiday inn", "restful nest", "HOTELTONIGHT", "best western"]),
-    ("pets", ["petsmart"]),
+    ("pets", ["petsmart", "battletown animal"]),
     ("house", ["ASHLEY INTERIORS", "ikea", "home.*depot", "regan nursery", "lowes", "fh furr",
-        "HOME PARAMOUNT", "ENVIROAIRE", "SPICHERS", "build.com", "wall control", "roofin", "bbqguys",
+        "HOME PARAMOUNT", "ENVIROAIRE", "SPICHERS", "build.com", "wall control", "roofin", "bbqguys", "casco plumbing", "berryville true value", "meadows farms", "anderson.*nursery", "cub cadet",
+        "webers's nursery", "SUPERIOR PLUS PROPANE",  "WEBER'S NURSERY", "BARRETT'S HORTICULTUR", "RAPPAHANNOCKELECTRIC", "absolute hvac", "RAPPAHANNOCK  ELECTRIC",
+
     ]),
+    ("jammies", ["kate quinn", "hanna andersson", "carters"]),
     ("restaurants", [
+        "the human bean",
+        "blue ridge grill",
+        "gringo gordo",
+        "waffle cabin",
+        "dairy corner",
+        "burgerfi",
+        "WESTMINSTER-CANTERBURY BI",
+        "dhaba",
+        "cake shop",
+        "DD/BR", # dunkin
+        "LA CARRETA",
+        "LA BRAZA BREAKFAST",
+        "mcdonalds",
+        "mango grove",
+        "district taco",
+        "pizzeria",
+        "cook out",
+        "SUREBET SERVICES", # vending machine
+        "FRANKLIN'S SMOKIN BAR",
+        "BEN.*JERRY'S",
+        "SCHMIDT'S BBQ",
+        "ALFREDO.*MEDITERRANEAN",
+        "PETITE LOULOU CREPERI",
+        "more better",
+        "MOM'S APPLE PIE AT HI",
+        "firehouse subs",
+        "sweet elephant",
+        "knead bread",
+        "royalicious",
+        "kamaya fiesta",
+        "capitol grounds main t",
+        "suecats",
+        "shakeshack",
+        "bandit taco",
         "subway",
         "el habanero",
         "burgers fries",
@@ -73,7 +122,13 @@ cats = OrderedDict([
         "brobear",
         "WILLIE SUTTONS SALOON",
         "water street kitchen",
+        "plaza azteca",
+        "LE PAIN QUOTIDIEN",
+        "lebanese taverna",
+        "resq bbq",
         "bonnie blue",
+        "bluemont station",
+        "gruto.*soft serve",
         "pho",
         "bojangles",
         "NEIGHBORHOOD ITALIAN",
@@ -195,6 +250,15 @@ cats = OrderedDict([
         "TOUS LES JOURS",
     ]),
     ("entertainment", [
+        "the rest is history",
+        "instapaper",
+        "the free press",
+        "Peacock",
+        "dispatch media",
+        "Prime Video",
+        "AMZN Digital",
+        "nintendo",
+        "lwn.net",
         "kindle svcs",
         "substack",
         "podcast",
@@ -209,6 +273,12 @@ cats = OrderedDict([
         "weekly dish llc",
     ]),
     ("gas+tolls", [
+        "wawa",
+        "impark",
+        "wilson blvd parking",
+        "metro",
+        "7-eleven",
+        "sunoco",
         "gill bros",
         "ezpassva",
         "exxon",
@@ -233,6 +303,17 @@ cats = OrderedDict([
         "CONNECTED SERVICES", # toyota
     ]),
     ("medical", [
+        "SP INITO",
+        "urgent care center",
+        "SHENANDOAH VALLEY ORTHODO",
+        "RADIOLOGIST",
+        "RADIOLOGY",
+        "INHEALTHPROFESSIONAL",
+        "EMS MANAGEMENT AND CONSUL",
+        "allergy asthma",
+        "myeyedr",
+        "loudoun pedi",
+        "wvuniversityhealth",
         "urgentcare",
         "WINCHESTER MEDICAL",
         "dental",
@@ -240,8 +321,10 @@ cats = OrderedDict([
         "EAST MOUNTAIN HEALTH",
         "LOUDOUN PED ASSC",
         "dermatology",
+        "valley health",
     ]),
     ("amazon", ["amazon", "AMZN Mktp"]),
+    ("cars", ["tesla", "auto parts", "towing", "department motor vehicles", "VA DMV", "CMA'S HONDA", "MALLOY TOYOTA", "autozone", "TMNA SUBSCRIPTION"]),
     ("other", ["clive coffee"]),
 ])
 
@@ -314,7 +397,7 @@ def main():
     print()
 
     for catname in cats.keys():
-        if sums[catname] > 0:
+        if sums[catname] != 0:
             print("SUM %s: %.2f" % (catname, sums[catname]))
 
     print()

@@ -30,6 +30,9 @@
     # current relative path
     pwd = rev-parse --show-prefix
 
+    top = rev-parse --show-toplevel
+    prefix = rev-parse --show-prefix
+
     # make sure a copy of this repo gets pushed to odin
 	odin = "! f()\n{\n    if ! git config --get-all remote.origin.pushurl | grep -qF odin.elder-gods.org ; then\n        git remote set-url --add --push origin $(git config remote.origin.url)\n        git remote set-url --add --push origin odin.elder-gods.org:$(basename `git rev-parse --show-toplevel`)\n    fi\n}\nf"
 
@@ -159,6 +162,10 @@
     # fetch and check out a tag based on an XBS update name
     aco = ! \nf() {\n git fetch\n git checkout $(getvers \"$@\" `pwd | xargs basename` )\n}\nf
 
+    redo = reset --mixed HEAD^
+
+    logmsg = log -n1 --pretty=format:%B
+
 [push]
     default = upstream
 
@@ -217,10 +224,18 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+
 [credential]
-	helper = store
+	helper = osxkeychain
+
 [init]
 	defaultBranch = master
 
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
+    
+[diff "json"]
+	textconv = jq .
+
+#[url "git@gitlab.research.volexity.com:"]
+#	insteadOf = https://gitlab.research.volexity.com/

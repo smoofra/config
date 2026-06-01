@@ -56,7 +56,10 @@
 		"prefix": "\\alpha",
 		"body" : "α",
 	},
-
+	"delta": {
+		"prefix": "\\Delta",
+		"body": "Δ",
+	},
 	"box-horizontal": {
 		"prefix": "\\box-horizontal",
 		"body" : "─",

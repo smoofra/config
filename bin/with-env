@@ -1,39 +1,61 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import argparse
 import sys
 import os
 import re
+import json
 import shlex
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--exclude", "-v", action='append')
 parser.add_argument("--chdir", "-C")
-parser.add_argument("--shlex", action='store_true')
+parser.add_argument("--json", "-j", action="store_true")
+parser.add_argument("--shell", action="store_true")
+parser.add_argument("--script", "-s", action="store_true")
+parser.add_argument("--replace", "-r", action="store_true")
 parser.add_argument('envfile')
 parser.add_argument('command', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 
-envfile = sys.argv[1]
-command = sys.argv[2:]
+if args.shell and len(args.command) != 1:
+    parser.error("shell command should be one argument")
 
 if args.chdir:
     os.chdir(args.chdir)
 
-env = dict()
+if args.replace or args.script:
+    env = dict()
+else:
+    env = dict(os.environ)
 with open(args.envfile, 'r') as f:
-    for line in f:
-        if args.shlex:
-            (key, value) = shlex.split(line)
-        else:
-            if '=' not in line:
+    if args.json:
+        env.update(json.load(f))
+    else:
+        for line in f:
+            if re.match(r'\s*(\#|$)', line):
                 continue
-            (key, value) = line.strip().split('=', 1)
-        if args.exclude and any(re.match(pat, key) for pat in args.exclude):
-            continue
-        env[key] = value
+            key, value = line.split("=", 1)
+            if args.exclude and any(re.match(pat, key) for pat in args.exclude):
+                continue
+            [value] = shlex.split(value)
+            env[key] = value
 
-print args.command
-        
-os.execvpe(args.command[0], args.command, env)
+
+if args.script:
+    for k,v in env.items():
+        print(f"export {k}={shlex.quote(v)}")
+    if args.command:
+        if args.shell:
+            print(*args.command)
+        else:
+            print(" ".join(map(shlex.quote, args.command)))
+
+else:
+
+    if args.shell:
+        command = [os.getenv("SHELL", "sh"), "-c", args.command]
+    else:
+        command = args.command
+    os.execvpe(args.command[0], command, env)
 

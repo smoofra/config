@@ -150,12 +150,16 @@ alias mouse='tmux set -g mode'
 alias k='kubectl'
 alias kc='kubectl config'
 
+alias q='git queue'
+alias qc='git queue continue'
 
 alias acc='appleconnect authenticate -a lawrence_danna'
 
 alias xcs='xcode-select'
 
 alias xiar='/usr/local/bin/xia restore --download-cache-path=/Volumes/data --no-open-xcode '
+
+alias pip='python -m pip'
 
 NSDDOWNLOADS=~/Downloads
 
@@ -198,13 +202,13 @@ function path() {
         echo "$PATH" | tr : \\n
     elif [ $# = 2 ] && [ $1 = "-d" ]; then
         local dir
-        dir="$(~/bin/relpath "$2")"
+        dir="$(realpath "$2")"
         DYLD_LIBRARY_PATH=$(~/bin/delpath "$dir" "$DYLD_LIBRARY_PATH")
         DYLD_FRAMEWORK_PATH=$(~/bin/delpath "$dir" "$DYLD_FRAMEWORK_PATH")
         PATH=$(~/bin/delpath "$dir" "$PATH")
     elif [ $# = 1 ]; then
         local dir
-        dir="$(~/bin/relpath "$1")"
+        dir="$(realpath "$1")"
         export DT_NO_RESPAWN=1
         export DYLD_LIBRARY_PATH=$(~/bin/addpath "$dir" "$DYLD_LIBRARY_PATH")
         export DYLD_FRAMEWORK_PATH=$(~/bin/addpath "$dir" "$DYLD_FRAMEWORK_PATH")
@@ -236,23 +240,8 @@ if [ -e /Volumes/data ]; then
 fi
 
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/larry/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/Users/larry/miniforge3/etc/profile.d/conda.sh" ]; then
-        . "/Users/larry/miniforge3/etc/profile.d/conda.sh"
-    else
-        export PATH="/Users/larry/miniforge3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
 alias pd=pushd
-alias conan='python3 -m conans.conan'
+#alias conan='python3 -m conans.conan'
 
 
 export CONAN_V2_MODE=1
@@ -276,7 +265,7 @@ export CFLAGS=
 export CPPFLAGS=
 export LDFLAGS=
 export CXXFLAGS=
-export MAKEFLAGS="-j$(nproc)"
+export MAKEFLAGS="-j$(nproc) -O"
 
 
 function zjq() {

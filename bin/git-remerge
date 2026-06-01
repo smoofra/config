@@ -15,7 +15,7 @@ class Commit(object):
 
     def __init__(self, git, rev):
         self.parents = list()
-        buffer = git.cmd("git log -n1 --no-notes --pretty=raw".split() + [rev])
+        buffer = git.cmd("git log -n1 --no-notes --pretty=raw".split() + [rev], quiet=True)
         (headers, message) = buffer.split("\n\n", 1)
         for header in headers.split("\n"):
             (key, value) = header.strip().split(' ', 1)
@@ -48,7 +48,7 @@ class Git(object):
                                 stdin=FNULL, stdout=subprocess.PIPE, **kw)
         (out, err) = proc.communicate()
         if proc.wait() != 0:
-            raise Exception("git failed")
+            raise Exception("git failed: " + out)
         return out
 
     def cmd_test(self, args, **kw) -> bool:
@@ -76,7 +76,7 @@ class Git(object):
         return self.cmd_test(['git', 'merge-base', '--is-ancestor', a, b])
 
     def rev_parse(self, commit: str) -> str:
-        return self.cmd(['git', 'rev-parse', commit]).strip()
+        return self.cmd(['git', 'rev-parse', commit], quiet=True).strip()
 
     def checkout(self, branch: str) -> None:
         self.cmd(['git', 'checkout', branch], stderr=FNULL)
@@ -94,7 +94,7 @@ class Git(object):
         return merged
 
     def current_branch(self) -> str:
-        branch = self.cmd(['git', 'symbolic-ref', 'HEAD']).strip()
+        branch = self.cmd(['git', 'symbolic-ref', 'HEAD'], quiet=True).strip()
         if branch == 'refs/heads/' or not branch.startswith('refs/heads/'):
             raise Exception("not on a branch")
         return branch[len('refs/heads/'):]
@@ -152,8 +152,8 @@ def remerge_multi_merges() -> None:
                 print("merge failed")
             elif git.trees_differ('HEAD', head.sha):
                 print("merge differed:", \
-                    git.cmd(['git', 'rev-parse', '--short', 'HEAD']).strip(),  \
-                    git.cmd(['git', 'rev-parse', '--short', head.sha]).strip())
+                    git.cmd(['git', 'rev-parse', '--short', 'HEAD'], quiet=True).strip(),  \
+                    git.cmd(['git', 'rev-parse', '--short', head.sha], quiet=True).strip())
 
             if merged and not git.trees_differ('HEAD', head.sha):
                 git.cmd(['git', 'update-ref', '-m', 'remerge', 'refs/heads/' + current_branch, 'HEAD'])
@@ -206,7 +206,14 @@ def pick_cherries(git: Git, cherries: List[str], contiguous: bool, keep: bool) -
 def remerge_integration_branch(keep: bool) -> None:
     with open('.branches', 'r') as f:
         branches_content = f.read()
-    branches = shlex.split(branches_content)
+
+    def i():
+        for line in branches_content.splitlines():
+            if re.match(r'^\s*(\#|$)', line):
+                continue
+            for branch in shlex.split(line):
+                yield branch
+    branches = list(i())
 
     if ".branches" in git.cmd("git diff-files --name-only".split(), quiet=True).splitlines():
         git.cmd(['git', 'commit', '-m', 'branches', '.branches'])
@@ -215,6 +222,14 @@ def remerge_integration_branch(keep: bool) -> None:
         raise Exception("repo not clean")
 
     current_branch = git.current_branch()
+
+    branches_commits = [line.strip() for line in
+        git.cmd(["git", "log", "--format=%H", "--", ".branches"], quiet=True).splitlines()]
+    first_branches_commit = None
+    if branches_commits:
+        first_branches_commit = branches_commits[-1]
+
+    branches_shas = {git.rev_parse(b) for b in branches}
 
     # find first merge, and collect a list of cherries
     commit = Commit(git, 'HEAD')
@@ -230,8 +245,12 @@ def remerge_integration_branch(keep: bool) -> None:
         else:
             cherries.append(commit.sha)
             summary += "c"
+        if commit.sha == first_branches_commit:
+            break # don't look back past the first commit to touch .branches
+        if commit.sha in branches_shas:
+            break # don't look back past the specified branches
         commit = Commit(git, commit.parents[0])
-    base = commit.sha
+
     cherries_are_contiguous = bool(re.match(r'^\s*c*\s*$', summary))
     cherries.reverse()
 
@@ -246,6 +265,9 @@ def remerge_integration_branch(keep: bool) -> None:
                     f.write(branches_content)
                 git.cmd(['git', 'add', '.branches'])
                 git.cmd(['git', 'commit', '-m', '.branches'])
+
+                if len(branches) == 1:
+                    break
 
                 if not octopus:
                     for branch in branches[1:]:

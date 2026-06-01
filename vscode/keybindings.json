@@ -35,7 +35,11 @@
         "command": "workbench.action.terminal.toggleTerminal"
     },
     {
-        "key": "ctrl+shift+j",
+        "key": "cmd+shift+j",
         "command": "workbench.action.toggleMaximizedPanel"
+    },
+    {
+        "key": "cmd+shift+0",
+        "command": "workbench.action.focusAuxiliaryBar"
     }
 ]

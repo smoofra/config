@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import sys
 import re
@@ -12,7 +12,7 @@ alphabet = {'a' : 'alfa',
             'g' : 'golf',
             'h' : 'hotel',
             'i' : 'india',
-            'j' : 'juliett',
+            'j' : 'juliette',
             'k' : 'kilo',
             'l' : 'lima',
             'm' : 'mike',
@@ -35,7 +35,7 @@ while True:
     if not line:
         break
 
-    print
+    print()
     for word in line.lower().strip().split():
-        print " ".join(alphabet.get(char,char) for char in word)
-    print
+        print(" ".join(alphabet.get(char,char) for char in word))
+    print()

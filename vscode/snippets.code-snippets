@@ -50,6 +50,80 @@
 	"— em": {
 		"prefix": "---",
 		"body": "—"
-	}
+	},
+
+	"alpha": {
+		"prefix": "\\alpha",
+		"body" : "α",
+	},
+
+	"box-horizontal": {
+		"prefix": "\\box-horizontal",
+		"body" : "─",
+	},
+
+	"box-vertical": {
+		"prefix": "\\box-vertical",
+		"body" : "│",
+	},
+
+
+	"box-top-left": {
+		"prefix": "\\box-top-left",
+		"body" : "┌",
+	},
+
+	"box-top-right": {
+		"prefix": "\\box-top-right",
+		"body" : "┐",
+	},
+
+	"box-bottom-left": {
+		"prefix": "\\box-bottom-left",
+		"body" : "└",
+	},
+
+	"box-bottom-right": {
+		"prefix": "\\box-bottom-right",
+		"body" : "┘",
+	},
+
+
+	"box-tee-top": {
+		"prefix": "\\box-tee-top",
+		"body" : "┬",
+	},
+
+	"box-tee-bottom": {
+		"prefix": "\\box-tee-bottom",
+		"body" : "'┴",
+	},
+
+	"box-tee-left": {
+		"prefix": "\\box-tee-left",
+		"body" : "├",
+	},
+
+	"box-tee-right": {
+		"prefix": "\\box-tee-right",
+		"body" : "┤",
+	},
+
+	"match": {
+		"prefix": "\\match",
+		"body": "∼",
+	},
+
+	"not-match": {
+		"prefix": "\\not-match",
+		"body": "≁",
+	},
+
+
+	"box-intersection":{
+		"prefix": "\\box-intersection",
+		"body": "┼",
+	},
+
 
 }

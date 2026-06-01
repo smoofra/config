@@ -3,15 +3,15 @@
 import csv
 import sys
 import re
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from datetime import datetime
 import os
 from typing import Dict
 import argparse
 
-cats = {
-    "other": ["clive coffee"],
-    "groceries": [
+cats = OrderedDict([
+    ('groceries', [
+        "wegmans",
         "weis",
         "supercenter",
         "food maxx",
@@ -31,11 +31,21 @@ cats = {
         "sprouts farmers",
         "99 ranch",
         "rancho gordo",
-    ],
-    "bike": ["EVOLUTION BIKE SHOP"],
-    "it": ["no-ip", "crashplan", "linode", "winchester wireless", "Akamai"],
-    "electronics": ["fry's", "adafruit", "digi key"],
-    "travel": [
+        "HEATONIST",
+        "coco food",
+        "nalls farm",
+        "shiraz market",
+        "harris teeter",
+        "wal-mart",
+        "moink",
+        "costco",
+        "aldi",
+
+    ]),
+    ("bike", ["EVOLUTION BIKE SHOP"]),
+    ("it", ["no-ip", "crashplan", "linode", "winchester wireless", "Akamai", "VZWRLSS", "starlink", "kolab"]),
+    ("electronics", ["fry's", "adafruit", "digi key"]),
+    ("travel", [
         "HUDSONNEWS",
         "usair",
         "clipper service",
@@ -49,11 +59,42 @@ cats = {
         "bird app",
         "virgin amer",
         "american air",
-    ],
-    "hotels": ["AIRBNB", "hilton", "holiday inn", "restful nest", "HOTELTONIGHT"],
-    "pets": ["petsmart"],
-    "house": ["ASHLEY INTERIORS", "ikea", "home.*depot", "regan nursery", "lowes", "fh furr"],
-    "restaurants": [
+    ]),
+    ("hotels", ["AIRBNB", "hilton", "holiday inn", "restful nest", "HOTELTONIGHT", "best western"]),
+    ("pets", ["petsmart"]),
+    ("house", ["ASHLEY INTERIORS", "ikea", "home.*depot", "regan nursery", "lowes", "fh furr",
+        "HOME PARAMOUNT", "ENVIROAIRE", "SPICHERS", "build.com", "wall control", "roofin", "bbqguys",
+    ]),
+    ("restaurants", [
+        "subway",
+        "el habanero",
+        "burgers fries",
+        "rams head",
+        "brobear",
+        "WILLIE SUTTONS SALOON",
+        "water street kitchen",
+        "bonnie blue",
+        "pho",
+        "bojangles",
+        "NEIGHBORHOOD ITALIAN",
+        "mobydick",
+        "bakeries",
+        "teytas treats",
+        "main cup",
+        "kung fu tea",
+        "WETZELS PRETZELS",
+        "SANTORINI GRILL",
+        "silver din",
+        "ale works",
+        "pho bar",
+        "glory days grill",
+        "POLLON RANSON",
+        "TJ's PIT STOP",
+        "RESTON BIG BUNS",
+        "waffle house",
+        "el ranchero",
+        "mission bbq",
+        "insomnia cookies",
         "mcdonald's",
         "wendys",
         "dunkin",
@@ -145,8 +186,16 @@ cats = {
         "mandarin gourmet",
         "poki run",
         "THE BRANDING IRON",
-    ],
-    "entertainment": [
+        "homespun",
+        "auntie annes",
+        "GOLDEN DRAGON CHINESE",
+        "mochinut",
+        "GOGI 92",
+        "sweet basil",
+        "TOUS LES JOURS",
+    ]),
+    ("entertainment", [
+        "kindle svcs",
         "substack",
         "podcast",
         "itunes",
@@ -155,8 +204,15 @@ cats = {
         "kqed membership",
         "kqed public media",
         "apple.com",
-    ],
-    "gas+tolls": [
+        "thedispatch",
+        "YouTubePremium",
+        "weekly dish llc",
+    ]),
+    ("gas+tolls", [
+        "gill bros",
+        "ezpassva",
+        "exxon",
+        "highs",
         "shell.*oil",
         "AUTOPIA",
         "bp.*mart",
@@ -170,9 +226,24 @@ cats = {
         "fastrak",
         "EXXONMOBIL",
         "valero",
-    ],
-    "amazon": ["amazon", "AMZN Mktp"],
-}
+        "SOMERSET BP",
+        "sheetz",
+        "gb10",
+        "E Z PASS",
+        "CONNECTED SERVICES", # toyota
+    ]),
+    ("medical", [
+        "urgentcare",
+        "WINCHESTER MEDICAL",
+        "dental",
+        "pharmacy",
+        "EAST MOUNTAIN HEALTH",
+        "LOUDOUN PED ASSC",
+        "dermatology",
+    ]),
+    ("amazon", ["amazon", "AMZN Mktp"]),
+    ("other", ["clive coffee"]),
+])
 
 sums: Dict[str, int] = defaultdict(lambda: 0)
 rows = defaultdict(list)
@@ -196,7 +267,7 @@ def fmt_date(date):
 
 
 def iter_ofx(filename):
-    from ofxparse import OfxParser
+    from ofxparse import OfxParser # type: ignore
 
     with open(filename, "rb") as f:
         ofx = OfxParser.parse(f)
@@ -234,7 +305,7 @@ def main():
         sums[catname] += amount
         rows[catname].append(f"{fmt_date(date)} {amount:7} {description}")
 
-    for catname in list(sums.keys()):
+    for catname in cats.keys():
         print()
         print("%s: " % catname)
         for row in rows[catname]:
@@ -242,8 +313,9 @@ def main():
 
     print()
 
-    for catname in list(sums.keys()):
-        print("SUM %s: %.2f" % (catname, sums[catname]))
+    for catname in cats.keys():
+        if sums[catname] > 0:
+            print("SUM %s: %.2f" % (catname, sums[catname]))
 
     print()
 

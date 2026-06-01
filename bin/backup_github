@@ -2,16 +2,16 @@
 
 import sys
 import argparse
-import urllib.request, urllib.error, urllib.parse
-import json
+import requests
 import subprocess
+import os
 import os.path
-
-if not os.path.exists('/data/Backup'):
-    sys.exit(0)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--verbose", "-v", action='store_true')
+parser.add_argument("--token-file", "-t", help="GitHub personal access token", 
+                    default="~/.config/github/token")
+parser.add_argument("--no-token-file", dest='token_file', action='store_const', const=None)
 parser.add_argument("user")
 parser.add_argument("--chdir", "-C")
 args = parser.parse_args()
@@ -22,58 +22,99 @@ if args.chdir:
 quiet_flags = [] if args.verbose else ["--quiet"]
 
 
+def read_token_file(path : str|None) -> str|None:
+    if path is None:
+        return None
+    path = os.path.expanduser(path)
+    if not os.path.exists(path):
+        return None
+    with open(path, "r") as f:
+        return f.read().strip()
+
+
+token = read_token_file(args.token_file)
+
+session = requests.Session()
+if token:
+    session.headers['Authorization'] = 'Bearer ' + token
+
+if token:
+    resp = session.get('https://api.github.com/user')
+    resp.raise_for_status()
+    authed_user = resp.json()['login']
+    if authed_user != args.user:
+        sys.exit("Token is for %s, not %s" % (authed_user, args.user))
+
+def api_get(url):
+    results = []
+    while url:
+        response = session.get(url)
+        response.raise_for_status()
+        results.extend(response.json())
+        url = response.links.get('next', {}).get('url')
+    return results
+
+
+def git_cmd(cmd, **kwargs):
+    extra = []
+    if token:
+        helper = "!f() { echo username=x-access-token; echo password=" + token + "; }; f"
+        extra = ['-c', 'credential.helper=' + helper]
+    return subprocess.Popen(['git'] + extra + cmd, encoding='utf8', **kwargs)
+
 
 def is_bare_repo(filename):
     return os.path.isdir(filename) and all(
         os.path.exists(os.path.join(filename, x)) for x in
         ['info', 'refs', 'objects', 'HEAD', 'config'])
 
-def go(name, url, filename):
+def backup(name, url, filename):
 
     if os.path.exists(filename):
 
         if not is_bare_repo(filename):
             raise Exception("%s exists but is not a bare git repo" + filename)
 
-
-        proc = subprocess.Popen(["git", "config", "remote.origin.url"],
+        proc = subprocess.run(["git", "config", "remote.origin.url"],
+                                check=True,
                                 cwd=filename,
                                 encoding='utf8',
                                 stdout=subprocess.PIPE)
-        check_url = proc.stdout.read().strip()
-        if proc.wait() != 0:
-            raise Exception("git config failed!")
+        check_url = proc.stdout.strip()
 
         if check_url != url:
             raise Exception("Url for repo %s changed from %s to %s" % (name, check_url, url))
 
-        proc = subprocess.Popen(["git", "fetch", "origin"] + quiet_flags,
-                                encoding='utf8',
-                                cwd=filename)
+        proc = git_cmd(["fetch", "origin"] + quiet_flags, cwd=filename)
         if proc.wait() != 0:
             raise Exception("git fetch failed for: " + name)
 
     else:
 
-        proc = subprocess.Popen(["git", "clone", "--bare", "--mirror"] + quiet_flags + [url, filename], 
-            encoding='utf8')
+        proc = git_cmd(["clone", "--bare", "--mirror"] + quiet_flags + [url, filename])
         if proc.wait() != 0:
             raise Exception("git clone failed for: " + url)
 
 
-repos = json.load(urllib.request.urlopen('https://api.github.com/users/%s/repos' % args.user))
+if token:
+    repos = api_get('https://api.github.com/user/repos?type=owner')
+else:
+    repos = api_get('https://api.github.com/users/%s/repos' % args.user)
 
 for repo in repos:
     name = repo["name"]
     url = repo["clone_url"]
     filename = name + ".git"
-    go(name, url, filename)
+    backup(name, url, filename)
 
 
-gists = json.load(urllib.request.urlopen('https://api.github.com/users/%s/gists' % args.user))
+if token:
+    gists = api_get('https://api.github.com/gists')
+else:
+    gists = api_get('https://api.github.com/users/%s/gists' % args.user)
 
 for gist in gists:
     url = gist["git_pull_url"]
     name = 'gist-' + gist["id"]
     filename = name + ".git"
-    go(name, url, filename)
+    backup(name, url, filename)

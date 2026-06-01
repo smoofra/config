@@ -1,6 +1,8 @@
 [general]
 status_path = "~/.vdirsyncer/status/"
 
+#### contacts 
+
 [pair odin2local]
 a = "odin"
 b = "local"
@@ -18,7 +20,6 @@ type = "filesystem"
 path = "/data/Backup/vdirsyncer"
 fileext = ".vcf"
 
-
 [storage odin]
 #read_only = true
 type = "carddav"
@@ -33,10 +34,14 @@ url = "https://apps.kolabnow.com/addressbooks"
 username = "larry@elder-gods.org"
 password.fetch = ["command", "sh", "-c", "cat ~/.vdirsyncer/kolab-password"]
 
+
+#### calendar 
+
 [pair cal]
 a = "kolab_cal"
 b = "local_cal"
-collections = ["from a", "from b"]
+conflict_resolution = "a wins"
+collections = ["from a"]
 metadata = ["displayname"]
 partial_sync = "error"
 

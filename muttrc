@@ -5,11 +5,11 @@ source ~/config/muttrc-common
 lists  thoughts@13th-floor.org Bese-devel@common-lisp.net sbcl-devel@lists.sourceforge.net slime-devel@common-lisp.net madman-discuss@lists.sourceforge.net darcs-devel@darcs.net git@vger.kernel.org
 subscribe  thoughts@13th-floor.org Bese-devel@common-lisp.net sbcl-devel@lists.sourceforge.net slime-devel@common-lisp.net madman-discuss@lists.sourceforge.net darcs-devel@darcs.net git@vger.kernel.org
 
-set alias_file=~/config/mutt-aliases
-source ~/config/mutt-aliases
+#set alias_file=~/config/mutt-aliases
+#source ~/config/mutt-aliases
 
 save-hook "~A" "=inbox_save"
-set folder=~/Maildir/folderlinks/ 
+#set folder=~/Maildir/folderlinks/ 
 set spoolfile='~/Maildir'
 set record='~/Maildir'
 set postponed="=Drafts"

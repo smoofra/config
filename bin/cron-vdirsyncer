@@ -7,10 +7,10 @@ fi
 
 logfile="$HOME/log/vdirsyncer `date -R`"
 
-( yes | vdirsyncer discover >"$logfile" && \
-      vdirsyncer metasync >>"$logfile" && \
-      vdirsyncer sync >>"$logfile" && \
-      vdirsyncer sync >>"$logfile" ) || cat "$logfile"
+( yes | vdirsyncer discover >"$logfile" 2>&1 && \
+  yes | vdirsyncer metasync >>"$logfile" 2>&1 && \
+  yes | vdirsyncer sync >>"$logfile" 2>&1 && \
+  yes | vdirsyncer sync >>"$logfile" 2>&1 ) || cat "$logfile"
 
 
 

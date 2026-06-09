@@ -8,20 +8,17 @@ export ZSH=~/.oh-my-zsh
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
-
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+case "$TERM_PROGRAM" in
+    vscode|ghostty) ZSH_THEME="agnoster" ;;
+    *) ZSH_THEME="robbyrussell" ;;
+esac
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
 
 # Uncomment the following line to use hyphen-insensitive completion.
 # Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+HYPHEN_INSENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
 DISABLE_AUTO_UPDATE="true"
@@ -76,7 +73,6 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-# export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -87,12 +83,28 @@ else
     export EDITOR='code -w'
 fi
 
-PROMPT="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
-if [[ -n $SSH_CONNECTION ]]; then
-    PROMPT+=" %{$fg[magenta]%}%m%{$reset_color%} "
-fi
-PROMPT+=' %{$fg[cyan]%}%3~%{$reset_color%} $(git_prompt_info)'
+export DEFAULT_USER=larry
 
+case $ZSH_THEME in 
+    robbyrussell)
+        PROMPT="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
+        if [[ -n $SSH_CONNECTION ]]; then
+            PROMPT+=" %{$fg[magenta]%}%m%{$reset_color%} "
+        fi
+        PROMPT+=' %{$fg[cyan]%}%3~%{$reset_color%} $(git_prompt_info)'
+        ;;
+    agnoster)
+        build_prompt () {
+                RETVAL=$?
+                [[ "$TERM_PROGRAM" = vscode ]] || prompt_status
+                prompt_virtualenv
+                prompt_context
+                prompt_dir
+                prompt_git
+                prompt_end
+        }
+        ;;
+esac
 
 for dir in /homebrew/bin /Volumes/data/homebrew/bin /opt/brew/bin /opt/homebrew/bin ; do
   if [[ -e $dir ]] ; then
@@ -104,8 +116,6 @@ done
 [[ -e ~/bin/addpath ]] && PATH=$(~/bin/addpath \
     "$HOME/bin.local" \
     "$HOME/bin" \
-    "$HOME/Library/Python/3.9/bin" \
-    "$HOME/Library/Python/3.8/bin" \
     "$HOME/.cargo/bin" \
     /usr/local/bin \
     /usr/local/sbin \

@@ -88,6 +88,7 @@ diskutil
 distro
 dnib
 dockerized
+dotenv
 DSTROOT
 dsym
 dsymutil
@@ -149,6 +150,7 @@ GOPRIVATE
 GOPROXY
 goroot
 goroutines
+gpgsig
 Gvars
 hasher
 hashtable
@@ -203,6 +205,7 @@ LIPO
 listcommands
 lldb
 lldbmacros
+lockfiles
 Logfile
 logid
 lowmem
@@ -389,6 +392,7 @@ Unpackable
 unsafeptr
 unslid
 untar
+urlpart
 usagef
 Userinfo
 userspace

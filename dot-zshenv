@@ -1,0 +1,30 @@
+
+# -U keeps only the first occurrence of each entry
+typeset -U path
+
+path=(
+    "$HOME/bin.local"
+    "$HOME/bin"
+    "$HOME/.local/bin"
+    "$HOME/.docker/bin"
+    "$HOME/.cargo/bin"
+    /opt/homebrew/bin
+    /opt/homebrew/sbin
+    "$(/opt/homebrew/bin/python3 -c 'import site, os; print(site.getuserbase())')"/bin
+    /usr/local/bin
+    /usr/local/sbin
+    "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/"
+    /usr/bin
+    /bin
+    /usr/sbin
+    /sbin
+    $path
+)
+
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+
+export GOPROXY=https://artifactory.research.volexity.com/artifactory/api/go/go
+export GOPRIVATE="*.volexity.com"
+export GOSUMDB=sum.golang.org
+
+export PIP_INDEX_URL="https://artifactory.research.volexity.com/artifactory/api/pypi/pypi/simple"

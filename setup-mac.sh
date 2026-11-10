@@ -25,6 +25,7 @@ if ! [[ -e ~/.oh-my-zsh ]]; then
     git clone https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
 fi
 ln -sf ~/config/dot-zshrc ~/.zshrc
+ln -sf ~/config/dot-zshenv ~/.zshenv
 
 
 if ! [[ -e ~/.ssh ]]; then

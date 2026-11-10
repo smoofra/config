@@ -250,7 +250,7 @@
 	pushInsteadOf = https://gitlab.research.volexity.com/
 
 
-# brew install git-delta
+
 [core]
     pager = delta
 

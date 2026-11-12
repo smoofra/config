@@ -1,6 +1,11 @@
 
 # -U keeps only the first occurrence of each entry
 typeset -U path
+setopt no_global_rcs
+
+if [ -x /usr/libexec/path_helper ]; then
+        eval `/usr/libexec/path_helper -s`
+fi
 
 path=(
     "$HOME/bin.local"
@@ -11,13 +16,7 @@ path=(
     /opt/homebrew/bin
     /opt/homebrew/sbin
     "$(/opt/homebrew/bin/python3 -c 'import site, os; print(site.getuserbase())')"/bin
-    /usr/local/bin
-    /usr/local/sbin
     "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/"
-    /usr/bin
-    /bin
-    /usr/sbin
-    /sbin
     $path
 )
 

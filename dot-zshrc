@@ -111,8 +111,6 @@ case $ZSH_THEME in
 esac
 
 
-export PERL5LIB
-[[ -e ~/bin/addpath ]] && PERL5LIB=$(~/bin/addpath ~/perl5/lib/perl5 "$PERL5LIB" )
 
 if which gls >/dev/null ; then
 	alias ls='gls --color=auto'

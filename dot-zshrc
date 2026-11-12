@@ -94,11 +94,15 @@ case $ZSH_THEME in
         PROMPT+=' %{$fg[cyan]%}%3~%{$reset_color%} $(git_prompt_info)'
         ;;
     agnoster)
+        export VIRTUAL_ENV_DISABLE_PROMPT=1
+        export AGNOSTER_VENV_BG=magenta
         build_prompt () {
                 RETVAL=$?
                 [[ "$TERM_PROGRAM" = vscode ]] || prompt_status
                 prompt_virtualenv
-                prompt_context
+                if [[ -n $SSH_CONNECTION ]]; then
+                    prompt_context
+                fi
                 prompt_dir
                 prompt_git
                 prompt_end
@@ -131,6 +135,10 @@ if which gxargs >/dev/null ; then
     alias xargs=gxargs
 fi
 
+if which gojq >/dev/null ; then
+    alias jq=gojq
+fi
+
 alias rerc='source ~/.zshrc'
 
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
@@ -147,6 +155,7 @@ alias kc='kubectl config'
 
 alias q='git queue'
 alias qc='git queue continue'
+alias qs='git queue status'
 
 alias acc='appleconnect authenticate -a lawrence_danna'
 
@@ -154,7 +163,9 @@ alias xcs='xcode-select'
 
 alias xiar='/usr/local/bin/xia restore --download-cache-path=/Volumes/data --no-open-xcode '
 
-alias pip='python -m pip'
+alias pip='python3 -m pip'
+alias python='python3'
+
 
 NSDDOWNLOADS=~/Downloads
 
@@ -251,6 +262,7 @@ alias vol=~/src/volatility3/vol.py
 alias vol2='python2 ~/src/volexity/Volcano-Future/volatility_volc/vol.py'
 alias conan1=~/src/conan/old-ass-conan/bin/conan
 alias make=gmake
+alias make3=/usr/bin/make
 
 export POETRY_REPOSITORIES_NEXUS_URL=https://nexus.research.volexity.com/repository/pypi-volexity/
 export POETRY_REPOSITORIES_INTERNAL_URL=https://artifactory.research.volexity.com/artifactory/api/pypi/pypi-volexity
@@ -293,4 +305,14 @@ function remake() {
     make "$@" || return $?
 }
 
+scratch() {
+  local d=$(ls -dt "/private/tmp/claude-501/${PWD//\//-}"/*/scratchpad 2>/dev/null | head -1)
+  [[ -n $d ]] && echo "$d" || echo "no scratchpad for $PWD" >&2
+}
+
 alias volcano-curl='curl -H "Authorization: Bearer `cat ~/.volcanoserver-token`"'
+
+
+export GOPROXY=https://artifactory.research.volexity.com/artifactory/api/go/go
+export GOPRIVATE="*.volexity.com"
+export PIP_INDEX_URL="https://artifactory.research.volexity.com/artifactory/api/pypi/pypi/simple"

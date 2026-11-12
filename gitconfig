@@ -145,8 +145,6 @@
     tg-stale = "!\nf() {\n    if [ $# -gt 0 ] && [ $1 = '-d' ]; then\n        foo='xargs -n1 -d\\n git-update-ref -d'        \n    else\n        foo='cat'\n    fi\n    git for-each-ref refs/top-bases | cut -f 2 | \\\n        xargs -d\\\\n -n1 perl -e '$_=shift; $o=$_; s:^refs/top-bases:refs/heads:; print \"$o\\n\" if \"\" eq `git for-each-ref $_`' | \\\n        $foo\n}\nf"
     delrefs = "!\nf() {\n    if [ $# -lt 1 ] ; then \n        echo \"usage: git delrefs <reftree>\"\n        exit 1; \n    fi\n    set -e\n    while [ $# -gt 0 ]; do\n          git ls-remote . $1 | cut -f2 | xargs -d\\\\n -n1 git update-ref -d \n          shift;\n    done\n}\nf"
 
-    make-pushable = !\nset -e \n. \"$(git --exec-path)\"/git-sh-setup\nf() {\n    ln -s $HOME/bin/git-pushable-hooks/* $GIT_DIR/hooks/\n    git config receive.denyCurrentBranch ignore\n}\nf
-
     me = ! \nf() { \n    git aone \"$@\" | grep -i d.anna\n}\nf
 
 	whatsnew = !\nf() {\n    set -e\n    up=$(git rev-parse --abbrev-ref --symbolic-full-name @{u})\n    me=$(git config user.name)\n    git log --oneline --decorate --author=\"$me\" --committer=\"$me\" $up..HEAD\n}\nf

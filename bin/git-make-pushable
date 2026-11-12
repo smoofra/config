@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+
+# Make a non-bare repository on the other end of an ssh remote safe to push
+# into: install the git-pushable-hooks there and let pushes update the
+# checked-out branch.
+#
+# usage: git make-pushable <remote>
+
+import argparse
+import io
+import os
+import re
+import shlex
+import subprocess
+import sys
+import tarfile
+
+bindir = os.path.dirname(os.path.realpath(__file__))
+hookdir = os.path.join(bindir, 'git-pushable-hooks')
+
+
+def parse_ssh_url(url):
+    """Return (host, port, path) for an ssh remote url, or None."""
+    m = re.match(r'^(?:ssh|git\+ssh|ssh\+git)://([^/]+)(/.*)$', url)
+    if m:
+        hostport, path = m.groups()
+        port = None
+        m = re.match(r'^(.*):(\d+)$', hostport)
+        if m:
+            hostport, port = m.groups()
+        # ssh://host/~/foo means foo relative to the home directory
+        if path.startswith('/~'):
+            path = path[1:]
+        return hostport, port, path
+    # scp-like syntax: [user@]host:path, with no slash before the colon
+    m = re.match(r'^([^/:]+):(.*)$', url)
+    if m and '://' not in url:
+        host, path = m.groups()
+        return host, None, path
+    return None
+
+
+def remote_path(path):
+    """Quote path for the remote shell, keeping ~/ expansion working."""
+    if path == '~' or path == '':
+        return '.'
+    if path.startswith('~/'):
+        # ssh commands start in the home directory
+        path = path[2:] or '.'
+    return shlex.quote(path)
+
+
+def make_tarball():
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode='w') as tar:
+        for name in sorted(os.listdir(hookdir)):
+            f = os.path.join(hookdir, name)
+            info = tar.gettarinfo(f, arcname=name)
+            info.uid = info.gid = 0
+            info.uname = info.gname = ''
+            with open(f, 'rb') as fd:
+                tar.addfile(info, fd)
+    return buf.getvalue()
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Make the repository behind an ssh remote pushable.')
+    parser.add_argument('remote')
+    args = parser.parse_args()
+
+    url = subprocess.run(['git', 'remote', 'get-url', '--push', args.remote],
+                         check=True, stdout=subprocess.PIPE,
+                         encoding='utf8').stdout.strip()
+    parsed = parse_ssh_url(url)
+    if parsed is None:
+        sys.exit(f'{args.remote}: not an ssh remote: {url}')
+    host, port, path = parsed
+
+    script = f'''
+        set -e
+        cd {remote_path(path)}
+        hooks=$(git rev-parse --git-path hooks)
+        mkdir -p "$hooks"
+        tar -C "$hooks" -xf -
+        git config receive.denyCurrentBranch ignore
+    '''
+    cmd = ['ssh']
+    if port:
+        cmd += ['-p', port]
+    cmd += ['--', host, 'sh -c ' + shlex.quote(script)]
+    subprocess.run(cmd, check=True, input=make_tarball())
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except subprocess.CalledProcessError as e:
+        sys.exit(e.returncode)

@@ -8,7 +8,6 @@
     "terminal.integrated.macOptionIsMeta": true,
     "go.formatTool": "goimports",
     "diffEditor.ignoreTrimWhitespace": false,
-    "cSpell.enabled": false,
     "editor.suggestSelection": "first",
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
     "python.jediEnabled": true,
@@ -20,10 +19,7 @@
         "**/.settings": true,
         "**/.factorypath": true
     },
-    "cSpell.enableFiletypes": [
-        "python"
-    ],
-    "python.languageServer": "Jedi",
+    "python.languageServer": "Default",
     "python.linting.mypyEnabled": true,
     "python.linting.mypyPath": "/opt/homebrew/bin/mypy",
     "python.linting.mypyArgs": [
@@ -73,7 +69,7 @@
         }
     },
     "rust-client.rustupPath": "$HOME/.cargo/bin/rustup",
-    "python.defaultInterpreterPath": "python3",
+    "python.defaultInterpreterPath": "/opt/homebrew/bin/python3",
     "editor.unicodeHighlight.ambiguousCharacters": false,
     "rewrap.wrappingColumn": 80,
     "editor.wordwrap": "wordWrapColumn",
@@ -88,6 +84,22 @@
     "editor.minimap.enabled": false,
     "editor.wordWrap": "bounded",
     "gitlens.mode.active": "zen",
-    "workbench.activityBar.visible": false,
     "go.alternateTools": {},
+    "workbench.activityBar.location": "hidden",
+    "claudeCode.preferredLocation": "sidebar",
+    "git.blame.editorDecoration.enabled": false,
+    "git.blame.statusBarItem.enabled": true,
+    "update.showReleaseNotes": false,
+    "cSpell.engines": {},
+    "cSpell.enabled": true,
+"[git-commit]": {
+    "editor.rulers": [50, 72],
+    "rewrap.wrappingColumn": 72,
+    "rewrap.autoWrap.enabled": true
+},
+"go.addTags": {
+    "tags": "pro"
+},
+"update.mode": "none"
+
 }

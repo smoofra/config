@@ -1,5 +1,7 @@
 # Custom Dictionary Words
 aarch
+abspaths
+addpath
 addresource
 addressspace
 aiohttp
@@ -39,6 +41,8 @@ byteorder
 bzero
 cakey
 canonicalize
+ccompiler
+certifi
 CFLAGS
 chdir
 classdocstring
@@ -70,6 +74,7 @@ cyto
 d'anna
 Datacenter
 datetime
+deallocates
 decompressor
 defragmentation
 dentry
@@ -151,6 +156,7 @@ GOPROXY
 goroot
 goroutines
 gpgsig
+gridview
 Gvars
 hasher
 hashtable
@@ -183,6 +189,7 @@ kernelcache
 kernversion
 kext
 klass
+klauspost
 kmem
 Kmod
 knownissue
@@ -241,6 +248,7 @@ mslex
 MSVC
 msvcrt
 mtab
+Mudhra
 multiarch
 Multifunctor
 Multifunctors
@@ -301,6 +309,7 @@ proxygen
 Ptr
 Ptrauth
 PTRS
+pyproject
 pytest
 qcow
 qemu
@@ -311,6 +320,7 @@ RANLIB
 rcedit
 rdar
 realpath
+realpaths
 reflog
 regressiontesting
 remerge
@@ -328,6 +338,8 @@ rtentry
 runenv
 runtimes
 SBCL
+scroller
+scrollers
 sdkroot
 secretmem
 selfref
@@ -353,6 +365,7 @@ stackshots
 stdlib
 struct
 structs
+stylesheet
 Stype
 stypes
 subapi
@@ -367,6 +380,7 @@ suspendable
 symbolication
 syms
 syscall
+syscalls
 sysctlbyname
 sysroot
 Systemmap
@@ -374,6 +388,7 @@ systemquery
 targetpath
 teobot
 testname
+textconv
 toolchains
 topo
 touchbar
@@ -389,6 +404,7 @@ ufffd
 ULONGLONG
 unexported
 Unpackable
+unprioritized
 unsafeptr
 unslid
 untar

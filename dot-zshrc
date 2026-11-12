@@ -231,6 +231,14 @@ function resetup() {
     fi
 }
 
+function gitpu() {
+  local branch
+  branch=$(git symbolic-ref --short HEAD 2>/dev/null) || {
+    echo "gpush: not on a branch (detached HEAD?)" >&2
+    return 1
+  }
+  git push -u origin "${branch}:ldanna/${branch}" "$@"
+}
 
 function podimages() {
     kubectl get pods -o=jsonpath='{range .items[*]}{range .spec.containers[*]}{.name}{"\t"}{.image}{"\n"}'  | column -c 2 -s $'\t' -t

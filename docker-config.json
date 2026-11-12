@@ -1,4 +1,5 @@
 {
-    "detachKeys": "ctrl-["
+  "auths": null,
+  "detachKeys": "ctrl-[",
+  "credsStore": "desktop"
 }
-

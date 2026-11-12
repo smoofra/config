@@ -5,9 +5,6 @@
 	excludesfile = /Users/lawrence_danna/config/exclude
     attributesFile = ~/config/gitattributes
 
-[url "ssh://git@stash.sd.apple.com/"]
-    insteadOf = stash://
-
 [rebase]
     autoSquash = true
 
@@ -24,6 +21,8 @@
     smtpuser = lawrence_danna
 
 [alias]
+
+	body = log -1 --pretty=%B
 
 	findtag = ! f() {\n  git tag --contains $1 | grep -v '^eng/' | head -1\n}\nf
 
@@ -85,7 +84,9 @@
     dec = ! \nf() { \n cd \"$GIT_PREFIX\" && git diff --cached \"$@\" | el -d \n } \nf
 
     # show commit color
-    sc = show --color
+    sc = show --color-moved
+
+    scc = show --color-moved CHERRY_PICK_HEAD
 
     # diff color
     dc = diff --color
@@ -166,6 +167,14 @@
 
     logmsg = log -n1 --pretty=format:%B
 
+
+    # output the left and right side of a merge conflict
+    left = ! \nf() { \n cd \"$GIT_PREFIX\" && git show \":2:./$1\" \n } \nf
+    right = ! \nf() { \n cd \"$GIT_PREFIX\" && git show \":3:./$1\" \n } \nf
+
+
+    rw = history reword
+
 [push]
     default = upstream
 
@@ -237,5 +246,19 @@
 [diff "json"]
 	textconv = jq .
 
-#[url "git@gitlab.research.volexity.com:"]
-#	insteadOf = https://gitlab.research.volexity.com/
+[url "git@gitlab.research.volexity.com:"]
+	pushInsteadOf = https://gitlab.research.volexity.com/
+
+
+# brew install git-delta
+[core]
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true    # use n and N to move between files
+    dark = true
+    line-numbers = true
+

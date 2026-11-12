@@ -1,89 +1,97 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env python3
 
-use IPC::Run qw/run harness/;
-use Getopt::Long;
-
-my $author;
-my $merges; 
-my $graph;
-my $plain;
-my $boundary;
-my $decorate; 
-
-Getopt::Long::Configure ("bundling");
-GetOptions ("p" => \$plain,
-            "decorate|d" => \$decorate,
-            "boundary|b" => \$boundary,
-            "graph|g" => \$graph,
-            "a" => \$author,
-            "m" => \$merges) or die "couln't get options $!";
-
-die "-g is incompatible with -a" if $graph && $author;
-
-sub revparse {
-  my $name = shift;
-  my $hash;
-  my $message; 
-  run [qw/git rev-parse --short --revs-only/, $name], '2>', \$message, '>', \$hash
-    or die "git rev-parse $name failed:\n$message\n";
-  $hash ne '' or die "bad revision: $name\n";
-  $hash =~ s/\s*$//;
-  $hash =~ /^ [0-9a-fA-F]+  $/x or die "git rev-parse returned nonsense <$hash>\n"; 
-  return $hash;
-}
+import argparse
+import re
+import subprocess
+import sys
 
 
-if (@ARGV == 1) {
-  $as = shift;
-  $bs = 'HEAD';
-} elsif (@ARGV == 2) {
-  $as = shift;
-  $bs = shift;
-} else {
-  die "usage: git dh <ref1> <ref2>\n";
-}
-
-my ($a, $b) = map { revparse $_ } ($as, $bs);
-
-unless ($plain) {
-  my $len = length $as > length $bs ? length $as : length $bs;
-  printf "%-${len}s %s\n", $as, $a;
-  printf "%-${len}s %s\n", $bs, $b;
-  print "\n"; 
-}
-  
-
-if ($a eq $b) {
-  print "same commit\n";
-} else {
-  my @args;
-  if ($graph) {
-    push @args, qw/--oneline --left-right  --graph/;
-  } elsif ($author) { 
-    push @args, '--pretty=format:%m%h %an %s';
-  } else {
-    push @args, qw/--left-right --oneline/;
-  }
-  push @args, '--decorate' if $decorate;
-  push @args, '--no-merges' unless $merges || $graph;
-  push @args, '--boundary' if $boundary; 
-  push @args, "$a...$b";
-  run [qw/git log/, @args] or die "git log failed\n";
-
-  print "\n";
-  print "\n" if $author;
-  
-  $h = harness [qw/git diff --quiet/, $a, $b];
-  $h->run;
-  die "git diff failed\n" if $h->result > 1;
-  if ($h->result == 1) {
-    print "trees differ\n";
-  } else {
-    print "trees are the same\n";
-  }
-}
-          
-  
-  
+def revparse(name):
+    result = subprocess.run(
+        ["git", "rev-parse", "--short", "--revs-only", name],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    if result.returncode != 0:
+        sys.exit(f"git rev-parse {name} failed:\n{result.stderr}")
+    hash_ = result.stdout.strip()
+    if hash_ == "":
+        sys.exit(f"bad revision: {name}")
+    if not re.fullmatch(r"[0-9a-fA-F]+", hash_):
+        sys.exit(f"git rev-parse returned nonsense <{hash_}>")
+    return hash_
 
 
+def main():
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("-p", dest="plain", action="store_true")
+    parser.add_argument("-d", "--decorate", dest="decorate", action="store_true")
+    parser.add_argument("-b", "--boundary", dest="boundary", action="store_true")
+    parser.add_argument("-g", "--graph", dest="graph", action="store_true")
+    parser.add_argument("-a", dest="author", action="store_true")
+    parser.add_argument("-m", dest="merges", action="store_true")
+    parser.add_argument("refs", nargs="*")
+    args = parser.parse_args()
+
+    if args.graph and args.author:
+        sys.exit("-g is incompatible with -a")
+
+    if len(args.refs) == 1:
+        as_, bs = args.refs[0], "HEAD"
+    elif len(args.refs) == 2:
+        as_, bs = args.refs
+    else:
+        sys.exit("usage: git dh <ref1> <ref2>")
+
+    a = revparse(as_)
+    b = revparse(bs)
+
+    if not args.plain:
+        width = max(len(as_), len(bs))
+        print(f"{as_:<{width}} {a}")
+        print(f"{bs:<{width}} {b}")
+        print()
+
+    if a == b:
+        print("same commit")
+        return
+
+    sys.stdout.flush()
+
+    log_args = []
+    if args.graph:
+        log_args += ["--oneline", "--left-right", "--graph"]
+    elif args.author:
+        log_args += ["--pretty=format:%m%h %an %s"]
+    else:
+        log_args += ["--left-right", "--oneline"]
+
+    if args.decorate:
+        log_args.append("--decorate")
+    if not (args.merges or args.graph):
+        log_args.append("--no-merges")
+    if args.boundary:
+        log_args.append("--boundary")
+    log_args.append(f"{a}...{b}")
+
+    result = subprocess.run(["git", "log"] + log_args)
+    if result.returncode != 0:
+        sys.exit("git log failed")
+
+    print()
+    if args.author:
+        print()
+    sys.stdout.flush()
+
+    diff_result = subprocess.run(["git", "diff", "--quiet", a, b])
+    if diff_result.returncode > 1:
+        sys.exit("git diff failed")
+    if diff_result.returncode == 1:
+        print("trees differ")
+    else:
+        print("trees are the same")
+
+
+if __name__ == "__main__":
+    main()

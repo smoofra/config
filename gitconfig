@@ -68,6 +68,8 @@
     # run clang-format on changes
     #clang-format = ! \nf() { \n ( cd \"$GIT_PREFIX\" && git diff HEAD -- \"$@\" ) | clang-format-diff.py -p1 -i \n } \nf
 
+    pc = prune-claude-worktrees
+
     # show commit in emacs
     se = ! \nf() { \n git show \"$@\"  | el -d \n } \nf
 

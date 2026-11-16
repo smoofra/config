@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+# git prune-claude-worktrees [-n]
+#
+# Remove this repository's linked worktrees under ~/.claude that are clean
+# (no staged changes, no unstaged changes, no untracked files other than
+# ignored ones) and checked out on a branch (not a detached HEAD).  Then run
+# `git worktree prune`.
+#
+#   -n   dry run: only print what would be removed
+#   -f   pass --force to `git worktree remove` (needed for worktrees with
+#        submodules)
+
+set -u
+
+dry_run=
+force=()
+for arg in "$@"; do
+    case "$arg" in
+        -n|--dry-run) dry_run=1 ;;
+        -f|--force)   force=(--force) ;;
+        *)
+            echo "usage: git prune-claude-worktrees [-n] [-f]" >&2
+            exit 2
+            ;;
+    esac
+done
+
+claude=$(cd "$HOME/.claude" && pwd -P) || exit 1
+
+# Read the whole list before removing anything.  Records are runs of
+# NUL-terminated fields, each record ending with an empty field.
+fields=()
+while IFS= read -r -d '' field; do
+    fields+=("$field")
+done < <(git worktree list --porcelain -z) || exit 1
+fields+=("")
+
+status=0
+first=1
+path= branch= locked= prunable=
+
+for field in "${fields[@]}"; do
+    case "$field" in
+        "worktree "*) path=${field#worktree } ;;
+        "branch "*)   branch=${field#branch refs/heads/} ;;
+        locked*)      locked=1 ;;
+        prunable*)    prunable=1 ;;
+        "")
+            # The first record is the main worktree.
+            if [[ -n "$path" && -z "$first" ]]; then
+                case "$path" in
+                    "$claude"/*|"$HOME/.claude"/*)
+                        if [[ -n "$prunable" ]]; then
+                            :   # missing; `git worktree prune` handles it
+                        elif [[ -n "$locked" ]]; then
+                            echo "keep   $path (locked)"
+                        elif [[ -z "$branch" ]]; then
+                            echo "keep   $path (detached HEAD)"
+                        elif [[ -n "$(git -C "$path" status --porcelain --ignore-submodules=none)" ]]; then
+                            echo "keep   $path ($branch, dirty)"
+                        else
+                            echo "remove $path ($branch)"
+                            if [[ -z "$dry_run" ]]; then
+                                git worktree remove "${force[@]+"${force[@]}"}" "$path" || status=1
+                            fi
+                        fi
+                        ;;
+                esac
+            fi
+            [[ -n "$path" ]] && first=
+            path= branch= locked= prunable=
+            ;;
+    esac
+done
+
+if [[ -n "$dry_run" ]]; then
+    git worktree prune -n -v
+else
+    git worktree prune -v
+fi
+
+exit $status

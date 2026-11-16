@@ -12,6 +12,7 @@ path=(
     "$HOME/bin"
     "$HOME/.local/bin"
     "$HOME/.docker/bin"
+    "$HOME/go/bin"
     "$HOME/.cargo/bin"
     /opt/homebrew/bin
     /opt/homebrew/sbin

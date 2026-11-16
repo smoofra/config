@@ -445,6 +445,7 @@ webservers
 winegcc
 winehq
 worktree
+worktrees
 writelink
 xanthan
 XDIST
